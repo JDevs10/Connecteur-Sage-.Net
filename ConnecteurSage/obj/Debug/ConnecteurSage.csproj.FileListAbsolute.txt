@@ -1,0 +1,39 @@
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\ConnecteurSage.exe
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\ConnecteurSage.pdb
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ResolveAssemblyReference.cache
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Properties.Resources.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.csproj.GenerateResource.Cache
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.exe
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.pdb
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Main.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.Configuration.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.importManuel.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.Planifier.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\Microsoft.Win32.TaskScheduler.dll
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\Microsoft.Win32.TaskScheduler.xml
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\it\Microsoft.Win32.TaskScheduler.resources.dll
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ExportCommande.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.Validation.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ExportFactures.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ExportBonLivraison.resources
+E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ConfMail.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.exe
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.pdb
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\ConnecteurSage.exe
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\ConnecteurSage.pdb
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\Microsoft.Win32.TaskScheduler.xml
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\it\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\bin\Debug\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.csprojResolveAssemblyReference.cache
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.Configuration.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ConfMail.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ExportBonLivraison.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ExportCommande.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.ExportFactures.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.importManuel.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Main.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.Planifier.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Forms.Validation.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.Properties.Resources.resources
+C:\Users\OTHMAN\Documents\Visual Studio 2013\Projects\ConnecteurSage\ConnecteurSage\obj\Debug\ConnecteurSage.csproj.GenerateResource.Cache
