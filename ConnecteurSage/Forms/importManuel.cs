@@ -1118,47 +1118,6 @@ namespace ConnecteurSage.Forms
             return null;
         }
 
-        public static int getDL_No_From_Database(StreamWriter logFileWriter)
-        {
-            int result = -1;
-            string db_result = null;
-
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
-            {
-                try
-                {
-                    connection.Open();
-
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getLatestDL_No(), connection); //execute the function within this statement : getNegativeStockOfAProduct()
-
-                    using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                    {
-                        if (reader.Read()) // reads lines/rows from the query
-                        {
-                            db_result = reader[0].ToString();
-                            logFileWriter.WriteLine(DateTime.Now + " | getDO_No_From_Database() : Last DO_No : " + db_result);
-                        }
-                    }
-
-                }
-                catch (OdbcException ex)
-                {
-                    MessageBox.Show("Message : " + ex.Message + ".");
-                    logFileWriter.WriteLine("");
-                    logFileWriter.WriteLine(DateTime.Now + " | getDO_No_From_Database() : ********************** OdbcException *********************");
-                    logFileWriter.WriteLine(DateTime.Now + " | getDO_No_From_Database() : SQL ===> " + QueryHelper.getLatestDL_No());
-                    logFileWriter.WriteLine(DateTime.Now + " | getDO_No_From_Database() : Message : " + ex.Message + ".");
-                    logFileWriter.WriteLine(DateTime.Now + " | getDO_No_From_Database() : Import annulée");
-                    logFileWriter.Close();
-                    return -1;
-                }
-
-                result = Convert.ToInt16(db_result) + 1;
-                logFileWriter.WriteLine(DateTime.Now + " | getDO_No_From_Database() : New DO_No : " + result);
-            }
-            return result;
-        }
-
         public static Client getClient(string id, int flag)
         {
             // Insertion dans la base sage : cbase
@@ -1415,10 +1374,6 @@ namespace ConnecteurSage.Forms
             string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
-            //Console.WriteLine("inside insertStock function");
-            //Console.ReadLine();
-            //MessageBox.Show("Inside insertStock");
-
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion()) //connecting to database as handler
             {
                 try
@@ -1459,19 +1414,12 @@ namespace ConnecteurSage.Forms
                                 }
                             }
                         }
-
-                        //MessageBox.Show("getProductNameByReference OK");
-                        //Console.Write(" >>> " + name_article + " ");
                         
                         if (name_article != "")
                         {
-                            //MessageBox.Show("Article found!" + name_article);
 
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Article trouvé.");
                             logFileWriter.WriteLine("");
-
-                            //Console.WriteLine(" found! ");
-                            //Console.ReadLine();
                             using (OdbcCommand command = new OdbcCommand(QueryHelper.getNegativeStockOfAProduct(line.reference), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                             {
                                 using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
@@ -1488,7 +1436,6 @@ namespace ConnecteurSage.Forms
                                     }
                                 }
                             }
-                            //MessageBox.Show("getNegativeStockOfAProduct OK");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : getNegativeStockOfAProduct OK.");
                             logFileWriter.WriteLine("");
 
@@ -1508,21 +1455,13 @@ namespace ConnecteurSage.Forms
                                    }
                                 }
                             }
-                            //MessageBox.Show("getPositiveStockOfAProduct OK");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : getPositiveStockOfAProduct OK.");
 
 
                             int current_stock = (total_positive - total_negative); // substract negative stock from the positive one = to obtain the initial current stock.
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Reference: " + line.reference + " total_positive: " + total_positive + " - total_negative: " + total_negative + " = current_stock : " + current_stock + ".");
-
-                            //current_stock = Math.Abs(current_stock); // converts negative value into positive value.
-                            //MessageBox.Show("current_stock OK = " + current_stock);
-
-                            //MessageBox.Show("current_stock OK = curr:" + current_stock + " === veo:" + Convert.ToInt16(line.stock) );
+                            
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : current_stock OK = curr:" + current_stock + " === veo:" + Convert.ToInt16(line.stock)+".");
-
-                            // Latest DL_No from db
-                            int DL_No = getDL_No_From_Database(logFileWriter);
 
                             if (current_stock > Convert.ToInt16(line.stock)) // if current stock in database is superior from the one received in file : means remove stock
                             {
@@ -1532,111 +1471,6 @@ namespace ConnecteurSage.Forms
                                 try{
                                     negative_item += 1000; //increment line by 1000 for format 1000,2000,etc
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : negativ_item: " + negative_item + ".");
-
-                                    // MS00000 : MS prefix will be used to create document
-                                    /*
-                                    list_of_products[counter,0] = "2"; // DO_Domaine
-                                    list_of_products[counter,1] = "21"; // DO_Type
-                                    list_of_products[counter,2] = "21"; // DO_DocType
-                                    list_of_products[counter,3] = reference_MS_doc; // DO_Piece
-                                    list_of_products[counter,4] = curr_date; // DO_Date
-                                    list_of_products[counter,5] = curr_date; // DL_DateBL
-                                    list_of_products[counter,6] = (negative_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter,7] = curr_date_seconds; //reference_ME_doc + ":imported from document"; // DO_Ref
-                                    list_of_products[counter,8] = line.reference; // AR_Ref
-                                    list_of_products[counter,9] = name_article; // DL_Design
-                                    list_of_products[counter,10] = line.stock; // DL_Qte
-                                    list_of_products[counter,11] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    list_of_products[counter,12] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    list_of_products[counter,13] = DL_PrixUnitaire; // DL_PrixUnitaire
-                                    list_of_products[counter,14] = DL_PrixUnitaire; // DL_PrixRU
-                                    list_of_products[counter,15] = DL_PrixUnitaire; // DL_CMUP
-                                    list_of_products[counter,16] = DL_PrixUnitaire; // EU_Enumere
-                                    list_of_products[counter,17] = (Convert.ToInt16(current_stock) - Convert.ToInt16(line.stock)).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
-                                    list_of_products[counter,18] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
-                                    list_of_products[counter,19] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
-                                    list_of_products[counter,20] = ""; //PF_Num
-                                    */
-
-                                    // MS00000 : MS prefix will be used to create document
-                                    /*
-                                    list_of_products[counter,0] = "2"; //DO_Domaine
-                                    list_of_products[counter,1] = "21"; //DO_Type
-                                    list_of_products[counter,2] = "21"; //DO_DocType
-                                    list_of_products[counter,3] = "1"; //CT_Num
-                                    list_of_products[counter, 4] = reference_MS_doc; // DO_Piece
-                                    list_of_products[counter, 5] = curr_date; //DO_Date
-                                    list_of_products[counter, 6] = curr_date; //DL_DateBC
-                                    list_of_products[counter, 7] = (negative_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter, 8] = curr_date_seconds; //reference_ME_doc + ":imported from document"; // DO_Ref
-                                    list_of_products[counter, 9] = line.reference; // AR_Ref
-                                    list_of_products[counter, 10] = "1"; //DL_Valorise
-                                    list_of_products[counter, 11] = "1"; //DE_No
-                                    list_of_products[counter, 12] = name_article; // DL_Design
-                                    list_of_products[counter, 13] = line.stock; // DL_Qte
-                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
-                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
-                                    list_of_products[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
-                                    if (list_of_products[counter, 16].Equals("0")) { list_of_products[counter, 16] = "0.000000"; } else if (!list_of_products[counter, 16].Contains(".")) { list_of_products[counter, 16] = list_of_products[counter, 16] + ".000000"; }
-                                    list_of_products[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
-                                    if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
-                                    list_of_products[counter, 18] = DL_PrixUnitaire; // DL_CMUP
-                                    list_of_products[counter, 19] = DL_PrixUnitaire; // EU_Enumere
-                                    list_of_products[counter, 20] = (Convert.ToInt16(current_stock) - Convert.ToInt16(line.stock)).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
-                                    list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
-                                    if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
-                                    list_of_products[counter, 23] = ""; //PF_Num
-                                    list_of_products[counter, 24] = "0"; // DL_No + ""; //DL_No
-                                    list_of_products[counter, 25] = "0"; //DL_FactPoids
-                                    list_of_products[counter, 26] = "0"; //DL_Escompte
-
-                                    
-                                    total_ht += Convert.ToDouble(list_of_products[counter, 21].ToString().Replace(".", ",")); // get article total HT price and store it
-                                    */
-
-                                    /** ======================================================================================== **/
-                                    /** =============================  NEW DOCLIGNE SQL ARRAY ================================== **/
-                                    /** ======================================================================================== **/
-                                    // MS00000 : MS prefix will be used to create document
-                                    /*
-                                    list_of_products[counter, 0] = ""; //AC_REFCLIENT
-                                    list_of_products[counter, 1] = ""; //AF_REFFOURNISS
-                                    list_of_products[counter, 2] = "1"; //CT_NUM
-                                    list_of_products[counter, 3] = "0"; //DE_NO
-                                    list_of_products[counter, 4] = "1"; //DL_Valorise
-                                    list_of_products[counter, 5] = "NULL"; //DO_DATELIVR
-                                    list_of_products[counter, 6] = "0"; //AG_No1
-                                    list_of_products[counter, 7] = "0"; //AG_No2
-                                    list_of_products[counter, 8] = ""; //AR_RefCompose
-                                    list_of_products[counter, 9] = "0"; //DL_Taxe1
-                                    list_of_products[counter, 10] = "0"; //DL_TypeTaux1
-                                    list_of_products[counter, 11] = "0"; //DL_TypeTaxe1
-                                    list_of_products[counter, 12] = curr_date_seconds; //reference_ME_doc + ":imported from document"; // DO_Ref
-                                    list_of_products[counter, 13] = line.reference; // AR_Ref
-                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
-                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
-                                    list_of_products[counter, 16] = "2"; // DO_Domaine
-                                    list_of_products[counter, 17] = reference_MS_doc; //DO_Piece
-                                    list_of_products[counter, 18] = "21"; //DO_Type
-                                    list_of_products[counter, 19] = curr_date; //DO_Date
-                                    list_of_products[counter, 20] = curr_date; //DL_DateBC
-                                    list_of_products[counter, 21] = name_article; // DL_Design
-                                    list_of_products[counter, 22] = (negative_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter, 23] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
-                                    if (list_of_products[counter, 23].Equals("0")) { list_of_products[counter, 23] = "0.000000"; } else if (!list_of_products[counter, 23].Contains(".")) { list_of_products[counter, 23] = list_of_products[counter, 23] + ".000000"; }
-                                    list_of_products[counter, 24] = line.stock; // DL_Qte
-                                    list_of_products[counter, 25] = DL_PrixUnitaire; // EU_Enumere
-                                    list_of_products[counter, 26] = (Convert.ToInt16(current_stock) - Convert.ToInt16(line.stock)).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
-                                    if (list_of_products[counter, 26].Equals("0")) { list_of_products[counter, 26] = "0.000000"; } else if (!list_of_products[counter, 26].Contains(".")) { list_of_products[counter, 26] = list_of_products[counter, 26] + ".000000"; }
-                                    */
 
                                     // MS00000 : MS prefix will be used to create document
                                     list_of_products[counter, 0] = "2"; // DO_Domaine
@@ -1671,7 +1505,7 @@ namespace ConnecteurSage.Forms
                                     if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
                                     if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
                                     list_of_products[counter, 23] = ""; //PF_Num
-                                    list_of_products[counter, 24] = "0"; // DL_No + ""; //DL_No
+                                    list_of_products[counter, 24] = "0"; //DL_No
                                     list_of_products[counter, 25] = "0"; //DL_FactPoids
                                     list_of_products[counter, 26] = "0"; //DL_Escompte
 
@@ -1701,110 +1535,6 @@ namespace ConnecteurSage.Forms
 
                                 try {
                                     positive_item += 1000; //increment line by 1000 for format 1000,2000,etc
-                                    // ME00000 : ME prefix will be used to create document
-                                    /*
-                                    list_of_products[counter,0] = "2"; // DO_Domaine
-                                    list_of_products[counter,1] = "20"; // DO_Type
-                                    list_of_products[counter,2] = "20"; // DO_DocType
-                                    list_of_products[counter,3] = reference_MS_doc; // DO_Piece
-                                    list_of_products[counter,4] = curr_date_time; // DO_Date
-                                    list_of_products[counter,5] = curr_date_time; // DL_DateBL
-                                    list_of_products[counter,6] = (positive_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter,7] = curr_date_seconds; //reference_ME_doc + ":imported from document"; // DO_Ref
-                                    list_of_products[counter,8] = line.reference; // AR_Ref
-                                    list_of_products[counter,9] = name_article; // DL_Design
-                                    list_of_products[counter,10] = line.stock; // DL_Qte
-                                    list_of_products[counter,11] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    list_of_products[counter,12] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    list_of_products[counter,13] = DL_PrixUnitaire; // DL_PrixUnitaire
-                                    list_of_products[counter,14] = DL_PrixUnitaire; // DL_PrixRU
-                                    list_of_products[counter,15] = DL_PrixUnitaire; // DL_CMUP
-                                    list_of_products[counter,16] = DL_PrixUnitaire; // EU_Enumere
-                                    list_of_products[counter,17] = (Convert.ToInt16(current_stock) - Convert.ToInt16(line.stock)).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
-                                    list_of_products[counter,18] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
-                                    list_of_products[counter,19] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
-                                    list_of_products[counter,20] = ""; //PF_Num
-                                     * */
-                                    /*
-                                    list_of_products[counter, 0] = "2"; //DO_Domaine
-                                    list_of_products[counter, 1] = "20"; //DO_Type
-                                    list_of_products[counter, 2] = "20"; //DO_DocType
-                                    list_of_products[counter, 3] = "1"; //CT_Num
-                                    list_of_products[counter, 4] = reference_ME_doc; // DO_Piece
-                                    list_of_products[counter, 5] = curr_date; //DO_Date
-                                    list_of_products[counter, 6] = curr_date; //DL_DateBC
-                                    list_of_products[counter, 7] = (positive_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter, 8] = curr_date_seconds; //reference_ME_doc + ":imported from document"; // DO_Ref
-                                    list_of_products[counter, 9] = line.reference; // AR_Ref
-                                    list_of_products[counter, 10] = "1"; //DL_Valorise
-                                    list_of_products[counter, 11] = "1"; //DE_No
-                                    list_of_products[counter, 12] = name_article; // DL_Design
-                                    list_of_products[counter, 13] = line.stock; // DL_Qte
-                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
-                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
-                                    list_of_products[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
-                                    if (list_of_products[counter, 16].Equals("0")) { list_of_products[counter, 16] = "0.000000"; } else if (!list_of_products[counter, 16].Contains(".")) { list_of_products[counter, 16] = list_of_products[counter, 16] + ".000000"; }
-                                    list_of_products[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
-                                    if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
-                                    list_of_products[counter, 18] = DL_PrixUnitaire; // DL_CMUP
-                                    list_of_products[counter, 19] = DL_PrixUnitaire; // EU_Enumere
-                                    list_of_products[counter, 20] = (Convert.ToInt16(current_stock) - Convert.ToInt16(line.stock)).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
-                                    list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
-                                    if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
-                                    list_of_products[counter, 23] = ""; //PF_Num
-                                    list_of_products[counter, 24] = "0"; // DL_No + ""; //DL_No
-                                    list_of_products[counter, 25] = "0"; //DL_FactPoids
-                                    list_of_products[counter, 26] = "0"; //DL_Escompte
-
-                                    total_ht += Convert.ToDouble(list_of_products[counter, 21].ToString().Replace(".", ",")); // get article total HT price and store it
-                                    */
-
-
-                                    /** ======================================================================================== **/
-                                    /** =============================  NEW DOCLIGNE SQL ARRAY ================================== **/
-                                    /** ======================================================================================== **/
-                                    // ME00000 : ME prefix will be used to create document
-                                    /*
-                                    list_of_products[counter, 0] = ""; //AC_REFCLIENT
-                                    list_of_products[counter, 1] = ""; //AF_REFFOURNISS
-                                    list_of_products[counter, 2] = "1"; //CT_NUM
-                                    list_of_products[counter, 3] = "0"; //DE_NO
-                                    list_of_products[counter, 4] = "1"; //DL_Valorise
-                                    list_of_products[counter, 5] = "NULL"; //DO_DATELIVR
-                                    list_of_products[counter, 6] = "0"; //AG_No1
-                                    list_of_products[counter, 7] = "0"; //AG_No2
-                                    list_of_products[counter, 8] = ""; //AR_RefCompose
-                                    list_of_products[counter, 9] = "0"; //DL_Taxe1
-                                    list_of_products[counter, 10] = "0"; //DL_TypeTaux1
-                                    list_of_products[counter, 11] = "0"; //DL_TypeTaxe1
-                                    list_of_products[counter, 12] = curr_date_seconds; //reference_ME_doc + ":imported from document"; // DO_Ref
-                                    list_of_products[counter, 13] = line.reference; // AR_Ref
-                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
-                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
-                                    list_of_products[counter, 16] = "2"; // DO_Domaine
-                                    list_of_products[counter, 17] = reference_ME_doc; //DO_Piece
-                                    list_of_products[counter, 18] = "20"; //DO_Type
-                                    list_of_products[counter, 19] = curr_date; //DO_Date
-                                    list_of_products[counter, 20] = curr_date; //DL_DateBC
-                                    list_of_products[counter, 21] = name_article; // DL_Design
-                                    list_of_products[counter, 22] = (positive_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter, 23] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
-                                    if (list_of_products[counter, 23].Equals("0")) { list_of_products[counter, 23] = "0.000000"; } else if (!list_of_products[counter, 23].Contains(".")) { list_of_products[counter, 23] = list_of_products[counter, 23] + ".000000"; }
-                                    list_of_products[counter, 24] = line.stock; // DL_Qte
-                                    list_of_products[counter, 25] = DL_PrixUnitaire; // EU_Enumere
-                                    list_of_products[counter, 26] = (Convert.ToInt16(current_stock) - Convert.ToInt16(line.stock)).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
-                                    if (list_of_products[counter, 26].Equals("0")) { list_of_products[counter, 26] = "0.000000"; } else if (!list_of_products[counter, 26].Contains(".")) { list_of_products[counter, 26] = list_of_products[counter, 26] + ".000000"; }
-
-                                    */
-
                                     // ME00000 : ME prefix will be used to create document
                                     list_of_products[counter, 0] = "2"; // DO_Domaine
                                     list_of_products[counter, 1] = "20"; //DO_Type
@@ -1838,7 +1568,7 @@ namespace ConnecteurSage.Forms
                                     if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
                                     if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
                                     list_of_products[counter, 23] = ""; //PF_Num
-                                    list_of_products[counter, 24] = "0"; // DL_No + ""; //DL_No
+                                    list_of_products[counter, 24] = "0"; //DL_No
                                     list_of_products[counter, 25] = "0"; //DL_FactPoids
                                     list_of_products[counter, 26] = "0"; //DL_Escompte
 
@@ -1854,8 +1584,6 @@ namespace ConnecteurSage.Forms
                                     return null;
                                 }
 
-                                //MessageBox.Show("Producted added into the table list_of_products as ME index ");
-
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Produit '" + name_article + "' est ajouté à la table list_of_products en tant qu'index ME.");
                             }
 
@@ -1866,10 +1594,12 @@ namespace ConnecteurSage.Forms
                         }
                         else
                         {
-                            //Console.WriteLine(" product not found... ");
-                            //Console.ReadLine();
-                            //log the product with the following reference line.reference not found in the database at curr_date
-                            //send mail.
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ******************** Erreur Référence ********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : La Référence du produit dans le fichier n'existe pas dans la BDD.");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
+                            logFileWriter.Close();
+                            return null;
                         }
 
                     } // end foreach
@@ -1925,25 +1655,7 @@ namespace ConnecteurSage.Forms
                                 logFileWriter.Close();
                                 return null;
                             }
-
-                            //MessageBox.Show(" generateStockDocument OK ");
-
-                            //string[][] products_ME = new string[positive_item / 1000][]; // create array with enough space
                             string[,] products_ME = new string[positive_item / 1000, 27]; // create array with enough space
-
-                            //int i = 0;
-                            //insert documentline into the database with articles having 20 as value @index 2
-                            /*
-                            foreach (string[] product in list_of_products) //read item line by line 
-                            {
-                                MessageBox.Show(" inside foreach ");
-                                // using reference_ME_doc to link documentline to the main document.
-                                if (product[1] == "20")
-                                {
-                                    products_ME[i] = product;
-                                    i++;
-                                }
-                            }*/
 
                             //insert documentline into the database with articles having 20 as value @index 2
                             logFileWriter.WriteLine("");
@@ -2014,19 +1726,7 @@ namespace ConnecteurSage.Forms
                                 return null;
                             }
 
-                            //string[][] products_MS = new string[negative_item / 1000][]; // create array with enough space
                             string[,] products_MS = new string[negative_item / 1000, 27]; // create array with enough space
-                            //insert documentline into the database with articles having 21 as value @index 2
-                            /*
-                            foreach (string[] product in list_of_products) //read item line by line 
-                            {
-                                // using reference_MS_doc to link documentline to the main document.
-                                if (product[1] == "21")
-                                {
-                                    products_MS[i] = product; 
-                                    i++;
-                                }
-                            }*/
 
                             //insert documentline into the database with articles having 20 as value @index 2
                             logFileWriter.WriteLine("");
@@ -2076,7 +1776,6 @@ namespace ConnecteurSage.Forms
                         //Exceptions pouvant survenir durant l'exécution de la requête SQL
                         MessageBox.Show(" ERREUR[4]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!",
                                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        // return list_of_products[0][0];//return false because the query failed to execute
 
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ********************** Exception 1 *********************");
@@ -2095,86 +1794,7 @@ namespace ConnecteurSage.Forms
 
             logFileWriter.WriteLine("");
 
-            return list_of_products ;
-                   /* using (OdbcCommand command = new OdbcCommand(QueryHelper.getStockOfAProduct(, connection))
-                    {
-                        using (IDataReader reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                Article article = new Article(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString());
-                                //MessageBox.Show(reader[0].ToString());
-                                //MessageBox.Show(article.AR_REF+" gamme1:"+ article.gamme1+" gamme2:"+article.gamme2 );
-                                connection.Close();
-                                return article;
-
-                            }
-                            else
-                            {
-                                MessageBox.Show("code article " + code_article + " n'existe pas dans la base.", "Erreur!!",
-                                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                                return null;
-                            }
-                        }
-
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    MessageBox.Show(" ERREUR[5]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!",
-                                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return false;
-                }
-
-                /*
-                try
-                {
-                    MessageBox.Show("Query to execute for  : " + reference_doc );
-                    
-                    connection.Open(); //connect to database
-                    
-                    foreach(Stock line in s) //read item by item and insert
-                    {
-                        int current_stock = 25;//GET CURRENT STOCK VALUE FROM DATABASE 
-
-                        if (current_stock > Convert.ToInt16(line.stock)) // if current stock in database is superior from the one received in file : means remove stock
-                        { 
-                            //MS00000 : MS prefix will be used to create docu
-                        }
-
-                        if (current_stock < Convert.ToInt16(line.stock)) // if current stock in database is inferior from the one received in file : means add stock
-                        {
-
-                        }
-
-                    }
-
-
-
-                    //string sql1 = "INSERT INTO BIJOU.dbo.F_DOCENTETE ( DO_Domaine, DO_Type, DO_Piece, DO_Date, DO_Ref, DO_Tiers, Commentaires) VALUES (2,20,'ME00003',CONVERT(DATETIME, '30-08-2019 19:01:45'),'TESTAFRAIMPORT','1','TESTAFRAIMPORT');";
-                    //string sql2 = "INSERT INTO BIJOU.dbo.F_DOCLIGNE ( DO_Domaine,DO_Type,DO_Piece,DO_Date,DL_DateBL,DL_Ligne, DO_Ref,AR_Ref, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut,DL_PrixUnitaire, DL_PrixRU,DL_CMUP, EU_Enumere,EU_Qte,DL_MontantHT,DL_MontantTTC,PF_Num) VALUES (2,20,'ME00003',CONVERT(DATETIME, '30-08-2019 19:01:45'),CONVERT(DATETIME, '30-08-2019 19:01:45'),1000,'TESTAFRAIMPORT','BAAR01',	'Bague Argent',23,97.29,345,186.00,186.00,186.00,186.00,23,4278,4278,'')";
-                    
-
-                    //OdbcCommand command = new OdbcCommand(QueryHelper.insertStockInfo(s) , connection); //calling the query and parsing the object Stock into it
-                    //command.ExecuteReader(); // executing the query
-
-                    connection.Close(); //disconnect from database
-                    
-                    return true; //return true because the query executed successfully
-                }
-                catch (Exception ex) //incase if error - throw exception and stop
-                {
-                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    MessageBox.Show(" ERREUR[4]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!",
-                                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return false;//return false because the query failed to execute
-                }
-               
-            }
-
-            return false; */
+            return list_of_products;  
         }
         
         public static Boolean insertCommandeLine(Client client, Order order, OrderLine orderLine)
@@ -2198,8 +1818,6 @@ namespace ConnecteurSage.Forms
                 catch (Exception ex)
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    //MessageBox.Show("Echec d'insertion de la ligne '"+orderLine.NumLigne+"' de la commande "+order.NumCommande+"." + "\n"+ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", ""), "Erreur!!",
-                      //                          MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     MessageErreur.Add("Echec d'insertion de la ligne " + orderLine.NumLigne + " de la commande " + order.NumCommande + "." + "\n" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR",""));
                     return false;
                 }
@@ -2244,8 +1862,6 @@ namespace ConnecteurSage.Forms
 
                     connection.Close();
                     return true;
-
-
                 }
                 catch
                 {
@@ -2782,7 +2398,6 @@ namespace ConnecteurSage.Forms
                 catch (Exception ex)
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    //Console.WriteLine(DateTime.Now + " : Erreur[42] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     MessageBox.Show(" ERREUR[55]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!",
                                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return false;

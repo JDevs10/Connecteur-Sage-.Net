@@ -271,43 +271,8 @@ namespace ConnecteurSage.Helpers
 
    public static string insertStockDocument(string DO_Type, string reference_doc, string curr_date, string curr_date_seconds, string curr_date_time)
    {
-      /* string sql = "";
-
-       sql = sql + "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_CONDITION, DO_DATE, DO_DATELIVR, DO_DEVISE, DO_DOMAINE, DO_EXPEDIT, DO_LANGUE, DO_NBFACTURE, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TXESCOMPTE, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, N_CATCOMPTA, DO_COORD01, Commentaires)";
-       sql = sql + "VALUES ('', '', 0, 0, 0, 0, 1, 0, {d '" + curr_date + "'}, NULL, 0, 2, 0   , 0, 0 , 0, '" + reference_doc + "', '" + curr_date_seconds + "', 0, 0 , 0, 1, 0, 0, " + DO_Type + ", 1, 0, 0, 0, '','" + reference_doc + ":document from logistic.')";
-
-       return sql;/*
-       //return "INSERT INTO F_DOCENTETE ( DO_Domaine, DO_Type, DO_Piece, DO_Date, DO_Ref, DO_Tiers, Commentaires ) VALUES (2,"+DO_Type+",'"+reference_doc+"','"+curr_date+"', CONCAT('ME00004:IMPORT le ',NOW()), '1','ME00004:document from logistic.')";
-       //new return "INSERT INTO F_DOCENTETE ( DO_Domaine, DO_Type, DO_Piece, DO_Date, DO_Ref, DO_Tiers, Commentaires ) VALUES (2," + DO_Type + ",'" + reference_doc + "', {d '" + curr_date + "'}, '" + curr_date_seconds + "', '1','" + reference_doc + ":document from logistic.')";
-      
-       /*
-       return "INSERT INTO F_DOCENTETE (DO_Domaine, DO_Type, DO_Piece, DO_Date, DO_Ref, DO_Tiers, DO_Colisage, DO_TypeColis, DO_TotalHT, Commentaires) VALUES ("+
-              "2, " + DO_Type + ", '" + reference_doc + "', {d '" + curr_date + "'}, '" + curr_date_seconds + "', '1', 1, 1, " + total_ht + ", '" + reference_doc + ": document from logistic a " + curr_date_time + ".')";
-       */
-       
-        /*
-       return "INSERT INTO F_DOCENTETE (DO_Domaine, DO_Type, DO_DocType, DO_Piece, DO_Date, DO_Ref, DO_CLOTURE, DO_COLISAGE, DO_Tiers, CO_No, DO_Period, DO_Devise, DO_Cours, DE_No, LI_No, DO_Expedit, DO_NbFacture, DO_BLFact, DO_TxEscompte, "+
-           " DO_Reliquat, DO_Imprim, CA_Num, DO_COORD01, DO_COORD02, DO_COORD03, DO_COORD04, DO_Souche, DO_DATELIVR, DO_CONDITION, DO_Tarif, DO_Transaction, DO_Langue, DO_Ecart, DO_Regime, N_CatCompta, DO_Ventile, AB_No, DO_DebutAbo, "+
-           "DO_FinAbo, DO_DebutPeriod, DO_FinPeriod, CG_Num, DO_Statut, DO_Heure, CA_No, CO_NoCaissier, DO_Transfere, DO_NoWeb, DO_Attente, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, "+
-           "DO_Motif, DO_Contact, DO_FactureElec, DO_TypeTransac, DO_FactureFrs, DO_PieceOrig, DO_EStatut, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_TotalHT, DO_StatutBAP, DO_Escompte, Commentaires) VALUES(" +
-           "2, " + DO_Type + ", "+DO_Type+", '" + reference_doc + "', '" + curr_date + "', '" + curr_date_seconds + "', 1, 1, '1', 0, 0, 0, 0.000000, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', 0, NULL, NULL, 0, 0, 0, 0.000000, 0, 0, 0, 0, "+
-           " NULL, NULL, NULL, NULL, NULL, 0, 0.000000, 0, 0, 0, 0, 0, 0, '', 0, 0.000000, 0, 0.000000, 0, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, " + total_ht + ", 0, 0, '"+reference_doc+": document from logistic à "+date_time+"')";
-       */
-       /*
-       return "INSERT INTO F_DOCENTETE (DO_Domaine, DO_Type, DO_DocType, DO_Piece, DO_Date, DO_Ref, DO_CLOTURE, DO_COLISAGE, DO_Tiers, CO_No, DO_Period, DO_Devise, DO_Cours, DE_No, LI_No, DO_Expedit, DO_NbFacture, DO_BLFact, DO_TxEscompte, " +
-           " DO_Reliquat, DO_Imprim, CA_Num, DO_COORD01, DO_COORD02, DO_COORD03, DO_COORD04, DO_Souche, DO_Tarif, DO_Transaction, DO_Langue, DO_Ecart, DO_Regime, N_CatCompta, DO_Ventile, AB_No, " +
-           " DO_Statut, DO_Heure, CA_No, CO_NoCaissier, DO_Transfere, DO_NoWeb, DO_Attente, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, " +
-           "DO_Motif, DO_Contact, DO_FactureElec, DO_TypeTransac, DO_FactureFrs, DO_PieceOrig, DO_EStatut, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_TotalHT, DO_StatutBAP, DO_Escompte, Commentaires) VALUES(" +
-           "2, " + DO_Type + ", " + DO_Type + ", '" + reference_doc + "', {d '" + curr_date + "'}, '" + curr_date_seconds + "', 1, 1, '1', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, " +
-           "0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, " + total_ht + ", 0, 0, '" + reference_doc + ": document from logistic à " + curr_date_time + "')";
-        */
-       /*
-       string sql = "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_CONDITION, DO_DATE, DO_DATELIVR, DO_DEVISE, DO_DOMAINE, DO_EXPEDIT, DO_LANGUE, DO_NBFACTURE, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TXESCOMPTE, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, N_CATCOMPTA, DO_COORD01, Commentaires)"+
-           "VALUES ('37100', 'EDF', 0, 0, 0, 0, 1, 0,'20190920', NULL, 0, 2, 0 , 0, 0 , 0, 'MS00017', '2019921175800', 0, 0 , 0, 1, 0, 0, 21, 1, 0, 0, 0, '','MS00017:document from logistic.')";
-       */
        string sql = "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_CONDITION, DO_DATE, DO_DATELIVR, DO_DEVISE, DO_DOMAINE, DO_EXPEDIT, DO_LANGUE, DO_NBFACTURE, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TXESCOMPTE, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, N_CATCOMPTA, DO_COORD01, Commentaires)"+
            "VALUES (NULL, NULL, 0, 0, 0, 0, 1, 0,{d '" + curr_date + "'}, NULL, 0, 2, 0 , 0, 0 , 0, '" + reference_doc + "', '" + curr_date_seconds + "', 0, 0 , 0, 1, 0, 0, " + DO_Type + ", 1, 0, 0, 0, '','" + reference_doc + ":document from logistic.')";
-
        return sql;
    }
 
@@ -318,43 +283,11 @@ namespace ConnecteurSage.Helpers
 
    public static string insertStockDocumentLine(string[,] products, int x)
    {
-       /*
-       return "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, DO_Piece, DO_Date, DL_DateBL, DL_Ligne, DO_Ref, AR_Ref, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, " +
-            "EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num ) VALUES ( " + products[x, 0] + ", " + products[x, 1] + ", "+products[x,2]+", '" + products[x, 3] + "', '" + products[x, 4] + "', '" + products[x, 5] + "'," +
-            " " + products[x, 6] + ", '" + products[x, 7] + "', '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", " + products[x, 12] + "," +
-            " " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", " + products[x, 19] + ", '" + products[x, 20] + "')";
-       */
-       /*
-       return "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_Ligne, DO_Ref, AR_Ref, DL_Design, DL_Qte, DL_PoidsNet, "+
-           "DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num) VALUES ("+
-           ""+products[x,0]+", "+products[x,1]+", "+products[x,2]+", '"+products[x,3]+"', '"+products[x,4]+"', {d '"+products[x,5]+"'}, "+products[x,6]+", '"+products[x,7]+"', "+
-           "'"+products[x,8]+"', '"+products[x,12]+"', "+products[x,13]+", "+products[x,14]+", "+products[x,15]+", "+products[x,16]+", "+products[x,17]+", "+products[x,18]+", "+
-           ""+products[x,19]+", "+products[x,20]+", "+products[x,21]+", "+products[x,22]+", '"+products[x,23]+"')";
-       */
-       /*
-       return "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_Ligne, DO_Ref, AR_Ref, DL_Design, DL_Qte, DL_PoidsNet, " +
-           "DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No) VALUES (" +
-           "" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, " + products[x, 6] + ", '" + products[x, 7] + "', " +
-           "'" + products[x, 8] + "', '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", " +
-           "" + products[x, 19] + ", " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', "+products[x, 24]+")";
-       */
-       /*
-       return "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, " +
-           "DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', " +
-           "{d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " +
-           "" + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", "+
-           "" + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
-       */
-      
        // INSERT INTO BIJOU.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00016', {d '2019-09-19'}, {d '2019-09-19'}, 0, '201991917544', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)
        //string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00017', {d '2019-09-23'}, {d '2019-09-23'}, 0, '2019921175800', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)";
        string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) "+
            "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
-       
-       /*sql = sql + "INSERT INTO F_DOCLIGNE(AC_REFCLIENT, AF_REFFOURNISS, CT_NUM, DE_NO, DL_VALORISE, DO_DATELIVR, AG_No1, AG_No2, AR_RefCompose, DL_Taxe1, DL_TypeTaux1, DL_TypeTaxe1, do_ref, AR_REF, DL_PoidsNet, DL_PoidsBrut, DO_DOMAINE, DO_PIECE, DO_TYPE, DO_DATE, DL_DATEBC, DL_DESIGN, DL_LIGNE, DL_PRIXUNITAIRE, DL_QTE, EU_Enumere, EU_QTE) " +
-           "VALUES ('" + products[x, 0] + "', '" + products[x, 1] + "', '" + products[x, 2] + "', " + products[x, 3] + ", " + products[x, 4] + ", " + products[x, 5] + ", " + products[x, 6] + ", " + products[x, 7] + ", '" + products[x, 8] + "', " + products[x, 9] + ", " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', "+
-           "'" + products[x, 13] + "', " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", '" + products[x, 17] + "', " + products[x, 18] + ", {d '" + products[x, 19] + "'}, {d '" + products[x, 20] + "'}, '" + products[x, 21] + "', " + products[x, 22] + ", " + products[x, 23] + ", " + products[x, 24] + ", '" + products[x, 25] + "', " + products[x, 26] + ")";
-       */return sql;
+       return sql;
    }
 
     #endregion
