@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ConfigurationDNS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <DNS_1>MS Access Database</DNS_1>
-  <Nom_1 />
-  <Password_1>wbVpi9zQjCU=</Password_1>
+  <DNS>Bijou</DNS>
+  <Nom />
+  <Password>wbVpi9zQjCU=</Password>
 </ConfigurationDNS>
