@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<ConfigurationStatuts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Statut_Commande>0</Statut_Commande>
+  <Statut_BonLivraision>1</Statut_BonLivraision>
+  <Statut_Facture>2</Statut_Facture>
+</ConfigurationStatuts>

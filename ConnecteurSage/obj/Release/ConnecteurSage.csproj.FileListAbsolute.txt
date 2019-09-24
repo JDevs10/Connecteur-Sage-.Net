@@ -158,3 +158,4 @@ C:\Users\Anexys\Pictures\ConnecteurSage_JL\ConnecteurSage\obj\Release\Connecteur
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ConnecteurSage\obj\Release\ConnecteurSage.Forms.Validation.resources
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ConnecteurSage\obj\Release\ConnecteurSage.Properties.Resources.resources
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ConnecteurSage\obj\Release\ConnecteurSage.csproj.GenerateResource.Cache
+C:\Users\Anexys\Pictures\ConnecteurSage_JL\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfStatus.resources

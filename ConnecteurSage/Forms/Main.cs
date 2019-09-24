@@ -43,19 +43,23 @@ namespace ConnecteurSage
         {
             InitializeComponent();
 
-            if (File.Exists(pathModule+@"\Setting.xml"))
+            if (File.Exists(pathModule + @"\Setting.xml") && File.Exists(pathModule + @"\SettingSQL.xml"))
             {
                 //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
                 //StreamReader file = new System.IO.StreamReader("Setting.xml");
                 //ConfigurationDNS setting = new ConfigurationDNS();
                 //setting = (ConfigurationDNS)reader.Deserialize(file);
 
-                ConfigurationDNS setting = new ConfigurationDNS();
-                setting.Load();
+                ConfigurationDNS setting1 = new ConfigurationDNS();
+                setting1.Load();
+                ConfigurationDNS setting2 = new ConfigurationDNS();
+                setting2.LoadSQL();
 
-                label1.Text = "DSN  : " + setting.DNS;
-                label2.Text = "Nom : " + setting.Nom;
+                label1.Text = "DSN I : " + setting1.DNS_1;
+                label5.Text = "DSN II : " + setting2.DNS_2;
+                label2.Text = "Nom : " + setting1.Nom_1;
                 //file.Close();
+
             }
             else
             {
@@ -72,6 +76,53 @@ namespace ConnecteurSage
                     MessageBox.Show(ex.Message);
                 }
             }
+
+            if (File.Exists(pathModule + @"\SettingStatut.xml"))
+            {
+                //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
+                //StreamReader file = new System.IO.StreamReader("Setting.xml");
+                //ConfigurationDNS setting = new ConfigurationDNS();
+                //setting = (ConfigurationDNS)reader.Deserialize(file);
+
+                ConfigurationStatuts setting = new ConfigurationStatuts();
+                setting.Load();
+
+                label6.Text = "Statut Commande : " + getListeStatutName(setting.Statut_Commande);
+                label7.Text = "Statut Bon de Livraision : " + getListeStatutName(setting.Statut_BonLivraision);
+                label8.Text = "Statut de Facture : " + getListeStatutName(setting.Statut_Facture);
+
+            }
+            else
+            {
+                try
+                {
+                    using (Forms.ConfStatus form = new Forms.ConfStatus())
+                    {
+                        form.ShowDialog();
+                    }
+                }
+                // Récupération d'une possible SDKException
+                catch (SDKException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        public static string getListeStatutName(int value)
+        {
+            string name = "";
+            List<Statut> list = new Statut().getListeStatut();
+
+            for (int i = 0; i < list.Count(); i++)
+            {
+                if (list[i].Value == value)
+                {
+                    name = list[i].Nom;
+                    break;
+                }
+            }
+            return name;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -249,6 +300,22 @@ namespace ConnecteurSage
             try
             {
                 using (Forms.ExportStocks form = new Forms.ExportStocks())
+                {
+                    form.ShowDialog();
+                }
+            }
+            // Récupération d'une possible SDKException
+            catch (SDKException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Forms.ConfStatus form = new Forms.ConfStatus())
                 {
                     form.ShowDialog();
                 }

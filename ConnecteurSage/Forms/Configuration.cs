@@ -23,10 +23,10 @@ namespace ConnecteurSage.Forms
             InitializeComponent();
 
 
-            List<string> list = EnumDsn();
-            for (int i = 0; i < list.Count; i++)
+            List<string> list1 = EnumDsn();
+            for (int i = 0; i < list1.Count; i++)
             {
-                comboBox1.Items.Add(list[i]);
+                comboBox1.Items.Add(list1[i]);
             }
 
             if (File.Exists(pathModule+@"\Setting.xml"))
@@ -36,12 +36,30 @@ namespace ConnecteurSage.Forms
                 ConfigurationDNS setting = new ConfigurationDNS();
                 setting = (ConfigurationDNS)reader.Deserialize(file);
 
-                comboBox1.Text = setting.DNS;
-                textBox2.Text = setting.Nom;
-                textBox3.Text = Utils.Decrypt(setting.Password);
+                comboBox1.Text = setting.DNS_1;
+                textBox2.Text = setting.Nom_1;
+                textBox3.Text = Utils.Decrypt(setting.Password_1);
                 file.Close();
             }
 
+            List<string> list2 = EnumDsn();
+            for (int i = 0; i < list2.Count; i++)
+            {
+                comboBox2.Items.Add(list2[i]);
+            }
+
+            if (File.Exists(pathModule + @"\SettingSQL.xml"))
+            {
+                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
+                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingSQL.xml");
+                ConfigurationDNS setting = new ConfigurationDNS();
+                setting = (ConfigurationDNS)reader.Deserialize(file);
+
+                comboBox2.Text = setting.DNS_2;
+                textBox2.Text = setting.Nom_2;
+                textBox3.Text = Utils.Decrypt(setting.Password_2);
+                file.Close();
+            }
             
         }
 
@@ -78,9 +96,9 @@ namespace ConnecteurSage.Forms
             {
             ConfigurationDNS configurationDNS = new ConfigurationDNS()
             {
-                DNS = "" + comboBox1.Text,
-                Nom = "" + textBox2.Text,
-                Password = "" + Utils.Encrypt(textBox3.Text),
+                DNS_1 = "" + comboBox1.Text,
+                Nom_1 = "" + textBox2.Text,
+                Password_1 = "" + Utils.Encrypt(textBox3.Text),
 
             };
 
@@ -107,13 +125,46 @@ namespace ConnecteurSage.Forms
             
             }
             else {
-            MessageBox.Show("DSN est obligatoire !!");
+            MessageBox.Show("DSN I est obligatoire !!");
             }
-        }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
+            //DSN II
+            if (!string.IsNullOrEmpty(comboBox2.Text))
+            {
+                ConfigurationDNS configurationDNS = new ConfigurationDNS()
+                {
+                    DNS_2 = "" + comboBox2.Text,
+                    Nom_2 = "" + textBox2.Text,
+                    Password_2 = "" + Utils.Encrypt(textBox3.Text),
 
+                };
+
+                try
+                {
+
+                    var myfile = File.Create(pathModule + @"\SettingSQL.xml");
+                    XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
+                    xml.Serialize(myfile, configurationDNS);
+                    myfile.Close();
+
+
+
+                    Main.ModifierButtonDNS(comboBox2.Text);
+                    Main.ModifierButtonNom(textBox2.Text);
+
+                    Close();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("" + ex.Message);
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("DSN II est obligatoire !!");
+            }
         }
 
 
