@@ -17,8 +17,10 @@ namespace ConnecteurSage.Forms
 {
     public partial class importManuel : Form
     {
-        private string logDirectoryName = Directory.GetCurrentDirectory() + @"\" +"LOG";
-        private StreamWriter logFileWriter = null;
+        private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
+        private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
+        private StreamWriter logFileWriter_general = null;
+        private StreamWriter logFileWriter_import = null;
 
         private static string filename = "";
         private static List<string> MessageErreur;
@@ -94,23 +96,38 @@ namespace ConnecteurSage.Forms
             //var dirName = string.Format("LogSage(manuelle) {0:dd-MM-yyyy HH.mm.ss}", DateTime.Now);
 
             //Check if the Log directory exists
-            if (!Directory.Exists(logDirectoryName))
+            if (!Directory.Exists(logDirectoryName_general))
             {
                 //Create log directory
-                Directory.CreateDirectory(logDirectoryName);
+                Directory.CreateDirectory(logDirectoryName_general);
+            }
+            if (!Directory.Exists(logDirectoryName_import))
+            {
+                //Create log directory
+                Directory.CreateDirectory(logDirectoryName_import);
             }
 
             //Create log file
-            var logFileName = logDirectoryName + @"\" + string.Format("LOG {0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
-            var logFile = File.Create(logFileName);
+            var logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG {0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFile_general = File.Create(logFileName_general);
+            var logFileName_import = logDirectoryName_import + @"\" + string.Format("LOG {0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFile_import = File.Create(logFileName_import);
 
             //Write in the log file 
-            logFileWriter = new StreamWriter(logFile);
+            logFileWriter_general = new StreamWriter(logFile_general);
             //logFileWriter.Write(string.Format("{0:HH:mm:ss}", DateTime.Now) + " \r\n");
-            logFileWriter.WriteLine("#####################################################################################");
-            logFileWriter.WriteLine("################################ ConnecteurSage Sage ################################");
-            logFileWriter.WriteLine("#####################################################################################");
-            logFileWriter.WriteLine("");
+            logFileWriter_general.WriteLine("#####################################################################################");
+            logFileWriter_general.WriteLine("################################ ConnecteurSage Sage ################################");
+            logFileWriter_general.WriteLine("#####################################################################################");
+            logFileWriter_general.WriteLine("");
+
+            //Write in the log file 
+            logFileWriter_import = new StreamWriter(logFile_import);
+            //logFileWriter.Write(string.Format("{0:HH:mm:ss}", DateTime.Now) + " \r\n");
+            logFileWriter_import.WriteLine("#####################################################################################");
+            logFileWriter_import.WriteLine("################################ ConnecteurSage Sage ################################");
+            logFileWriter_import.WriteLine("#####################################################################################");
+            logFileWriter_import.WriteLine("");
 
             try
             {
@@ -120,7 +137,7 @@ namespace ConnecteurSage.Forms
                 
                 if (lines[0].Split(';')[0] == "ORDERS" && lines[0].Split(';').Length == 11)
                 {
-                    logFileWriter.WriteLine(DateTime.Now + " : Import Commande Manuel.");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import Commande Manuel.");
 
                      Boolean prixDef = false;
                     //Boolean insertAdressLivr = false;
@@ -143,10 +160,15 @@ namespace ConnecteurSage.Forms
 
                     if (order.Id == "erreur")
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : orderId erreur");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : orderId erreur");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -156,10 +178,15 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("Erreur [10] : numéro de piece non valide", "Erreur !!",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : orderId est null");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : orderId est null");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -173,10 +200,15 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("Numéro de commande doit être < 10", "Erreur de lecture !!",
                                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -186,10 +218,15 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("Le champ numéro de commande est vide.", "Erreur !!",
                                                                            MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -199,10 +236,15 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("Le champ numéro de commande est invalide.", "Erreur !!",
                                                                            MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -214,20 +256,30 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : "+existe+"", "Erreur !!",
                                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : "+existe+".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : "+existe+".");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
 
                     if (existe == "erreur")
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : N° de pièce : '" + existe + "' trouvée dans la Base de Données");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : N° de pièce : '" + existe + "' trouvée dans la Base de Données");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                       return;
                     }
@@ -241,10 +293,15 @@ namespace ConnecteurSage.Forms
                     Client client = getClient(order.codeClient,1);
                     if (client == null)
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -252,10 +309,15 @@ namespace ConnecteurSage.Forms
                     Client client2 = getClient(order.codeAcheteur,2);
                     if (client2 == null)
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -263,10 +325,15 @@ namespace ConnecteurSage.Forms
 
                     if (existeFourniseur(order.codeFournisseur) == null)
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         Close();
                         return;
                     }
@@ -278,10 +345,16 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays", "Erreur !!",
                                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         return;
                     }
                     order.nom_contact = tab_adress[0];
@@ -310,18 +383,23 @@ namespace ConnecteurSage.Forms
 
                     if (order.deviseCommande == "erreur")
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : deviseCommande == erreur");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : deviseCommande == erreur");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         return;
                     }
 
 
                     if (lines[1].Split(';')[0] == "ORDHD1" && lines[1].Split(';').Length == 5)
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " : ORDHD1 trouvé.");
-                        logFileWriter.WriteLine("");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ORDHD1 trouvé.");
+                        logFileWriter_import.WriteLine("");
                         
                         if (lines[1].Split(';')[1].Length == 8)
                         {
@@ -340,14 +418,14 @@ namespace ConnecteurSage.Forms
 
                             if (lines[2].Split(';')[0] == "ORDLIN" && lines[2].Split(';').Length == 23)
                             {
-                                logFileWriter.WriteLine(DateTime.Now + " : ORDLIN trouvé.");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ORDLIN trouvé.");
                                 var totalLines = lines.Count();
                                 var currentIndexLine = 1;
 
                                 decimal total = 0m;
                                 foreach (string ligneDuFichier in lines)
                                 {
-                                    logFileWriter.WriteLine(DateTime.Now + " : ORDLIN line "+currentIndexLine+" / "+totalLines+".");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ORDLIN line "+currentIndexLine+" / "+totalLines+".");
 
                                     string[] tab = ligneDuFichier.Split(';');
 
@@ -363,11 +441,16 @@ namespace ConnecteurSage.Forms
 
                                                 if (line.article == null)
                                                 {
-                                                    logFileWriter.WriteLine("");
-                                                    logFileWriter.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                    logFileWriter.WriteLine(DateTime.Now + " : article est null");
-                                                    logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                                    logFileWriter.Close();
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                                    logFileWriter_general.Close();
+
+                                                    logFileWriter_import.WriteLine("");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : article est null");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_import.Close();
                                                     return;
                                                 }
 
@@ -446,11 +529,16 @@ namespace ConnecteurSage.Forms
 
                                                     if (resultDialog == DialogResult.Cancel)
                                                     {
-                                                        logFileWriter.WriteLine("");
-                                                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                        logFileWriter.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
-                                                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                                        logFileWriter.Close();
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                                        logFileWriter_general.Close();
+
+                                                        logFileWriter_import.WriteLine("");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                        logFileWriter_import.Close();
                                                         return;
                                                     }
                                                 }
@@ -479,11 +567,16 @@ namespace ConnecteurSage.Forms
 
                                                     if (resultDialog == DialogResult.Cancel)
                                                     {
-                                                        logFileWriter.WriteLine("");
-                                                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                        logFileWriter.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
-                                                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                                        logFileWriter.Close();
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                                        logFileWriter_general.Close();
+
+                                                        logFileWriter_import.WriteLine("");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                        logFileWriter_import.Close();
                                                         return;
                                                     }
 
@@ -500,11 +593,16 @@ namespace ConnecteurSage.Forms
                                                 MessageBox.Show("Erreur dans la ligne " + pos + " du fichier.", "Erreur de lecture !!",
                                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                                logFileWriter.WriteLine("");
-                                                logFileWriter.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                logFileWriter.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier "+filename+".", "Erreur de lecture.");
-                                                logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter.Close();
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                                logFileWriter_general.Close();
+
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier "+filename+".", "Erreur de lecture.");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                logFileWriter_import.Close();
                                                 return;
                                             }
                                             break;
@@ -545,12 +643,17 @@ namespace ConnecteurSage.Forms
                                     order.StockId = getStockId();
                                     if (string.IsNullOrEmpty(order.StockId))
                                     {
-                                        logFileWriter.WriteLine("");
-                                        logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                        logFileWriter.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
-                                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter.WriteLine("");
-                                        logFileWriter.Close();
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                        logFileWriter_general.Close();
+
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.Close();
                                         return;
                                     }
 
@@ -612,11 +715,16 @@ namespace ConnecteurSage.Forms
                                         MessageBox.Show("Aucun ligne de commande enregistré.", "Erreur de lecture !!",
                                                      MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                        logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                        logFileWriter.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = "+order.Lines.Count());
-                                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter.WriteLine("");
-                                        logFileWriter.Close();
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                        logFileWriter_general.Close();
+
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = "+order.Lines.Count());
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.Close();
                                         return;
                                     }
                                     MessageErreur = new List<string>();
@@ -710,11 +818,16 @@ namespace ConnecteurSage.Forms
                                     order.adresseLivraison = getNumLivraison(client.CT_Num);
                                     if (string.IsNullOrEmpty(order.adresseLivraison))
                                     {
-                                        logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                        logFileWriter.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide");
-                                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter.WriteLine("");
-                                        logFileWriter.Close();
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                        logFileWriter_general.Close();
+
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.Close();
                                         return;
                                     }
 
@@ -766,8 +879,8 @@ namespace ConnecteurSage.Forms
                                         MessageBox.Show(""+nbr+"/"+order.Lines.Count+" ligne(s) enregistrée(s).\n"+mot, "Information d'insertion",
                                             MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
-                                        logFileWriter.WriteLine(DateTime.Now + " : "+nbr+"/"+order.Lines.Count+" ligne(s) enregistrée(s).\n"+mot);
-                                        logFileWriter.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : "+nbr+"/"+order.Lines.Count+" ligne(s) enregistrée(s).\n"+mot);
+                                        logFileWriter_import.WriteLine("");
                                     }
 
                                 }
@@ -776,11 +889,16 @@ namespace ConnecteurSage.Forms
                                     MessageBox.Show("Il faut mentionner le code client.", "Erreur de lecture !!",
                                                      MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                    logFileWriter.WriteLine("");
-                                    logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                    logFileWriter.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
-                                    logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter.Close();
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                    logFileWriter_general.Close();
+
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_import.Close();
                                 }
                             }
                             else
@@ -788,11 +906,16 @@ namespace ConnecteurSage.Forms
                                 MessageBox.Show("Erreur dans la troisième ligne du fichier.", "Erreur de lecture !!",
                                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                logFileWriter.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
-                                logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter.Close();
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                logFileWriter_general.Close();
+
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                logFileWriter_import.Close();
                                 return;
                             }
                         }
@@ -801,11 +924,16 @@ namespace ConnecteurSage.Forms
                             MessageBox.Show("Date de la commande est incorrecte", "Erreur de lecture !!",
                                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                            logFileWriter.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
-                            logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                            logFileWriter.Close();
+                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                            logFileWriter_general.Close();
+
+                            logFileWriter_import.WriteLine("");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                            logFileWriter_import.Close();
                             return;
                         }
                     }
@@ -814,26 +942,31 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("Erreur dans la deuxième ligne du fichier.", "Erreur de lecture !!",
                                             MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : rreur dans la deuxième ligne du fichier.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                        logFileWriter_general.Close();
+
+                        logFileWriter_import.WriteLine("");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : rreur dans la deuxième ligne du fichier.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
                         return;
                     }
 
-                }
+                } gggg need ToolBar finish logDirectoryName_general logs
                 else if (lines[0].Split(';')[0] == "INVPRT") //check if the document is an inventory stock document to handle further
                 {
-                    logFileWriter.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
 
 
                     if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
                     {
 
                         //Console.WriteLine("OK");
-                        string reference_me_doc = lastNumberReference("ME", logFileWriter);    //"ME00004";//get last reference number for entry STOCK document MEXXXXX and increment it
-                        string reference_ms_doc = lastNumberReference("MS", logFileWriter);    //"MS00007";//get last reference number for removal STOCK document MSXXXXX and increment it
+                        string reference_me_doc = lastNumberReference("ME", logFileWriter_import);    //"ME00004";//get last reference number for entry STOCK document MEXXXXX and increment it
+                        string reference_ms_doc = lastNumberReference("MS", logFileWriter_import);    //"MS00007";//get last reference number for removal STOCK document MSXXXXX and increment it
 
                         int i = 0;
                         string totallines = "";
@@ -843,8 +976,8 @@ namespace ConnecteurSage.Forms
                         {
                             //MessageBox.Show("READING IMPORTED FILE");
 
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " : Lecture du fichier d'importation.");
+                            logFileWriter_import.WriteLine("");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Lecture du fichier d'importation.");
 
                             string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
                             
@@ -867,17 +1000,17 @@ namespace ConnecteurSage.Forms
                         {
                             MessageBox.Show("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
 
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                            logFileWriter.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
-                            logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                            logFileWriter.Close();
+                            logFileWriter_import.WriteLine("");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                            logFileWriter_import.Close();
                         }
                         else
                         {
                             //MessageBox.Show("INSERTSTOCK BEING CALLED");
                             //insert or update the database with the values obtained from the document
-                            if (insertStock(s, reference_ms_doc, reference_me_doc, logFileWriter) != null)
+                            if (insertStock(s, reference_ms_doc, reference_me_doc, logFileWriter_import) != null)
                             {
                                 MessageBox.Show("Le stock est importe avec succès", "Import",
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -894,17 +1027,17 @@ namespace ConnecteurSage.Forms
                     {
                         MessageBox.Show("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
 
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
+                        logFileWriter_import.WriteLine("");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.Close();
 
                     }
                 }
                 else if (lines[0].Split(';')[0] == "DESADV") //check if the document is an desadv stock document to handle further
                 {
-                    logFileWriter.WriteLine(DateTime.Now + " : Import DESADV.");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import DESADV.");
 
                     if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
                     {
@@ -956,8 +1089,8 @@ namespace ConnecteurSage.Forms
                         {
                             MessageBox.Show("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
 
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                            logFileWriter_import.WriteLine("");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
                         }
                         else
                         {
@@ -969,8 +1102,8 @@ namespace ConnecteurSage.Forms
                     {
                         MessageBox.Show("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
 
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                        logFileWriter_import.WriteLine("");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                     }
                 }
                 else
@@ -978,11 +1111,11 @@ namespace ConnecteurSage.Forms
                     MessageBox.Show("Erreur dans la première ligne du fichier.", "Erreur de lecture !!",
                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                    logFileWriter.WriteLine("");
-                    logFileWriter.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                    logFileWriter.WriteLine(DateTime.Now + " : Erreur dans la première ligne du fichier.");
-                    logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                    logFileWriter.Close();
+                    logFileWriter_import.WriteLine("");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la première ligne du fichier.");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                    logFileWriter_import.Close();
                     return;
                 }
 
@@ -992,13 +1125,13 @@ namespace ConnecteurSage.Forms
                 MessageBox.Show(" ERREUR[0]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR",""), "Erreur!!",
                                             MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : ********************** Exception *********************");
-                logFileWriter.WriteLine(DateTime.Now + " : ERREUR[0]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!.");
-                logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                logFileWriter_import.WriteLine("");
+                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Exception *********************");
+                logFileWriter_import.WriteLine(DateTime.Now + " : ERREUR[0]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!.");
+                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
             }
 
-            logFileWriter.Close();
+            logFileWriter_import.Close();
         }
 
         public static string lastNumberReference(string mask, StreamWriter logFileWriter)

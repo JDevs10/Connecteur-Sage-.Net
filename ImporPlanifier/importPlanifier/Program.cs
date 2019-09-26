@@ -15,6 +15,7 @@ namespace importPlanifier
             
             try
             {
+                /*
                 Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("Software\\TrackBack\\Values");
                 if (key != null)
                 {
@@ -45,6 +46,10 @@ namespace importPlanifier
                         Console.Read();
                     }
                 }
+                 * */
+
+                Classes.Action2 action = new Classes.Action2();
+                action.LancerPlanification();
 
             }
             catch (Exception e)
