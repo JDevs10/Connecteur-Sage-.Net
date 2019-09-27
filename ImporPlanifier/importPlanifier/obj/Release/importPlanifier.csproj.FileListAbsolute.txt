@@ -23,3 +23,4 @@ C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\bin\Re
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\bin\Release\Microsoft.Win32.TaskScheduler.dll
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\bin\Release\Microsoft.Win32.TaskScheduler.xml
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.exe
+C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.csprojResolveAssemblyReference.cache
