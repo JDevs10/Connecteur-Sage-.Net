@@ -19,6 +19,11 @@ namespace ConnecteurSage.Forms
     {
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
+        private string logDirectoryName_export_desadv = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_DESADV";
+        private string logDirectoryName_export_commande = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_COMMANDE";
+        private string logDirectoryName_export_facture = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_FACTURE";
+        private string logDirectoryName_export_stock = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_STOCK";
+
         private StreamWriter logFileWriter_general = null;
         private StreamWriter logFileWriter_import = null;
 
@@ -137,6 +142,10 @@ namespace ConnecteurSage.Forms
                 
                 if (lines[0].Split(';')[0] == "ORDERS" && lines[0].Split(';').Length == 11)
                 {
+                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** ORDERS *********************");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Fichier ORDERS Trouvé");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import Commande Manuel.");
 
                      Boolean prixDef = false;
@@ -958,6 +967,12 @@ namespace ConnecteurSage.Forms
                 }
                 else if (lines[0].Split(';')[0] == "INVPRT") //check if the document is an inventory stock document to handle further
                 {
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Stock Trouvé");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                    logFileWriter_general.WriteLine("");
+
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
 
 
@@ -1000,6 +1015,11 @@ namespace ConnecteurSage.Forms
                         {
                             MessageBox.Show("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
 
+                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Erreur du pied de page");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                            logFileWriter_general.Close();
+
                             logFileWriter_import.WriteLine("");
                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
@@ -1014,11 +1034,19 @@ namespace ConnecteurSage.Forms
                             {
                                 MessageBox.Show("Le stock est importe avec succès", "Import",
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès");
+                                logFileWriter_general.Close();
                             }
                             else
                             {
                                 MessageBox.Show("Nous n'avons pas pu importer le stock", "Problème",
                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+                                logFileWriter_general.Close();
                             }
                         }
 
@@ -1037,6 +1065,12 @@ namespace ConnecteurSage.Forms
                 }
                 else if (lines[0].Split(';')[0] == "DESADV") //check if the document is an desadv stock document to handle further
                 {
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Fichier DESADV Trouvé");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                    logFileWriter_general.WriteLine("");
+
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import DESADV.");
 
                     if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct

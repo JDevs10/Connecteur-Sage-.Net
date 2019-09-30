@@ -56,7 +56,7 @@ namespace importPlanifier
             {
                 Console.WriteLine(e.Message);
                 //Console.WriteLine("Votre licence n'est pas valide");
-                Console.Read();
+                //Console.Read();
 
             }
         }
