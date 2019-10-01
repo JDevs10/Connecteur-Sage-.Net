@@ -30,6 +30,7 @@ namespace importPlanifier.Classes
         /* JL LOG */
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
+        private string outputFileError = Directory.GetCurrentDirectory() + @"\LOG\Error_File\";
         private StreamWriter logFileWriter_general = null;
         private StreamWriter logFileWriter_import = null;
 
@@ -45,12 +46,6 @@ namespace importPlanifier.Classes
 
         public void ImportPlanifier()
         {
-            string outputFile = "";
-            string outputFileError = "";
-            string outputFileLog = "";
-            //Boolean ThereIsError = false;
-
-
             //tester s'il existe des fichies .csv
             Boolean FileExiste = false;
             //Boolean insertAdressLivr = false;
@@ -109,16 +104,19 @@ namespace importPlanifier.Classes
                 //Create log directory
                 Directory.CreateDirectory(logDirectoryName_import);
             }
+            if (!Directory.Exists(outputFileError))
+            {
+                System.IO.Directory.CreateDirectory(outputFileError);
+            }
 
             //Create log file
-            var logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG {0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG_General_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
             var logFile_general = File.Create(logFileName_general);
-            var logFileName_import = logDirectoryName_import + @"\" + string.Format("LOG {0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFileName_import = logDirectoryName_import + @"\" + string.Format("LOG_Import_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
             var logFile_import = File.Create(logFileName_import);
 
             //Write in the log file 
             logFileWriter_general = new StreamWriter(logFile_general);
-            //logFileWriter.Write(string.Format("{0:HH:mm:ss}", DateTime.Now) + " \r\n");
             logFileWriter_general.WriteLine("#####################################################################################");
             logFileWriter_general.WriteLine("################################ ConnecteurSage Sage ################################");
             logFileWriter_general.WriteLine("#####################################################################################");
@@ -131,73 +129,26 @@ namespace importPlanifier.Classes
 
             //Write in the log file 
             logFileWriter_import = new StreamWriter(logFile_import);
-            //logFileWriter.Write(string.Format("{0:HH:mm:ss}", DateTime.Now) + " \r\n");
             logFileWriter_import.WriteLine("#####################################################################################");
             logFileWriter_import.WriteLine("################################ ConnecteurSage Sage ################################");
             logFileWriter_import.WriteLine("#####################################################################################");
             logFileWriter_import.WriteLine("");
 
 
-            // Creer dossier sortie "LOG Directory" --------------------------
-            var dirName = string.Format(@"Commandes {0:MM-yyyy}\LogSage(planifiée) {0:dd-MM-yyyy HH.mm.ss}", DateTime.Now);
-            var logName = string.Format("Log {0:dd-MM-yyyy}", DateTime.Now);
-            outputFile = dir + @"\Success File\" + dirName;
-            outputFileError = dir + @"\Error File\";
-            outputFileLog = dir + @"\LOG\" + logName;
-            System.IO.Directory.CreateDirectory(outputFile);
-            if (!Directory.Exists(outputFileError))
-            {
-                System.IO.Directory.CreateDirectory(outputFileError);
-            }
-            if (!Directory.Exists(outputFileLog))
-            {
-                System.IO.Directory.CreateDirectory(outputFileLog);
-            }
-            // Creer fichier de sortie "LOG File" ------------------------
-            //LogFile = new StreamWriter(outputFile + @"\logFile.log");
-            /*
-            var nameLogfile = string.Format("logFile {0:dd-MM-yyyy HH.mm.ss}.log", DateTime.Now);
-            LogFile = new StreamWriter(outputFileLog + @"\" + nameLogfile);
-            cheminLogFile = outputFileLog + @"\" + nameLogfile;
-            LogFile.WriteLine("##############################################");
-            LogFile.WriteLine("############ L'import planifié ##############");
-            LogFile.WriteLine("##############################################");
-            LogFile.WriteLine("");
-            LogFile.WriteLine(infoPlan);
-            LogFile.WriteLine("Dossier : " + fileListing);
-            LogFile.WriteLine("");
-            LogFile.WriteLine(DateTime.Now + " : Scan du dossier ...");
-            */
-            //string nextIdString = NextNumPiece();
-
-            //if (nextIdString == "erreur")
-            //{
-            //    goto goError;
-            //}
-
-            //if (nextIdString == null)
-            //{
-            //    LogFile.WriteLine(DateTime.Now + " : Erreur[22] numéro de piece non valide.");
-            //    //Console.WriteLine(DateTime.Now + " : Erreur[22] numéro de piece non valide.");
-            //    goto goError;
-            //}
-
-            //int nextId = int.Parse(nextIdString.Replace("BC",""));
-
-            
             // Recherche des fichiers .csv
             //foreach (FileInfo filename in fileListing.GetFiles("*.csv"))
             for (int index = 0; index < fileListing.GetFiles("*.csv").Length; index++)
             {
                 Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + fileListing.GetFiles("*.csv")[index].Name);
                 FileInfo filename = fileListing.GetFiles("*.csv")[index];
+
                 try
                 {
                     nbr++;
                     FileExiste = true;
-                    //Console.WriteLine(DateTime.Now + " : un fichier \".csv\" trouvé :");
-                    //Console.WriteLine(DateTime.Now + " : -----> " + nbr + "- " + filename);
-                    //Console.WriteLine(DateTime.Now + " : Scan fichier...");
+                    Console.WriteLine(DateTime.Now + " : un fichier \".csv\" trouvé :");
+                    Console.WriteLine(DateTime.Now + " : -----> " + nbr + "- " + filename);
+                    Console.WriteLine(DateTime.Now + " : Scan fichier...");
 
                     logFileWriter_general.WriteLine(DateTime.Now + " : Numbre de fichier \".csv\" trouvé : " + fileListing.GetFiles("*.csv").Length);
 
@@ -205,7 +156,6 @@ namespace importPlanifier.Classes
                     logFileWriter_import.WriteLine(DateTime.Now + " : Scan fichier...");
                     Console.WriteLine(DateTime.Now + " : Ficher " + index + " : " + filename);
 
-                    
 
                     long pos = 1;
                     string[] lines = System.IO.File.ReadAllLines(fileListing + @"\" + filename, Encoding.Default);
@@ -256,7 +206,6 @@ namespace importPlanifier.Classes
                             return;
                         }
 
-                        order.Lines = new List<OrderLine>();
                         order.Lines = new List<OrderLine>();
 
                         order.NumCommande = lines[0].Split(';')[1];
@@ -983,6 +932,7 @@ namespace importPlanifier.Classes
                         logFileWriter_general.WriteLine("");
 
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
+
                         if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
                         {
 
@@ -1093,6 +1043,29 @@ namespace importPlanifier.Classes
 
                             // *once list is filled with values, start executing queries for each line - one by one.*
 
+
+                            foreach (string ligneDuFichier in lines) //read lines by line
+                            {
+                                //MessageBox.Show("READING IMPORTED FILE");
+
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Lecture du fichier d'importation.");
+
+                                string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                if (tab[1] == "L") //checking if its an product line
+                                {
+                                    Stock stock_info = new Stock("", tab[2], tab[3], tab[4], tab[5], "", ""); //creating new object type stock and storing values
+                                    s.Add(stock_info); //adding the object into the list type stock
+                                    i++;
+                                }
+
+                                if (tab[1] == "F") //checking if its end of file for control
+                                {
+                                    totallines = tab[2];
+                                }
+                            }
+
                             if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer
                             {
                                 Console.WriteLine("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
@@ -1101,7 +1074,8 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                
+                                logFileWriter_general.Close();
+
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
@@ -1220,7 +1194,9 @@ namespace importPlanifier.Classes
                             logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                             logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                            
+                            logFileWriter_general.Close();
+
+
 
                             logFileWriter_import.WriteLine("");
                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
@@ -1242,30 +1218,39 @@ namespace importPlanifier.Classes
                 catch (Exception e)
                 {
                     //Console.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    logFileWriter_import.WriteLine("");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Exception *********************");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
                     logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     tabCommandeError.Add(filename.ToString());
                     goto goOut;
                 }
 
-            goOut: ;
-                //Deplaçer les fichier dans le dossier : Error File
-                if (File.Exists(dir + @"\" + filename))
+                goOut: ;
+
+                //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
+                if (File.Exists(dir + @"\" + filename) && tabCommandeError.Count > 0)
                 {
-                    logFileWriter_import.WriteLine("");
-                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                    logFileWriter_import.WriteLine(DateTime.Now + " : arrivee ici dans le goto.");
-                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                    logFileWriter_import.Close();
                     var errorfilename = string.Format("{0:ddMMyyyy_HHmmss}_" + filename, DateTime.Now);
                     System.IO.File.Move(dir + @"\" + filename, outputFileError + @"\" + errorfilename);
+
+                    logFileWriter_import.WriteLine("");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : le fichier a été déplacé dans ===> " + errorfilename);
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                    logFileWriter_import.Close();
                 }
 
             }
 
+            /*
             if (SaveSuccess == 0)
             {
                 System.IO.Directory.Delete(outputFile);
             }
+            */
 
             Boolean envoiMail = false;
 
@@ -1287,12 +1272,12 @@ namespace importPlanifier.Classes
                             commande = commande + (i + 1) + " - " + tabCommandeError[i] + "\n";
                         }
                         Console.WriteLine(DateTime.Now + " : Envoi de mail en cours..");
-                        LogFile.WriteLine(DateTime.Now + " : Fin de l'execution");
-                        LogFile.WriteLine("");
-                        LogFile.WriteLine("Nombre de fichier scanner : " + nbr);
-                        LogFile.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                        LogFile.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                        LogFile.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                        logFileWriter_general.WriteLine("");
+                        logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                        logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+                        logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+                        logFileWriter_general.Close();
 
                         //Envoi
                         EnvoiMail(cMail, "Erreur d'import de documents commerciaux", "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux a echoué :\n" + commande + "\nVeuillez vérifier dans le fichier Log ci-joint, les problèmes qui sont survenus au moment de l'importation.\n\nNB: Les fichiers sont déplacé dans un dossier nommé : \"Error file\".\n\nCordialement,\n\nConnecteur SAGE.", cheminLogFile);
@@ -1301,33 +1286,34 @@ namespace importPlanifier.Classes
                     }
                     else
                     {
-                        LogFile.WriteLine(DateTime.Now + " : Fin de l'execution");
-                        LogFile.WriteLine("");
-                        LogFile.WriteLine("Nombre de fichier scanner : " + nbr);
-                        LogFile.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                        LogFile.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                        LogFile.Close();
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                        logFileWriter_general.WriteLine("");
+                        logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                        logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+                        logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+                        logFileWriter_general.Close();
                     }
                 }
                 else
                 {
-                    LogFile.WriteLine(DateTime.Now + " : Fin de l'execution");
-                    LogFile.WriteLine("");
-                    LogFile.WriteLine("Nombre de fichier scanner : " + nbr);
-                    LogFile.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                    LogFile.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                    LogFile.Close();
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                    logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+                    logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+                    logFileWriter_general.Close();
                 }
             }
 
             if (!FileExiste && !envoiMail)
             {
                 //Console.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
-                LogFile.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
-                LogFile.WriteLine(DateTime.Now + " : Fin de l'execution");
-                LogFile.WriteLine("");
-                LogFile.WriteLine("Nombre de fichier scanner : " + nbr);
-                LogFile.Close();
+                logFileWriter_general.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                logFileWriter_general.Close();
+                logFileWriter_import.Close();
                 //var newlog = string.Format("logFile(0) {0:dd-MM-yyyy HH.mm.ss}.log", DateTime.Now);
                 //System.IO.File.Move(outputFile + @"\logFile.log", dir + @"\" + newlog);
                 //System.IO.Directory.Delete(outputFile);
@@ -1336,12 +1322,13 @@ namespace importPlanifier.Classes
             }
             if (FileExiste && tabCommandeError.Count == 0)
             {
-                LogFile.WriteLine(DateTime.Now + " : Fin de l'execution");
-                LogFile.WriteLine("");
-                LogFile.WriteLine("Nombre de fichier scanner : " + nbr);
-                LogFile.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                LogFile.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                LogFile.Close();
+                logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+                logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+                logFileWriter_general.Close();
+                logFileWriter_import.Close();
             }
 
 
@@ -1355,6 +1342,8 @@ namespace importPlanifier.Classes
 
             //Console.Read();
 
+            logFileWriter_general.Close();
+            logFileWriter_import.Close();
         }
 
         public static Boolean insertCommande(Client client, Order order)
@@ -1415,6 +1404,7 @@ namespace importPlanifier.Classes
 
         public static string[,] insertStock(List<Stock> s, string reference_MS_doc, string reference_ME_doc, StreamWriter logFileWriter)
         {
+            logFileWriter.WriteLine(DateTime.Now + " | insertStock() ");
 
             //List<Stock> s : values obtained from the document received/imported.
             //reference_doc : the last reference of the document that is to be imported. format ME______ - "ME" because its an entry OR MS______ - "MS" because its a removal
@@ -1472,8 +1462,6 @@ namespace importPlanifier.Classes
                         if (name_article != "")
                         {
 
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Article trouvé.");
-                            logFileWriter.WriteLine("");
                             using (OdbcConnection connectionSQL = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
                             {
                                 connectionSQL.Open();
@@ -1860,6 +1848,7 @@ namespace importPlanifier.Classes
             }
 
             logFileWriter.WriteLine("");
+            logFileWriter.Close();
 
             return list_of_products;
         }
@@ -2011,8 +2000,10 @@ namespace importPlanifier.Classes
             List<string> tabCommandeError = new List<string>();
             List<Order> ordersList = new List<Order>();
 
+            /*
             Classes.Path path = getPath();
             dir = path.path;
+            */
 
             Console.WriteLine("##################################################################################");
             Console.WriteLine("######################## Envoie Bon de Commande à Velog ##########################");
@@ -2022,11 +2013,11 @@ namespace importPlanifier.Classes
             Console.WriteLine("");
 
             // Creer dossier sortie "LOG Directory" --------------------------
-            var dirName = string.Format(@"{0:MM-yyyy}\LogSage_Veolog(planifiée) {0:dd-MM-yyyy HH.mm.ss}", DateTime.Now);
-            var logName = string.Format("Log_Veolog {0:dd-MM-yyyy}", DateTime.Now);
-            outputFile = dir + @"\Success File\" + dirName;
-            outputFileError = dir + @"\Error File\";
-            outputFileLog = dir + @"\LOG\" + logName;
+            var dirName = string.Format(@"{0:MM-yyyy}\LogSage_Veolog(planifiée){0:dd-MM-yyyy HH.mm.ss}", DateTime.Now);
+            var logName = string.Format("Log_Veolog{0:dd-MM-yyyy}", DateTime.Now);
+            outputFile = Directory.GetCurrentDirectory() + @"\LOG\Success_File\" + dirName;
+            outputFileError = Directory.GetCurrentDirectory() + @"\LOG\Error_File\";
+            outputFileLog = Directory.GetCurrentDirectory() + @"\LOG\" + logName;
 
             if (!Directory.Exists(outputFile))
             {

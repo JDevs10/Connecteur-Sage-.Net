@@ -16,6 +16,9 @@ namespace importPlanifier.Classes
         //private List<DocumentVente> FacturesAExporter;
         //private Customer client = new Customer();
 
+        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE";
+        private StreamWriter logFileWriter_export = null;
+
         private string pathExport;
 
         public ExportFactures()
@@ -508,331 +511,340 @@ namespace importPlanifier.Classes
         {
             try
             {
-                var dirName = string.Format(@"\Fichier Exporter\LOG\LOG{0:MM-yyyy}\", DateTime.Now);
-                var logName = string.Format("Log.{0:ddMMyyyy}.log", DateTime.Now);
-
-                if (!Directory.Exists(this.pathExport + dirName))
+                if (!Directory.Exists(logDirectoryName_export))
                 {
-                    System.IO.Directory.CreateDirectory(this.pathExport + dirName);
+                    Directory.CreateDirectory(logDirectoryName_export);
                 }
 
-                using (StreamWriter writerLog = new StreamWriter(this.pathExport + dirName + logName, true, Encoding.Default))
+                var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Facture_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+                var logFile_export = File.Create(logFileName_export);
+                logFileWriter_export = new StreamWriter(logFile_export);
+
+                
+                try
                 {
-                    try
+
+                    logFileWriter_export.WriteLine("#####################################################################################");
+                    logFileWriter_export.WriteLine("################################# Import Planifier ##################################");
+                    logFileWriter_export.WriteLine("#####################################################################################");
+                    logFileWriter_export.WriteLine("");
+
+                    List<DocumentVente> FacturesAExporter = GetFacturesFromDataBase();
+
+                    if (FacturesAExporter != null)
                     {
+                        string outputFile = "";
+                        var fileName = "";
 
-                        List<DocumentVente> FacturesAExporter = GetFacturesFromDataBase();
-
-                        if (FacturesAExporter != null)
+                        for (int i = 0; i < FacturesAExporter.Count; i++)
                         {
-                            string outputFile = "";
-                            var fileName = "";
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Nombre de facture à exporter ===> " + i + "/" + FacturesAExporter.Count);
 
-                            for (int i = 0; i < FacturesAExporter.Count; i++)
+                            Customer customer = GetClient(FacturesAExporter[i].DO_TIERS);
+
+                            Societe societe = getInfoSociete();
+                            string prefix = "FA";
+                            string identifiant = "380";
+
+                            if (FacturesAExporter[i].DO_Piece.StartsWith("BA"))
                             {
-
-                                Customer customer = GetClient(FacturesAExporter[i].DO_TIERS);
-
-                                Societe societe = getInfoSociete();
-                                string prefix = "FA";
-                                string identifiant = "380";
-
-                                if (FacturesAExporter[i].DO_Piece.StartsWith("BA"))
-                                {
-                                    outputFile = this.pathExport + @"\Fichier Exporter\Avoirs\";
-                                    fileName = string.Format("AVOIR-{0:HHmmss}.{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
-                                    prefix = "BA";
-                                    identifiant = "381";
-                                }
-                                else
-                                {
-                                    outputFile = this.pathExport + @"\Fichier Exporter\Factures\";
-                                    fileName = string.Format("INV-{0:HHmmss}.{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
-
-                                }
-
-                                if (!Directory.Exists(outputFile))
-                                {
-                                    System.IO.Directory.CreateDirectory(outputFile);
-                                }
-
-
-                                using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName, false, Encoding.Default))
-                                {
-                                    writer.WriteLine("DEMAT-AAA;v01.0;;;" + DateTime.Today.Year + addZero(DateTime.Today.Month.ToString()) + addZero(DateTime.Today.Day.ToString()) + ";;");
-                                    writer.WriteLine("");
-                                    writer.WriteLine("");
-
-
-
-                                    //string[] tab = new string[] { "", "", "" };
-
-
-
-                                    //if (FacturesAExporter[i].OriginDocumentType == "8")
-                                    //{
-                                    //    tab = GetCommandeFacture(FacturesAExporter[i].Id).Split(';');
-                                    //}
-
-                                    string[] docRegl = GetModeReglement(FacturesAExporter[i].DO_Piece).Split(';');
-
-                                    string modeReglement = "";
-                                    string DR_DATE = "";
-                                    string DR_TYPEREGL = "";
-                                    string DR_POURCENT = "";
-                                    string DR_MONTANT = "";
-
-                                    if (docRegl.Length != 0)
-                                    {
-                                        modeReglement = docRegl[0];
-                                        DR_DATE = docRegl[1];
-                                        DR_TYPEREGL = docRegl[2];
-                                        DR_POURCENT = docRegl[3];
-                                        DR_MONTANT = docRegl[4];
-                                    }
-
-                                    string devise = "";
-                                    if (FacturesAExporter[i].DO_devise != "0")
-                                    {
-                                        if (FacturesAExporter[i].DO_devise == "1")
-                                        {
-                                            devise = "EUR";
-                                        }
-                                        else
-                                        {
-                                            devise = getDeviseIso(FacturesAExporter[i].DO_devise);
-                                        }
-                                    }
-
-                                    writer.WriteLine("DEMAT-HD1;v01.0;;" + FacturesAExporter[i].DO_Piece.Replace(prefix, "") + ";" + identifiant + ";9;" + ConvertDate(FacturesAExporter[i].DO_date) + ";" + ConvertDate(FacturesAExporter[i].DO_dateLivr) + ";;;;;" + modeReglement + ";;" + customer.CT_SvFormeJuri + ";;0;;" + FacturesAExporter[i].DO_COORD01 + ";;" + FacturesAExporter[i].DO_COORD01 + ";;;;;;;;;;;;;;;;;;;;;;;;" + devise + ";;;" + ConvertDate(DR_DATE) + ";;" + FacturesAExporter[i].FNT_Escompte.Replace(",", ".").Replace("00000", "") + ";;;;;;;;;;;;;");
-                                    writer.WriteLine("");
-
-                                    // Code GNL extraie de DO_MOTIF
-                                    //writer.WriteLine("DEMAT-HD2;" + customer.CT_EDI1 + ";" + customer.CT_Num + ";" + customer.CT_Adresse + ";" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + customer.CT_Pays + ";;;;;;;3700471600002;TRACE SPORT;32 RUE DE PARADIS;75010;PARIS;FR;;;;;;;;;;;;;" + (FacturesAExporter[i].DO_MOTIF.Split(';').Length == 2 ? FacturesAExporter[i].DO_MOTIF.Split(';')[0] : null) + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + FacturesAExporter[i].LI_PAYS + ";XXXX;500110226;ESA28425270;FR68500110226;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
-
-                                    // Code GLN extraie de li_complement
-                                    // writer.WriteLine("DEMAT-HD2;" + customer.CT_EDI1 + ";" + customer.CT_Num + ";" + customer.CT_Adresse + ";" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + customer.CT_Pays + ";" + FacturesAExporter[i].LI_COMPLEMENT + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + FacturesAExporter[i].LI_PAYS + ";3700471600002;TRACE SPORT;32 RUE DE PARADIS;75010;PARIS;FR;;;;;;;;;;;;;" + FacturesAExporter[i].LI_COMPLEMENT + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + FacturesAExporter[i].LI_PAYS + ";XXXX;500110226;ESA28425270;FR68500110226;;;;;;;;;;;;;;;;;;;;;;;;;;;;3700471600002;;;;;;;;;;;;;;;;;;");
-                                    // DEMAT-HD2 est changé pour extraire les infos de la société la table p_dossier(version 5.2)
-                                    // D_commentaire c'est le GLN de la société
-                                    string glnLivraison = null;
-
-                                    if (FacturesAExporter[i].LI_Intitule == customer.CT_Intitule)
-                                    {
-                                        glnLivraison = customer.CT_EDI1;
-                                    }
-                                    else
-                                    {
-                                        glnLivraison = getGNLClientLivraison(FacturesAExporter[i].LI_Intitule);
-                                    }
-
-                                    writer.WriteLine("DEMAT-HD2;" + glnLivraison + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + (FacturesAExporter[i].LI_PAYS.ToUpper() == "FRANCE" ? "FR" : FacturesAExporter[i].LI_PAYS) + ";" + customer.CT_EDI1 + ";" + customer.CT_Num + ";" + customer.CT_Adresse + ";" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + (customer.CT_Pays.ToUpper() == "FRANCE" ? "FR" : customer.CT_Pays) + ";" + societe.D_Commentaire + ";" + societe.D_RaisonSoc + ";" + societe.D_Adresse + ";" + societe.D_CodePostal + ";" + societe.D_Ville + ";" + (societe.D_Pays.ToUpper() == "FRANCE" ? "FR" : societe.D_Pays) + ";;;;;;;;;;;;;" + FacturesAExporter[i].LI_COMPLEMENT + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + (FacturesAExporter[i].LI_PAYS.ToUpper() == "FRANCE" ? "FR" : FacturesAExporter[i].LI_PAYS) + ";XXXX;" + societe.D_Siret + ";ESA28425270;" + societe.D_Identifiant + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;" + societe.D_Commentaire + ";;;;;;;;;;;;;;;;;;");                      
-                                    writer.WriteLine("");
-
-                                    //writer.WriteLine("DEMAT-CTA;" + FacturesAExporter[i].InvoicingContact_Function + ";;" + FacturesAExporter[i].InvoicingContact_Name + " " + FacturesAExporter[i].InvoicingContact_FirstName + ";" + FacturesAExporter[i].InvoicingContact_Email + ";" + FacturesAExporter[i].InvoicingContact_Fax + ";" + FacturesAExporter[i].InvoicingContact_Phone + ";" + FacturesAExporter[i].InvoicingContact_Function + ";;" + FacturesAExporter[i].InvoicingContact_Name + " " + FacturesAExporter[i].InvoicingContact_FirstName + ";" + FacturesAExporter[i].InvoicingContact_Email + ";" + FacturesAExporter[i].InvoicingContact_Fax + ";" + FacturesAExporter[i].InvoicingContact_Phone + ";;;;;;;;;;;;;;;;;;;" + FacturesAExporter[i].DeliveryContact_Function + ";;" + FacturesAExporter[i].DeliveryContact_Name + " " + FacturesAExporter[i].DeliveryContact_FirstName + ";" + FacturesAExporter[i].DeliveryContact_Email + ";" + FacturesAExporter[i].DeliveryContact_Fax + ";" + FacturesAExporter[i].DeliveryContact_Phone + ";;;;;;;");
-                                    //writer.WriteLine("");
-
-                                    if (FacturesAExporter[i].DO_Piece.StartsWith("FA"))
-                                    {
-                                        writer.WriteLine("DEMAT-CTH;1;AAI;Type de document;Facture;;;;");
-                                        writer.WriteLine("");
-                                    }
-                                    else if (FacturesAExporter[i].DO_Piece.StartsWith("BA"))
-                                    {
-                                        writer.WriteLine("DEMAT-CTH;1;AAI;Type de document;Bon d’avoir;;;;");
-                                        writer.WriteLine("");
-                                    }
-
-                                    writer.WriteLine("DEMAT-CTH;2;AAI;N° d'accord;" + FacturesAExporter[i].ca_num + ";;;;");
-                                    writer.WriteLine("");
-
-                                    writer.WriteLine("DEMAT-REM;;A;;;;;;;;" + FacturesAExporter[i].FNT_Escompte + ";" + FacturesAExporter[i].do_txescompte.Replace(",", ".").Replace("00000", "") + ";;");
-                                    writer.WriteLine("");
-
-                                    FacturesAExporter[i].lines = getDocumentLine(FacturesAExporter[i].DO_Piece);
-
-                                    for (int j = 0; j < FacturesAExporter[i].lines.Count; j++)
-                                    {
-
-                                        writer.WriteLine("DEMAT-LIN;" + FacturesAExporter[i].lines[j].DL_Ligne + ";" + FacturesAExporter[i].lines[j].AR_CODEBARRE + ";EAN;;;" + customer.CT_EDI1 + ";;;;" + FacturesAExporter[i].lines[j].DL_Design + ";;" + FacturesAExporter[i].lines[j].DL_PoidsNet.Replace(",", ".") + ";" + FacturesAExporter[i].lines[j].DL_PoidsBrut.Replace(",", ".") + ";;" + FacturesAExporter[i].lines[j].DL_Qte + ";" + FacturesAExporter[i].lines[j].DL_QteBL + ";" + FacturesAExporter[i].lines[j].EU_Qte + ";;;;" + FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", ".") + ";" + FacturesAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";" + FacturesAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";;1;;;" + ConvertDate(FacturesAExporter[i].lines[j].DO_DateLivr.Replace("00:00:00", "")) + ";" + FacturesAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;;;" + FacturesAExporter[i].lines[j].FNT_MontantTTC.Replace(",", ".") + ";;;;;;;;");
-                                        writer.WriteLine("");
-
-                                        if (FacturesAExporter[i].lines[j].DL_TypeTaxe1 == "0")
-                                        {
-                                            FacturesAExporter[i].lines[j].DL_TypeTaxe1 = "TVA/Débit";
-                                        }
-                                        if (FacturesAExporter[i].lines[j].DL_TypeTaxe2 == "0")
-                                        {
-                                            FacturesAExporter[i].lines[j].DL_TypeTaxe2 = "TVA/Débit";
-                                        }
-                                        if (FacturesAExporter[i].lines[j].DL_TypeTaxe3 == "0")
-                                        {
-                                            FacturesAExporter[i].lines[j].DL_TypeTaxe3 = "TVA/Débit";
-                                        }
-
-                                        if (FacturesAExporter[i].lines[j].DL_TypeTaxe1 == "1")
-                                        {
-                                            FacturesAExporter[i].lines[j].DL_TypeTaxe1 = "TVA/Encaissement";
-                                        }
-                                        if (FacturesAExporter[i].lines[j].DL_TypeTaxe2 == "1")
-                                        {
-                                            FacturesAExporter[i].lines[j].DL_TypeTaxe2 = "TVA/Encaissement";
-                                        }
-                                        if (FacturesAExporter[i].lines[j].DL_TypeTaxe3 == "1")
-                                        {
-                                            FacturesAExporter[i].lines[j].DL_TypeTaxe3 = "TVA/Encaissement";
-                                        }
-
-
-                                        // Calcule taxe
-                                        decimal montantTaxe = (Decimal.Parse(FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].lines[j].DL_Taxe1.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
-
-                                        writer.WriteLine("DEMAT-TAX;1;;" + FacturesAExporter[i].lines[j].DL_TypeTaxe1 + ";" + FacturesAExporter[i].lines[j].DL_Taxe1.Replace(",", ".") + ";;" + Math.Round(montantTaxe, 2).ToString().Replace(",", ".") + ";;;");
-                                        writer.WriteLine("");
-
-                                        //if (FacturesAExporter[i].lines[j].DL_Taxe2 != FacturesAExporter[i].lines[j].DL_Taxe1 && FacturesAExporter[i].lines[j].DL_Taxe2 != "0")
-                                        if (FacturesAExporter[i].lines[j].DL_Taxe2 != "0")
-                                        {
-                                            montantTaxe = (Decimal.Parse(FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].lines[j].DL_Taxe2.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
-
-                                            writer.WriteLine("DEMAT-TAX;2;;" + FacturesAExporter[i].lines[j].DL_TypeTaxe2 + ";" + FacturesAExporter[i].lines[j].DL_Taxe2.Replace(",", ".") + ";;" + Math.Round(montantTaxe, 2).ToString().Replace(",", ".") + ";;;");
-                                            writer.WriteLine("");
-                                        }
-
-                                        //if ((FacturesAExporter[i].lines[j].DL_Taxe3 != FacturesAExporter[i].lines[j].DL_Taxe1) && (FacturesAExporter[i].lines[j].DL_Taxe3 != FacturesAExporter[i].lines[j].DL_Taxe2) && FacturesAExporter[i].lines[j].DL_Taxe3 != "0")
-                                        if (FacturesAExporter[i].lines[j].DL_Taxe3 != "0")
-                                        {
-                                            montantTaxe = (Decimal.Parse(FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].lines[j].DL_Taxe3.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
-
-                                            writer.WriteLine("DEMAT-TAX;3;;" + FacturesAExporter[i].lines[j].DL_TypeTaxe3 + ";" + FacturesAExporter[i].lines[j].DL_Taxe3.Replace(",", ".") + ";;" + Math.Round(montantTaxe, 2).ToString().Replace(",", ".") + ";;;");
-                                            writer.WriteLine("");
-                                        }
-
-                                        //---- Remise ----
-
-                                        string MontantRemise = "";
-                                        string PourcentageRemise = "";
-
-                                        if (FacturesAExporter[i].lines[j].DL_Remise01REM_Type == "0")
-                                        {
-                                            MontantRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur.Replace(",", ".");
-                                            PourcentageRemise = "";
-                                        }
-
-                                        if (FacturesAExporter[i].lines[j].DL_Remise01REM_Type == "1")
-                                        {
-                                            MontantRemise = "";
-                                            PourcentageRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur;
-                                        }
-
-                                        //if (FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur != "0")
-                                        //{
-                                            writer.WriteLine("DEMAT-DED;;A;;;;;;;" + FacturesAExporter[i].lines[j].DL_Remise01REM_Type + ";" + MontantRemise + ";" + PourcentageRemise + ";;");
-                                            writer.WriteLine("");
-                                        //}
-
-
-                                        if (FacturesAExporter[i].lines[j].DL_Remise03REM_Type == "0")
-                                        {
-                                            MontantRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur;
-                                            PourcentageRemise = "";
-                                        }
-
-                                        if (FacturesAExporter[i].lines[j].DL_Remise03REM_Type == "1")
-                                        {
-                                            MontantRemise = "";
-                                            PourcentageRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur;
-                                        }
-
-                                        if ((FacturesAExporter[i].lines[j].DL_Remise03REM_Valeur != "0") && (FacturesAExporter[i].lines[j].DL_Remise03REM_Valeur != FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur))
-                                        {
-                                            writer.WriteLine("DEMAT-DED;;A;;;;;;;;" + MontantRemise + ";" + PourcentageRemise + ";;");
-                                            writer.WriteLine("");
-                                        }
-
-                                    }
-
-                                    //  Les lignes des taxes
-
-
-                                    if (FacturesAExporter[i].DO_TypeTaxe1 == "0")
-                                    {
-                                        FacturesAExporter[i].DO_TypeTaxe1 = "TVA/Débit";
-                                    }
-                                    if (FacturesAExporter[i].DO_TypeTaxe2 == "0")
-                                    {
-                                        FacturesAExporter[i].DO_TypeTaxe2 = "TVA/Débit";
-                                    }
-                                    if (FacturesAExporter[i].DO_TypeTaxe3 == "0")
-                                    {
-                                        FacturesAExporter[i].DO_TypeTaxe3 = "TVA/Débit";
-                                    }
-
-                                    if (FacturesAExporter[i].DO_TypeTaxe1 == "1")
-                                    {
-                                        FacturesAExporter[i].DO_TypeTaxe1 = "TVA/Encaissement";
-                                    }
-                                    if (FacturesAExporter[i].DO_TypeTaxe2 == "1")
-                                    {
-                                        FacturesAExporter[i].DO_TypeTaxe2 = "TVA/Encaissement";
-                                    }
-                                    if (FacturesAExporter[i].DO_TypeTaxe3 == "1")
-                                    {
-                                        FacturesAExporter[i].DO_TypeTaxe3 = "TVA/Encaissement";
-                                    }
-
-                                    // Calcule taxe
-                                    decimal montantTaxe1 = (Decimal.Parse(FacturesAExporter[i].FNT_TotalHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].DO_taxe1.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
-
-                                    writer.WriteLine("DEMAT-TTX;1;;" + FacturesAExporter[i].DO_TypeTaxe1.Replace(",", ".") + ";" + FacturesAExporter[i].DO_taxe1.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".").Replace("00000", "") + ";" + Math.Round(montantTaxe1, 2).ToString().Replace(",", ".") + ";;");
-                                    writer.WriteLine("");
-
-                                    //if (FacturesAExporter[i].DO_taxe2 != FacturesAExporter[i].DO_taxe1 && FacturesAExporter[i].DO_taxe2 != "0")
-
-                                    if (FacturesAExporter[i].DO_taxe2 != "0")
-                                    {
-                                        // Calcule taxe
-                                        montantTaxe1 = (Decimal.Parse(FacturesAExporter[i].FNT_TotalHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].DO_taxe3.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
-
-                                        writer.WriteLine("DEMAT-TTX;2;;" + FacturesAExporter[i].DO_TypeTaxe2.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].DO_taxe1.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".").Replace("00000", "") + ";" + Math.Round(montantTaxe1, 2).ToString().Replace(",", ".") + ";;");
-                                        writer.WriteLine("");
-                                    }
-
-                                    if (FacturesAExporter[i].DO_taxe3 != "0")
-                                    // if ((FacturesAExporter[i].DO_taxe3 != FacturesAExporter[i].DO_taxe1) && (FacturesAExporter[i].DO_taxe3 != FacturesAExporter[i].DO_taxe2) && FacturesAExporter[i].DO_taxe3 != "0")
-                                    {
-                                        // Calcule taxe
-                                        montantTaxe1 = (Decimal.Parse(FacturesAExporter[i].FNT_TotalHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].DO_taxe3.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
-
-                                        writer.WriteLine("DEMAT-TTX;3;;" + FacturesAExporter[i].DO_TypeTaxe3.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].DO_taxe1.Replace(",", ".") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + Math.Round(montantTaxe1, 2).ToString().Replace(",", ".") + ";;");
-                                        writer.WriteLine("");
-                                    }
-
-
-                                    writer.WriteLine("DEMAT-END;;;" + FacturesAExporter[i].DO_Piece.Replace(prefix, "") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_TotalTTC.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_MontantTotalTaxes.Replace(",", ".") + ";;;;" + FacturesAExporter[i].FNT_Escompte.Replace(",", ".") + ";;" + FacturesAExporter[i].FNT_NetAPayer.Replace(",", ".") + ";;;;");
-                                    writer.WriteLine("");
-                                    writer.WriteLine("");
-
-
-                                    writer.WriteLine("DEMAT-ZZZ;v01.0;;;;");
-
-
-                                }
-
-                                UpdateDocumentVente(FacturesAExporter[i].DO_Piece);
+                                outputFile = this.pathExport + @"\Fichier Exporter\Avoirs\";
+                                fileName = string.Format("AVOIR-{0:HHmmss}.{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
+                                prefix = "BA";
+                                identifiant = "381";
+                            }
+                            else
+                            {
+                                outputFile = this.pathExport + @"\Fichier Exporter\Factures\";
+                                fileName = string.Format("INV-{0:HHmmss}.{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
 
                             }
 
-                            Console.WriteLine(DateTime.Now + " : Nombre de facture : " + FacturesAExporter.Count);
-                            writerLog.WriteLine(DateTime.Now + " : Nombre de facture : " + FacturesAExporter.Count);
-  
+                            if (!Directory.Exists(outputFile))
+                            {
+                                System.IO.Directory.CreateDirectory(outputFile);
+                            }
+
+
+                            using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName, false, Encoding.Default))
+                            {
+                                writer.WriteLine("DEMAT-AAA;v01.0;;;" + DateTime.Today.Year + addZero(DateTime.Today.Month.ToString()) + addZero(DateTime.Today.Day.ToString()) + ";;");
+                                writer.WriteLine("");
+                                writer.WriteLine("");
+
+
+
+                                //string[] tab = new string[] { "", "", "" };
+
+
+
+                                //if (FacturesAExporter[i].OriginDocumentType == "8")
+                                //{
+                                //    tab = GetCommandeFacture(FacturesAExporter[i].Id).Split(';');
+                                //}
+
+                                string[] docRegl = GetModeReglement(FacturesAExporter[i].DO_Piece).Split(';');
+
+                                string modeReglement = "";
+                                string DR_DATE = "";
+                                string DR_TYPEREGL = "";
+                                string DR_POURCENT = "";
+                                string DR_MONTANT = "";
+
+                                if (docRegl.Length != 0)
+                                {
+                                    modeReglement = docRegl[0];
+                                    DR_DATE = docRegl[1];
+                                    DR_TYPEREGL = docRegl[2];
+                                    DR_POURCENT = docRegl[3];
+                                    DR_MONTANT = docRegl[4];
+                                }
+
+                                string devise = "";
+                                if (FacturesAExporter[i].DO_devise != "0")
+                                {
+                                    if (FacturesAExporter[i].DO_devise == "1")
+                                    {
+                                        devise = "EUR";
+                                    }
+                                    else
+                                    {
+                                        devise = getDeviseIso(FacturesAExporter[i].DO_devise);
+                                    }
+                                }
+
+                                writer.WriteLine("DEMAT-HD1;v01.0;;" + FacturesAExporter[i].DO_Piece.Replace(prefix, "") + ";" + identifiant + ";9;" + ConvertDate(FacturesAExporter[i].DO_date) + ";" + ConvertDate(FacturesAExporter[i].DO_dateLivr) + ";;;;;" + modeReglement + ";;" + customer.CT_SvFormeJuri + ";;0;;" + FacturesAExporter[i].DO_COORD01 + ";;" + FacturesAExporter[i].DO_COORD01 + ";;;;;;;;;;;;;;;;;;;;;;;;" + devise + ";;;" + ConvertDate(DR_DATE) + ";;" + FacturesAExporter[i].FNT_Escompte.Replace(",", ".").Replace("00000", "") + ";;;;;;;;;;;;;");
+                                writer.WriteLine("");
+
+                                // Code GNL extraie de DO_MOTIF
+                                //writer.WriteLine("DEMAT-HD2;" + customer.CT_EDI1 + ";" + customer.CT_Num + ";" + customer.CT_Adresse + ";" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + customer.CT_Pays + ";;;;;;;3700471600002;TRACE SPORT;32 RUE DE PARADIS;75010;PARIS;FR;;;;;;;;;;;;;" + (FacturesAExporter[i].DO_MOTIF.Split(';').Length == 2 ? FacturesAExporter[i].DO_MOTIF.Split(';')[0] : null) + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + FacturesAExporter[i].LI_PAYS + ";XXXX;500110226;ESA28425270;FR68500110226;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+
+                                // Code GLN extraie de li_complement
+                                // writer.WriteLine("DEMAT-HD2;" + customer.CT_EDI1 + ";" + customer.CT_Num + ";" + customer.CT_Adresse + ";" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + customer.CT_Pays + ";" + FacturesAExporter[i].LI_COMPLEMENT + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + FacturesAExporter[i].LI_PAYS + ";3700471600002;TRACE SPORT;32 RUE DE PARADIS;75010;PARIS;FR;;;;;;;;;;;;;" + FacturesAExporter[i].LI_COMPLEMENT + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + FacturesAExporter[i].LI_PAYS + ";XXXX;500110226;ESA28425270;FR68500110226;;;;;;;;;;;;;;;;;;;;;;;;;;;;3700471600002;;;;;;;;;;;;;;;;;;");
+                                // DEMAT-HD2 est changé pour extraire les infos de la société la table p_dossier(version 5.2)
+                                // D_commentaire c'est le GLN de la société
+                                string glnLivraison = null;
+
+                                if (FacturesAExporter[i].LI_Intitule == customer.CT_Intitule)
+                                {
+                                    glnLivraison = customer.CT_EDI1;
+                                }
+                                else
+                                {
+                                    glnLivraison = getGNLClientLivraison(FacturesAExporter[i].LI_Intitule);
+                                }
+
+                                writer.WriteLine("DEMAT-HD2;" + glnLivraison + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + (FacturesAExporter[i].LI_PAYS.ToUpper() == "FRANCE" ? "FR" : FacturesAExporter[i].LI_PAYS) + ";" + customer.CT_EDI1 + ";" + customer.CT_Num + ";" + customer.CT_Adresse + ";" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + (customer.CT_Pays.ToUpper() == "FRANCE" ? "FR" : customer.CT_Pays) + ";" + societe.D_Commentaire + ";" + societe.D_RaisonSoc + ";" + societe.D_Adresse + ";" + societe.D_CodePostal + ";" + societe.D_Ville + ";" + (societe.D_Pays.ToUpper() == "FRANCE" ? "FR" : societe.D_Pays) + ";;;;;;;;;;;;;" + FacturesAExporter[i].LI_COMPLEMENT + ";" + FacturesAExporter[i].LI_Intitule + ";" + FacturesAExporter[i].LI_ADRESSE + ";" + FacturesAExporter[i].LI_CODEPOSTAL + ";" + FacturesAExporter[i].LI_VILLE + ";" + (FacturesAExporter[i].LI_PAYS.ToUpper() == "FRANCE" ? "FR" : FacturesAExporter[i].LI_PAYS) + ";XXXX;" + societe.D_Siret + ";ESA28425270;" + societe.D_Identifiant + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;" + societe.D_Commentaire + ";;;;;;;;;;;;;;;;;;");                      
+                                writer.WriteLine("");
+
+                                //writer.WriteLine("DEMAT-CTA;" + FacturesAExporter[i].InvoicingContact_Function + ";;" + FacturesAExporter[i].InvoicingContact_Name + " " + FacturesAExporter[i].InvoicingContact_FirstName + ";" + FacturesAExporter[i].InvoicingContact_Email + ";" + FacturesAExporter[i].InvoicingContact_Fax + ";" + FacturesAExporter[i].InvoicingContact_Phone + ";" + FacturesAExporter[i].InvoicingContact_Function + ";;" + FacturesAExporter[i].InvoicingContact_Name + " " + FacturesAExporter[i].InvoicingContact_FirstName + ";" + FacturesAExporter[i].InvoicingContact_Email + ";" + FacturesAExporter[i].InvoicingContact_Fax + ";" + FacturesAExporter[i].InvoicingContact_Phone + ";;;;;;;;;;;;;;;;;;;" + FacturesAExporter[i].DeliveryContact_Function + ";;" + FacturesAExporter[i].DeliveryContact_Name + " " + FacturesAExporter[i].DeliveryContact_FirstName + ";" + FacturesAExporter[i].DeliveryContact_Email + ";" + FacturesAExporter[i].DeliveryContact_Fax + ";" + FacturesAExporter[i].DeliveryContact_Phone + ";;;;;;;");
+                                //writer.WriteLine("");
+
+                                if (FacturesAExporter[i].DO_Piece.StartsWith("FA"))
+                                {
+                                    writer.WriteLine("DEMAT-CTH;1;AAI;Type de document;Facture;;;;");
+                                    writer.WriteLine("");
+                                }
+                                else if (FacturesAExporter[i].DO_Piece.StartsWith("BA"))
+                                {
+                                    writer.WriteLine("DEMAT-CTH;1;AAI;Type de document;Bon d’avoir;;;;");
+                                    writer.WriteLine("");
+                                }
+
+                                writer.WriteLine("DEMAT-CTH;2;AAI;N° d'accord;" + FacturesAExporter[i].ca_num + ";;;;");
+                                writer.WriteLine("");
+
+                                writer.WriteLine("DEMAT-REM;;A;;;;;;;;" + FacturesAExporter[i].FNT_Escompte + ";" + FacturesAExporter[i].do_txescompte.Replace(",", ".").Replace("00000", "") + ";;");
+                                writer.WriteLine("");
+
+                                FacturesAExporter[i].lines = getDocumentLine(FacturesAExporter[i].DO_Piece);
+
+                                for (int j = 0; j < FacturesAExporter[i].lines.Count; j++)
+                                {
+
+                                    writer.WriteLine("DEMAT-LIN;" + FacturesAExporter[i].lines[j].DL_Ligne + ";" + FacturesAExporter[i].lines[j].AR_CODEBARRE + ";EAN;;;" + customer.CT_EDI1 + ";;;;" + FacturesAExporter[i].lines[j].DL_Design + ";;" + FacturesAExporter[i].lines[j].DL_PoidsNet.Replace(",", ".") + ";" + FacturesAExporter[i].lines[j].DL_PoidsBrut.Replace(",", ".") + ";;" + FacturesAExporter[i].lines[j].DL_Qte + ";" + FacturesAExporter[i].lines[j].DL_QteBL + ";" + FacturesAExporter[i].lines[j].EU_Qte + ";;;;" + FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", ".") + ";" + FacturesAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";" + FacturesAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";;1;;;" + ConvertDate(FacturesAExporter[i].lines[j].DO_DateLivr.Replace("00:00:00", "")) + ";" + FacturesAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;;;" + FacturesAExporter[i].lines[j].FNT_MontantTTC.Replace(",", ".") + ";;;;;;;;");
+                                    writer.WriteLine("");
+
+                                    if (FacturesAExporter[i].lines[j].DL_TypeTaxe1 == "0")
+                                    {
+                                        FacturesAExporter[i].lines[j].DL_TypeTaxe1 = "TVA/Débit";
+                                    }
+                                    if (FacturesAExporter[i].lines[j].DL_TypeTaxe2 == "0")
+                                    {
+                                        FacturesAExporter[i].lines[j].DL_TypeTaxe2 = "TVA/Débit";
+                                    }
+                                    if (FacturesAExporter[i].lines[j].DL_TypeTaxe3 == "0")
+                                    {
+                                        FacturesAExporter[i].lines[j].DL_TypeTaxe3 = "TVA/Débit";
+                                    }
+
+                                    if (FacturesAExporter[i].lines[j].DL_TypeTaxe1 == "1")
+                                    {
+                                        FacturesAExporter[i].lines[j].DL_TypeTaxe1 = "TVA/Encaissement";
+                                    }
+                                    if (FacturesAExporter[i].lines[j].DL_TypeTaxe2 == "1")
+                                    {
+                                        FacturesAExporter[i].lines[j].DL_TypeTaxe2 = "TVA/Encaissement";
+                                    }
+                                    if (FacturesAExporter[i].lines[j].DL_TypeTaxe3 == "1")
+                                    {
+                                        FacturesAExporter[i].lines[j].DL_TypeTaxe3 = "TVA/Encaissement";
+                                    }
+
+
+                                    // Calcule taxe
+                                    decimal montantTaxe = (Decimal.Parse(FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].lines[j].DL_Taxe1.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
+
+                                    writer.WriteLine("DEMAT-TAX;1;;" + FacturesAExporter[i].lines[j].DL_TypeTaxe1 + ";" + FacturesAExporter[i].lines[j].DL_Taxe1.Replace(",", ".") + ";;" + Math.Round(montantTaxe, 2).ToString().Replace(",", ".") + ";;;");
+                                    writer.WriteLine("");
+
+                                    //if (FacturesAExporter[i].lines[j].DL_Taxe2 != FacturesAExporter[i].lines[j].DL_Taxe1 && FacturesAExporter[i].lines[j].DL_Taxe2 != "0")
+                                    if (FacturesAExporter[i].lines[j].DL_Taxe2 != "0")
+                                    {
+                                        montantTaxe = (Decimal.Parse(FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].lines[j].DL_Taxe2.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
+
+                                        writer.WriteLine("DEMAT-TAX;2;;" + FacturesAExporter[i].lines[j].DL_TypeTaxe2 + ";" + FacturesAExporter[i].lines[j].DL_Taxe2.Replace(",", ".") + ";;" + Math.Round(montantTaxe, 2).ToString().Replace(",", ".") + ";;;");
+                                        writer.WriteLine("");
+                                    }
+
+                                    //if ((FacturesAExporter[i].lines[j].DL_Taxe3 != FacturesAExporter[i].lines[j].DL_Taxe1) && (FacturesAExporter[i].lines[j].DL_Taxe3 != FacturesAExporter[i].lines[j].DL_Taxe2) && FacturesAExporter[i].lines[j].DL_Taxe3 != "0")
+                                    if (FacturesAExporter[i].lines[j].DL_Taxe3 != "0")
+                                    {
+                                        montantTaxe = (Decimal.Parse(FacturesAExporter[i].lines[j].FNT_MontantHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].lines[j].DL_Taxe3.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
+
+                                        writer.WriteLine("DEMAT-TAX;3;;" + FacturesAExporter[i].lines[j].DL_TypeTaxe3 + ";" + FacturesAExporter[i].lines[j].DL_Taxe3.Replace(",", ".") + ";;" + Math.Round(montantTaxe, 2).ToString().Replace(",", ".") + ";;;");
+                                        writer.WriteLine("");
+                                    }
+
+                                    //---- Remise ----
+
+                                    string MontantRemise = "";
+                                    string PourcentageRemise = "";
+
+                                    if (FacturesAExporter[i].lines[j].DL_Remise01REM_Type == "0")
+                                    {
+                                        MontantRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur.Replace(",", ".");
+                                        PourcentageRemise = "";
+                                    }
+
+                                    if (FacturesAExporter[i].lines[j].DL_Remise01REM_Type == "1")
+                                    {
+                                        MontantRemise = "";
+                                        PourcentageRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur;
+                                    }
+
+                                    //if (FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur != "0")
+                                    //{
+                                        writer.WriteLine("DEMAT-DED;;A;;;;;;;" + FacturesAExporter[i].lines[j].DL_Remise01REM_Type + ";" + MontantRemise + ";" + PourcentageRemise + ";;");
+                                        writer.WriteLine("");
+                                    //}
+
+
+                                    if (FacturesAExporter[i].lines[j].DL_Remise03REM_Type == "0")
+                                    {
+                                        MontantRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur;
+                                        PourcentageRemise = "";
+                                    }
+
+                                    if (FacturesAExporter[i].lines[j].DL_Remise03REM_Type == "1")
+                                    {
+                                        MontantRemise = "";
+                                        PourcentageRemise = FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur;
+                                    }
+
+                                    if ((FacturesAExporter[i].lines[j].DL_Remise03REM_Valeur != "0") && (FacturesAExporter[i].lines[j].DL_Remise03REM_Valeur != FacturesAExporter[i].lines[j].DL_Remise01REM_Valeur))
+                                    {
+                                        writer.WriteLine("DEMAT-DED;;A;;;;;;;;" + MontantRemise + ";" + PourcentageRemise + ";;");
+                                        writer.WriteLine("");
+                                    }
+
+                                }
+
+                                //  Les lignes des taxes
+
+
+                                if (FacturesAExporter[i].DO_TypeTaxe1 == "0")
+                                {
+                                    FacturesAExporter[i].DO_TypeTaxe1 = "TVA/Débit";
+                                }
+                                if (FacturesAExporter[i].DO_TypeTaxe2 == "0")
+                                {
+                                    FacturesAExporter[i].DO_TypeTaxe2 = "TVA/Débit";
+                                }
+                                if (FacturesAExporter[i].DO_TypeTaxe3 == "0")
+                                {
+                                    FacturesAExporter[i].DO_TypeTaxe3 = "TVA/Débit";
+                                }
+
+                                if (FacturesAExporter[i].DO_TypeTaxe1 == "1")
+                                {
+                                    FacturesAExporter[i].DO_TypeTaxe1 = "TVA/Encaissement";
+                                }
+                                if (FacturesAExporter[i].DO_TypeTaxe2 == "1")
+                                {
+                                    FacturesAExporter[i].DO_TypeTaxe2 = "TVA/Encaissement";
+                                }
+                                if (FacturesAExporter[i].DO_TypeTaxe3 == "1")
+                                {
+                                    FacturesAExporter[i].DO_TypeTaxe3 = "TVA/Encaissement";
+                                }
+
+                                // Calcule taxe
+                                decimal montantTaxe1 = (Decimal.Parse(FacturesAExporter[i].FNT_TotalHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].DO_taxe1.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
+
+                                writer.WriteLine("DEMAT-TTX;1;;" + FacturesAExporter[i].DO_TypeTaxe1.Replace(",", ".") + ";" + FacturesAExporter[i].DO_taxe1.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".").Replace("00000", "") + ";" + Math.Round(montantTaxe1, 2).ToString().Replace(",", ".") + ";;");
+                                writer.WriteLine("");
+
+                                //if (FacturesAExporter[i].DO_taxe2 != FacturesAExporter[i].DO_taxe1 && FacturesAExporter[i].DO_taxe2 != "0")
+
+                                if (FacturesAExporter[i].DO_taxe2 != "0")
+                                {
+                                    // Calcule taxe
+                                    montantTaxe1 = (Decimal.Parse(FacturesAExporter[i].FNT_TotalHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].DO_taxe3.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
+
+                                    writer.WriteLine("DEMAT-TTX;2;;" + FacturesAExporter[i].DO_TypeTaxe2.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].DO_taxe1.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".").Replace("00000", "") + ";" + Math.Round(montantTaxe1, 2).ToString().Replace(",", ".") + ";;");
+                                    writer.WriteLine("");
+                                }
+
+                                if (FacturesAExporter[i].DO_taxe3 != "0")
+                                // if ((FacturesAExporter[i].DO_taxe3 != FacturesAExporter[i].DO_taxe1) && (FacturesAExporter[i].DO_taxe3 != FacturesAExporter[i].DO_taxe2) && FacturesAExporter[i].DO_taxe3 != "0")
+                                {
+                                    // Calcule taxe
+                                    montantTaxe1 = (Decimal.Parse(FacturesAExporter[i].FNT_TotalHT.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) * (Decimal.Parse(FacturesAExporter[i].DO_taxe3.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 100));
+
+                                    writer.WriteLine("DEMAT-TTX;3;;" + FacturesAExporter[i].DO_TypeTaxe3.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].DO_taxe1.Replace(",", ".") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + Math.Round(montantTaxe1, 2).ToString().Replace(",", ".") + ";;");
+                                    writer.WriteLine("");
+                                }
+
+
+                                writer.WriteLine("DEMAT-END;;;" + FacturesAExporter[i].DO_Piece.Replace(prefix, "") + ";" + FacturesAExporter[i].FNT_TotalHT.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_TotalTTC.Replace(",", ".").Replace("00000", "") + ";" + FacturesAExporter[i].FNT_MontantTotalTaxes.Replace(",", ".") + ";;;;" + FacturesAExporter[i].FNT_Escompte.Replace(",", ".") + ";;" + FacturesAExporter[i].FNT_NetAPayer.Replace(",", ".") + ";;;;");
+                                writer.WriteLine("");
+                                writer.WriteLine("");
+
+
+                                writer.WriteLine("DEMAT-ZZZ;v01.0;;;;");
+
+
+                            }
+
+                            UpdateDocumentVente(FacturesAExporter[i].DO_Piece);
+
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
-                        Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                        writerLog.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    }
+
+                        Console.WriteLine(DateTime.Now + " : Nombre de facture : " + FacturesAExporter.Count);
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Nombre de facture : " + FacturesAExporter.Count);
+
+                }
+                }
+                catch (Exception ex)
+                {
+                    //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
+                    Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    
+                    logFileWriter_export.WriteLine(DateTime.Now + "********************************* Exception *********************************");
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Export annullé");
+                    logFileWriter_export.Close();
                 }
             }
 
@@ -840,7 +852,13 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+
+                logFileWriter_export.WriteLine(DateTime.Now + "********************************* Exception *********************************");
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Export annullé");
+                logFileWriter_export.Close();
             }
+            logFileWriter_export.Close();
         }
 
         private string GetModeReglement(string do_piece)

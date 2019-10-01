@@ -24,3 +24,10 @@ C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\bin\Re
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\bin\Release\Microsoft.Win32.TaskScheduler.xml
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.exe
 C:\Users\Anexys\Pictures\ConnecteurSage_JL\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.csprojResolveAssemblyReference.cache
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\Release\importPlanifier.exe
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\Release\importPlanifier.pdb
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\Release\Microsoft.Win32.TaskScheduler.xml
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.csprojAssemblyReference.cache
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.csproj.CopyComplete
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.exe
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.pdb
