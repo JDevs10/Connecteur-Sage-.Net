@@ -23,21 +23,30 @@ namespace ConnecteurSage.Forms
 
         private Customer customer = new Customer();
 
+        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "STOCK";
+        private StreamWriter logFileWriter_export = null;
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
         }
 
-        private void ExportStock()
+        private void ExportStock(StreamWriter logFileWriter)
         {
             try
             {
+                logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Export Stock.");
+
                 if (string.IsNullOrEmpty(textBox1.Text)) //check if the seleted path is empty
                 {
                     MessageBox.Show("Le chemin pour l'export du fichier stock liste doit être renseigné !"); //if yes prompt error message
+
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Le chemin pour l'export du fichier stock liste doit être renseigné !");
                     return;
                 }
-                
+
+                logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Récupérer le stock de tous les produits et leur stock.");
+
                 List<Stock> s = new List<Stock>(); //creating list type stock
                 s = GetStockArticle(); //call function GetStockArticle to get all the products and their stock
 
@@ -51,9 +60,12 @@ namespace ConnecteurSage.Forms
                 if (s == null) //check if the list is empty or not
                 {
                     MessageBox.Show("Failed to obtain value from database : (Maybe failed to connect with database) "); //show failed to connect with database
+
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Failed to obtain value from database : (Maybe failed to connect with database) ");
                 }
                 else
                 {
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Nombre de Stock récupéré : " + s.Count);
 
                     string[] stocklines = new string[s.Count]; //creating array to add output lines for file
                     int i=0;
@@ -72,6 +84,8 @@ namespace ConnecteurSage.Forms
 
                     using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName)) // streaming the file 
                     {
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Écrire dans le fichier à : " + fileName);
+
                         foreach (string line in stocklines) //reading line per line from array
                         {
                             file.WriteLine(line); //writing inside the file
@@ -89,6 +103,7 @@ namespace ConnecteurSage.Forms
 
                     MessageBox.Show("File has been generated at : "+fileName); //show message file has been generated
 
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
                 }
 
                 Close(); //close the ExportStock window.
@@ -99,6 +114,8 @@ namespace ConnecteurSage.Forms
                 //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
                 MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
             }
 
         }
@@ -252,7 +269,26 @@ namespace ConnecteurSage.Forms
 
         private void export_stockliste_Click(object sender, EventArgs e)
         {
-            ExportStock(); //calling this class' function to export list of stock
+            if (!Directory.Exists(logDirectoryName_export))
+            {
+                Directory.CreateDirectory(logDirectoryName_export);
+            }
+
+            var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Stock_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFile_export = File.Create(logFileName_export);
+
+            //Write in the log file 
+            logFileWriter_export = new StreamWriter(logFile_export);
+            //logFileWriter.Write(string.Format("{0:HH:mm:ss}", DateTime.Now) + " \r\n");
+            logFileWriter_export.WriteLine("#####################################################################################");
+            logFileWriter_export.WriteLine("################################ ConnecteurSage Sage ################################");
+            logFileWriter_export.WriteLine("#####################################################################################");
+            logFileWriter_export.WriteLine("");
+
+            ExportStock(logFileWriter_export); //calling this class' function to export list of stock
+
+            logFileWriter_export.Close();
+            
         }
 
         private void button2_Click(object sender, EventArgs e)

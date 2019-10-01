@@ -19,20 +19,12 @@ namespace ConnecteurSage.Forms
     {
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
-        private string logDirectoryName_export_desadv = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_DESADV";
-        private string logDirectoryName_export_commande = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_COMMANDE";
-        private string logDirectoryName_export_facture = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_FACTURE";
-        private string logDirectoryName_export_stock = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export_STOCK";
 
         private StreamWriter logFileWriter_general = null;
         private StreamWriter logFileWriter_import = null;
 
         private static string filename = "";
         private static List<string> MessageErreur;
-
-        private static ProgressDialog progressDialog = null;
-        private static Thread backgroundThread = null;
-        private static Boolean checkImportProgressDialog = false;
 
         public importManuel()
         {

@@ -19,9 +19,12 @@ namespace importPlanifier.Classes
 
         private string pathExport;
 
+        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE";
+        private StreamWriter logFileWriter_export = null;
+
         #endregion
 
- 
+
 
         public ExportCommandes(string path)
         {
@@ -86,6 +89,20 @@ namespace importPlanifier.Classes
         {
             try
             {
+                if (!Directory.Exists(logDirectoryName_export))
+                {
+                    Directory.CreateDirectory(logDirectoryName_export);
+                }
+
+                var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Commande_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+                var logFile_export = File.Create(logFileName_export);
+                logFileWriter_export = new StreamWriter(logFile_export);
+
+                logFileWriter_export.WriteLine("#####################################################################################");
+                logFileWriter_export.WriteLine("################################# Import Planifier ##################################");
+                logFileWriter_export.WriteLine("#####################################################################################");
+                logFileWriter_export.WriteLine("");
+
                 List<Order> CommandeAExporter = GetCommandesFromDataBase();
 
                 string outputFile = this.pathExport + @"\Fichier Exporter\Export Bons de commandes\";
@@ -97,150 +114,151 @@ namespace importPlanifier.Classes
 
                 for(int i=0;i<CommandeAExporter.Count;i++)
                 {
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Nombre de commande à exporter ===> " + i + "/" + CommandeAExporter.Count);
 
-                if (CommandeAExporter[i].deviseCommande == "0")
-                {
-                    CommandeAExporter[i].deviseCommande = "1";
-                }
+                    if (CommandeAExporter[i].deviseCommande == "0")
+                    {
+                        CommandeAExporter[i].deviseCommande = "1";
+                    }
 
-                if (CommandeAExporter[i].deviseCommande != "")
-                {
-                    CommandeAExporter[i].deviseCommande = getDeviseIso(CommandeAExporter[i].deviseCommande);
-                }
+                    if (CommandeAExporter[i].deviseCommande != "")
+                    {
+                        CommandeAExporter[i].deviseCommande = getDeviseIso(CommandeAExporter[i].deviseCommande);
+                    }
 
-                //if (CommandeAExporter[i].DO_MOTIF == "")
-                //{
-                //    CommandeAExporter[i].DO_MOTIF = CommandeAExporter[i].NumCommande;
-                //}
-
-                //if (CommandeAExporter[i].DO_MOTIF == "")
-                //{
-                //    DialogResult resultDialog = Console.WriteLine("N° de commande non enregistrer.\nVoulez vous Continuer ?");
-
-                //    if (resultDialog == DialogResult.Cancel)
-                //    {
-                //        goto jamp;
-                //    }
-
-                //    if (resultDialog == DialogResult.OK)
-                //    {
-                //        CommandeAExporter[i].DO_MOTIF = "";
-                //    }
-
-                //}
-
-                //if (CommandeAExporter[i].codeClient == "")
-                //{
-                //    DialogResult resultDialog = Console.WriteLine("Code GNL client n'est pas enregistrer.\nVoulez vous continuer ?");
-
-                //    if (resultDialog == DialogResult.Cancel)
-                //    {
-                //        goto jamp;
-                //    }
-
-                //    if (resultDialog == DialogResult.OK)
-                //    {
-                //        CommandeAExporter.codeClient = "";
-                //    }
-
-                //}
-
-                if (!IsNumeric(CommandeAExporter[i].DO_MOTIF) && CommandeAExporter[i].DO_MOTIF != "")
-                {
-                    //DialogResult resultDialog = Console.WriteLine("N° de commande est mal enregistrer.\nVoulez vous Continuer ?");
-
-                    //if (resultDialog == DialogResult.Cancel)
+                    //if (CommandeAExporter[i].DO_MOTIF == "")
                     //{
-                    //    goto jamp;
+                    //    CommandeAExporter[i].DO_MOTIF = CommandeAExporter[i].NumCommande;
                     //}
 
-                    //if (resultDialog == DialogResult.OK)
+                    //if (CommandeAExporter[i].DO_MOTIF == "")
                     //{
+                    //    DialogResult resultDialog = Console.WriteLine("N° de commande non enregistrer.\nVoulez vous Continuer ?");
+
+                    //    if (resultDialog == DialogResult.Cancel)
+                    //    {
+                    //        goto jamp;
+                    //    }
+
+                    //    if (resultDialog == DialogResult.OK)
+                    //    {
+                    //        CommandeAExporter[i].DO_MOTIF = "";
+                    //    }
+
+                    //}
+
+                    //if (CommandeAExporter[i].codeClient == "")
+                    //{
+                    //    DialogResult resultDialog = Console.WriteLine("Code GNL client n'est pas enregistrer.\nVoulez vous continuer ?");
+
+                    //    if (resultDialog == DialogResult.Cancel)
+                    //    {
+                    //        goto jamp;
+                    //    }
+
+                    //    if (resultDialog == DialogResult.OK)
+                    //    {
+                    //        CommandeAExporter.codeClient = "";
+                    //    }
+
+                    //}
+
+                    if (!IsNumeric(CommandeAExporter[i].DO_MOTIF) && CommandeAExporter[i].DO_MOTIF != "")
+                    {
+                        //DialogResult resultDialog = Console.WriteLine("N° de commande est mal enregistrer.\nVoulez vous Continuer ?");
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : N° de commande est mal enregistrer");
+
+                        //if (resultDialog == DialogResult.Cancel)
+                        //{
+                        //    goto jamp;
+                        //}
+
+                        //if (resultDialog == DialogResult.OK)
+                        //{
                         CommandeAExporter[i].DO_MOTIF = "";
-                    //}
+                        //}
 
-                }
-
-                //if (!IsNumeric(CommandeAExporter[i].codeClient) && CommandeAExporter[i].codeClient != "")
-                //{
-                //    DialogResult resultDialog = Console.WriteLine("Code GNL client est mal enregistrer.\nVoulez vous continuer ?");
-
-                //    if (resultDialog == DialogResult.Cancel)
-                //    {
-                //        goto jamp;
-                //    }
-
-                //    if (resultDialog == DialogResult.OK)
-                //    {
-                //        CommandeAExporter[i].DO_MOTIF = "";
-                //    }
-
-                //}
-
-
-                var fileName = string.Format("EDI_ORDERS." + CommandeAExporter[i].codeClient + "." + CommandeAExporter[i].NumCommande + "." + ConvertDate(CommandeAExporter[i].DateCommande) + "."+ CommandeAExporter[i].adresseLivraison + ".{0:yyyyMMddhhmmss}.csv", DateTime.Now);
-
-                fileName = fileName.Replace("...", ".");
-
-                using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName.Replace("..", "."), false, Encoding.UTF8))
-                {
-
-
-                    writer.WriteLine("ORDERS;" + CommandeAExporter[i].DO_MOTIF + ";" + CommandeAExporter[i].codeClient + ";" + CommandeAExporter[i].codeAcheteur + ";" + CommandeAExporter[i].codeFournisseur + ";;;" + CommandeAExporter[i].nom_contact + "." + CommandeAExporter[i].adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter[i].deviseCommande + ";;");
-                    
-                    if (CommandeAExporter[i].DateCommande != "")
-                    {
-                        CommandeAExporter[i].DateCommande = ConvertDate(CommandeAExporter[i].DateCommande);
                     }
 
-                    //if (CommandeAExporter[i].DateCommande != " ")
+                    //if (!IsNumeric(CommandeAExporter[i].codeClient) && CommandeAExporter[i].codeClient != "")
                     //{
-                    //    CommandeAExporter[i].conditionLivraison = "";
+                    //    DialogResult resultDialog = Console.WriteLine("Code GNL client est mal enregistrer.\nVoulez vous continuer ?");
+
+                    //    if (resultDialog == DialogResult.Cancel)
+                    //    {
+                    //        goto jamp;
+                    //    }
+
+                    //    if (resultDialog == DialogResult.OK)
+                    //    {
+                    //        CommandeAExporter[i].DO_MOTIF = "";
+                    //    }
+
                     //}
 
-                    writer.WriteLine("ORDHD1;" + CommandeAExporter[i].DateCommande + ";" + CommandeAExporter[i].conditionLivraison + ";;");
 
-                    CommandeAExporter[i].Lines = getLigneCommande(CommandeAExporter[i].NumCommande);
+                    var fileName = string.Format("EDI_ORDERS." + CommandeAExporter[i].codeClient + "." + CommandeAExporter[i].NumCommande + "." + ConvertDate(CommandeAExporter[i].DateCommande) + "."+ CommandeAExporter[i].adresseLivraison + ".{0:yyyyMMddhhmmss}.csv", DateTime.Now);
 
-                    for (int j = 0; j < CommandeAExporter[i].Lines.Count;j++ )
+                    fileName = fileName.Replace("...", ".");
+
+                    using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName.Replace("..", "."), false, Encoding.UTF8))
                     {
-                        if (!IsNumeric(CommandeAExporter[i].Lines[j].codeAcheteur))
-                        {
-                            CommandeAExporter[i].Lines[j].codeAcheteur = "";
-                        }
 
-                        if (!IsNumeric(CommandeAExporter[i].Lines[j].codeFournis))
-                        {
-                            CommandeAExporter[i].Lines[j].codeFournis = "";
-                        }
-
-                        writer.WriteLine("ORDLIN;" + CommandeAExporter[i].Lines[j].NumLigne + ";" + CommandeAExporter[i].Lines[j].codeArticle + ";GS1;" + CommandeAExporter[i].Lines[j].codeAcheteur + ";" + CommandeAExporter[i].Lines[j].codeFournis + ";;A;" + CommandeAExporter[i].Lines[j].descriptionArticle + ";" + CommandeAExporter[i].Lines[j].Quantite.Replace(",", ".") + ";LM;" + CommandeAExporter[i].Lines[j].MontantLigne.Replace(",", ".") + ";;;" + CommandeAExporter[i].Lines[j].PrixNetHT.Replace(",", ".") + ";;;LM;;;;" + ConvertDate(CommandeAExporter[i].Lines[j].DateLivraison) + ";");
-                    }
-                    writer.WriteLine("ORDEND;" + CommandeAExporter[i].MontantTotal.ToString().Replace(",", ".") + ";");
-
-
+                        writer.WriteLine("ORDERS;" + CommandeAExporter[i].DO_MOTIF + ";" + CommandeAExporter[i].codeClient + ";" + CommandeAExporter[i].codeAcheteur + ";" + CommandeAExporter[i].codeFournisseur + ";;;" + CommandeAExporter[i].nom_contact + "." + CommandeAExporter[i].adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter[i].deviseCommande + ";;");
                     
+                        if (CommandeAExporter[i].DateCommande != "")
+                        {
+                            CommandeAExporter[i].DateCommande = ConvertDate(CommandeAExporter[i].DateCommande);
+                        }
+
+                        //if (CommandeAExporter[i].DateCommande != " ")
+                        //{
+                        //    CommandeAExporter[i].conditionLivraison = "";
+                        //}
+
+                        writer.WriteLine("ORDHD1;" + CommandeAExporter[i].DateCommande + ";" + CommandeAExporter[i].conditionLivraison + ";;");
+
+                        CommandeAExporter[i].Lines = getLigneCommande(CommandeAExporter[i].NumCommande);
+
+                        for (int j = 0; j < CommandeAExporter[i].Lines.Count;j++ )
+                        {
+                            if (!IsNumeric(CommandeAExporter[i].Lines[j].codeAcheteur))
+                            {
+                                CommandeAExporter[i].Lines[j].codeAcheteur = "";
+                            }
+
+                            if (!IsNumeric(CommandeAExporter[i].Lines[j].codeFournis))
+                            {
+                                CommandeAExporter[i].Lines[j].codeFournis = "";
+                            }
+
+                            writer.WriteLine("ORDLIN;" + CommandeAExporter[i].Lines[j].NumLigne + ";" + CommandeAExporter[i].Lines[j].codeArticle + ";GS1;" + CommandeAExporter[i].Lines[j].codeAcheteur + ";" + CommandeAExporter[i].Lines[j].codeFournis + ";;A;" + CommandeAExporter[i].Lines[j].descriptionArticle + ";" + CommandeAExporter[i].Lines[j].Quantite.Replace(",", ".") + ";LM;" + CommandeAExporter[i].Lines[j].MontantLigne.Replace(",", ".") + ";;;" + CommandeAExporter[i].Lines[j].PrixNetHT.Replace(",", ".") + ";;;LM;;;;" + ConvertDate(CommandeAExporter[i].Lines[j].DateLivraison) + ";");
+                        }
+                        writer.WriteLine("ORDEND;" + CommandeAExporter[i].MontantTotal.ToString().Replace(",", ".") + ";");
+
+                    }
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Fichier d'export commande généré dans : " + outputFile + @"\" + fileName.Replace("..", "."));
+
+                    UpdateDocumentVente(CommandeAExporter[i].NumCommande);
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Mettre à jour le Document de Vente");
                 }
-
-                UpdateDocumentVente(CommandeAExporter[i].NumCommande);
-            
-
-            }
-
 
                 Console.WriteLine(DateTime.Now + " : Nombre de commande exporté : " + CommandeAExporter.Count);
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Nombre de commande exporté : " + CommandeAExporter.Count);
 
-                
-                
-
-                
-                
             }
             catch (Exception ex)
             {
                 //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
                 Console.WriteLine(ex.Message);
+
+                logFileWriter_export.WriteLine(DateTime.Now + "********************************* Exception *********************************");
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Message :: " + ex.Message);
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Export annullé");
+                logFileWriter_export.Close();
             }
+
+            logFileWriter_export.Close();
         }
         #endregion
 

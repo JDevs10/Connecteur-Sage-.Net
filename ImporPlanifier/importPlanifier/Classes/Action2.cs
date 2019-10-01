@@ -30,6 +30,7 @@ namespace importPlanifier.Classes
         /* JL LOG */
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
+        private string outputFileError = Directory.GetCurrentDirectory() + @"\LOG\Error_File\";
         private StreamWriter logFileWriter_general = null;
         private StreamWriter logFileWriter_import = null;
 
@@ -103,6 +104,10 @@ namespace importPlanifier.Classes
                 //Create log directory
                 Directory.CreateDirectory(logDirectoryName_import);
             }
+            if (!Directory.Exists(outputFileError))
+            {
+                System.IO.Directory.CreateDirectory(outputFileError);
+            }
 
             //Create log file
             var logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG_General_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
@@ -136,6 +141,7 @@ namespace importPlanifier.Classes
             {
                 Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + fileListing.GetFiles("*.csv")[index].Name);
                 FileInfo filename = fileListing.GetFiles("*.csv")[index];
+
                 try
                 {
                     nbr++;
@@ -150,7 +156,6 @@ namespace importPlanifier.Classes
                     logFileWriter_import.WriteLine(DateTime.Now + " : Scan fichier...");
                     Console.WriteLine(DateTime.Now + " : Ficher " + index + " : " + filename);
 
-                    
 
                     long pos = 1;
                     string[] lines = System.IO.File.ReadAllLines(fileListing + @"\" + filename, Encoding.Default);
@@ -201,7 +206,6 @@ namespace importPlanifier.Classes
                             return;
                         }
 
-                        order.Lines = new List<OrderLine>();
                         order.Lines = new List<OrderLine>();
 
                         order.NumCommande = lines[0].Split(';')[1];
@@ -928,6 +932,7 @@ namespace importPlanifier.Classes
                         logFileWriter_general.WriteLine("");
 
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
+
                         if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
                         {
 
@@ -1037,6 +1042,29 @@ namespace importPlanifier.Classes
                              * */
 
                             // *once list is filled with values, start executing queries for each line - one by one.*
+
+
+                            foreach (string ligneDuFichier in lines) //read lines by line
+                            {
+                                //MessageBox.Show("READING IMPORTED FILE");
+
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Lecture du fichier d'importation.");
+
+                                string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                if (tab[1] == "L") //checking if its an product line
+                                {
+                                    Stock stock_info = new Stock("", tab[2], tab[3], tab[4], tab[5], "", ""); //creating new object type stock and storing values
+                                    s.Add(stock_info); //adding the object into the list type stock
+                                    i++;
+                                }
+
+                                if (tab[1] == "F") //checking if its end of file for control
+                                {
+                                    totallines = tab[2];
+                                }
+                            }
 
                             if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer
                             {
@@ -1190,22 +1218,29 @@ namespace importPlanifier.Classes
                 catch (Exception e)
                 {
                     //Console.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    logFileWriter_import.WriteLine("");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Exception *********************");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
                     logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     tabCommandeError.Add(filename.ToString());
                     goto goOut;
                 }
 
-            goOut: ;
-                //Deplaçer les fichier dans le dossier : Error File
-                if (File.Exists(dir + @"\" + filename))
+                goOut: ;
+
+                //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
+                if (File.Exists(dir + @"\" + filename) && tabCommandeError.Count > 0)
                 {
+                    var errorfilename = string.Format("{0:ddMMyyyy_HHmmss}_" + filename, DateTime.Now);
+                    System.IO.File.Move(dir + @"\" + filename, outputFileError + @"\" + errorfilename);
+
                     logFileWriter_import.WriteLine("");
-                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                    logFileWriter_import.WriteLine(DateTime.Now + " : arrivee ici dans le goto.");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : le fichier a été déplacé dans ===> " + errorfilename);
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                     logFileWriter_import.Close();
-                    var errorfilename = string.Format("{0:ddMMyyyy_HHmmss}_" + filename, DateTime.Now);
-                    //System.IO.File.Move(dir + @"\" + filename, outputFileError + @"\" + errorfilename);
                 }
 
             }
@@ -1369,6 +1404,7 @@ namespace importPlanifier.Classes
 
         public static string[,] insertStock(List<Stock> s, string reference_MS_doc, string reference_ME_doc, StreamWriter logFileWriter)
         {
+            logFileWriter.WriteLine(DateTime.Now + " | insertStock() ");
 
             //List<Stock> s : values obtained from the document received/imported.
             //reference_doc : the last reference of the document that is to be imported. format ME______ - "ME" because its an entry OR MS______ - "MS" because its a removal
@@ -1426,8 +1462,6 @@ namespace importPlanifier.Classes
                         if (name_article != "")
                         {
 
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Article trouvé.");
-                            logFileWriter.WriteLine("");
                             using (OdbcConnection connectionSQL = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
                             {
                                 connectionSQL.Open();

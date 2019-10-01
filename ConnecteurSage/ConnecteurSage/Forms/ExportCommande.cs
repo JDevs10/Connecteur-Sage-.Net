@@ -23,6 +23,9 @@ namespace ConnecteurSage.Forms
         /// </summary>
         private Order CommandeAExporter;
 
+        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE";
+        private StreamWriter logFileWriter_export = null;
+
         #endregion
 
         #region Constructeurs
@@ -89,14 +92,24 @@ namespace ConnecteurSage.Forms
         /// <summary>
         /// Génération du fichier d'import, lancement de l'application et import des commandes
         /// </summary>
-        private void ExportFacture()
+        private void ExportFacture(StreamWriter logFileWriter)
         {
+            if (!CommandeAExporter.NomClient.Equals("") && !CommandeAExporter.NomClient.Equals(" "))
+            {
+                logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
+            }
+            else
+            {
+                logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"...\"");
+            }
+
             try
             {
 
                 if (string.IsNullOrEmpty(textBox1.Text))
                 {
-                    MessageBox.Show("Le chemin du fichier d'import de commande doit être renseigné");
+                    MessageBox.Show("Le chemin du fichier d'export de commande doit être renseigné.");
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Le chemin du fichier d'export de commande doit être renseigné.");
                     return;
                 }
 
@@ -131,6 +144,7 @@ namespace ConnecteurSage.Forms
                     if (resultDialog == DialogResult.OK)
                     {
                         CommandeAExporter.DO_MOTIF = "";
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande non enregistrer.");
                     }
 
                 }
@@ -151,6 +165,7 @@ namespace ConnecteurSage.Forms
                     if (resultDialog == DialogResult.OK)
                     {
                         CommandeAExporter.codeClient = "";
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Code GNL client n'est pas enregistrer.");
                     }
 
                 }
@@ -171,6 +186,7 @@ namespace ConnecteurSage.Forms
                     if (resultDialog == DialogResult.OK)
                     {
                         CommandeAExporter.DO_MOTIF = "";
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande est mal enregistrer.");
                     }
 
                 }
@@ -191,6 +207,7 @@ namespace ConnecteurSage.Forms
                     if (resultDialog == DialogResult.OK)
                     {
                         CommandeAExporter.DO_MOTIF = "";
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Code GNL client est mal enregistrer.");
                     }
 
                 }
@@ -202,7 +219,7 @@ namespace ConnecteurSage.Forms
 
                 using (StreamWriter writer = new StreamWriter(textBox1.Text+@"\"+fileName.Replace("..","."), false, Encoding.Default))
                 {
-
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Ecrire le fichier dans : " + textBox1.Text + @"\" + fileName.Replace("..", "."));
 
                     writer.WriteLine("ORDERS;" + CommandeAExporter.DO_MOTIF + ";" + CommandeAExporter.codeClient + ";" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.codeFournisseur + ";;;" + CommandeAExporter.nom_contact + "." + CommandeAExporter.adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter.deviseCommande + ";;");
                     
@@ -243,7 +260,9 @@ namespace ConnecteurSage.Forms
                 MessageBox.Show("Commande exportée avec succés" , "Information !!",
                                              MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
-                jamp :
+                logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Commande exportée avec succés.");
+
+            jamp :
                 Close();
 
                 
@@ -253,6 +272,8 @@ namespace ConnecteurSage.Forms
             {
                 //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
                 MessageBox.Show(ex.Message);
+
+                logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message);
             }
         }
         #endregion
@@ -435,7 +456,25 @@ namespace ConnecteurSage.Forms
         {                        
             importButton.Enabled = false;
 
-            ExportFacture();
+            if (!Directory.Exists(logDirectoryName_export))
+            {
+                Directory.CreateDirectory(logDirectoryName_export);
+            }
+
+            var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Commande_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFile_export = File.Create(logFileName_export);
+
+            //Write in the log file 
+            logFileWriter_export = new StreamWriter(logFile_export);
+            //logFileWriter.Write(string.Format("{0:HH:mm:ss}", DateTime.Now) + " \r\n");
+            logFileWriter_export.WriteLine("#####################################################################################");
+            logFileWriter_export.WriteLine("################################ ConnecteurSage Sage ################################");
+            logFileWriter_export.WriteLine("#####################################################################################");
+            logFileWriter_export.WriteLine("");
+
+            ExportFacture(logFileWriter_export);
+
+            logFileWriter_export.Close();
         }
         #endregion
 

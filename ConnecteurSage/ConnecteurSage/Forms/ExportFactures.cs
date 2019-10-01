@@ -21,6 +21,9 @@ namespace ConnecteurSage.Forms
         private Customer customer = new Customer();
         private Societe societe = null;
 
+        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE";
+        private StreamWriter logFileWriter_export = null;
+
         public ExportFactures()
         {
             InitializeComponent();
@@ -739,13 +742,17 @@ namespace ConnecteurSage.Forms
         /// <summary>
         /// Génération du fichier d'export, lancement de l'application et exporter les factures
         /// </summary>
-        private void ExportFacture()
+        private void ExportFacture(StreamWriter logFileWriter)
         {
+            logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Facture.");
+
             try
             {
                 if (string.IsNullOrEmpty(textBox1.Text))
                 {
                     MessageBox.Show("Le chemin du fichier d'import de commande doit être renseigné");
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Le chemin du fichier d'import de commande doit être renseigné.");
+
                     return;
                 }
                 
@@ -763,6 +770,8 @@ namespace ConnecteurSage.Forms
 
                 using (StreamWriter writer = new StreamWriter(textBox1.Text + @"\" + fileName, false, Encoding.Default))
                 {
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Ecrire le fichier dans : " + textBox1.Text + @"\" + fileName);
+
                     writer.WriteLine("DEMAT-AAA;v01.0;;;" + DateTime.Today.Year + addZero(DateTime.Today.Month.ToString()) + addZero(DateTime.Today.Day.ToString()) + ";;");
                     writer.WriteLine("");
                     writer.WriteLine("");
@@ -772,7 +781,7 @@ namespace ConnecteurSage.Forms
 
                         //string[] tab = new string[] { "", "", "" };
 
-
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : " + i + "/" + FacturesAExporter.Count + " a exporter.");
 
                         //if (FacturesAExporter[i].OriginDocumentType == "8")
                         //{
@@ -1027,7 +1036,7 @@ namespace ConnecteurSage.Forms
 
                     writer.WriteLine("DEMAT-ZZZ;v01.0;;;;");
 
-
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Facture Exporté.");
                 }
 
                 MessageBox.Show("Nombre de facture : " + FacturesAExporter.Count, "Information !!",
@@ -1043,13 +1052,34 @@ namespace ConnecteurSage.Forms
                 //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
                 MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
             }
         }
 
         private void importButton_Click(object sender, EventArgs e)
         {
             //importButton.Enabled = true;
-            ExportFacture();
+
+            if(!Directory.Exists(logDirectoryName_export))
+            {
+                Directory.CreateDirectory(logDirectoryName_export);
+            }
+
+            var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Facture_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFile_export = File.Create(logFileName_export);
+
+            //Write in the log file 
+            logFileWriter_export = new StreamWriter(logFile_export);
+            //logFileWriter.Write(string.Format("{0:HH:mm:ss}", DateTime.Now) + " \r\n");
+            logFileWriter_export.WriteLine("#####################################################################################");
+            logFileWriter_export.WriteLine("################################ ConnecteurSage Sage ################################");
+            logFileWriter_export.WriteLine("#####################################################################################");
+            logFileWriter_export.WriteLine("");
+
+            ExportFacture(logFileWriter_export);
+
+            logFileWriter_export.Close();
         }
 
         private string getDeviseIso(string code)
