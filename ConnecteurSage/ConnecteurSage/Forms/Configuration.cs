@@ -56,8 +56,8 @@ namespace ConnecteurSage.Forms
                 setting = (ConfigurationDNS)reader.Deserialize(file);
 
                 comboBox2.Text = setting.DNS_2;
-                textBox2.Text = setting.Nom_2;
-                textBox3.Text = Utils.Decrypt(setting.Password_2);
+                textBox4.Text = setting.Nom_2;
+                textBox1.Text = Utils.Decrypt(setting.Password_2);
                 file.Close();
             }
             
@@ -94,38 +94,39 @@ namespace ConnecteurSage.Forms
         {
             if (!string.IsNullOrEmpty(comboBox1.Text))
             {
-            ConfigurationDNS configurationDNS = new ConfigurationDNS()
-            {
-                DNS_1 = "" + comboBox1.Text,
-                Nom_1 = "" + textBox2.Text,
-                Password_1 = "" + Utils.Encrypt(textBox3.Text),
+                ConfigurationDNS configurationDNS = new ConfigurationDNS()
+                {
+                    Prefix = comboBox1.Text.Split('_')[0],
+                    DNS_1 = "" + comboBox1.Text,
+                    Nom_1 = "" + textBox2.Text,
+                    Password_1 = "" + Utils.Encrypt(textBox3.Text),
 
-            };
+                };
 
-            try
-            {
+                try
+                {
 
-                var myfile = File.Create(pathModule + @"\Setting.xml");
-                XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
-                xml.Serialize(myfile, configurationDNS);
-                myfile.Close();
+                    var myfile = File.Create(pathModule + @"\Setting.xml");
+                    XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
+                    xml.Serialize(myfile, configurationDNS);
+                    myfile.Close();
 
 
 
-                Main.ModifierButtonDNS(comboBox1.Text);
-                Main.ModifierButtonNom(textBox2.Text);
+                    Main.ModifierButtonDNS(comboBox1.Text);
+                    Main.ModifierButtonNom(textBox2.Text);
 
-                Close();
+                    Close();
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(""+ex.Message);
-            }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(""+ex.Message);
+                }
             
             }
             else {
-            MessageBox.Show("DSN I est obligatoire !!");
+                MessageBox.Show("DSN I est obligatoire !!");
             }
 
             //DSN II
@@ -133,9 +134,10 @@ namespace ConnecteurSage.Forms
             {
                 ConfigurationDNS configurationDNS = new ConfigurationDNS()
                 {
+                    Prefix = comboBox2.Text.Split('_')[0],
                     DNS_2 = "" + comboBox2.Text,
-                    Nom_2 = "" + textBox2.Text,
-                    Password_2 = "" + Utils.Encrypt(textBox3.Text),
+                    Nom_2 = "" + textBox4.Text,
+                    Password_2 = "" + Utils.Encrypt(textBox1.Text),
 
                 };
 
@@ -150,7 +152,7 @@ namespace ConnecteurSage.Forms
 
 
                     Main.ModifierButtonDNS(comboBox2.Text);
-                    Main.ModifierButtonNom(textBox2.Text);
+                    Main.ModifierButtonNom(textBox4.Text);
 
                     Close();
 

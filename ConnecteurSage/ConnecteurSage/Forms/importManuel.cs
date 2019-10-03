@@ -1207,7 +1207,8 @@ namespace ConnecteurSage.Forms
 
                     //ME00001
                     int chiffreTotal = 7;
-                    int lastMaskID = Convert.ToInt16(db_result.Replace(mask, ""));
+                    logFileWriter.WriteLine(DateTime.Now+ " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
                     int newMaskID = lastMaskID + 1;
 
                     result = mask; // put ME before adding '0'
@@ -1267,7 +1268,8 @@ namespace ConnecteurSage.Forms
 
                     //ME00001
                     int chiffreTotal = 7;
-                    int lastMaskID = Convert.ToInt16(db_result.Replace(mask, ""));
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
                     int newMaskID = lastMaskID + 1;
 
                     result = mask; // put ME before adding '0'

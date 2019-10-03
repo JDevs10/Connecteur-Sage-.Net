@@ -56,8 +56,9 @@ namespace ConnecteurSage
                 setting2.LoadSQL();
 
                 label1.Text = "DSN I : " + setting1.DNS_1;
+                label2.Text = "DSN I Nom : " + setting1.Nom_1;
                 label5.Text = "DSN II : " + setting2.DNS_2;
-                label2.Text = "Nom : " + setting1.Nom_1;
+                label9.Text = "DSN II Nom : " + setting1.Nom_2;
                 //file.Close();
 
             }

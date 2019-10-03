@@ -43,6 +43,9 @@
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -65,9 +68,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -218,7 +219,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(351, 153);
+            this.button9.Location = new System.Drawing.Point(351, 176);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(110, 23);
             this.button9.TabIndex = 10;
@@ -228,7 +229,7 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(235, 153);
+            this.button7.Location = new System.Drawing.Point(235, 176);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(110, 23);
             this.button7.TabIndex = 9;
@@ -238,6 +239,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.label6);
@@ -246,15 +248,42 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Location = new System.Drawing.Point(121, 26);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(385, 117);
+            this.groupBox2.Size = new System.Drawing.Size(385, 144);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Paramétrage";
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(187, 87);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(157, 14);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "Statut de Facture : Non défini";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(187, 58);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(194, 14);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "Statut Bon de Livraision : Non défini";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(187, 29);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(164, 14);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Statut Commande : Non défini";
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 58);
+            this.label5.Location = new System.Drawing.Point(16, 87);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(96, 14);
             this.label5.TabIndex = 2;
@@ -272,7 +301,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 87);
+            this.label2.Location = new System.Drawing.Point(16, 58);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(96, 14);
             this.label2.TabIndex = 1;
@@ -280,7 +309,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(121, 153);
+            this.button3.Location = new System.Drawing.Point(121, 176);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(110, 23);
             this.button3.TabIndex = 6;
@@ -484,32 +513,14 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
-            // label6
+            // label9
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(187, 29);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(164, 14);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "Statut Commande : Non défini";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(187, 58);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(194, 14);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "Statut Bon de Livraision : Non défini";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(187, 87);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(157, 14);
-            this.label8.TabIndex = 5;
-            this.label8.Text = "Statut de Facture : Non défini";
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(16, 114);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(96, 14);
+            this.label9.TabIndex = 6;
+            this.label9.Text = "Nom : Non défini";
             // 
             // Main
             // 
@@ -601,6 +612,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label9;
     }
 
 }
