@@ -43,6 +43,7 @@
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -68,7 +69,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -223,7 +224,7 @@
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(110, 23);
             this.button9.TabIndex = 10;
-            this.button9.Text = "Config Status";
+            this.button9.Text = "Config Export";
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
@@ -239,6 +240,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.label7);
@@ -252,6 +254,15 @@
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Paramétrage";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(16, 114);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(96, 14);
+            this.label9.TabIndex = 6;
+            this.label9.Text = "Nom : Non défini";
             // 
             // label8
             // 
@@ -513,14 +524,14 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
-            // label9
+            // label10
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(16, 114);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(96, 14);
-            this.label9.TabIndex = 6;
-            this.label9.Text = "Nom : Non défini";
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(187, 114);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(148, 14);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "Statut de Stock : Non défini";
             // 
             // Main
             // 
@@ -566,15 +577,6 @@
 
         private System.Windows.Forms.Button Fermer;
 
-        public static void ModifierButtonDNS(string text)
-        {
-            //label1.Text = "DSN  : " + text;
-        }
-        public static void ModifierButtonNom(string text)
-        {
-            //label2.Text = "Nom : " + text;
-        }
-
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TabPage tabPage3;
@@ -613,6 +615,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
     }
 
 }

@@ -624,8 +624,9 @@ namespace ConnecteurSage.Forms
         }
 
         /// <summary>
-        /// Génération du fichier d'export, lancement de l'application et exporter les factures
+        /// Génération du fichier d'export, lancement de l'application et exporter les Bon De Livraison
         /// </summary>
+
         private void ExportFacture(StreamWriter logFileWriter)
         {
             logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : Export Bon Livraison.");
@@ -637,6 +638,7 @@ namespace ConnecteurSage.Forms
                     MessageBox.Show("Le chemin du fichier d'import de commande doit être renseigné");
 
                     logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : Le chemin du fichier d'export de Bon Livraison doit être renseigné.");
+                    logFileWriter.Close();
                     return;
                 }
 
@@ -710,10 +712,7 @@ namespace ConnecteurSage.Forms
                                              MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : Bon de Livraison Exporté");
-
-                Close();
-
-
+                logFileWriter.Close();
 
             }
             catch (Exception ex)
@@ -723,9 +722,9 @@ namespace ConnecteurSage.Forms
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter.Close();
             }
         }
-
         private void importButton_Click(object sender, EventArgs e)
         {
             //importButton.Enabled = true;
@@ -746,9 +745,13 @@ namespace ConnecteurSage.Forms
             logFileWriter_export.WriteLine("#####################################################################################");
             logFileWriter_export.WriteLine("");
 
+            /** ================================================ **/
+            /** ============== ExportBonLivraison ============== **/
+            /** ================================================ **/
             ExportFacture(logFileWriter_export);
 
-            logFileWriter_export.Close();
+            //logFileWriter_export.Close();
+            Close();
         }
 
         private void closeButton_Click_1(object sender, EventArgs e)

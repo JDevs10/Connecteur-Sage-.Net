@@ -3139,27 +3139,52 @@ namespace importPlanifier.Classes
         {
             this.ImportPlanifier();
 
-            this.SendToVeolog();
+            //this.SendToVeolog();
+
+            Console.WriteLine(DateTime.Now + " : Before Anything");
+            Console.ReadLine();
 
             Classes.Path path = getPath();
+            ConfigurationExport export = new ConfigurationExport();
+            export.Load();
 
-            if (path.exportFactures)
+            Console.WriteLine(DateTime.Now + " : Before Export");
+            Console.ReadLine();
+
+            Console.WriteLine(DateTime.Now + " : "+ export.exportFactures+" ; " + export.exportBonsLivraisons + " ; " + export.exportBonsCommandes + " ; " + export.exportStock);
+            Console.WriteLine(DateTime.Now + " ");
+            Console.WriteLine(DateTime.Now + " ");
+
+            if (export.exportFactures)
             {
                 Classes.ExportFactures a = new Classes.ExportFactures(path.path);
                 a.ExportFacture();
+                Console.WriteLine(DateTime.Now + " : exportFactures");
             }
 
-            if (path.exportBonsLivraisons)
+            if (export.exportBonsLivraisons)
             {
                 Classes.ExportBonLivraison b = new Classes.ExportBonLivraison(path.path);
                 b.ExportBonLivraisonAction();
+                Console.WriteLine(DateTime.Now + " : exportBonsLivraisons");
             }
 
-            if (path.exportBonsCommandes)
+            if (export.exportBonsCommandes)
             {
                 Classes.ExportCommandes c = new Classes.ExportCommandes(path.path);
                 c.ExportCommande();
+                Console.WriteLine(DateTime.Now + " : exportBonsCommandes");
             }
+
+            if (export.exportStock)
+            {
+                Classes.ExportStocks s = new Classes.ExportStocks(path.path);
+                s.ExportStock();
+                Console.WriteLine(DateTime.Now + " : exportStock");
+            }
+
+            Console.WriteLine(DateTime.Now + " : After Export");
+            Console.ReadLine();
 
         }
 

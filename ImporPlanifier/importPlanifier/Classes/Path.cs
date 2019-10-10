@@ -11,21 +11,15 @@ namespace importPlanifier.Classes
     {
         [XmlElement]
         public string path;
-        public Boolean exportFactures;
-        public Boolean exportBonsLivraisons;
-        public Boolean exportBonsCommandes;
 
         public Path()
         {
 
         }
 
-        public Path(string path, Boolean exportFactures, Boolean exportBonsLivraisons, Boolean exportBonsCommandes)
+        public Path(string path)
         {
             this.path = path;
-            this.exportFactures = exportFactures;
-            this.exportBonsLivraisons = exportBonsLivraisons;
-            this.exportBonsCommandes = exportBonsCommandes;
         }
 
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
@@ -40,12 +34,25 @@ namespace importPlanifier.Classes
                 setting = (Path)reader.Deserialize(file);
 
                 this.path = setting.path;
+
+                file.Close();
+            }
+            /*
+            if (File.Exists(pathModule + @"\Path.xml"))
+            {
+                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(Path));
+                StreamReader file = new System.IO.StreamReader(pathModule + @"\Path.xml");
+                Path setting = new Path();
+                setting = (Path)reader.Deserialize(file);
+
+                this.path = setting.path;
                 this.exportFactures = setting.exportFactures;
                 this.exportBonsLivraisons = setting.exportBonsLivraisons;
                 this.exportBonsCommandes = setting.exportBonsCommandes;
 
                 file.Close();
             }
+            */
         }
     }
 }

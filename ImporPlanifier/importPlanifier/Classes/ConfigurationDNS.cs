@@ -11,6 +11,8 @@ namespace importPlanifier.Classes
     public class ConfigurationDNS
     {
         [XmlElement]
+        public string Prefix { get; set; }
+        [XmlElement]
         public string DNS_1 { get; set; }
         [XmlElement]
         public string Nom_1 { get; set; }

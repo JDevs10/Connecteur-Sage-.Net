@@ -92,81 +92,66 @@ namespace ConnecteurSage.Forms
 
         private void enregistrer_config_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(comboBox1.Text))
+            if (string.IsNullOrEmpty(comboBox1.Text))
             {
-                ConfigurationDNS configurationDNS = new ConfigurationDNS()
-                {
-                    Prefix = comboBox1.Text.Split('_')[0],
-                    DNS_1 = "" + comboBox1.Text,
-                    Nom_1 = "" + textBox2.Text,
-                    Password_1 = "" + Utils.Encrypt(textBox3.Text),
-
-                };
-
-                try
-                {
-
-                    var myfile = File.Create(pathModule + @"\Setting.xml");
-                    XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
-                    xml.Serialize(myfile, configurationDNS);
-                    myfile.Close();
-
-
-
-                    Main.ModifierButtonDNS(comboBox1.Text);
-                    Main.ModifierButtonNom(textBox2.Text);
-
-                    Close();
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(""+ex.Message);
-                }
-            
+                MessageBox.Show("DSN ODBC est obligatoire !!");
+                return;
             }
-            else {
-                MessageBox.Show("DSN I est obligatoire !!");
-            }
-
-            //DSN II
-            if (!string.IsNullOrEmpty(comboBox2.Text))
+            if (string.IsNullOrEmpty(comboBox2.Text))
             {
-                ConfigurationDNS configurationDNS = new ConfigurationDNS()
-                {
-                    Prefix = comboBox2.Text.Split('_')[0],
-                    DNS_2 = "" + comboBox2.Text,
-                    Nom_2 = "" + textBox4.Text,
-                    Password_2 = "" + Utils.Encrypt(textBox1.Text),
-
-                };
-
-                try
-                {
-
-                    var myfile = File.Create(pathModule + @"\SettingSQL.xml");
-                    XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
-                    xml.Serialize(myfile, configurationDNS);
-                    myfile.Close();
-
-
-
-                    Main.ModifierButtonDNS(comboBox2.Text);
-                    Main.ModifierButtonNom(textBox4.Text);
-
-                    Close();
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("" + ex.Message);
-                }
-
+                MessageBox.Show("DSN SQL est obligatoire !!");
+                return;
             }
-            else
+
+
+            ConfigurationDNS configurationDNS1 = new ConfigurationDNS()
             {
-                MessageBox.Show("DSN II est obligatoire !!");
+                Prefix = comboBox1.Text.Split('_')[0],
+                DNS_1 = "" + comboBox1.Text,
+                Nom_1 = "" + textBox2.Text,
+                Password_1 = "" + Utils.Encrypt(textBox3.Text),
+
+            };
+
+            try
+            {
+                var myfile = File.Create(pathModule + @"\Setting.xml");
+                XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
+                xml.Serialize(myfile, configurationDNS1);
+                myfile.Close();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(""+ex.Message);
+            }
+
+
+            //DSN II            
+            ConfigurationDNS configurationDNS2 = new ConfigurationDNS()
+            {
+                Prefix = comboBox2.Text.Split('_')[0],
+                DNS_2 = "" + comboBox2.Text,
+                Nom_2 = "" + textBox4.Text,
+                Password_2 = "" + Utils.Encrypt(textBox1.Text),
+
+            };
+
+            try
+            {
+
+                var myfile = File.Create(pathModule + @"\SettingSQL.xml");
+                XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
+                xml.Serialize(myfile, configurationDNS2);
+                myfile.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("" + ex.Message);
+            }
+
+            //Update Main UI
+            Main.ModifierButtonDNS(comboBox1.Text, textBox2.Text, comboBox2.Text, textBox4.Text);
+            Close();
         }
 
 

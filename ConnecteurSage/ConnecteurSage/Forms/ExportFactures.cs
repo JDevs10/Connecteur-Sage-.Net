@@ -752,7 +752,7 @@ namespace ConnecteurSage.Forms
                 {
                     MessageBox.Show("Le chemin du fichier d'import de commande doit être renseigné");
                     logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Le chemin du fichier d'import de commande doit être renseigné.");
-
+                    logFileWriter.Close();
                     return;
                 }
                 
@@ -1041,11 +1041,7 @@ namespace ConnecteurSage.Forms
 
                 MessageBox.Show("Nombre de facture : " + FacturesAExporter.Count, "Information !!",
                                              MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-
-                Close();
-
-
-
+                logFileWriter.Close();
             }
             catch (Exception ex)
             {
@@ -1054,6 +1050,7 @@ namespace ConnecteurSage.Forms
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter.Close();
             }
         }
 
@@ -1079,7 +1076,8 @@ namespace ConnecteurSage.Forms
 
             ExportFacture(logFileWriter_export);
 
-            logFileWriter_export.Close();
+            //logFileWriter_export.Close();
+            Close();
         }
 
         private string getDeviseIso(string code)

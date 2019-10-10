@@ -33,15 +33,18 @@ namespace ConnecteurSage.Forms
 
         private void ExportStock(StreamWriter logFileWriter)
         {
+            string exportPath = "";
+
             try
             {
                 logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Export Stock.");
 
-                if (string.IsNullOrEmpty(textBox1.Text)) //check if the seleted path is empty
+                if (string.IsNullOrEmpty(exportPath)) //check if the seleted path is empty
                 {
                     MessageBox.Show("Le chemin pour l'export du fichier stock liste doit être renseigné !"); //if yes prompt error message
 
                     logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Le chemin pour l'export du fichier stock liste doit être renseigné !");
+                    logFileWriter.Close();
                     return;
                 }
 
@@ -75,7 +78,7 @@ namespace ConnecteurSage.Forms
                         i++; //increment for further adding/reading into the array
                     }
 
-                    string fileName = string.Format(textBox1.Text + @"\" + "stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //creating the file.
+                    string fileName = string.Format(exportPath + @"\" + "stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //creating the file.
 
                     if (File.Exists(fileName)) //verifying if the file exists else delete and recreate
                     {
@@ -104,9 +107,8 @@ namespace ConnecteurSage.Forms
                     MessageBox.Show("File has been generated at : "+fileName); //show message file has been generated
 
                     logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
+                    logFileWriter.Close();
                 }
-
-                Close(); //close the ExportStock window.
 
             }
             catch (Exception ex)
@@ -116,6 +118,7 @@ namespace ConnecteurSage.Forms
                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter.Close();
             }
 
         }
@@ -287,8 +290,8 @@ namespace ConnecteurSage.Forms
 
             ExportStock(logFileWriter_export); //calling this class' function to export list of stock
 
-            logFileWriter_export.Close();
-            
+            //logFileWriter_export.Close();
+            Close();
         }
 
         private void button2_Click(object sender, EventArgs e)

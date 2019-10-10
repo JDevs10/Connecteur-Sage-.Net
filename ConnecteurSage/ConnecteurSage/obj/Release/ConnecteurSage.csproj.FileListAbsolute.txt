@@ -192,7 +192,6 @@ C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSag
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csprojAssemblyReference.cache
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\Interop.TaskScheduler.dll
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csproj.ResolveComReference.cache
-C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfStatus.resources
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.Configuration.resources
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfMail.resources
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ExportBonLivraison.resources
@@ -208,3 +207,4 @@ C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSag
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csproj.CopyComplete
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.exe
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.pdb
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfExport.resources

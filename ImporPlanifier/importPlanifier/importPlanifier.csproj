@@ -85,15 +85,24 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x86|AnyCPU'">
+    <OutputPath>bin\Release_x86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x86|x64'">
+    <OutputPath>bin\x64\Release_x86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x86|x86'">
+    <OutputPath>bin\x86\Release_x86\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Win32.TaskScheduler, Version=1.8.1.16907, Culture=neutral, PublicKeyToken=0d013ddd5178a2ae, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\CONNECTOR\SAGE_2019\importPlanifier\Microsoft.Win32.TaskScheduler.dll</HintPath>
+    <Reference Include="Microsoft.Win32.TaskScheduler, Version=2.8.15.0, Culture=neutral, PublicKeyToken=c416bc1b32d97233, processorArchitecture=MSIL">
+      <HintPath>..\packages\TaskScheduler.2.8.15\lib\net35\Microsoft.Win32.TaskScheduler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -112,7 +121,7 @@
     <Compile Include="Classes\Action2.cs" />
     <Compile Include="Classes\AdresseLivraison.cs" />
     <Compile Include="Classes\Article.cs" />
-    <Compile Include="Classes\ConfigurationStatuts.cs" />
+    <Compile Include="Classes\ConfigurationExport.cs" />
     <Compile Include="Classes\Client.cs" />
     <Compile Include="Classes\ConfigurationDNS.cs" />
     <Compile Include="Classes\ConfSendMail.cs" />
@@ -124,6 +133,7 @@
     <Compile Include="Classes\DocumentVente.cs" />
     <Compile Include="Classes\DocumentVenteLine.cs" />
     <Compile Include="Classes\ExportBonLivraison.cs" />
+    <Compile Include="Classes\ExportStocks.cs" />
     <Compile Include="Classes\ExportCommandes.cs" />
     <Compile Include="Classes\ExportFactures.cs" />
     <Compile Include="Classes\Order.cs" />
@@ -150,6 +160,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Xml.Serialization;
 using importPlanifier.Classes;
 
 namespace importPlanifier.Helpers
@@ -10,8 +12,26 @@ namespace importPlanifier.Helpers
     /// </summary>
     public static class QueryHelper
     {
-        #region SQL Queries
+        public static string getPrefix()
+        {
+            string result = null;
+            string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
+            if (File.Exists(pathModule + @"\Setting.xml"))
+            {
+                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
+                StreamReader file = new System.IO.StreamReader(pathModule + @"\Setting.xml");
+                ConfigurationDNS setting = new ConfigurationDNS();
+                setting = (ConfigurationDNS)reader.Deserialize(file);
+
+                result = setting.Prefix + ".dbo.";
+                file.Close();
+            }
+
+            return "";
+        }
+
+        #region SQL Queries
 
         public static string getClient(string id)
         {
@@ -248,6 +268,11 @@ namespace importPlanifier.Helpers
             return "SELECT TOP 100 * FROM F_DOCENTETE WHERE DO_Type = 20 OR DO_Type = 21 AND DO_Statut = 0 ORDER BY cbMarq DESC";
         }
 
+        public static string getStockInfo()
+        {
+            return "SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock,ArtLot.LS_NoSerie,ArtLot.LS_Qte,ArtLot.LS_LotEpuise FROM " + getPrefix() + "F_LOTSERIE as ArtLot, " + getPrefix() + "F_ARTICLE as Art, " + getPrefix() + "F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref AND Art.AR_Ref= ArtLot.AR_Ref ORDER BY ArtStock.AS_QteSto DESC";
+            // testing : SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock,ArtLot.LS_NoSerie,ArtLot.LS_Qte,ArtLot.LS_LotEpuise FROM "+ getPrefix() + "BIJOU.dbo.F_LOTSERIE as ArtLot, BIJOU.dbo.F_ARTICLE as Art, BIJOU.dbo.F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref AND Art.AR_Ref= ArtLot.AR_Ref ORDER BY ArtStock.AS_QteSto DESC
+        }
 
         /* ============================================= VERSION 0.6 =============================================*/
 

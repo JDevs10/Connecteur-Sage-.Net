@@ -30,6 +30,10 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Configuration));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -42,10 +46,6 @@
             this.button2 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -72,6 +72,41 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Paramétre de connexion";
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(110, 221);
+            this.textBox1.MaxLength = 100;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.PasswordChar = '●';
+            this.textBox1.Size = new System.Drawing.Size(159, 22);
+            this.textBox1.TabIndex = 12;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(110, 182);
+            this.textBox4.MaxLength = 100;
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(159, 22);
+            this.textBox4.TabIndex = 11;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(17, 222);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(76, 14);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Mot de passe";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(17, 185);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(32, 14);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "Nom";
+            // 
             // comboBox2
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -85,9 +120,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(17, 152);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(38, 14);
+            this.label5.Size = new System.Drawing.Size(52, 14);
             this.label5.TabIndex = 7;
-            this.label5.Text = "DNS II";
+            this.label5.Text = "DNS SQL";
             // 
             // comboBox1
             // 
@@ -137,9 +172,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(17, 38);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 14);
+            this.label1.Size = new System.Drawing.Size(62, 14);
             this.label1.TabIndex = 0;
-            this.label1.Text = "DNS I";
+            this.label1.Text = "DNS ODBC";
             // 
             // enregistrer_config
             // 
@@ -182,41 +217,6 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(110, 221);
-            this.textBox1.MaxLength = 100;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.PasswordChar = '●';
-            this.textBox1.Size = new System.Drawing.Size(159, 22);
-            this.textBox1.TabIndex = 12;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(110, 182);
-            this.textBox4.MaxLength = 100;
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(159, 22);
-            this.textBox4.TabIndex = 11;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(17, 222);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(76, 14);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Mot de passe";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(17, 185);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(32, 14);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "Nom";
             // 
             // Configuration
             // 

@@ -73,6 +73,36 @@
     <ErrorReport>prompt</ErrorReport>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x86|AnyCPU'">
+    <OutputPath>bin\Release_x86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x86|x64'">
+    <OutputPath>bin\x64\Release_x86\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_x86|x86'">
+    <OutputPath>bin\x86\Release_x86\</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Win32.TaskScheduler">
@@ -102,7 +132,7 @@
     <Compile Include="Classes\Statut.cs" />
     <Compile Include="Classes\Article.cs" />
     <Compile Include="Classes\Client.cs" />
-    <Compile Include="Classes\ConfigurationStatuts.cs" />
+    <Compile Include="Classes\ConfigurationExport.cs" />
     <Compile Include="Classes\ConfigurationDNS.cs" />
     <Compile Include="Classes\ConfSendMail.cs" />
     <Compile Include="Classes\Connexion.cs" />
@@ -118,11 +148,11 @@
     <Compile Include="Classes\SDKException.cs" />
     <Compile Include="Classes\Societe.cs" />
     <Compile Include="Classes\Stock.cs" />
-    <Compile Include="Forms\ConfStatus.cs">
+    <Compile Include="Forms\ConfExport.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ConfStatus.Designer.cs">
-      <DependentUpon>ConfStatus.cs</DependentUpon>
+    <Compile Include="Forms\ConfExport.Designer.cs">
+      <DependentUpon>ConfExport.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Configuration.cs">
       <SubType>Form</SubType>
@@ -194,8 +224,8 @@
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\ConfStatus.resx">
-      <DependentUpon>ConfStatus.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ConfExport.resx">
+      <DependentUpon>ConfExport.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Configuration.resx">

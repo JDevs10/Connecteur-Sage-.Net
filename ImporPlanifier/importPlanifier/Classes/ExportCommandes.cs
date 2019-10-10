@@ -255,7 +255,7 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine(DateTime.Now + "********************************* Exception *********************************");
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Message :: " + ex.Message);
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Export annullé");
-                logFileWriter_export.Close();
+                //logFileWriter_export.Close();
             }
 
             logFileWriter_export.Close();

@@ -1,0 +1,13 @@
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\x86\Release_x86\importPlanifier.csprojAssemblyReference.cache
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\importPlanifier.exe
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\Microsoft.Win32.TaskScheduler.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\Microsoft.Win32.TaskScheduler.xml
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\de\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\es\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\fr\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\it\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\pl\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\ru\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\x86\Release_x86\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\x86\Release_x86\importPlanifier.csproj.CopyComplete
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\x86\Release_x86\importPlanifier.exe

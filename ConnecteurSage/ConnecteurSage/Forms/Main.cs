@@ -55,10 +55,10 @@ namespace ConnecteurSage
                 ConfigurationDNS setting2 = new ConfigurationDNS();
                 setting2.LoadSQL();
 
-                label1.Text = "DSN I : " + setting1.DNS_1;
-                label2.Text = "DSN I Nom : " + setting1.Nom_1;
-                label5.Text = "DSN II : " + setting2.DNS_2;
-                label9.Text = "DSN II Nom : " + setting1.Nom_2;
+                label1.Text = "DSN ODBC : " + setting1.DNS_1;
+                label2.Text = "DSN ODBC Nom : " + setting1.Nom_1;
+                label5.Text = "DSN SQL : " + setting2.DNS_2;
+                label9.Text = "DSN SQL Nom : " + setting1.Nom_2;
                 //file.Close();
 
             }
@@ -78,26 +78,26 @@ namespace ConnecteurSage
                 }
             }
 
-            if (File.Exists(pathModule + @"\SettingStatut.xml"))
+            if (File.Exists(pathModule + @"\SettingExport.xml"))
             {
                 //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
                 //StreamReader file = new System.IO.StreamReader("Setting.xml");
                 //ConfigurationDNS setting = new ConfigurationDNS();
                 //setting = (ConfigurationDNS)reader.Deserialize(file);
 
-                ConfigurationStatuts setting = new ConfigurationStatuts();
+                ConfigurationExport setting = new ConfigurationExport();
                 setting.Load();
 
-                label6.Text = "Statut Commande : " + getListeStatutName(setting.Statut_Commande);
-                label7.Text = "Statut Bon de Livraision : " + getListeStatutName(setting.Statut_BonLivraision);
-                label8.Text = "Statut de Facture : " + getListeStatutName(setting.Statut_Facture);
-
+                label6.Text = "Statut d'Export Commande : " + setting.exportBonsCommandes;
+                label7.Text = "Statut d'Export Livraision : " + setting.exportBonsLivraisons;
+                label8.Text = "Statut d'Export Facture : " + setting.exportFactures;
+                label10.Text = "Statut Export Stock : "+setting.exportStock;
             }
             else
             {
                 try
                 {
-                    using (Forms.ConfStatus form = new Forms.ConfStatus())
+                    using (Forms.ConfExport form = new Forms.ConfExport())
                     {
                         form.ShowDialog();
                     }
@@ -108,6 +108,24 @@ namespace ConnecteurSage
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        public static void ModifierButtonDNS(string text1, string text2, string text3, string text4)
+        {
+            Main main = new Main();
+            main.label1.Text = "DSN I : " + text1;
+            main.label2.Text = "Nom I : " + text2;
+            main.label5.Text = "DSN II : " + text3;
+            main.label9.Text = "Nom II : " + text4;
+        }
+
+        public void setExportValues(Boolean cmd, Boolean blv, Boolean fct, Boolean stk)
+        {
+            Main main = new Main();
+            main.label6.Text = cmd ? "True" : "False";
+            main.label7.Text = blv ? "True" : "False";
+            main.label8.Text = fct ? "True" : "False";
+            main.label10.Text = stk ? "True" : "False";
         }
 
         public static string getListeStatutName(int value)
@@ -316,7 +334,7 @@ namespace ConnecteurSage
         {
             try
             {
-                using (Forms.ConfStatus form = new Forms.ConfStatus())
+                using (Forms.ConfExport form = new Forms.ConfExport())
                 {
                     form.ShowDialog();
                 }

@@ -84,9 +84,6 @@ namespace ConnecteurSage.Forms
                 }
         }
 
-       
-
-
 
 
         /// <summary>
@@ -96,10 +93,12 @@ namespace ConnecteurSage.Forms
         {
             if (!CommandeAExporter.NomClient.Equals("") && !CommandeAExporter.NomClient.Equals(" "))
             {
+                MessageBox.Show("Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
                 logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
             }
             else
             {
+                MessageBox.Show("Export Commande du client \"...\"");
                 logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"...\"");
             }
 
@@ -110,6 +109,7 @@ namespace ConnecteurSage.Forms
                 {
                     MessageBox.Show("Le chemin du fichier d'export de commande doit être renseigné.");
                     logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Le chemin du fichier d'export de commande doit être renseigné.");
+                    logFileWriter.Close();
                     return;
                 }
 
@@ -253,20 +253,18 @@ namespace ConnecteurSage.Forms
                     }
                     writer.WriteLine("ORDEND;" + CommandeAExporter.MontantTotal.Replace(",", ".") + ";");
 
-
-                    
+                    writer.Close();
                 }
 
                 MessageBox.Show("Commande exportée avec succés" , "Information !!",
                                              MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Commande exportée avec succés.");
-
-            jamp :
-                Close();
-
                 
-                
+            jamp:;
+
+                //logFileWriter.Close();
+                //Close();
             }
             catch (Exception ex)
             {
@@ -274,7 +272,10 @@ namespace ConnecteurSage.Forms
                 MessageBox.Show(ex.Message);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message);
+                //logFileWriter.Close();
+                //Close();
             }
+
         }
         #endregion
 
@@ -475,6 +476,7 @@ namespace ConnecteurSage.Forms
             ExportFacture(logFileWriter_export);
 
             logFileWriter_export.Close();
+            Close();
         }
         #endregion
 

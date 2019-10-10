@@ -1795,7 +1795,7 @@ namespace ConnecteurSage.Forms
                     // return list_of_products[0][0];//return false because the query failed to execute
 
                     logFileWriter.WriteLine("");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ********************** Exception 1 *********************");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ********************** Exception 2 *********************");
                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Message :: " + ex.Message);
                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : StackTrace :: " + ex.StackTrace);
                     connection.Close(); //disconnect from database
@@ -1947,7 +1947,6 @@ namespace ConnecteurSage.Forms
                                         return null;
                                     }
                                 }
-
                             }
                         }
                     }

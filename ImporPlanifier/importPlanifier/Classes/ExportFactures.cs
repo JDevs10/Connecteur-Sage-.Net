@@ -844,7 +844,7 @@ namespace importPlanifier.Classes
                     logFileWriter_export.WriteLine(DateTime.Now + "********************************* Exception *********************************");
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Export annullé");
-                    logFileWriter_export.Close();
+                    //logFileWriter_export.Close();
                 }
             }
 
@@ -856,7 +856,7 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine(DateTime.Now + "********************************* Exception *********************************");
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Export annullé");
-                logFileWriter_export.Close();
+                //logFileWriter_export.Close();
             }
             logFileWriter_export.Close();
         }
