@@ -200,9 +200,17 @@ namespace ConnecteurSage.Helpers
 
    public static string getListLignesCommandes(string codeCommande)
    {
+            /*
        return "SELECT doc.DL_LIGNE, art.AR_CODEBARRE, doc.DL_DESIGN, doc.DL_QTE, doc.DL_PRIXUNITAIRE, doc.DL_MONTANTHT, doc.DO_DATELIVR, doc.do_ref, doc.AC_REFCLIENT "+
 "FROM "+ getPrefix() + "F_ARTICLE art, " + getPrefix() + "F_DOCLIGNE doc " +
 "WHERE doc.AR_REF = art.AR_REF and doc.do_piece='" + codeCommande + "'";
+*/
+
+       return "SELECT doc.DL_LIGNE, (" +
+                    "CASE WHEN art.AR_CODEBARRE IS NULL or art.AR_CODEBARRE = '' " +
+                        "THEN '' " +
+                        "ELSE art.AR_CODEBARRE END) as AR_CODEBARRE ,doc.DL_DESIGN, doc.DL_QTE, doc.DL_PRIXUNITAIRE, doc.DL_MONTANTHT, doc.DO_DATELIVR, doc.do_ref, doc.AC_REFCLIENT " +
+                        "FROM CFCI.dbo.F_ARTICLE art, CFCI.dbo.F_DOCLIGNE doc WHERE doc.AR_REF = art.AR_REF and doc.do_piece = '" + codeCommande + "'";
    }
 
       
@@ -242,7 +250,7 @@ namespace ConnecteurSage.Helpers
     /* GET STOCK INFORMATION WITH PRODUCTS */
    public static string getStockInfo()
    {
-       return "SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock,ArtLot.LS_NoSerie,ArtLot.LS_Qte,ArtLot.LS_LotEpuise FROM "+ getPrefix() + "F_LOTSERIE as ArtLot, " + getPrefix() + "F_ARTICLE as Art, " + getPrefix() + "F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref AND Art.AR_Ref= ArtLot.AR_Ref ORDER BY ArtStock.AS_QteSto DESC";
+       return "SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock FROM CFCI.dbo.F_ARTICLE as Art, CFCI.dbo.F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref ORDER BY ArtStock.AS_QteSto DESC";
        // testing : SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock,ArtLot.LS_NoSerie,ArtLot.LS_Qte,ArtLot.LS_LotEpuise FROM "+ getPrefix() + "BIJOU.dbo.F_LOTSERIE as ArtLot, BIJOU.dbo.F_ARTICLE as Art, BIJOU.dbo.F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref AND Art.AR_Ref= ArtLot.AR_Ref ORDER BY ArtStock.AS_QteSto DESC
    }
 

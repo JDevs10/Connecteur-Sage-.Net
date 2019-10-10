@@ -130,18 +130,18 @@ namespace ConnecteurSage.Forms
 
                 if (CommandeAExporter.DO_MOTIF == "")
                 {
-                    DialogResult resultDialog = MessageBox.Show("N° de commande non enregistrer.\nVoulez vous Continuer ?",
+                    DialogResult resultDialog1 = MessageBox.Show("N° de commande non enregistrer.\nVoulez vous Continuer ?",
                                                      "Worning Message !!",
                                                      MessageBoxButtons.OKCancel,
                                                      MessageBoxIcon.Warning,
                                                      MessageBoxDefaultButton.Button2);
 
-                    if (resultDialog == DialogResult.Cancel)
+                    if (resultDialog1 == DialogResult.Cancel)
                     {
                         goto jamp;
                     }
 
-                    if (resultDialog == DialogResult.OK)
+                    if (resultDialog1 == DialogResult.OK)
                     {
                         CommandeAExporter.DO_MOTIF = "";
                         logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande non enregistrer.");
@@ -151,18 +151,18 @@ namespace ConnecteurSage.Forms
 
                 if (CommandeAExporter.codeClient == "")
                 {
-                    DialogResult resultDialog = MessageBox.Show("Code GNL client n'est pas enregistrer.\nVoulez vous continuer ?",
+                    DialogResult resultDialog2 = MessageBox.Show("Code GNL client n'est pas enregistrer.\nVoulez vous continuer ?",
                                                      "Worning Message !!",
                                                      MessageBoxButtons.OKCancel,
                                                      MessageBoxIcon.Warning,
                                                      MessageBoxDefaultButton.Button2);
 
-                    if (resultDialog == DialogResult.Cancel)
+                    if (resultDialog2 == DialogResult.Cancel)
                     {
                         goto jamp;
                     }
 
-                    if (resultDialog == DialogResult.OK)
+                    if (resultDialog2 == DialogResult.OK)
                     {
                         CommandeAExporter.codeClient = "";
                         logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Code GNL client n'est pas enregistrer.");
@@ -172,18 +172,18 @@ namespace ConnecteurSage.Forms
 
                 if (!IsNumeric(CommandeAExporter.DO_MOTIF) && CommandeAExporter.DO_MOTIF != "")
                 {
-                    DialogResult resultDialog = MessageBox.Show("N° de commande est mal enregistrer.\nVoulez vous Continuer ?",
+                    DialogResult resultDialog3 = MessageBox.Show("N° de commande est mal enregistrer.\nVoulez vous Continuer ?",
                                                      "Worning Message !!",
                                                      MessageBoxButtons.OKCancel,
                                                      MessageBoxIcon.Warning,
                                                      MessageBoxDefaultButton.Button2);
 
-                    if (resultDialog == DialogResult.Cancel)
+                    if (resultDialog3 == DialogResult.Cancel)
                     {
                         goto jamp;
                     }
 
-                    if (resultDialog == DialogResult.OK)
+                    if (resultDialog3 == DialogResult.OK)
                     {
                         CommandeAExporter.DO_MOTIF = "";
                         logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande est mal enregistrer.");
@@ -193,18 +193,18 @@ namespace ConnecteurSage.Forms
 
                 if (!IsNumeric(CommandeAExporter.codeClient) && CommandeAExporter.codeClient != "")
                 {
-                    DialogResult resultDialog = MessageBox.Show("Code GNL client est mal enregistrer.\nVoulez vous continuer ?",
+                    DialogResult resultDialog4 = MessageBox.Show("Code GNL client est mal enregistrer.\nVoulez vous continuer ?",
                                                      "Worning Message !!",
                                                      MessageBoxButtons.OKCancel,
                                                      MessageBoxIcon.Warning,
                                                      MessageBoxDefaultButton.Button2);
 
-                    if (resultDialog == DialogResult.Cancel)
+                    if (resultDialog4 == DialogResult.Cancel)
                     {
                         goto jamp;
                     }
 
-                    if (resultDialog == DialogResult.OK)
+                    if (resultDialog4 == DialogResult.OK)
                     {
                         CommandeAExporter.DO_MOTIF = "";
                         logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Code GNL client est mal enregistrer.");
@@ -212,48 +212,108 @@ namespace ConnecteurSage.Forms
 
                 }
 
-
+                MessageBox.Show("OK 1");
                 var fileName = string.Format("EDI_ORDERS." + CommandeAExporter.codeClient + "." + CommandeAExporter.NumCommande + "." + ConvertDate(CommandeAExporter.DateCommande) + "."+ CommandeAExporter.adresseLivraison + ".{0:yyyyMMddhhmmss}.csv", DateTime.Now);
 
                 fileName = fileName.Replace("...", ".");
 
-                using (StreamWriter writer = new StreamWriter(textBox1.Text+@"\"+fileName.Replace("..","."), false, Encoding.Default))
+                MessageBox.Show("OK 2");
+
+                DialogResult resultDialog5 = MessageBox.Show("Voulez-vous générer l'exportation du fichier en format Veolog?",
+                                            "Information !",
+                                            MessageBoxButtons.OKCancel,
+                                            MessageBoxIcon.Question,
+                                            MessageBoxDefaultButton.Button2);
+                var veolog_format = false;
+
+                if (resultDialog5 == DialogResult.Cancel)
+                {
+                    veolog_format = false;
+                    fileName = fileName.Replace("..", ".");
+                }
+
+                if (resultDialog5 == DialogResult.OK)
+                {
+                    veolog_format = true;
+                    fileName = string.Format("orders_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
+                }
+
+                using (StreamWriter writer = new StreamWriter(textBox1.Text + @"\" + fileName, false, Encoding.Default))
                 {
                     logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Ecrire le fichier dans : " + textBox1.Text + @"\" + fileName.Replace("..", "."));
 
-                    writer.WriteLine("ORDERS;" + CommandeAExporter.DO_MOTIF + ";" + CommandeAExporter.codeClient + ";" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.codeFournisseur + ";;;" + CommandeAExporter.nom_contact + "." + CommandeAExporter.adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter.deviseCommande + ";;");
-                    
-                    if (CommandeAExporter.DateCommande != "")
+                    MessageBox.Show("OK 3");
+                    if (veolog_format)
                     {
-                        CommandeAExporter.DateCommande = ConvertDate(CommandeAExporter.DateCommande);
-                    }
+                        //format Veolog
+                        
 
-                    //if (CommandeAExporter.DateCommande != " ")
-                    //{
-                    //    CommandeAExporter.conditionLivraison = "";
-                    //}
+                        writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;Veolog;35 Avenue de Bethunes;ZI de Bethunes;;95310;Saint Ouen l'Aumone;FR;766666666;a.bertolino@veolog.fr;20180917;1200;ENLEVEMENT;;;COMMANDE DE TEST"); // E line
+                        
+                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 
-                    writer.WriteLine("ORDHD1;" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.conditionLivraison + ";;");
-
-                    CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande);
-
-                    for (int i = 0; i < CommandeAExporter.Lines.Count;i++ )
-                    {
-                        if (!IsNumeric(CommandeAExporter.Lines[i].codeAcheteur))
+                        int qteTotal = 0;
+                        string[] declarerpourrien = new string[2];
+                        for (int i = 0; i < CommandeAExporter.Lines.Count; i++)
                         {
-                            CommandeAExporter.Lines[i].codeAcheteur = "";
+                            if (!IsNumeric(CommandeAExporter.Lines[i].codeAcheteur))
+                            {
+                                CommandeAExporter.Lines[i].codeAcheteur = "";
+                            }
+
+                            if (!IsNumeric(CommandeAExporter.Lines[i].codeFournis))
+                            {
+                                CommandeAExporter.Lines[i].codeFournis = "";
+                            }
+
+                            declarerpourrien = CommandeAExporter.Lines[i].Quantite.Split(',');
+                            qteTotal = qteTotal + Convert.ToInt16(declarerpourrien[0]);
+
+                            writer.WriteLine("L;;"+ ((CommandeAExporter.Lines[i].codeArticle.Length>30)? CommandeAExporter.Lines[i].codeArticle.Substring(0,30): CommandeAExporter.Lines[i].codeArticle) +";;"+ declarerpourrien[0]+";"); // L line
+
                         }
 
-                        if (!IsNumeric(CommandeAExporter.Lines[i].codeFournis))
+                        writer.WriteLine("F;" + CommandeAExporter.Lines.Count + ";" + qteTotal + ";"); // F line
+                    }
+                    else
+                    {
+                        //Format Fichier plat
+                        writer.WriteLine("ORDERS;" + CommandeAExporter.DO_MOTIF + ";" + CommandeAExporter.codeClient + ";" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.codeFournisseur + ";;;" + CommandeAExporter.nom_contact + "." + CommandeAExporter.adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter.deviseCommande + ";;");
+                        if (CommandeAExporter.DateCommande != "")
                         {
-                            CommandeAExporter.Lines[i].codeFournis = "";
+                            CommandeAExporter.DateCommande = ConvertDate(CommandeAExporter.DateCommande);
                         }
 
-                        writer.WriteLine("ORDLIN;" + CommandeAExporter.Lines[i].NumLigne + ";" + CommandeAExporter.Lines[i].codeArticle + ";GS1;" + CommandeAExporter.Lines[i].codeAcheteur + ";" + CommandeAExporter.Lines[i].codeFournis + ";;A;" + CommandeAExporter.Lines[i].descriptionArticle + ";" + CommandeAExporter.Lines[i].Quantite.Replace(",", ".") + ";LM;" + CommandeAExporter.Lines[i].MontantLigne.Replace(",", ".") + ";;;" + CommandeAExporter.Lines[i].PrixNetHT.Replace(",", ".") + ";;;LM;;;;" + ConvertDate(CommandeAExporter.Lines[i].DateLivraison) + ";");
-                    }
-                    writer.WriteLine("ORDEND;" + CommandeAExporter.MontantTotal.Replace(",", ".") + ";");
+                        MessageBox.Show("OK 4");
+                        //if (CommandeAExporter.DateCommande != " ")
+                        //{
+                        //    CommandeAExporter.conditionLivraison = "";
+                        //}
 
-                    writer.Close();
+                        writer.WriteLine("ORDHD1;" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.conditionLivraison + ";;");
+
+                        MessageBox.Show("OK 5");
+                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
+
+                        MessageBox.Show("OK 6");
+                        for (int i = 0; i < CommandeAExporter.Lines.Count; i++)
+                        {
+                            if (!IsNumeric(CommandeAExporter.Lines[i].codeAcheteur))
+                            {
+                                CommandeAExporter.Lines[i].codeAcheteur = "";
+                            }
+
+                            if (!IsNumeric(CommandeAExporter.Lines[i].codeFournis))
+                            {
+                                CommandeAExporter.Lines[i].codeFournis = "";
+                            }
+
+                            writer.WriteLine("ORDLIN;" + CommandeAExporter.Lines[i].NumLigne + ";" + CommandeAExporter.Lines[i].codeArticle + ";GS1;" + CommandeAExporter.Lines[i].codeAcheteur + ";" + CommandeAExporter.Lines[i].codeFournis + ";;A;" + CommandeAExporter.Lines[i].descriptionArticle + ";" + CommandeAExporter.Lines[i].Quantite.Replace(",", ".") + ";LM;" + CommandeAExporter.Lines[i].MontantLigne.Replace(",", ".") + ";;;" + CommandeAExporter.Lines[i].PrixNetHT.Replace(",", ".") + ";;;LM;;;;" + ConvertDate(CommandeAExporter.Lines[i].DateLivraison) + ";");
+                        }
+                        writer.WriteLine("ORDEND;" + CommandeAExporter.MontantTotal.Replace(",", ".") + ";");
+
+                        writer.Close();
+                    }
                 }
 
                 MessageBox.Show("Commande exportée avec succés" , "Information !!",
@@ -553,12 +613,14 @@ namespace ConnecteurSage.Forms
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                MessageBox.Show("Before Connexion");
+                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
                     List<OrderLine> lines = new List<OrderLine>();
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
+                    MessageBox.Show("SQL: " + QueryHelper.getListLignesCommandes(code));
                     OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
@@ -567,12 +629,10 @@ namespace ConnecteurSage.Forms
                             {
                                 lines.Add(new OrderLine(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString()));
                             }
-
-                            return lines;
                         }
                     }
-                    return null;
-
+                    MessageBox.Show("Lines Size: " + lines.Count());
+                    return lines;
                 }
 
             }

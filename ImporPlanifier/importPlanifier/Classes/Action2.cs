@@ -3139,7 +3139,7 @@ namespace importPlanifier.Classes
         {
             this.ImportPlanifier();
 
-            //this.SendToVeolog();
+            this.SendToVeolog();
 
             Console.WriteLine(DateTime.Now + " : Before Anything");
             Console.ReadLine();

@@ -189,7 +189,6 @@ C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSag
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Microsoft.Win32.TaskScheduler.dll
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Microsoft.Win32.TaskScheduler.xml
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Interop.TaskScheduler.dll
-C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csprojAssemblyReference.cache
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\Interop.TaskScheduler.dll
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csproj.ResolveComReference.cache
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.Configuration.resources
