@@ -33,7 +33,7 @@ namespace ConnecteurSage.Forms
 
         private void ExportStock(StreamWriter logFileWriter)
         {
-            string exportPath = "";
+            string exportPath = textBox1.Text;
 
             try
             {
@@ -170,7 +170,7 @@ namespace ConnecteurSage.Forms
             try
             {
                 List<Stock> stock_info = new List<Stock>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
 
                     connection.Open();//connecting as handler with database
@@ -181,7 +181,7 @@ namespace ConnecteurSage.Forms
                         {
                             while (reader.Read())
                             {
-                                Stock stock = new Stock(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString());
+                                Stock stock = new Stock(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), "", "", "");
                                 stock_info.Add(stock);
                             }
                         }
@@ -202,18 +202,18 @@ namespace ConnecteurSage.Forms
         {
             
             //adding columns to the grid
-            cols_rows.ColumnCount     = 5;  //size of columns
+            cols_rows.ColumnCount     = 4;  //size of columns      // 5
             cols_rows.Columns[0].Name = "libelle";//string[] row1 = new string[] { "Vis de fixation","XVIS","59536109","241.000000" };
             cols_rows.Columns[1].Name = "reference";//cols_rows.Rows.Add(row2);
             cols_rows.Columns[2].Name = "stock";
             cols_rows.Columns[3].Name = "barcode";
-            cols_rows.Columns[4].Name = "num. lot";
+            //cols_rows.Columns[4].Name = "num. lot";
 
             cols_rows.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
             cols_rows.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
             cols_rows.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
             cols_rows.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-            cols_rows.Columns[4].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            //cols_rows.Columns[4].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
             List<Stock> stock_info = new List<Stock>(); //creating stock_info object
             stock_info = GetStockArticle(); //this class function to get all data from database
@@ -232,7 +232,7 @@ namespace ConnecteurSage.Forms
 
                     foreach (Stock stockline in stock_info) //loop each element
                     {
-                       cols_rows.Rows.Add(new string[] { stockline.libelle,stockline.reference,stockline.stock,stockline.codebarre,stockline.numerolot }); //add element into the gridview
+                       cols_rows.Rows.Add(new string[] { stockline.libelle,stockline.reference,stockline.stock,stockline.codebarre}); //add element into the gridview  //,stockline.numerolot 
                     }
 
                 }

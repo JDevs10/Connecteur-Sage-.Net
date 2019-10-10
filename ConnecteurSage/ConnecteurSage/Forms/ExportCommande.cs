@@ -212,27 +212,24 @@ namespace ConnecteurSage.Forms
 
                 }
 
-                MessageBox.Show("OK 1");
                 var fileName = string.Format("EDI_ORDERS." + CommandeAExporter.codeClient + "." + CommandeAExporter.NumCommande + "." + ConvertDate(CommandeAExporter.DateCommande) + "."+ CommandeAExporter.adresseLivraison + ".{0:yyyyMMddhhmmss}.csv", DateTime.Now);
 
                 fileName = fileName.Replace("...", ".");
 
-                MessageBox.Show("OK 2");
-
                 DialogResult resultDialog5 = MessageBox.Show("Voulez-vous générer l'exportation du fichier en format Veolog?",
                                             "Information !",
-                                            MessageBoxButtons.OKCancel,
+                                            MessageBoxButtons.YesNo,
                                             MessageBoxIcon.Question,
                                             MessageBoxDefaultButton.Button2);
                 var veolog_format = false;
 
-                if (resultDialog5 == DialogResult.Cancel)
+                if (resultDialog5 == DialogResult.No)
                 {
                     veolog_format = false;
                     fileName = fileName.Replace("..", ".");
                 }
 
-                if (resultDialog5 == DialogResult.OK)
+                if (resultDialog5 == DialogResult.Yes)
                 {
                     veolog_format = true;
                     fileName = string.Format("orders_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
@@ -246,8 +243,6 @@ namespace ConnecteurSage.Forms
                     if (veolog_format)
                     {
                         //format Veolog
-                        
-
                         writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;Veolog;35 Avenue de Bethunes;ZI de Bethunes;;95310;Saint Ouen l'Aumone;FR;766666666;a.bertolino@veolog.fr;20180917;1200;ENLEVEMENT;;;COMMANDE DE TEST"); // E line
                         
                         CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
@@ -284,7 +279,6 @@ namespace ConnecteurSage.Forms
                             CommandeAExporter.DateCommande = ConvertDate(CommandeAExporter.DateCommande);
                         }
 
-                        MessageBox.Show("OK 4");
                         //if (CommandeAExporter.DateCommande != " ")
                         //{
                         //    CommandeAExporter.conditionLivraison = "";
@@ -292,10 +286,8 @@ namespace ConnecteurSage.Forms
 
                         writer.WriteLine("ORDHD1;" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.conditionLivraison + ";;");
 
-                        MessageBox.Show("OK 5");
-                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
+                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande);
 
-                        MessageBox.Show("OK 6");
                         for (int i = 0; i < CommandeAExporter.Lines.Count; i++)
                         {
                             if (!IsNumeric(CommandeAExporter.Lines[i].codeAcheteur))
@@ -613,14 +605,12 @@ namespace ConnecteurSage.Forms
         {
             try
             {
-                MessageBox.Show("Before Connexion");
                 using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
                     List<OrderLine> lines = new List<OrderLine>();
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    MessageBox.Show("SQL: " + QueryHelper.getListLignesCommandes(code));
                     OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
@@ -631,12 +621,9 @@ namespace ConnecteurSage.Forms
                             }
                         }
                     }
-                    MessageBox.Show("Lines Size: " + lines.Count());
                     return lines;
                 }
-
             }
-
             catch (Exception ex)
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL

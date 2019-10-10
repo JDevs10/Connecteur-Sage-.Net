@@ -207,3 +207,4 @@ C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSag
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.exe
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.pdb
 C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfExport.resources
+C:\Users\Ilias\Desktop\Android Studio Projets\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csprojAssemblyReference.cache
