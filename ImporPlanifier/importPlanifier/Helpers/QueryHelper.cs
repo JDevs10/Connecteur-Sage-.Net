@@ -219,7 +219,7 @@ namespace importPlanifier.Helpers
         public static string getListLignesCommandes(string codeCommande)
         {
             return "SELECT doc.DL_LIGNE, art.AR_CODEBARRE, doc.DL_DESIGN, doc.DL_QTE, doc.DL_PRIXUNITAIRE, doc.DL_MONTANTHT, doc.DO_DATELIVR, doc.do_ref, doc.AC_REFCLIENT " +
-     "FROM F_ARTICLE art, F_DOCLIGNE doc " +
+     "FROM CFCI.dbo.F_ARTICLE art, CFCI.dbo.F_DOCLIGNE doc " +
      "WHERE doc.AR_REF = art.AR_REF and doc.do_piece='" + codeCommande + "'";
         }
 
@@ -265,7 +265,7 @@ namespace importPlanifier.Helpers
 
         public static string getCommandeStatut()
         {
-            return "SELECT TOP 100 * FROM F_DOCENTETE WHERE DO_Type = 20 OR DO_Type = 21 AND DO_Statut = 0 ORDER BY cbMarq DESC";
+            return "SELECT cbMarq, DO_Statut FROM CFCI.dbo.F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = 1 ORDER BY cbMarq DESC";
         }
 
         public static string getStockInfo()
@@ -314,6 +314,14 @@ namespace importPlanifier.Helpers
             string sql = "INSERT INTO BIJOU.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) " +
                 "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
             return sql;
+        }
+
+        public static string getCoommandeById(string cbMarq)
+        {
+            return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,', ',cli.CT_CodePostal,' - ',cli.CT_Ville, ', ',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Adresse, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, cmd.DO_MOTIF, liv.LI_Contact " +
+                    "FROM CFCI.dbo.F_COMPTET as cli,CFCI.dbo.F_DOCENTETE as cmd, CFCI.dbo.F_livraison liv " +
+                   "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num " +
+                   "AND cmd.cbMarq = '"+ cbMarq + "'";
         }
 
         #endregion

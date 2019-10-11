@@ -28,31 +28,24 @@ namespace importPlanifier.Classes
         {
             if (File.Exists(pathModule + @"\Path.xml"))
             {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(Path));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\Path.xml");
-                Path setting = new Path();
-                setting = (Path)reader.Deserialize(file);
+                Console.WriteLine(DateTime.Now + " | " + pathModule + @"\Path.xml");
+                Console.ReadLine();
+                try
+                {
+                    XmlSerializer reader = new XmlSerializer(typeof(Path));
+                    StreamReader file = new StreamReader(pathModule + @"\Path.xml");
+                    Path setting = new Path();
+                    setting = (Path)reader.Deserialize(file);
 
-                this.path = setting.path;
+                    this.path = setting.path;
 
-                file.Close();
+                    file.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(DateTime.Now + " | Path Exception : "+e.Message);
+                }
             }
-            /*
-            if (File.Exists(pathModule + @"\Path.xml"))
-            {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(Path));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\Path.xml");
-                Path setting = new Path();
-                setting = (Path)reader.Deserialize(file);
-
-                this.path = setting.path;
-                this.exportFactures = setting.exportFactures;
-                this.exportBonsLivraisons = setting.exportBonsLivraisons;
-                this.exportBonsCommandes = setting.exportBonsCommandes;
-
-                file.Close();
-            }
-            */
         }
     }
 }

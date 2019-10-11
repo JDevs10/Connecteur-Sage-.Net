@@ -11,21 +11,15 @@ namespace ConnecteurSage.Classes
     {
         [XmlElement]
         public string path;
-        public Boolean exportFactures;
-        public Boolean exportBonsLivraisons;
-        public Boolean exportBonsCommandes;
 
         public Path()
         {
 
         }
 
-        public Path(string path, Boolean exportFactures, Boolean exportBonsLivraisons, Boolean exportBonsCommandes)
+        public Path(string path)
         {
             this.path = path;
-            this.exportFactures = exportFactures;
-            this.exportBonsLivraisons = exportBonsLivraisons;
-            this.exportBonsCommandes = exportBonsCommandes;
         }
 
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
@@ -40,9 +34,6 @@ namespace ConnecteurSage.Classes
                 setting = (Path)reader.Deserialize(file);
 
                 this.path = setting.path;
-                this.exportFactures = setting.exportFactures;
-                this.exportBonsLivraisons = setting.exportBonsLivraisons;
-                this.exportBonsCommandes = setting.exportBonsCommandes;
 
                 file.Close();
             }

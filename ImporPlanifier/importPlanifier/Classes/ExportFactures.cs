@@ -847,7 +847,6 @@ namespace importPlanifier.Classes
                     //logFileWriter_export.Close();
                 }
             }
-
             catch (Exception ex)
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
@@ -890,7 +889,6 @@ namespace importPlanifier.Classes
                 }
 
             }
-
             catch (Exception e)
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL

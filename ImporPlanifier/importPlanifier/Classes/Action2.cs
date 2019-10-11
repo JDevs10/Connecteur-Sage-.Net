@@ -134,7 +134,11 @@ namespace importPlanifier.Classes
             logFileWriter_import.WriteLine("#####################################################################################");
             logFileWriter_import.WriteLine("");
 
-
+            /* 
+             
+                action : import documents
+             
+            */
             // Recherche des fichiers .csv
             //foreach (FileInfo filename in fileListing.GetFiles("*.csv"))
             for (int index = 0; index < fileListing.GetFiles("*.csv").Length; index++)
@@ -1244,6 +1248,11 @@ namespace importPlanifier.Classes
                 }
 
             }
+            /* 
+             
+                END action : import documents
+             
+            */
 
             /*
             if (SaveSuccess == 0)
@@ -2090,7 +2099,6 @@ namespace importPlanifier.Classes
             }
 
 
-
             LogFile.Close();
         }
 
@@ -2344,8 +2352,9 @@ namespace importPlanifier.Classes
                 path.Load();
                 return path;
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(DateTime.Now + " : Error : " + e.Message);
                 return null;
             }
         }
@@ -3137,52 +3146,62 @@ namespace importPlanifier.Classes
 
         public void LancerPlanification()
         {
-            this.ImportPlanifier();
+            //this.ImportPlanifier();
 
-            this.SendToVeolog();
+            //this.SendToVeolog();
 
             Console.WriteLine(DateTime.Now + " : Before Anything");
             Console.ReadLine();
 
-            Classes.Path path = getPath();
-            ConfigurationExport export = new ConfigurationExport();
-            export.Load();
 
+            Console.WriteLine("getting path : ");
+            Classes.Path path = new Path(); 
+            path.Load();
+            Console.WriteLine("getting export configuration : ");
+            Console.ReadLine();
+            ConfigurationExport export = new ConfigurationExport();
+            Console.WriteLine("loading export : ");
+            Console.ReadLine();
+            export.Load();
+            Console.WriteLine("displaying information : ");
+            Console.ReadLine();
+            Console.WriteLine(DateTime.Now + " : Path => " + path.path);
+            Console.WriteLine(DateTime.Now + " : exportFactures => " + export.exportFactures);
+            Console.WriteLine(DateTime.Now + " : export.exportBonsLivraisons => " + export.exportBonsLivraisons);
+            Console.WriteLine(DateTime.Now + " : export.exportBonsCommandes => " + export.exportBonsCommandes);
+            Console.WriteLine(DateTime.Now + " : export.exportStock => " + export.exportStock);
+            Console.ReadLine();
             Console.WriteLine(DateTime.Now + " : Before Export");
             Console.ReadLine();
-
             Console.WriteLine(DateTime.Now + " : "+ export.exportFactures+" ; " + export.exportBonsLivraisons + " ; " + export.exportBonsCommandes + " ; " + export.exportStock);
             Console.WriteLine(DateTime.Now + " ");
             Console.WriteLine(DateTime.Now + " ");
+            Console.ReadLine();
 
-            if (export.exportFactures)
+            if (((export.exportFactures == "True") ? true : false))
             {
+                Console.WriteLine(DateTime.Now + " : exportFactures");
                 Classes.ExportFactures a = new Classes.ExportFactures(path.path);
                 a.ExportFacture();
-                Console.WriteLine(DateTime.Now + " : exportFactures");
             }
-
-            if (export.exportBonsLivraisons)
+            if (((export.exportBonsLivraisons == "True") ? true : false))
             {
+                Console.WriteLine(DateTime.Now + " : exportBonsLivraisons");
                 Classes.ExportBonLivraison b = new Classes.ExportBonLivraison(path.path);
                 b.ExportBonLivraisonAction();
-                Console.WriteLine(DateTime.Now + " : exportBonsLivraisons");
             }
-
-            if (export.exportBonsCommandes)
+            if (((export.exportBonsCommandes == "True") ? true : false))
             {
+                Console.WriteLine(DateTime.Now + " : exportBonsCommandes");
                 Classes.ExportCommandes c = new Classes.ExportCommandes(path.path);
                 c.ExportCommande();
-                Console.WriteLine(DateTime.Now + " : exportBonsCommandes");
             }
-
-            if (export.exportStock)
+            if (((export.exportFactures == "True") ? true : false))
             {
+                Console.WriteLine(DateTime.Now + " : exportStock");
                 Classes.ExportStocks s = new Classes.ExportStocks(path.path);
                 s.ExportStock();
-                Console.WriteLine(DateTime.Now + " : exportStock");
             }
-
             Console.WriteLine(DateTime.Now + " : After Export");
             Console.ReadLine();
 

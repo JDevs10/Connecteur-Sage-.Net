@@ -57,6 +57,7 @@ namespace ConnecteurSage.Forms
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.checkBox6 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -194,7 +195,7 @@ namespace ConnecteurSage.Forms
             // 
             // enregistrerButton
             // 
-            this.enregistrerButton.Location = new System.Drawing.Point(201, 551);
+            this.enregistrerButton.Location = new System.Drawing.Point(201, 586);
             this.enregistrerButton.Name = "enregistrerButton";
             this.enregistrerButton.Size = new System.Drawing.Size(75, 25);
             this.enregistrerButton.TabIndex = 5;
@@ -204,7 +205,7 @@ namespace ConnecteurSage.Forms
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(282, 551);
+            this.button2.Location = new System.Drawing.Point(282, 586);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(66, 25);
             this.button2.TabIndex = 7;
@@ -317,12 +318,13 @@ namespace ConnecteurSage.Forms
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.checkBox6);
             this.groupBox4.Controls.Add(this.checkBox5);
             this.groupBox4.Controls.Add(this.checkBox4);
             this.groupBox4.Controls.Add(this.checkBox3);
             this.groupBox4.Location = new System.Drawing.Point(13, 449);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(336, 96);
+            this.groupBox4.Size = new System.Drawing.Size(336, 119);
             this.groupBox4.TabIndex = 16;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "L\'exports des documents :";
@@ -347,11 +349,21 @@ namespace ConnecteurSage.Forms
             this.checkBox4.Text = "L\'export de bons de livraisons";
             this.checkBox4.UseVisualStyleBackColor = true;
             // 
+            // checkBox6
+            // 
+            this.checkBox6.AutoSize = true;
+            this.checkBox6.Location = new System.Drawing.Point(10, 92);
+            this.checkBox6.Name = "checkBox6";
+            this.checkBox6.Size = new System.Drawing.Size(109, 17);
+            this.checkBox6.TabIndex = 18;
+            this.checkBox6.Text = "L\'export du Stock";
+            this.checkBox6.UseVisualStyleBackColor = true;
+            // 
             // Planifier
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 588);
+            this.ClientSize = new System.Drawing.Size(362, 627);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.groupBox3);
@@ -418,5 +430,6 @@ namespace ConnecteurSage.Forms
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox checkBox5;
         private System.Windows.Forms.CheckBox checkBox4;
+        private System.Windows.Forms.CheckBox checkBox6;
     }
 }

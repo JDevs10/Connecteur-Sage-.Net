@@ -23,12 +23,12 @@ namespace ConnecteurSage.Forms
             InitializeComponent();
 
 
+            Boolean[] list1 = new Boolean[2];
+            list1[0] = true;
+            list1[1] = false;
 
-            List<Boolean> list1 = new List<Boolean>();
-            list1.Add(true);
-            list1.Add(false);
 
-            for (int i = 0; i < list1.Count; i++)
+            for (int i = 0; i < getValuesExport().Length; i++)
             {
                 comboBox1.Items.Add(list1[i]);
                 comboBox2.Items.Add(list1[i]);
@@ -43,10 +43,10 @@ namespace ConnecteurSage.Forms
                 ConfigurationExport setting = new ConfigurationExport();
                 setting = (ConfigurationExport)reader.Deserialize(file);
 
-                comboBox1.Text = Convert.ToString(setting.exportBonsCommandes);
-                comboBox2.Text = Convert.ToString(setting.exportBonsLivraisons);
-                comboBox3.Text = Convert.ToString(setting.exportFactures);
-                comboBox4.Text = Convert.ToString(setting.exportStock);
+                comboBox1.Text = setting.exportBonsCommandes;
+                comboBox2.Text = setting.exportBonsLivraisons;
+                comboBox3.Text = setting.exportFactures;
+                comboBox4.Text = setting.exportStock;
                 file.Close();
             }
 
@@ -72,13 +72,20 @@ namespace ConnecteurSage.Forms
 
         }
 
-        //Requette SQL pour trouver dans la BDD les statuts
-        
-        /*
-        public static int getListeStatutValue(string name)
+        public static Boolean[] getValuesExport()
         {
-            int value = -1;
-            List<Statut> list = new Statut().getListeStatut();
+            Boolean[] list1 = new Boolean[2];
+            list1[0] = true;
+            list1[1] = false;
+
+            return list1;
+        }
+
+        /*
+        //Requette SQL pour trouver dans la BDD les statuts
+        public static int getListeStatutValue(bool statut)
+        {
+            Boolean[] list = getValuesExport();
 
             for (int i = 0; i < list.Count(); i++)
             {
@@ -94,13 +101,18 @@ namespace ConnecteurSage.Forms
         public static string getListeStatutName(int value)
         {
             string name = "";
-            List<Statut> list = new Statut().getListeStatut();
+            Boolean[] list = getValuesExport();
 
             for (int i = 0; i < list.Count(); i++)
             {
-                if (list[i].Value == value)
+                if (list[i])
                 {
-                    name = list[i].Nom;
+                    name = "True";
+                    break;
+                }
+                else
+                {
+                    name = "False";
                     break;
                 }
             }
@@ -133,10 +145,10 @@ namespace ConnecteurSage.Forms
             {
                 ConfigurationExport configurationStatut = new ConfigurationExport()
                 {
-                    exportBonsCommandes = Convert.ToBoolean(comboBox1.Text),
-                    exportBonsLivraisons = Convert.ToBoolean(comboBox2.Text),
-                    exportFactures = Convert.ToBoolean(comboBox3.Text),
-                    exportStock = Convert.ToBoolean(comboBox4.Text)
+                    exportBonsCommandes = comboBox1.Text,
+                    exportBonsLivraisons = comboBox2.Text,
+                    exportFactures = comboBox3.Text,
+                    exportStock = comboBox4.Text
                 };
 
                 try
@@ -147,9 +159,11 @@ namespace ConnecteurSage.Forms
                     myfile.Close();
 
                     //Update labels
+                    /*
                     ConfigurationExport settings = new ConfigurationExport();
                     Main main = new Main();
                     main.setExportValues(settings.exportBonsCommandes, settings.exportBonsLivraisons, settings.exportFactures, settings.exportStock);
+                    */
                     Close();
                 }
                 catch (Exception ex)

@@ -7,16 +7,16 @@ using System.IO;
 
 namespace importPlanifier.Classes
 {
-    class ConfigurationExport
+    public class ConfigurationExport
     {
         [XmlElement]
-        public Boolean exportFactures { get; set; }
+        public string exportFactures;
         [XmlElement]
-        public Boolean exportBonsLivraisons { get; set; }
+        public string exportBonsLivraisons;
         [XmlElement]
-        public Boolean exportBonsCommandes { get; set; }
+        public string exportBonsCommandes;
         [XmlElement]
-        public Boolean exportStock { get; set; }
+        public string exportStock;
 
         public ConfigurationExport()
         {
@@ -29,16 +29,29 @@ namespace importPlanifier.Classes
         {
             if (File.Exists("SettingExport.xml"))
             {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationExport));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingExport.xml");
-                ConfigurationExport setting = new ConfigurationExport();
-                setting = (ConfigurationExport)reader.Deserialize(file);
+                try { 
 
-                this.exportFactures = setting.exportFactures;
-                this.exportBonsLivraisons = setting.exportBonsLivraisons;
-                this.exportBonsCommandes = setting.exportBonsCommandes;
-                this.exportStock = setting.exportStock;
-                file.Close();
+                    XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationExport));
+
+                    StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingExport.xml");
+
+                    ConfigurationExport setting = new ConfigurationExport();
+
+                    setting = (ConfigurationExport)reader.Deserialize(file);
+
+                    this.exportFactures = setting.exportFactures;
+                    this.exportBonsLivraisons = setting.exportBonsLivraisons;
+                    this.exportBonsCommandes = setting.exportBonsCommandes;
+                    this.exportStock = setting.exportStock;
+
+                    file.Close();
+
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(DateTime.Now + " | Path Exception : " + e.Message);
+                }
             }
         }
     }

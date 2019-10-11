@@ -67,10 +67,13 @@ namespace ConnecteurSage.Forms
                 checkBox2.Checked = false;
                 }
 
-                checkBox3.Checked = path.exportBonsCommandes;
-                checkBox4.Checked = path.exportBonsLivraisons;
-                checkBox5.Checked = path.exportFactures;
+                Classes.ConfigurationExport export = new Classes.ConfigurationExport();
+                export.Load();
 
+                checkBox3.Checked = ((export.exportBonsCommandes == "True") ?true:false);
+                checkBox4.Checked = ((export.exportBonsLivraisons == "True") ?true:false);
+                checkBox5.Checked = ((export.exportFactures == "True") ?true:false);
+                checkBox6.Checked = ((export.exportStock == "True") ?true:false);
 
             }
 
@@ -182,16 +185,25 @@ namespace ConnecteurSage.Forms
                     EnregistrerLaTache(dateTimePicker2.Text, dateTimePicker1.Text);
 
                     //Enregistrer l'emplacement dans Path.xml
-                    Classes.Path path = new Classes.Path(textBox1.Text, checkBox5.Checked, checkBox4.Checked, checkBox3.Checked);
-
+                    Classes.Path path = new Classes.Path(textBox1.Text);
 
                     var myfile = File.Create(pathModule+@"\Path.xml");
                     XmlSerializer xml = new XmlSerializer(typeof(Classes.Path));
                     xml.Serialize(myfile, path);
                     myfile.Close();
 
-                   
-                    
+
+                    //Enregistrement du statu export
+                    Classes.ConfigurationExport export = new Classes.ConfigurationExport(((checkBox5.Checked == true) ? "True" : "False"),
+                                                                                        ((checkBox4.Checked == true) ? "True" : "False"),
+                                                                                        ((checkBox3.Checked == true) ? "True" : "False"),
+                                                                                        ((checkBox6.Checked == true) ? "True" : "False"));
+
+                    var myfile1 = File.Create(pathModule + @"\SettingExport.xml");
+                    XmlSerializer xml1 = new XmlSerializer(typeof(Classes.ConfigurationExport));
+                    xml1.Serialize(myfile1, export);
+                    myfile1.Close();
+
 
                     // ***********************************************************************
                 }

@@ -11,17 +11,25 @@ namespace ConnecteurSage.Classes
     public class ConfigurationExport
     {
         [XmlElement]
-        public Boolean exportFactures { get; set; }
+        public string exportFactures;
         [XmlElement]
-        public Boolean exportBonsLivraisons { get; set; }
+        public string exportBonsLivraisons;
         [XmlElement]
-        public Boolean exportBonsCommandes { get; set; }
+        public string exportBonsCommandes;
         [XmlElement]
-        public Boolean exportStock { get; set; }
+        public string exportStock;
 
         public ConfigurationExport()
         {
             //Load();
+        }
+
+        public ConfigurationExport(string exportFactures, string exportBonsLivraisons, string exportBonsCommandes, string exportStock)
+        {
+            this.exportFactures = exportFactures;
+            this.exportBonsLivraisons = exportBonsLivraisons;
+            this.exportBonsCommandes = exportBonsCommandes;
+            this.exportStock = exportStock;
         }
 
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);

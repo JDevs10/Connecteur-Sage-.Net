@@ -104,7 +104,6 @@ namespace ConnecteurSage.Forms
 
             try
             {
-
                 if (string.IsNullOrEmpty(textBox1.Text))
                 {
                     MessageBox.Show("Le chemin du fichier d'export de commande doit être renseigné.");
