@@ -28,8 +28,6 @@ namespace importPlanifier.Classes
         {
             if (File.Exists(pathModule + @"\Path.xml"))
             {
-                Console.WriteLine(DateTime.Now + " | " + pathModule + @"\Path.xml");
-                Console.ReadLine();
                 try
                 {
                     XmlSerializer reader = new XmlSerializer(typeof(Path));

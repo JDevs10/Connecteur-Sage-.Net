@@ -104,7 +104,12 @@ namespace importPlanifier.Classes
             logFileWriter_export.WriteLine("#####################################################################################");
             logFileWriter_export.WriteLine("");
 
-            string exportStockPath = pathExport;
+            string exportStockPath = pathExport + @"\Export_Veolog";
+
+            if (!Directory.Exists(exportStockPath))
+            {
+                Directory.CreateDirectory(exportStockPath);
+            }
 
             logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Path Export ==> "+ exportStockPath);
 
@@ -364,7 +369,7 @@ namespace importPlanifier.Classes
             try
             {
                 List<Stock> stock_info = new List<Stock>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
                     connection.Open();//connecting as handler with database
 
@@ -376,7 +381,7 @@ namespace importPlanifier.Classes
                         {
                             while (reader.Read())
                             {
-                                Stock stock = new Stock(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString());
+                                Stock stock = new Stock(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), "", "", "");
                                 stock_info.Add(stock);
                             }
                         }

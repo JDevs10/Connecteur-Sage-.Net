@@ -93,7 +93,7 @@ namespace ConnecteurSage.Forms
         {
             if (!CommandeAExporter.NomClient.Equals("") && !CommandeAExporter.NomClient.Equals(" "))
             {
-                MessageBox.Show("Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
+                //MessageBox.Show("Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
                 logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
             }
             else
@@ -104,6 +104,7 @@ namespace ConnecteurSage.Forms
 
             try
             {
+
                 if (string.IsNullOrEmpty(textBox1.Text))
                 {
                     MessageBox.Show("Le chemin du fichier d'export de commande doit être renseigné.");

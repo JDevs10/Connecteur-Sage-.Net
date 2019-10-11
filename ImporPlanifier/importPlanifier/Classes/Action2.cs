@@ -3150,33 +3150,19 @@ namespace importPlanifier.Classes
 
             //this.SendToVeolog();
 
-            Console.WriteLine(DateTime.Now + " : Before Anything");
-            Console.ReadLine();
-
 
             Console.WriteLine("getting path : ");
             Classes.Path path = new Path(); 
             path.Load();
-            Console.WriteLine("getting export configuration : ");
-            Console.ReadLine();
+
             ConfigurationExport export = new ConfigurationExport();
-            Console.WriteLine("loading export : ");
-            Console.ReadLine();
             export.Load();
-            Console.WriteLine("displaying information : ");
-            Console.ReadLine();
+
             Console.WriteLine(DateTime.Now + " : Path => " + path.path);
             Console.WriteLine(DateTime.Now + " : exportFactures => " + export.exportFactures);
             Console.WriteLine(DateTime.Now + " : export.exportBonsLivraisons => " + export.exportBonsLivraisons);
             Console.WriteLine(DateTime.Now + " : export.exportBonsCommandes => " + export.exportBonsCommandes);
             Console.WriteLine(DateTime.Now + " : export.exportStock => " + export.exportStock);
-            Console.ReadLine();
-            Console.WriteLine(DateTime.Now + " : Before Export");
-            Console.ReadLine();
-            Console.WriteLine(DateTime.Now + " : "+ export.exportFactures+" ; " + export.exportBonsLivraisons + " ; " + export.exportBonsCommandes + " ; " + export.exportStock);
-            Console.WriteLine(DateTime.Now + " ");
-            Console.WriteLine(DateTime.Now + " ");
-            Console.ReadLine();
 
             if (((export.exportFactures == "True") ? true : false))
             {
@@ -3196,14 +3182,13 @@ namespace importPlanifier.Classes
                 Classes.ExportCommandes c = new Classes.ExportCommandes(path.path);
                 c.ExportCommande();
             }
-            if (((export.exportFactures == "True") ? true : false))
+            if (((export.exportStock == "True") ? true : false))
             {
                 Console.WriteLine(DateTime.Now + " : exportStock");
                 Classes.ExportStocks s = new Classes.ExportStocks(path.path);
                 s.ExportStock();
             }
-            Console.WriteLine(DateTime.Now + " : After Export");
-            Console.ReadLine();
+            Console.WriteLine(DateTime.Now + " : Done Export");
 
         }
 
