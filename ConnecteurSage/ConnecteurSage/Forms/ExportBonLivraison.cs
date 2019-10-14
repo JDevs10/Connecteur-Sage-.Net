@@ -39,7 +39,7 @@ namespace ConnecteurSage.Forms
                     DocumentVente documentVente;
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(client, 3), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, client, 3), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -98,7 +98,7 @@ namespace ConnecteurSage.Forms
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(codeDocument), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(false, codeDocument), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -144,7 +144,7 @@ namespace ConnecteurSage.Forms
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListClient(), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListClient(false), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -411,7 +411,7 @@ namespace ConnecteurSage.Forms
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(code), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(false, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {

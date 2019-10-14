@@ -1364,7 +1364,7 @@ namespace importPlanifier.Classes
                 {
                     connection.Open();
 
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(client, order), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(false, client, order), connection);
                     //MessageBox.Show(command.CommandText);
                     command.ExecuteReader();
 
@@ -1391,7 +1391,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(client, order, orderLine), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(false, client, order, orderLine), connection);
                     //MessageBox.Show(command.CommandText);
                     //Console.Read();
                     command.ExecuteReader();
@@ -1450,7 +1450,7 @@ namespace importPlanifier.Classes
                         // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
                         //getProductNameByReference
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference(line.reference), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference(false, line.reference), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
                             using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
@@ -1474,12 +1474,12 @@ namespace importPlanifier.Classes
                             using (OdbcConnection connectionSQL = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
                             {
                                 connectionSQL.Open();
-                                using (OdbcCommand command = new OdbcCommand(QueryHelper.getNegativeStockOfAProduct(line.reference), connectionSQL)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                using (OdbcCommand command = new OdbcCommand(QueryHelper.getNegativeStockOfAProduct(true, line.reference), connectionSQL)) //execute the function within this statement : getNegativeStockOfAProduct()
                                 {
                                     using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                                     {
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Exécuter la requête");
-                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getNegativeStockOfAProduct(line.reference));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getNegativeStockOfAProduct(true, line.reference));
                                         while (reader.Read()) // reads lines/rows from the query
                                         {
                                             char split = ',';
@@ -1492,10 +1492,10 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStock() : getNegativeStockOfAProduct OK.");
                                 logFileWriter.WriteLine("");
 
-                                using (OdbcCommand command = new OdbcCommand(QueryHelper.getPositiveStockOfAProduct(line.reference), connectionSQL)) //execute the function within this statement : getPositiveStockOfAProduct()
+                                using (OdbcCommand command = new OdbcCommand(QueryHelper.getPositiveStockOfAProduct(true, line.reference), connectionSQL)) //execute the function within this statement : getPositiveStockOfAProduct()
                                 {
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Exécuter la requête");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getPositiveStockOfAProduct(line.reference));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getPositiveStockOfAProduct(true, line.reference));
 
                                     using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                                     {
@@ -1704,11 +1704,11 @@ namespace importPlanifier.Classes
                             //generate document ME_____ in database.
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Vérifier si un produit pour 20 = ME");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument("20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time));
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time));
 
                             try
                             {
-                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument("20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
                                 command.ExecuteReader(); // executing the query
 
                             }
@@ -1743,9 +1743,9 @@ namespace importPlanifier.Classes
                                     {
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : insert the article " + products_ME[x, 15] + " (Ref:" + products_ME[x, 10] + ") to documentline in the database");
-                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(products_ME, x));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_ME, x));
 
-                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(products_ME, x), connectionSQL);
+                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_ME, x), connectionSQL);
                                         command.ExecuteReader();
 
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : insert termine!");
@@ -1773,12 +1773,12 @@ namespace importPlanifier.Classes
                             connectionSQL.Open();
 
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Vérifier si un produit pour 21 = MS");
-                            logFileWriter.Write(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument("21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time));
+                            logFileWriter.Write(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time));
 
                             //generate document MS_____. in database.
                             try
                             {
-                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument("21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
                                 command.ExecuteReader(); // executing the query
                             }
                             catch (OdbcException ex)
@@ -1814,9 +1814,9 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : insert the article " + products_MS[x, 15] + " (Ref:" + products_MS[x, 10] + ") to documentline in the database");
 
-                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(products_MS, x));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_MS, x));
 
-                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(products_MS, x), connectionSQL);
+                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_MS, x), connectionSQL);
                                         command.ExecuteReader();
                                     }
                                     catch (OdbcException ex)
@@ -1879,7 +1879,7 @@ namespace importPlanifier.Classes
                     {
                         connection.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
 
                         using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                         {
@@ -1903,7 +1903,7 @@ namespace importPlanifier.Classes
                         Console.WriteLine("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getLastPieceNumberReference(mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Import annulée");
                         logFileWriter.Close();
@@ -1941,7 +1941,7 @@ namespace importPlanifier.Classes
                     {
                         connection.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(false, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
 
                         using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                         {
@@ -1963,7 +1963,7 @@ namespace importPlanifier.Classes
                         Console.WriteLine("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
                         logFileWriter.Close();
@@ -2064,9 +2064,9 @@ namespace importPlanifier.Classes
                 try
                 {
                     connexion.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeStatut(), connexion);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeStatut(true), connexion);
 
-                    LogFile.WriteLine(DateTime.Now + " | SendToVeolog() : SQL ===> " + QueryHelper.getCommandeStatut());
+                    LogFile.WriteLine(DateTime.Now + " | SendToVeolog() : SQL ===> " + QueryHelper.getCommandeStatut(true));
 
                     using (IDataReader reader = command.ExecuteReader())
                     {
@@ -2090,7 +2090,7 @@ namespace importPlanifier.Classes
                 {
                     LogFile.WriteLine("");
                     LogFile.WriteLine(DateTime.Now + " : lastNumberReference() |  ********************** OdbcException *********************");
-                    LogFile.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getCommandeStatut());
+                    LogFile.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getCommandeStatut(true));
                     LogFile.WriteLine(DateTime.Now + " : lastNumberReference() |  Message : " + ex.Message + ".");
                     LogFile.WriteLine(DateTime.Now + " : lastNumberReference() |  Scan annulée");
                     LogFile.Close();
@@ -2113,7 +2113,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(id), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2155,7 +2155,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getStockId(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getStockId(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2198,7 +2198,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getNumLivraison(client_num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getNumLivraison(false, client_num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2275,7 +2275,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(client, order, orderLine), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(false, client, order, orderLine), connection);
                     command.ExecuteReader();
                 }
                 catch (Exception ex)
@@ -2307,7 +2307,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(false, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2397,7 +2397,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(NumCommande), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(false, NumCommande), connection);
                     command.ExecuteReader();
 
                     connection.Close();
@@ -2422,7 +2422,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getGAMME(type, code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getGAMME(false, type, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2474,7 +2474,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_NumPiece_Motif(num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_NumPiece_Motif(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2515,7 +2515,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.MaxNumPiece(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.MaxNumPiece(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2594,7 +2594,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2650,7 +2650,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_condition_livraison_indice(c_mode), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_condition_livraison_indice(false, c_mode), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2691,7 +2691,7 @@ namespace importPlanifier.Classes
                 {
                     List<AdresseLivraison> list = new List<AdresseLivraison>();
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_adresse_livraison(adresse), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_adresse_livraison(false, adresse), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2727,7 +2727,7 @@ namespace importPlanifier.Classes
                 {
                     connection.Open();
 
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insert_adresse_livraison(client, adresse), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insert_adresse_livraison(false, client, adresse), connection);
                     command.ExecuteReader();
 
                     connection.Close();
@@ -2754,7 +2754,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.fournisseurExiste(num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.fournisseurExiste(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2797,7 +2797,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_last_Num_Livraison(client), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_last_Num_Livraison(false, client), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2843,7 +2843,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(id), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2897,7 +2897,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getDevise(codeIso), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getDevise(false, codeIso), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -3038,7 +3038,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestSiNumPieceExisteDeja(num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestSiNumPieceExisteDeja(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -3078,7 +3078,7 @@ namespace importPlanifier.Classes
                 {
                     List<string> adresses = new List<string>();
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestIntituleLivraison(Intitule), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestIntituleLivraison(false, Intitule), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -3114,7 +3114,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getConditionnementArticle(code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getConditionnementArticle(false, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -3150,7 +3150,6 @@ namespace importPlanifier.Classes
 
             //this.SendToVeolog();
 
-
             Console.WriteLine("getting path : ");
             Classes.Path path = new Path(); 
             path.Load();
@@ -3159,10 +3158,12 @@ namespace importPlanifier.Classes
             export.Load();
 
             Console.WriteLine(DateTime.Now + " : Path => " + path.path);
+            Console.WriteLine("");
             Console.WriteLine(DateTime.Now + " : exportFactures => " + export.exportFactures);
             Console.WriteLine(DateTime.Now + " : export.exportBonsLivraisons => " + export.exportBonsLivraisons);
             Console.WriteLine(DateTime.Now + " : export.exportBonsCommandes => " + export.exportBonsCommandes);
             Console.WriteLine(DateTime.Now + " : export.exportStock => " + export.exportStock);
+            Console.WriteLine("");
 
             if (((export.exportFactures == "True") ? true : false))
             {
@@ -3170,24 +3171,28 @@ namespace importPlanifier.Classes
                 Classes.ExportFactures a = new Classes.ExportFactures(path.path);
                 a.ExportFacture();
             }
+            Console.WriteLine("");
             if (((export.exportBonsLivraisons == "True") ? true : false))
             {
                 Console.WriteLine(DateTime.Now + " : exportBonsLivraisons");
                 Classes.ExportBonLivraison b = new Classes.ExportBonLivraison(path.path);
                 b.ExportBonLivraisonAction();
             }
+            Console.WriteLine("");
             if (((export.exportBonsCommandes == "True") ? true : false))
             {
                 Console.WriteLine(DateTime.Now + " : exportBonsCommandes");
                 Classes.ExportCommandes c = new Classes.ExportCommandes(path.path);
                 c.ExportCommande();
             }
+            Console.WriteLine("");
             if (((export.exportStock == "True") ? true : false))
             {
                 Console.WriteLine(DateTime.Now + " : exportStock");
                 Classes.ExportStocks s = new Classes.ExportStocks(path.path);
                 s.ExportStock();
             }
+            Console.WriteLine("");
             Console.WriteLine(DateTime.Now + " : Done Export");
 
         }

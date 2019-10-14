@@ -42,12 +42,16 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(67), connection);
+                    Console.WriteLine("SQL : " + QueryHelper.getListDocumentVente(false, 67));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 67), connection);
                     {
+                        Console.WriteLine("OK 6");
                         using (IDataReader reader = command.ExecuteReader())
                         {
+                            Console.WriteLine("OK 7");
                             while (reader.Read())
                             {
+                                Console.WriteLine("OK 8: "+ reader[0].ToString());
                                 DocumentVente documentVente = new DocumentVente(reader[0].ToString(), reader[1].ToString(),
                                     reader[2].ToString().Replace("00:00:00", ""), reader[3].ToString().Replace("00:00:00", ""), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(),
                                     reader[8].ToString(), reader[9].ToString(),
@@ -55,9 +59,9 @@ namespace importPlanifier.Classes
                                     reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString(),
                                     reader[16].ToString(), reader[17].ToString(), reader[18].ToString(), reader[19].ToString(),
                                     reader[20].ToString(), reader[21].ToString(), reader[22].ToString(), reader[23].ToString(),
-                                     reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString(),
-                                     reader[28].ToString(), reader[29].ToString(), reader[30].ToString(), reader[31].ToString(),
-                                     reader[32].ToString(), reader[33].ToString()
+                                    reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString(),
+                                    reader[28].ToString(), reader[29].ToString(), reader[30].ToString(), reader[31].ToString(),
+                                    reader[32].ToString(), reader[33].ToString()
                                     );
                                 if (documentVente.DO_Statut == "0")
                                 {
@@ -100,7 +104,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(codeDocument), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(false, codeDocument), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -144,7 +148,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getCustomer(do_tiers), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getCustomer(false, do_tiers), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -181,7 +185,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(do_piece), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(false, do_piece), connection);
                     command.ExecuteNonQuery();
                 }
 
@@ -451,7 +455,7 @@ namespace importPlanifier.Classes
                 {
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getInfoSociete(), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getInfoSociete(false), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -483,7 +487,7 @@ namespace importPlanifier.Classes
                 {
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getGNLClientLivraison(intitule), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getGNLClientLivraison(false, intitule), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -511,11 +515,13 @@ namespace importPlanifier.Classes
         {
             try
             {
+                Console.WriteLine("OK 1");
                 if (!Directory.Exists(logDirectoryName_export))
                 {
                     Directory.CreateDirectory(logDirectoryName_export);
                 }
 
+                Console.WriteLine("OK 2");
                 var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Facture_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
                 var logFile_export = File.Create(logFileName_export);
                 logFileWriter_export = new StreamWriter(logFile_export);
@@ -524,15 +530,18 @@ namespace importPlanifier.Classes
                 try
                 {
 
+                    Console.WriteLine("OK 3");
                     logFileWriter_export.WriteLine("#####################################################################################");
                     logFileWriter_export.WriteLine("################################# Import Planifier ##################################");
                     logFileWriter_export.WriteLine("#####################################################################################");
                     logFileWriter_export.WriteLine("");
 
                     List<DocumentVente> FacturesAExporter = GetFacturesFromDataBase();
+                    Console.WriteLine("OK 4");
 
                     if (FacturesAExporter != null)
                     {
+                        Console.WriteLine("OK 5");
                         string outputFile = "";
                         var fileName = "";
 
@@ -871,7 +880,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getModeReglement(do_piece), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getModeReglement(false, do_piece), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -906,7 +915,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(code), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(false, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {

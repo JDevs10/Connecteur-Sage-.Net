@@ -44,7 +44,7 @@ namespace importPlanifier.Classes
                
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -126,39 +126,39 @@ namespace importPlanifier.Classes
                 try
                 {
                     connexion.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeStatut(), connexion);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeStatut(true), connexion);
 
-                    //Console.WriteLine(DateTime.Now + " | ExportFacture() : SQL ===> " + QueryHelper.getCommandeStatut());
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : SQL ===> " + QueryHelper.getCommandeStatut());
+                    //Console.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeStatut());
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeStatut(true));
 
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read()) // reads lines/rows from the query
                         {
-                            //Console.WriteLine(DateTime.Now + " | ExportFacture() : reader[0].ToString() == "+ reader[1].ToString());
+                            //Console.WriteLine(DateTime.Now + " | ExportCommande() : reader[0].ToString() == "+ reader[1].ToString());
                             if (reader[1].ToString().Equals("1"))
                             {
                                 if (countLimit < 100)
                                 {
                                     lits_of_stock[countLimit, 0] = reader[0].ToString(); // cbMarq
                                     lits_of_stock[countLimit, 1] = reader[1].ToString(); // DO_Statut
-                                    Console.WriteLine(DateTime.Now + " | ExportFacture() : cbMarq = " + reader[0].ToString() + " DO_Statut = " + reader[1].ToString());
+                                    Console.WriteLine(DateTime.Now + " | ExportCommande() : cbMarq = " + reader[0].ToString() + " DO_Statut = " + reader[1].ToString());
                                     countLimit++;
                                 }
                             }
                         }
                     }
-                    Console.WriteLine(DateTime.Now + " | ExportFacture() : Connexion close.");
+                    Console.WriteLine(DateTime.Now + " | ExportCommande() : Connexion close.");
                     connexion.Close();
 
                 }
                 catch (OdbcException ex)
                 {
                     Console.WriteLine("");
-                    Console.WriteLine(DateTime.Now + " : ExportFacture() |  ********************** OdbcException *********************");
-                    Console.WriteLine(DateTime.Now + " : ExportFacture() |  SQL ===> " + QueryHelper.getCommandeStatut());
-                    Console.WriteLine(DateTime.Now + " : ExportFacture() |  Message : " + ex.Message + ".");
-                    Console.WriteLine(DateTime.Now + " : ExportFacture() |  Scan annulée");
+                    Console.WriteLine(DateTime.Now + " : ExportCommande() |  ********************** OdbcException *********************");
+                    Console.WriteLine(DateTime.Now + " : ExportCommande() |  SQL ===> " + QueryHelper.getCommandeStatut(true));
+                    Console.WriteLine(DateTime.Now + " : ExportCommande() |  Message : " + ex.Message + ".");
+                    Console.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                     return;
                 }
             }
@@ -175,10 +175,10 @@ namespace importPlanifier.Classes
                     try
                     {
                         connexion.Open();
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getCoommandeById(lits_of_stock[index,0]), connexion);
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getCoommandeById(true, lits_of_stock[index,0]), connexion);
 
-                        Console.WriteLine(DateTime.Now + " | ExportFacture() : SQL ===> " + QueryHelper.getCoommandeById(lits_of_stock[index, 0]));
-                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : SQL ===> " + QueryHelper.getCoommandeById(lits_of_stock[index, 0]));
+                        Console.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCoommandeById(true, lits_of_stock[index, 0]));
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCoommandeById(true, lits_of_stock[index, 0]));
 
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -191,11 +191,11 @@ namespace importPlanifier.Classes
                         {
                             if (!CommandeAExporter.NomClient.Equals("") && !CommandeAExporter.NomClient.Equals(" "))
                             {
-                                logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
+                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
                             }
                             else
                             {
-                                logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"...\"");
+                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Export Commande du client \"...\"");
                             }
                             try
                             {
@@ -214,38 +214,38 @@ namespace importPlanifier.Classes
                                 if (CommandeAExporter.DO_MOTIF == "")
                                 {
                                     CommandeAExporter.DO_MOTIF = "";
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande non enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : N° de commande non enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
                                 }
                                 else
                                 {
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande non enregistrer, valuer '" + CommandeAExporter.DO_MOTIF + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : N° de commande non enregistrer, valuer '" + CommandeAExporter.DO_MOTIF + "'.");
                                 }
                                 if (CommandeAExporter.codeClient == "")
                                 {
                                     CommandeAExporter.codeClient = "";
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Code GNL client n'est pas enregistrer, valeur '" + CommandeAExporter.codeClient + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Code GNL client n'est pas enregistrer, valeur '" + CommandeAExporter.codeClient + "'.");
                                 }
                                 else
                                 {
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Code GNL client n'est pas enregistrer, valeur '" + CommandeAExporter.codeClient + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Code GNL client n'est pas enregistrer, valeur '" + CommandeAExporter.codeClient + "'.");
                                 }
                                 if (!IsNumeric(CommandeAExporter.DO_MOTIF) && CommandeAExporter.DO_MOTIF != "")
                                 {
                                     CommandeAExporter.DO_MOTIF = "";
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande est mal enregistrer, valeur '"+ CommandeAExporter.DO_MOTIF + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : N° de commande est mal enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
                                 }
                                 else
                                 {
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande est mal enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : N° de commande est mal enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
                                 }
                                 if (!IsNumeric(CommandeAExporter.codeClient) && CommandeAExporter.codeClient != "")
                                 {
                                     CommandeAExporter.DO_MOTIF = "";
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Code GNL client est mal enregistrer.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Code GNL client est mal enregistrer.");
                                 }
                                 else
                                 {
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : N° de commande est mal enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : N° de commande est mal enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
                                 }
                                 var fileName = string.Format("EDI_ORDERS." + CommandeAExporter.codeClient + "." + CommandeAExporter.NumCommande + "." + ConvertDate(CommandeAExporter.DateCommande) + "." + CommandeAExporter.adresseLivraison + ".{0:yyyyMMddhhmmss}.csv", DateTime.Now);
 
@@ -271,7 +271,11 @@ namespace importPlanifier.Classes
                                 }
                                 */
 
-                                var veolog_format = true;
+                                //Verifier le format utilise depuis le fichier de config
+                                ConfigurationExport export = new ConfigurationExport();
+                                export.Load();
+
+                                var veolog_format = ((export.exportBonsCommandes_Format == "Velog") ? true : false);
                                 if (veolog_format)
                                 {
                                     veolog_format = true;
@@ -284,7 +288,7 @@ namespace importPlanifier.Classes
                                 }
                                 using (StreamWriter writer = new StreamWriter(exportPath + @"\" + fileName, false, Encoding.Default))
                                 {
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Ecrire le fichier dans : " + exportPath + @"\" + fileName.Replace("..", "."));
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ecrire le fichier dans : " + exportPath + @"\" + fileName.Replace("..", "."));
 
                                     if (veolog_format)
                                     {
@@ -354,7 +358,7 @@ namespace importPlanifier.Classes
                                     }
                                 }
 
-                                logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Commande exportée avec succés.");
+                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Commande exportée avec succés.");
 
                             jamp:;
 
@@ -370,16 +374,16 @@ namespace importPlanifier.Classes
                             }
                         }
 
-                        Console.WriteLine(DateTime.Now + " | ExportFacture() : Connexion close.");
+                        Console.WriteLine(DateTime.Now + " | ExportCommande() : Connexion close.");
                         connexion.Close();
                     }
                     catch (OdbcException ex)
                     {
                         Console.WriteLine("");
-                        Console.WriteLine(DateTime.Now + " : ExportFacture() |  ********************** OdbcException *********************");
-                        Console.WriteLine(DateTime.Now + " : ExportFacture() |  SQL ===> " + QueryHelper.getCommandeStatut());
-                        Console.WriteLine(DateTime.Now + " : ExportFacture() |  Message : " + ex.Message + ".");
-                        Console.WriteLine(DateTime.Now + " : ExportFacture() |  Scan annulée");
+                        Console.WriteLine(DateTime.Now + " : ExportCommande() |  ********************** OdbcException *********************");
+                        Console.WriteLine(DateTime.Now + " : ExportCommande() |  SQL ===> " + QueryHelper.getCommandeStatut(true));
+                        Console.WriteLine(DateTime.Now + " : ExportCommande() |  Message : " + ex.Message + ".");
+                        Console.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                         return;
                     }
                 }
@@ -419,7 +423,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(code), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(false, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -453,8 +457,8 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    Console.WriteLine("SQL: "+QueryHelper.getListLignesCommandes(code));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(code), connection);
+                    Console.WriteLine("SQL: "+QueryHelper.getListLignesCommandes(true, code));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(true, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -500,7 +504,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(do_piece), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(false, do_piece), connection);
                     command.ExecuteNonQuery();
                 }
 

@@ -43,7 +43,7 @@ namespace importPlanifier.Classes
                
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -189,6 +189,7 @@ namespace importPlanifier.Classes
             }
 
             logFileWriter_export.Close();
+            Console.WriteLine(DateTime.Now + " | ExportCommande() : Close.");
 
             /*
             try
@@ -373,9 +374,9 @@ namespace importPlanifier.Classes
                 {
                     connection.Open();//connecting as handler with database
 
-                    logFileWriter.WriteLine(DateTime.Now + " : GetStockArticle | SQL: " + QueryHelper.getStockInfo());
+                    logFileWriter.WriteLine(DateTime.Now + " : GetStockArticle | SQL: " + QueryHelper.getStockInfo(true));
 
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getStockInfo(), connection);//Exécution de la requête permettant de récupérer les articles du dossier
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getStockInfo(true), connection);//Exécution de la requête permettant de récupérer les articles du dossier
                     {
                         using (IDataReader reader = command.ExecuteReader()) //reading lines fetched.
                         {
@@ -427,7 +428,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(code), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(false, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -461,7 +462,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(code), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(false, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -510,7 +511,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(do_piece), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(false, do_piece), connection);
                     command.ExecuteNonQuery();
                 }
 

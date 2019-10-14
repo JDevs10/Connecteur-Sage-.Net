@@ -43,6 +43,7 @@
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -69,7 +70,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.label10 = new System.Windows.Forms.Label();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -255,6 +255,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Paramétrage";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(187, 114);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(148, 14);
+            this.label10.TabIndex = 7;
+            this.label10.Text = "Statut de Stock : Non défini";
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -361,7 +370,7 @@
             this.groupBox6.Size = new System.Drawing.Size(293, 53);
             this.groupBox6.TabIndex = 3;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Export d\'info. stocks";
+            this.groupBox6.Text = "Export des Informations du Stock";
             // 
             // button8
             // 
@@ -381,7 +390,7 @@
             this.groupBox5.Size = new System.Drawing.Size(293, 51);
             this.groupBox5.TabIndex = 2;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Export de bons de livraisons";
+            this.groupBox5.Text = "Export des bons de livraisons";
             // 
             // button6
             // 
@@ -401,7 +410,7 @@
             this.groupBox4.Size = new System.Drawing.Size(293, 51);
             this.groupBox4.TabIndex = 1;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Export de factures";
+            this.groupBox4.Text = "Export des factures";
             // 
             // button5
             // 
@@ -421,7 +430,7 @@
             this.groupBox3.Size = new System.Drawing.Size(293, 51);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Export de commandes";
+            this.groupBox3.Text = "Export des commandes";
             // 
             // button4
             // 
@@ -473,7 +482,7 @@
             this.groupBox1.Size = new System.Drawing.Size(217, 126);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Import de commandes";
+            this.groupBox1.Text = "Import des commandes";
             // 
             // button2
             // 
@@ -523,15 +532,6 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(187, 114);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(148, 14);
-            this.label10.TabIndex = 7;
-            this.label10.Text = "Statut de Stock : Non défini";
             // 
             // Main
             // 

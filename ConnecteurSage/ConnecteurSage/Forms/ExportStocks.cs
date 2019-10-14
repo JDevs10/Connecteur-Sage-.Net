@@ -137,7 +137,7 @@ namespace ConnecteurSage.Forms
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListClient(), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListClient(false), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -175,7 +175,7 @@ namespace ConnecteurSage.Forms
 
                     connection.Open();//connecting as handler with database
 
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getStockInfo(), connection);//Exécution de la requête permettant de récupérer les articles du dossier
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getStockInfo(true), connection);//Exécution de la requête permettant de récupérer les articles du dossier
                     {
                         using (IDataReader reader = command.ExecuteReader()) //reading lines fetched.
                         {

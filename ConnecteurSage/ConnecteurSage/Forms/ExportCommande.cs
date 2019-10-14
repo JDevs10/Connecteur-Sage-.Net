@@ -51,7 +51,7 @@ namespace ConnecteurSage.Forms
                
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -576,7 +576,7 @@ namespace ConnecteurSage.Forms
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(code), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getDeviseIso(false, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -611,7 +611,7 @@ namespace ConnecteurSage.Forms
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(code), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListLignesCommandes(true, code), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {

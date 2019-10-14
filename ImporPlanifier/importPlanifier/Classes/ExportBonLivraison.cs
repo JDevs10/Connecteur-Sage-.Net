@@ -35,7 +35,7 @@ namespace importPlanifier.Classes
                     DocumentVente documentVente;
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(3), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -93,7 +93,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(codeDocument), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(false, codeDocument), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -137,7 +137,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getCustomer(do_tiers), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getCustomer(false, do_tiers), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -307,7 +307,7 @@ namespace importPlanifier.Classes
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(do_piece), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.updateDocumentdeVente(false, do_piece), connection);
                     command.ExecuteNonQuery();
                 }
 

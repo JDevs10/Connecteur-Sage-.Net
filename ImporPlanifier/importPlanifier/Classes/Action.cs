@@ -555,7 +555,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(id), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -597,7 +597,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getStockId(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getStockId(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -640,7 +640,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getNumLivraison(client_num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getNumLivraison(false, client_num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -685,7 +685,7 @@ namespace importPlanifier.Classes
                 {
                     connection.Open();
 
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(client, order), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(false, client, order), connection);
                     command.ExecuteReader();
                     connection.Close();
                     return true;
@@ -712,7 +712,7 @@ namespace importPlanifier.Classes
                         try
                         {
                             connection.Open();
-                            OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(client, order, orderLine), connection);
+                            OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(false, client, order, orderLine), connection);
                             command.ExecuteReader();
                         }
                         catch (Exception ex)
@@ -744,7 +744,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(false, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -830,7 +830,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(NumCommande), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(false, NumCommande), connection);
                     command.ExecuteReader();
 
                     connection.Close();
@@ -855,7 +855,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getGAMME(type, code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getGAMME(false, type, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -907,7 +907,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_NumPiece_Motif(num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_NumPiece_Motif(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -948,7 +948,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.MaxNumPiece(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.MaxNumPiece(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -1027,7 +1027,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {

@@ -1175,7 +1175,7 @@ namespace ConnecteurSage.Forms
                     try{
                         connection.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(false, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
                             
                             using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
@@ -1198,7 +1198,7 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getLastPieceNumberReference(mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Import annulée");
                         logFileWriter.Close();
@@ -1237,7 +1237,7 @@ namespace ConnecteurSage.Forms
                     {
                         connection.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(false, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
 
                         using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                         {
@@ -1259,7 +1259,7 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
                         logFileWriter.Close();
@@ -1297,7 +1297,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(id), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -1345,7 +1345,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getStockId(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getStockId(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -1387,7 +1387,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getNumLivraison(client_num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getNumLivraison(false, client_num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -1429,7 +1429,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_last_Num_Livraison(client), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_last_Num_Livraison(false, client), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -1472,7 +1472,7 @@ namespace ConnecteurSage.Forms
                 {
                     connection.Open();
 
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(client, order), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(false, client, order), connection);
                     //MessageBox.Show(command.CommandText);
                     command.ExecuteReader();
 
@@ -1568,7 +1568,7 @@ namespace ConnecteurSage.Forms
                         // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
                         //getProductNameByReference
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference(line.reference), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference(false, line.reference), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
                             using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
@@ -1591,12 +1591,12 @@ namespace ConnecteurSage.Forms
 
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Article trouvé.");
                             logFileWriter.WriteLine("");
-                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getNegativeStockOfAProduct(line.reference), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getNegativeStockOfAProduct(false, line.reference), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                             {
                                 using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                                 {
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Exécuter la requête");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getNegativeStockOfAProduct(line.reference));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getNegativeStockOfAProduct(false, line.reference));
 
                                     while (reader.Read()) // reads lines/rows from the query
                                     {
@@ -1610,10 +1610,10 @@ namespace ConnecteurSage.Forms
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : getNegativeStockOfAProduct OK.");
                             logFileWriter.WriteLine("");
 
-                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getPositiveStockOfAProduct(line.reference), connection)) //execute the function within this statement : getPositiveStockOfAProduct()
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getPositiveStockOfAProduct(false, line.reference), connection)) //execute the function within this statement : getPositiveStockOfAProduct()
                             {
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Exécuter la requête");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getPositiveStockOfAProduct(line.reference));
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStock() : " + QueryHelper.getPositiveStockOfAProduct(false, line.reference));
 
                                 using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                                 {
@@ -1817,11 +1817,11 @@ namespace ConnecteurSage.Forms
                             //generate document ME_____ in database.
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Vérifier si un produit pour 20 = ME");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument("20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time));
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time));
 
                             try
                             {
-                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument("20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
                                 command.ExecuteReader(); // executing the query
 
                             }
@@ -1856,9 +1856,9 @@ namespace ConnecteurSage.Forms
                                     {
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : insert the article " + products_ME[x, 15] + " (Ref:" + products_ME[x, 10] + ") to documentline in the database");
-                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(products_ME, x));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_ME, x));
 
-                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(products_ME, x), connectionSQL);
+                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_ME, x), connectionSQL);
                                         command.ExecuteReader();
 
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : insert termine!");
@@ -1887,12 +1887,12 @@ namespace ConnecteurSage.Forms
                             connectionSQL.Open();
 
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Vérifier si un produit pour 21 = MS");
-                            logFileWriter.Write(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument("21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time));
+                            logFileWriter.Write(DateTime.Now + " | insertStock() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time));
 
                             //generate document MS_____. in database.
                             try
                             {
-                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument("21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time), connectionSQL); //calling the query and parsing the parameters into it
                                 command.ExecuteReader(); // executing the query
                             }
                             catch (OdbcException ex)
@@ -1928,9 +1928,9 @@ namespace ConnecteurSage.Forms
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : insert the article " + products_MS[x, 15] + " (Ref:" + products_MS[x, 10] + ") to documentline in the database");
 
-                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(products_MS, x));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertStock() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_MS, x));
 
-                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(products_MS, x), connectionSQL);
+                                        OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_MS, x), connectionSQL);
                                         command.ExecuteReader();
                                     }
                                     catch (OdbcException ex)
@@ -1984,7 +1984,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(client, order, orderLine), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insertLigneCommande(false, client, order, orderLine), connection);
                     //MessageBox.Show(command.CommandText);
                     //Console.Read();
                     command.ExecuteReader();
@@ -2012,7 +2012,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(NumCommande), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(false, NumCommande), connection);
                     command.ExecuteReader();
 
                     connection.Close();
@@ -2036,7 +2036,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.UpdateCommandeTaxes(montantTaxes, do_piece), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.UpdateCommandeTaxes(false, montantTaxes, do_piece), connection);
                     command.ExecuteReader();
 
                     connection.Close();
@@ -2058,7 +2058,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(false, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2101,7 +2101,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getConditionnementArticle(code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getConditionnementArticle(false, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2140,7 +2140,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getGAMME(type,code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getGAMME(false, type, code_article), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2190,7 +2190,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getDevise(codeIso), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getDevise(false, codeIso), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2231,7 +2231,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_NumPiece_Motif(num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_NumPiece_Motif(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2271,7 +2271,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.fournisseurExiste(num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.fournisseurExiste(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2313,7 +2313,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.MaxNumPiece(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.MaxNumPiece(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2411,7 +2411,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande(), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2451,7 +2451,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_condition_livraison_indice(c_mode), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_condition_livraison_indice(false, c_mode), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2492,7 +2492,7 @@ namespace ConnecteurSage.Forms
                 {
                     List<AdresseLivraison> list = new List<AdresseLivraison>();
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_adresse_livraison(adresse), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_adresse_livraison(false, adresse), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2528,7 +2528,7 @@ namespace ConnecteurSage.Forms
                 {
                     connection.Open();
 
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insert_adresse_livraison(client,adresse), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insert_adresse_livraison(false, client, adresse), connection);
                     command.ExecuteReader();
 
                     connection.Close();
@@ -2555,7 +2555,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestSiNumPieceExisteDeja(num), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestSiNumPieceExisteDeja(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -2594,7 +2594,7 @@ namespace ConnecteurSage.Forms
                 {
                     List<string> adresses = new List<string>();
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestIntituleLivraison(Intitule), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.TestIntituleLivraison(false, Intitule), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
