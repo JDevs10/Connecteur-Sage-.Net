@@ -88,10 +88,10 @@ namespace ConnecteurSage
                 ConfigurationExport setting = new ConfigurationExport();
                 setting.Load();
 
-                label6.Text = "Statut d'Export Commande : " + setting.exportBonsCommandes;
-                label7.Text = "Statut d'Export Livraision : " + setting.exportBonsLivraisons;
-                label8.Text = "Statut d'Export Facture : " + setting.exportFactures;
-                label10.Text = "Statut Export Stock : "+setting.exportStock;
+                label6.Text = "Statut d'Export Commande : " + ((setting.exportBonsCommandes == "True") ? "Activer":"Désactiver");
+                label7.Text = "Statut d'Export Livraision : " + ((setting.exportBonsLivraisons == "True") ? "Activer":"Désactiver");
+                label8.Text = "Statut d'Export Facture : " + ((setting.exportFactures == "True") ? "Activer":"Désactiver");
+                label10.Text = "Statut Export Stock : "+((setting.exportStock == "True") ? "Activer":"Désactiver");
             }
             else
             {
@@ -117,15 +117,6 @@ namespace ConnecteurSage
             main.label2.Text = "Nom I : " + text2;
             main.label5.Text = "DSN II : " + text3;
             main.label9.Text = "Nom II : " + text4;
-        }
-
-        public void setExportValues(Boolean cmd, Boolean blv, Boolean fct, Boolean stk)
-        {
-            Main main = new Main();
-            main.label6.Text = cmd ? "True" : "False";
-            main.label7.Text = blv ? "True" : "False";
-            main.label8.Text = fct ? "True" : "False";
-            main.label10.Text = stk ? "True" : "False";
         }
 
         public static string getListeStatutName(int value)

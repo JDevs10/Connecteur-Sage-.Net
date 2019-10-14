@@ -194,16 +194,16 @@ namespace ConnecteurSage.Forms
 
 
                     //Enregistrement du statu export
-                    Classes.ConfigurationExport export = new Classes.ConfigurationExport(((checkBox5.Checked == true) ? "True" : "False"),
-                                                                                        ((checkBox4.Checked == true) ? "True" : "False"),
-                                                                                        ((checkBox3.Checked == true) ? "True" : "False"),
-                                                                                        ((checkBox6.Checked == true) ? "True" : "False"));
+                    /*
+                    Classes.ConfigurationExport export = new Classes.ConfigurationExport(
+                        ((checkBox5.Checked == true) ? "True" : "False"), ((checkBox4.Checked == true) ? "True" : "False"), ((checkBox3.Checked == true) ? "True" : "False"), ((checkBox6.Checked == true) ? "True" : "False")
+                        );
 
                     var myfile1 = File.Create(pathModule + @"\SettingExport.xml");
                     XmlSerializer xml1 = new XmlSerializer(typeof(Classes.ConfigurationExport));
                     xml1.Serialize(myfile1, export);
                     myfile1.Close();
-
+                    */
 
                     // ***********************************************************************
                 }
