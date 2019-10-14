@@ -109,7 +109,7 @@ namespace ConnecteurSage.Forms
                 Prefix = comboBox1.Text.Split('_')[0],
                 DNS_1 = "" + comboBox1.Text,
                 Nom_1 = "" + textBox2.Text,
-                Password_1 = "" + Utils.Encrypt(textBox3.Text),
+                Password_1 = ""+ textBox2.Text,//+ Utils.Encrypt(textBox3.Text),
 
             };
 
@@ -132,7 +132,7 @@ namespace ConnecteurSage.Forms
                 Prefix = comboBox2.Text.Split('_')[0],
                 DNS_2 = "" + comboBox2.Text,
                 Nom_2 = "" + textBox4.Text,
-                Password_2 = "" + Utils.Encrypt(textBox1.Text),
+                Password_2 = ""+ textBox2.Text, //+ Utils.Encrypt(textBox1.Text),
 
             };
 
