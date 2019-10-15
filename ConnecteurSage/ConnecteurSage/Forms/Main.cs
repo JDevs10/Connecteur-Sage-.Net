@@ -10,6 +10,8 @@ using ConnecteurSage.Classes;
 using System.Xml.Serialization;
 using System.IO;
 using Microsoft.Win32.TaskScheduler;
+using System.Data.Odbc;
+using ConnecteurSage.Helpers;
 
 namespace ConnecteurSage
 {
@@ -337,6 +339,59 @@ namespace ConnecteurSage
             }
         }
 
+        private void button10_Click(object sender, EventArgs e)
+        {
+            string checkTable = null;
+            try
+            {
+                //Verifie si la table 'Velog_Pending' avec id, cmd_id, cmd_ref, statut
+                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                {
+                    connection.Open();
+                    OdbcCommand command = new OdbcCommand(QueryHelper.checkVelog_PendingTable(true), connection);
+                    {
+                        using (IDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                if (reader[0].ToString().Equals("0"))
+                                {
+                                    checkTable = reader[0].ToString();
 
+                                } else if (reader[0].ToString().Equals("1"))
+                                {
+                                    checkTable = reader[0].ToString();
+                                }
+                            }
+                        }
+                    }
+
+                    //Si lea table n'existe pas alors creer la
+                    if (checkTable != null && checkTable.Equals("0"))
+                    {
+                        OdbcCommand command1 = new OdbcCommand(QueryHelper.createVelog_PendingTable(true), connection);
+                        {
+                            using (IDataReader reader = command1.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    Console.WriteLine("Table \"Velog_Pending\" est créé !", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                            }
+                        }
+                    }
+                    else if(checkTable != null && checkTable.Equals("1"))
+                    {
+                        Console.WriteLine("Table \"Velog_Pending\" existe !", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 }

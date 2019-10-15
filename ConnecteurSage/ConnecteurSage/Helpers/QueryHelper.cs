@@ -648,7 +648,90 @@ namespace ConnecteurSage.Helpers
             }
    }
 
-    #endregion
+        public static string getCommandeStatut(bool sqlConnexion)
+        {
+            ConfigurationExport export = new ConfigurationExport();
+            export.Load();
 
-  }
+            if (sqlConnexion)
+            {
+                return "SELECT cbMarq, DO_Statut FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
+            }
+            else
+            {
+                return "SELECT cbMarq, DO_Statut FROM F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
+            }
+        }
+
+        public static string checkVelog_PendingTable(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                return "IF (EXISTS (SELECT * " +
+                                    "FROM INFORMATION_SCHEMA.TABLES " +
+                                    "WHERE TABLE_SCHEMA = '" + getPrefix() + "' " + //DataBase.dbo
+                                    "AND  TABLE_NAME = 'F_DOCENTETE')) " +
+                            "BEGIN " +
+                                "SELECT FIELD(0, 0); " +    //Return 1
+                            "END " +
+                        "ELSE " +
+                            "BEGIN " +
+                                "SELECT FIELD(0, 1); " +    //Return 0
+                            "END";
+            }
+            else
+            {
+                return "Dont Support ODBC Request";
+            }
+        }
+
+        public static string createVelog_PendingTable(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                return "CREATE TABLE " + getPrefix() + "Velog_Pending{" +
+                    "ID INT PRIMARY KEY NOT NULL, "+
+                    "CMD_ID VARCHAR(255)," +
+                    "CMD_REF VARCHAR(255)," +
+                    "STATUT VARCHAR(255)" +
+                    "}";
+            }
+            else
+            {
+                return "CREATE TABLE Velog_Pending{" +
+                    "ID INT PRIMARY KEY NOT NULL, " +
+                    "CMD_ID VARCHAR(255)," +
+                    "CMD_REF VARCHAR(255)," +
+                    "STATUT VARCHAR(255)" +
+                    "}";
+            }
+        }
+
+        public static string changeOrderStatut(bool sqlConnexion, string cmd_NumCommande)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '"+ cmd_NumCommande + "' ";
+            }
+            else
+            {
+                return "UPDATE F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '" + cmd_NumCommande + "'";
+            }
+
+            ConfigurationExport export = new ConfigurationExport();
+            export.Load();
+
+            if (sqlConnexion)
+            {
+                return "SELECT cbMarq, DO_Statut FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
+            }
+            else
+            {
+                return "SELECT cbMarq, DO_Statut FROM F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
+            }
+        }
+
+                #endregion
+
+    }
 }

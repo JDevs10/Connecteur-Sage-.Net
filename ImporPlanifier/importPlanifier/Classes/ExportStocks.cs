@@ -40,7 +40,6 @@ namespace importPlanifier.Classes
             List<Order> listCommande = new List<Order>();
              using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
             {
-               
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
                     OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);

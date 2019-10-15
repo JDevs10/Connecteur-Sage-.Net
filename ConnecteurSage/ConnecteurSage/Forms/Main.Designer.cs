@@ -70,6 +70,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.button10 = new System.Windows.Forms.Button();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -204,6 +205,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.button10);
             this.tabPage4.Controls.Add(this.button9);
             this.tabPage4.Controls.Add(this.button7);
             this.tabPage4.Controls.Add(this.groupBox2);
@@ -220,9 +222,9 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(351, 176);
+            this.button9.Location = new System.Drawing.Point(412, 176);
             this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(110, 23);
+            this.button9.Size = new System.Drawing.Size(90, 23);
             this.button9.TabIndex = 10;
             this.button9.Text = "Config Export";
             this.button9.UseVisualStyleBackColor = true;
@@ -230,9 +232,9 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(235, 176);
+            this.button7.Location = new System.Drawing.Point(316, 176);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(110, 23);
+            this.button7.Size = new System.Drawing.Size(90, 23);
             this.button7.TabIndex = 9;
             this.button7.Text = "Config Mail";
             this.button7.UseVisualStyleBackColor = true;
@@ -329,9 +331,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(121, 176);
+            this.button3.Location = new System.Drawing.Point(220, 176);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(110, 23);
+            this.button3.Size = new System.Drawing.Size(90, 23);
             this.button3.TabIndex = 6;
             this.button3.Text = "Config DSN";
             this.button3.UseVisualStyleBackColor = true;
@@ -533,6 +535,16 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(124, 176);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(90, 23);
+            this.button10.TabIndex = 11;
+            this.button10.Text = "Initialisé";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -616,6 +628,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button button10;
     }
 
 }

@@ -235,6 +235,7 @@ namespace ConnecteurSage.Forms
                     fileName = string.Format("orders_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
                 }
 
+                bool veolog_file_check = false;
                 using (StreamWriter writer = new StreamWriter(textBox1.Text + @"\" + fileName, false, Encoding.Default))
                 {
                     logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Ecrire le fichier dans : " + textBox1.Text + @"\" + fileName.Replace("..", "."));
@@ -244,7 +245,7 @@ namespace ConnecteurSage.Forms
                     {
                         //format Veolog
                         writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;Veolog;35 Avenue de Bethunes;ZI de Bethunes;;95310;Saint Ouen l'Aumone;FR;766666666;a.bertolino@veolog.fr;20180917;1200;ENLEVEMENT;;;COMMANDE DE TEST"); // E line
-                        
+
                         CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 
                         int qteTotal = 0;
@@ -264,11 +265,21 @@ namespace ConnecteurSage.Forms
                             declarerpourrien = CommandeAExporter.Lines[i].Quantite.Split(',');
                             qteTotal = qteTotal + Convert.ToInt16(declarerpourrien[0]);
 
-                            writer.WriteLine("L;;"+ ((CommandeAExporter.Lines[i].codeArticle.Length>30)? CommandeAExporter.Lines[i].codeArticle.Substring(0,30): CommandeAExporter.Lines[i].codeArticle) +";;"+ declarerpourrien[0]+";"); // L line
+                            writer.WriteLine("L;;" + ((CommandeAExporter.Lines[i].codeArticle.Length > 30) ? CommandeAExporter.Lines[i].codeArticle.Substring(0, 30) : CommandeAExporter.Lines[i].codeArticle) + ";;" + declarerpourrien[0] + ";"); // L line
 
                         }
 
                         writer.WriteLine("F;" + CommandeAExporter.Lines.Count + ";" + qteTotal + ";"); // F line
+                        writer.Close();
+
+                        //Vérifier si le fichier a bien été créé et écrit
+                        if (File.Exists(textBox1.Text + @"\" + fileName))
+                        {
+                            if (new FileInfo(textBox1.Text + @"\" + fileName).Length > 0)
+                            {
+                                veolog_file_check = true;
+                            }
+                        }
                     }
                     else
                     {
@@ -308,8 +319,49 @@ namespace ConnecteurSage.Forms
                     }
                 }
 
-                MessageBox.Show("Commande exportée avec succés" , "Information !!",
-                                             MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                //changer le statut de la commande
+                logFileWriter.WriteLine("");
+                logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Changer le statut de la commande \""+ CommandeAExporter.NumCommande + "\".");
+                if (veolog_file_check)
+                {
+                    try
+                    {
+                        using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                        {
+                            connection.Open();
+
+                            logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : SQL ===> "+ QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande), connection);
+                            {
+                                using (IDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        //Statut Update
+                                    }
+                                }
+                            }
+                            connection.Close();
+                            logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                        MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
+                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: "+ ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                        return;
+                    }
+                }
+
+                MessageBox.Show("Commande exportée avec succés", "Information !!",
+                                                 MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Commande exportée avec succés.");
                 

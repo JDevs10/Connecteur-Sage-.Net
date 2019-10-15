@@ -286,6 +286,8 @@ namespace importPlanifier.Classes
                                     veolog_format = false;
                                     fileName = fileName.Replace("..", ".");
                                 }
+
+                                bool veolog_file_check = false;
                                 using (StreamWriter writer = new StreamWriter(exportPath + @"\" + fileName, false, Encoding.Default))
                                 {
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ecrire le fichier dans : " + exportPath + @"\" + fileName.Replace("..", "."));
@@ -319,6 +321,15 @@ namespace importPlanifier.Classes
                                         }
                                         writer.WriteLine("F;" + CommandeAExporter.Lines.Count + ";" + qteTotal + ";"); // F line
                                         writer.Close();
+
+                                        //Vérifier si le fichier a bien été créé et écrit
+                                        if (File.Exists(exportPath + @"\" + fileName))
+                                        {
+                                            if (new FileInfo(exportPath + @"\" + fileName).Length > 0)
+                                            {
+                                                veolog_file_check = true;
+                                            }
+                                        }
                                     }
                                     else
                                     {
@@ -355,6 +366,45 @@ namespace importPlanifier.Classes
                                         writer.WriteLine("ORDEND;" + CommandeAExporter.MontantTotal.ToString().Replace(",", ".") + ";");
 
                                         writer.Close();
+                                    }
+                                }
+
+                                //changer le statut de la commande
+                                if (veolog_file_check)
+                                {
+                                    try
+                                    {
+                                        logFileWriter.WriteLine("");
+                                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
+
+                                        using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                        {
+                                            connection.Open();
+
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : SQL ===> " + QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande));
+                                            OdbcCommand command1 = new OdbcCommand(QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande), connection);
+                                            {
+                                                using (IDataReader reader = command1.ExecuteReader())
+                                                {
+                                                    while (reader.Read())
+                                                    {
+                                                        //Statut Update
+                                                    }
+                                                }
+                                            }
+                                            connection.Close();
+                                            logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
+                                        }
+
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                        logFileWriter.WriteLine("");
+                                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                        return;
                                     }
                                 }
 

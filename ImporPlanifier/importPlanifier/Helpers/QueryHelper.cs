@@ -547,6 +547,18 @@ namespace importPlanifier.Helpers
             }
         }
 
+        public static string changeOrderStatut(bool sqlConnexion, string cmd_NumCommande)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '" + cmd_NumCommande + "' ";
+            }
+            else
+            {
+                return "UPDATE F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '" + cmd_NumCommande + "'";
+            }
+        }
+
         public static string getStockInfo(bool sqlConnexion)
         {
             if (sqlConnexion)
