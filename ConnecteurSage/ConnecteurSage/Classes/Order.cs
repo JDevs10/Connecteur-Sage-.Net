@@ -118,6 +118,8 @@ namespace ConnecteurSage.Classes
     /// <summary>
     /// Liste ligne
     /// </summary>
+    public string cbMarq { get; set; }
+    public string statut { get; set; }
     public string commentaires { get; set; }
     /// <summary>
     /// Liste ligne

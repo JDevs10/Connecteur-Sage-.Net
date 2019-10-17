@@ -231,12 +231,6 @@ namespace ConnecteurSage
                     "l'export de documents commerciaux. \n" +
                     "Aussi bien en manuel qu'en \n" +
                     "automatique.";
-             
-
-
-
-
-
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -345,52 +339,96 @@ namespace ConnecteurSage
             try
             {
                 //Verifie si la table 'Velog_Pending' avec id, cmd_id, cmd_ref, statut
-                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                OdbcConnection connection = Connexion.CreateOdbcConnexionSQL();
+                connection.Open();
+                OdbcCommand command;
+
+                try
                 {
-                    connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.checkVelog_PendingTable(true), connection);
+                    command = new OdbcCommand(QueryHelper.checkVelog_PendingTable(true), connection);
+                    using (IDataReader reader = command.ExecuteReader())
                     {
+                        while (reader.Read())
+                        {
+                            if (reader[0].ToString().Equals("0"))
+                            {
+                                checkTable = reader[0].ToString();
+
+                            }
+                            else if (reader[0].ToString().Equals("1"))
+                            {
+                                checkTable = reader[0].ToString();
+                            }
+                        }
+                    }
+                }
+                catch (OdbcException ex)
+                {
+                    MessageBox.Show(" ERROR[Init 1] : "+ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                //Si la table n'existe pas alors creer la
+                if (checkTable != null && checkTable.Equals("0"))
+                {
+                    try
+                    {
+                        command = new OdbcCommand(QueryHelper.createVelog_PendingTable(true), connection);
                         using (IDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                if (reader[0].ToString().Equals("0"))
-                                {
-                                    checkTable = reader[0].ToString();
-
-                                } else if (reader[0].ToString().Equals("1"))
-                                {
-                                    checkTable = reader[0].ToString();
-                                }
+                                Console.WriteLine("Table \"Veolog_Pending\" est créé !", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
                     }
-
-                    //Si lea table n'existe pas alors creer la
-                    if (checkTable != null && checkTable.Equals("0"))
+                    catch (OdbcException ex)
                     {
-                        OdbcCommand command1 = new OdbcCommand(QueryHelper.createVelog_PendingTable(true), connection);
-                        {
-                            using (IDataReader reader = command1.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    Console.WriteLine("Table \"Velog_Pending\" est créé !", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                }
-                            }
-                        }
+                        MessageBox.Show(" ERROR[Init 2] : " + ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
-                    else if(checkTable != null && checkTable.Equals("1"))
-                    {
-                        Console.WriteLine("Table \"Velog_Pending\" existe !", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    //ConfigurationDNS settings = new ConfigurationDNS();
+                    //settings.LoadSQL();
 
+                    //MessageBox.Show(" Information[Init 1] : Il faut creer la table 'Veolog_Pending' dans la base de donnee ("+ settings.Prefix+ ".dbo)", "Information !", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //return;
                 }
+                else if(checkTable != null && checkTable.Equals("1"))
+                {
+                    DialogResult resultDialog5 = MessageBox.Show("La table \"Velog_Pending\" existe !\n\nVoulez-vous vider tous les données dans cette table ?",
+                                                "Information !",
+                                                MessageBoxButtons.YesNo,
+                                                MessageBoxIcon.Question,
+                                                MessageBoxDefaultButton.Button2);
+                    if (resultDialog5 == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            command = new OdbcCommand(QueryHelper.deleteVelog_PendingTableData(true), connection);
+                            command.ExecuteReader();
+                        }
+                        // Récupération d'une possible SDKException
+                        catch (SDKException ex)
+                        {
+                            MessageBox.Show(" ERROR[Init 3] : " + ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+
+                    var veolog_format = false;
+
+                    if (resultDialog5 == DialogResult.No)
+                    {
+                        connection.Close();
+                        return;
+                    }
+                }
+
+                connection.Close();
             }
             catch (Exception ex)
             {
-                //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                Console.WriteLine(ex.Message);
+                MessageBox.Show("ERROR[Init 4] : " + ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

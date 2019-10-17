@@ -1140,11 +1140,11 @@ namespace ConnecteurSage.Forms
                     logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                     logFileWriter_general.WriteLine("");
 
-                    logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog DESADV Inventaire.");
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog DESADV E Inventaire.");
 
                     if (lines[0].Split(';').Length == 6)
                     {
-                        string reference_DESADV_doc = lastNumberReference("DESADV", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
+                        string reference_DESADV_doc = lastNumberReference("BL", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
 
                         int i = 0;
                         string totallines = "";
@@ -1166,6 +1166,25 @@ namespace ConnecteurSage.Forms
                                 desadv_info.Date_De_Expedition = tab[3];
                                 desadv_info.Heure_De_Expedition = tab[4];
                                 desadv_info.Etat = tab[5];
+
+                                if(desadv_info.Etat == "X")
+                                {
+                                    desadv_info.Etat = "1";
+                                }
+                                else if(desadv_info.Etat == "P")
+                                {
+                                    desadv_info.Etat = "0";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé");
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_import.Close();
+                                    return;
+                                }
 
                                 dh = desadv_info;
                             }
@@ -1211,13 +1230,13 @@ namespace ConnecteurSage.Forms
                         }
                         else
                         {
-                            if (insertDesadv(reference_DESADV_doc, dh, dl, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
+                            if (insertDesadv_Veolog(reference_DESADV_doc, dh, dl, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
                             {
-                                MessageBox.Show("Le stock est importe avec succès", "Import",
+                                MessageBox.Show("Le DESADV est importe avec succès", "Import",
                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
                                 logFileWriter_general.Close();
                             }
                             else
@@ -1226,7 +1245,7 @@ namespace ConnecteurSage.Forms
                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
                                 logFileWriter_general.Close();
                             }
                         }
@@ -1396,10 +1415,10 @@ namespace ConnecteurSage.Forms
                 }
                 return result;
             }
-            else if(mask == "DESADV")
+            else if(mask == "BL")
             {
                 logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask DESADV");
+                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BL");
 
                 using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
@@ -1407,29 +1426,29 @@ namespace ConnecteurSage.Forms
                     {
                         connection.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(false, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
 
                         using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                         {
                             if (reader.Read()) // reads lines/rows from the query
                             {
                                 db_result = reader[0].ToString();
-                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask DESADV : " + db_result);
+                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BL : " + db_result);
                             }
                             else
                             {
-                                db_result = "MS00000";
-                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask DESADV : " + db_result);
+                                db_result = "BL00000";
+                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BL : " + db_result);
                             }
                         }
-
+                        
                     }
                     catch (OdbcException ex)
                     {
                         MessageBox.Show("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
                         logFileWriter.Close();
@@ -1452,7 +1471,7 @@ namespace ConnecteurSage.Forms
                     }
                     result += zeros + "" + newMaskID;
 
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask DESADV : " + result);
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BL : " + result);
                 }
                 return result;
             }
@@ -1650,7 +1669,6 @@ namespace ConnecteurSage.Forms
 
                         connection.Close();
                         return true;
-                    
 
                 }
                 catch (Exception ex)
@@ -2148,17 +2166,20 @@ namespace ConnecteurSage.Forms
             return list_of_products;  
         }
 
-        private static string[,] insertDesadv(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
+        private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 27];    // new string [x,y]
+            string[] list_of_client_info = null;
 
             int position_item = 0;
             DateTime d = DateTime.Now;
             string curr_date_time = d.ToString("yyyy-MM-dd hh:mm:ss");
             string curr_date = d.ToString("yyyy-MM-dd");
-            string curr_time = "000" + d.ToString("hhmmss");
+            //string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
+            string ref_client = "";
+            string ref_article = "";
             string name_article = "";
             string DL_PoidsNet = "0";
             string DL_PoidsBrut = "0";
@@ -2166,31 +2187,32 @@ namespace ConnecteurSage.Forms
 
             // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
-
             using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
             {
                 try
                 {
                     connection.Open(); //opening the connection
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Connexion ouverte.");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Connexion ouverte.");
 
                     int counter = 0;
 
                     foreach (Veolog_DESADV_Lines line in dl) //read item by item
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Lire la ligne de l'article.");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Lire la ligne de l'article.");
 
-                        //getProductNameByReference
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference(false, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        //get Product Name By Reference
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> "+ QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
                             using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
                                 if (reader.Read()) // If any rows returned
                                 {
-                                    name_article = (reader[0].ToString());          // sum up the total_negative variable. - check query
-                                    //DL_PoidsNet = (reader[1].ToString());         // get unit weight NET - check query
-                                    //DL_PoidsBrut = (reader[2].ToString());        // get unit weight BRUT - check query  
-                                    //DL_PrixUnitaire = (reader[3].ToString());     // get unit price  - check query 
+                                    ref_article = (reader[0].ToString());         // get product ref
+                                    name_article = (reader[1].ToString());        // sum up the total_negative variable. - check query
+                                    DL_PoidsNet = (reader[2].ToString());         // get unit weight NET - check query
+                                    DL_PoidsBrut = (reader[3].ToString());        // get unit weight BRUT - check query  
+                                    DL_PrixUnitaire = (reader[4].ToString());     // get unit price  - check query 
                                 }
                                 else// If no rows returned
                                 {
@@ -2199,9 +2221,57 @@ namespace ConnecteurSage.Forms
                             }
                         }
 
-                        if (name_article != "")
+                        //get Client Reference From CMD Ref
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Commande_Donneur_Ordre));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
-                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Article trouvé.");
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    ref_client = reader[0].ToString();
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                }
+                            }
+                        }
+
+                        //get Client Reference by Ref
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_client));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    list_of_client_info = new string[12];
+                                    list_of_client_info[0] = reader[0].ToString();      // CT_Num
+                                    list_of_client_info[1] = reader[1].ToString();      // CA_Num 
+                                    list_of_client_info[2] = reader[2].ToString();      // CG_NumPrinc
+                                    list_of_client_info[3] = reader[3].ToString();      // CT_NumPayeur
+                                    list_of_client_info[4] = reader[4].ToString();      // N_Condition
+                                    list_of_client_info[5] = reader[5].ToString();      // N_Devise
+                                    list_of_client_info[6] = reader[6].ToString();      // CT_Langue
+                                    list_of_client_info[7] = reader[7].ToString();      // DO_NbFacture = CT_Facture
+                                    list_of_client_info[8] = reader[8].ToString().Replace(',','.');      // DO_TxEscompte = CT_Taux02
+                                    list_of_client_info[9] = reader[9].ToString();      // N_CatCompta
+                                    list_of_client_info[10] = reader[10].ToString();    // CO_No
+                                    list_of_client_info[11] = reader[11].ToString();//  DO_Tarif = N_CatTarif
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                }
+                            }
+                        }
+
+                        if (ref_article != "" && name_article != "" && list_of_client_info != null)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Article trouvé.");
                             logFileWriter.WriteLine("");
 
                             try
@@ -2210,15 +2280,15 @@ namespace ConnecteurSage.Forms
 
                                 // DESADV prefix will be used to create document
                                 list_of_cmd_lines[counter, 0] = "0"; // DO_Domaine
-                                list_of_cmd_lines[counter, 1] = "1"; //DO_Type
-                                list_of_cmd_lines[counter, 2] = "1"; //DO_DocType
-                                list_of_cmd_lines[counter, 3] = "1"; //CT_NUM
+                                list_of_cmd_lines[counter, 1] = "3"; //DO_Type
+                                list_of_cmd_lines[counter, 2] = "3"; //DO_DocType
+                                list_of_cmd_lines[counter, 3] = list_of_client_info[0]; //CT_NUM
                                 list_of_cmd_lines[counter, 4] = reference_DESADV_doc; //DO_Piece
                                 list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
                                 list_of_cmd_lines[counter, 6] = curr_date; //DL_DateBC
                                 list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
                                 list_of_cmd_lines[counter, 8] = curr_date_seconds; // DO_Ref
-                                list_of_cmd_lines[counter, 9] = ""; // AR_Ref
+                                list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
                                 list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
                                 list_of_cmd_lines[counter, 11] = "1"; //DE_NO
                                 list_of_cmd_lines[counter, 12] = name_article; // DL_Design
@@ -2256,64 +2326,67 @@ namespace ConnecteurSage.Forms
                             {
                                 //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : ******************** Exception ********************");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : StackTrace :" + ex.StackTrace);
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Import annulée");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Exception ********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                 logFileWriter.Close();
                                 return null;
                             }
                         }
 
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Compter => "+ counter);
+                        counter++;
                     }
                     // ===== End Foreach =====
 
 
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Vérifier si un produit pour 21 = MS");
-                    logFileWriter.Write(DateTime.Now + " | insertDesadv() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument(true, "1", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, curr_date_time));
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(false, "3", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, list_of_client_info, dh.Etat));
 
-                    //generate document MS_____. in database.
+                    //generate document BLF_____. in database.
                     try
                     {
-                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument(true, "1", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, curr_date_time), connection); //calling the query and parsing the parameters into it
+                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
                         command.ExecuteReader(); // executing the query
                     }
                     catch (OdbcException ex)
                     {
                         logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Message :" + ex.Message);
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : StackTrace :" + ex.StackTrace);
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Import annulée");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                         //logFileWriter.Close();
                         return null;
                     }
+
 
                     string[,] products_MS = new string[position_item / 1000, 27]; // create array with enough space
 
                     //insert documentline into the database with articles having 20 as value @index 2
                     logFileWriter.WriteLine("");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : insert documentline into the database with articles having 20 as value @index 2");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert documentline into the database with articles having 3 as value @index 2");
 
                     for (int x = 0; x < list_of_cmd_lines.GetLength(0); x++)
                     {
-                        if (list_of_cmd_lines[x, 1] == "1")
+                        if (list_of_cmd_lines[x, 1] == "3")
                         {
                             for (int y = 0; y < list_of_cmd_lines.GetLength(1); y++)
                             {
                                 products_MS[x, y] = list_of_cmd_lines[x, y];
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : products_MS[" + x + "," + y + "] = " + products_MS[x, y]);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : products_BL_L[" + x + "," + y + "] = " + products_MS[x, y]);
                             }
 
                             //insert the article to documentline in the database
                             try
                             {
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : insert the article " + products_MS[x, 15] + " (Ref:" + products_MS[x, 10] + ") to documentline in the database");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert the article " + products_MS[x, 15] + " (Ref:" + products_MS[x, 10] + ") to documentline in the database");
 
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_MS, x));
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.insertDesadvDocumentLine_Veolog(true, products_MS, x));
 
-                                OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_MS, x), connection);
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocumentLine_Veolog(true, products_MS, x), connection);
                                 command.ExecuteReader();
                             }
                             catch (OdbcException ex)
@@ -2322,10 +2395,10 @@ namespace ConnecteurSage.Forms
                                 MessageBox.Show(" ERREUR[1]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", ""), "Erreur!!",
                                                             MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : ********************** OdbcException *********************");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Message :" + ex.Message);
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : StackTrace :" + ex.StackTrace);
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Import annulée");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException *********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                 //logFileWriter.Close();
                                 return null;
                             }
@@ -2340,10 +2413,12 @@ namespace ConnecteurSage.Forms
                                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     // return list_of_products[0][0];//return false because the query failed to execute
 
+                    MessageBox.Show("OK 10");
+
                     logFileWriter.WriteLine("");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : ********************** Exception 3 *********************");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : Message :: " + ex.Message);
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv() : StackTrace :: " + ex.StackTrace);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** Exception 3 *********************");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :: " + ex.Message);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :: " + ex.StackTrace);
                     connection.Close(); //disconnect from database
                     return null;
                 }
@@ -2764,7 +2839,6 @@ namespace ConnecteurSage.Forms
             
 
         }
-
 
 
         public static Boolean IsNumeric(string Nombre)

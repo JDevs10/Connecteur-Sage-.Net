@@ -107,11 +107,13 @@ namespace importPlanifier.Classes
     public string do_coord01 { get; set; }
     public string DO_MOTIF { get; set; }
     public string NomClient { get; set; }
+    public string cbMarq { get; set; }
+    public string statut { get; set; }
 
     #endregion
 
 
-  }
+    }
 
   /// <summary>
   /// Classe repésentant une ligne de vente de la commande

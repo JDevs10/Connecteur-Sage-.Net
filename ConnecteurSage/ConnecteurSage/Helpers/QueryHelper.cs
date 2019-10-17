@@ -397,13 +397,13 @@ namespace ConnecteurSage.Helpers
    {
             if (sqlConnexion)
             {
-                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01,liv.li_contact " +
+                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.do_tiers, doc.do_motif, doc.do_coord01, liv.li_contact " + //doc.cbMarq, doc.DO_Ref, doc.DO_Statut
                     "FROM " + getPrefix() + "F_COMPTET cli, " + getPrefix() + "P_condlivr cond, " + getPrefix() + "F_docentete doc, " + getPrefix() + "F_LIVRAISON liv " +
                     "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=1) AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition) AND (cli.CT_NUM=doc.do_tiers)";
             }
             else
             {
-                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01,liv.li_contact " +
+                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01, liv.li_contact " + //, doc.cbMarq, doc.DO_Ref, doc.DO_Statut
                     "FROM F_COMPTET cli, P_condlivr cond, F_docentete doc, F_LIVRAISON liv " +
                     "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=1) AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition) AND (cli.CT_NUM=doc.do_tiers)";
             }
@@ -564,7 +564,14 @@ namespace ConnecteurSage.Helpers
    {
             if (sqlConnexion)
             {
-                return "SELECT DO_Piece FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece LIKE '" + mask + "%' ORDER BY DO_Piece DESC";
+                if (mask == "BL")
+                {
+                    return "SELECT DO_Piece FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece LIKE '" + mask + "%' AND DO_Type = 3 ORDER BY DO_Piece DESC";    //SQL For DESADV 'BL'
+                }
+                else
+                {
+                    return "SELECT DO_Piece FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece LIKE '" + mask + "%' ORDER BY DO_Piece DESC";
+                }
             }
             else
             {
@@ -586,8 +593,8 @@ namespace ConnecteurSage.Helpers
             }
    }
 
-   public static string getPositiveStockOfAProduct(bool sqlConnexion, string reference) 
-   {
+        public static string getPositiveStockOfAProduct(bool sqlConnexion, string reference) 
+        {
             if (sqlConnexion)
             {
                 //return "SELECT DISTINCT(DO_Piece),DO_Ref,AR_Ref,DL_Qte,DL_Design FROM "+ getPrefix() + "F_DOCLIGNE WHERE (DO_Piece LIKE 'FFA%' OR DO_Piece LIKE 'ME%' OR DO_Piece LIKE 'FBL%' ) AND AR_Ref IN('" + reference + "') ";
@@ -598,10 +605,10 @@ namespace ConnecteurSage.Helpers
                 //return "SELECT DISTINCT(DO_Piece),DO_Ref,AR_Ref,DL_Qte,DL_Design FROM "+ getPrefix() + "F_DOCLIGNE WHERE (DO_Piece LIKE 'FFA%' OR DO_Piece LIKE 'ME%' OR DO_Piece LIKE 'FBL%' ) AND AR_Ref IN('" + reference + "') ";
                 return "SELECT DO_Piece,DO_Ref,AR_Ref,DL_Qte,DL_Design,DL_Ligne FROM F_DOCLIGNE WHERE (DO_Piece LIKE 'FFA%' OR DO_Piece LIKE 'ME%' OR DO_Piece LIKE 'FBL%' ) AND AR_Ref IN('" + reference + "') ";
             }
-   }
+        }
 
-   public static string getProductNameByReference(bool sqlConnexion, string reference)
-   {
+        public static string getProductNameByReference(bool sqlConnexion, string reference)
+        {
             if (sqlConnexion)
             {
                 return "SELECT AR_Design,AR_PoidsNet,AR_PoidsBrut,AR_PrixAch FROM " + getPrefix() + "F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
@@ -610,32 +617,68 @@ namespace ConnecteurSage.Helpers
             {
                 return "SELECT AR_Design,AR_PoidsNet,AR_PoidsBrut,AR_PrixAch FROM F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
             }
-   }
+        }
 
-   public static string insertStockDocument(bool sqlConnexion, string DO_Type, string reference_doc, string curr_date, string curr_date_seconds, string curr_date_time)
-   {
+        public static string getProductNameByReference_DESADV(bool sqlConnexion, string reference)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT AR_Ref,AR_Design,AR_PoidsNet,AR_PoidsBrut,AR_PrixAch FROM " + getPrefix() + "F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
+            }
+            else
+            {
+                return "SELECT AR_Ref,AR_Design,AR_PoidsNet,AR_PoidsBrut,AR_PrixAch FROM F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
+            }
+        }
+
+        public static string getClientReferenceFromCMD_DESADV(bool sqlConnexion, string reference_cmd)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT DO_TIERS FROM " + getPrefix() + "F_DOCENTETE WHERE DO_REF IN('" + reference_cmd + "') ";
+            }
+            else
+            {
+                return "SELECT DO_TIERS FROM F_DOCENTETE WHERE DO_REF IN('" + reference_cmd + "') ";
+            }
+        }
+
+        public static string getClientReferenceById_DESADV(bool sqlConnexion, string CT_Num)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT CT_Num, CA_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise, CT_Langue, CT_Facture, CT_Taux02, N_CatCompta, CO_No, N_CatTarif FROM " + getPrefix()+"F_Comptet WHERE CT_Num IN('"+ CT_Num+"')";
+            }
+            else
+            {
+                return "SELECT CT_Num, CA_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise, CT_Langue, CT_Facture, CT_Taux02, N_CatCompta, CO_No, N_CatTarif FROM F_Comptet WHERE CT_Num IN('" + CT_Num + "')";
+            }
+        }
+
+        public static string insertStockDocument(bool sqlConnexion, string DO_Type, string reference_doc, string curr_date, string curr_date_seconds, string curr_date_time)
+       {
             if (sqlConnexion)
             {
                 string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_CONDITION, DO_DATE, DO_DATELIVR, DO_DEVISE, DO_DOMAINE, DO_EXPEDIT, DO_LANGUE, DO_NBFACTURE, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TXESCOMPTE, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, N_CATCOMPTA, DO_COORD01, COMMENTAIRES)" +
-                             "VALUES (NULL, NULL, 0, 0, 0, 0, 1, 0,{d '" + curr_date + "'}, NULL, 0, 2, 0 , 0, 0 , 0, '" + reference_doc + "', '" + curr_date_seconds + "', 0, 0 , 0, 1, 0, 0, " + DO_Type + ", 1, 0, 0, 0, '','" + reference_doc + ":document FROM " + getPrefix() + "logistic.')";
+                                "VALUES (NULL, NULL, 0, 0, 0, 0, 1, 0, {d '" + curr_date + "'}, NULL, 0, 2, 0, 0, 0 , 0, '" + reference_doc + "', '" + curr_date_seconds + "', 0, 0, 0, 1, 0, 0, " + DO_Type + ", 1, 0, 0, 0, '','" + reference_doc + ":document FROM " + getPrefix() + "logistic.')";
                 return sql;
             }
             else
             {
                 string sql = "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_CONDITION, DO_DATE, DO_DATELIVR, DO_DEVISE, DO_DOMAINE, DO_EXPEDIT, DO_LANGUE, DO_NBFACTURE, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TXESCOMPTE, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, N_CATCOMPTA, DO_COORD01, COMMENTAIRES)" +
-                             "VALUES (NULL, NULL, 0, 0, 0, 0, 1, 0,{d '" + curr_date + "'}, NULL, 0, 2, 0 , 0, 0 , 0, '" + reference_doc + "', '" + curr_date_seconds + "', 0, 0 , 0, 1, 0, 0, " + DO_Type + ", 1, 0, 0, 0, '','" + reference_doc + ":document FROM " + getPrefix() + "logistic.')";
+                                "VALUES (NULL, NULL, 0, 0, 0, 0, 1, 0,{d '" + curr_date + "'}, NULL, 0, 2, 0 , 0, 0 , 0, '" + reference_doc + "', '" + curr_date_seconds + "', 0, 0 , 0, 1, 0, 0, " + DO_Type + ", 1, 0, 0, 0, '','" + reference_doc + ":document FROM " + getPrefix() + "logistic.')";
                 return sql;
             }
-   }
+       }
 
-   public static string insertStockDocumentLine(bool sqlConnexion, string[,] products, int x)
-   {
+       public static string insertStockDocumentLine(bool sqlConnexion, string[,] products, int x)
+       {
             if (sqlConnexion)
             {
                 // INSERT INTO BIJOU.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00016', {d '2019-09-19'}, {d '2019-09-19'}, 0, '201991917544', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)
                 //string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00017', {d '2019-09-23'}, {d '2019-09-23'}, 0, '2019921175800', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)";
                 string sql = "INSERT INTO " + getPrefix() + "F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) " +
-                             "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
+                                "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
                 return sql;
             }
             else
@@ -643,10 +686,46 @@ namespace ConnecteurSage.Helpers
                 // INSERT INTO BIJOU.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00016', {d '2019-09-19'}, {d '2019-09-19'}, 0, '201991917544', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)
                 //string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00017', {d '2019-09-23'}, {d '2019-09-23'}, 0, '2019921175800', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)";
                 string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) " +
-                             "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
+                                "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
                 return sql;
             }
-   }
+       }
+
+        public static string insertDesadvDocument_Veolog(bool sqlConnexion, string DO_Type, string reference_doc, string curr_date, string DO_Ref, string[] reference_client, string DO_Expedit)
+        {
+            if (sqlConnexion)
+            {
+                string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, DO_COORD01, COMMENTAIRES, DO_COURS)" +
+                                "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + reference_client[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date + "'}, NULL, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + DO_Ref + "', 21, 2, "+ reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, 0, '', '" + reference_doc + ": document from logistic.', 0.000000)";
+                return sql;
+            }
+            else
+            {
+                string sql = "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, DO_COORD01, COMMENTAIRES, DO_COURS)" +
+                                "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + reference_client[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date + "'}, NULL, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + DO_Ref + "', 21, 2, " + reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, 0, '', '" + reference_doc + ": document from logistic.', 0.000000)";
+                return sql;
+            }
+        }
+
+        public static string insertDesadvDocumentLine_Veolog(bool sqlConnexion, string[,] products, int x)
+        {
+            if (sqlConnexion)
+            {
+                // INSERT INTO BIJOU.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00016', {d '2019-09-19'}, {d '2019-09-19'}, 0, '201991917544', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)
+                //string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00017', {d '2019-09-23'}, {d '2019-09-23'}, 0, '2019921175800', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)";
+                string sql = "INSERT INTO " + getPrefix() + "F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) " +
+                                "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
+                return sql;
+            }
+            else
+            {
+                // INSERT INTO BIJOU.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00016', {d '2019-09-19'}, {d '2019-09-19'}, 0, '201991917544', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)
+                //string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00017', {d '2019-09-23'}, {d '2019-09-23'}, 0, '2019921175800', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)";
+                string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) " +
+                                "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {d '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ")";
+                return sql;
+            }
+        }
 
         public static string getCommandeStatut(bool sqlConnexion)
         {
@@ -665,19 +744,20 @@ namespace ConnecteurSage.Helpers
 
         public static string checkVelog_PendingTable(bool sqlConnexion)
         {
+            ConfigurationDNS settings = new ConfigurationDNS();
+            settings.LoadSQL();
+
             if (sqlConnexion)
             {
-                return "IF (EXISTS (SELECT * " +
-                                    "FROM INFORMATION_SCHEMA.TABLES " +
-                                    "WHERE TABLE_SCHEMA = '" + getPrefix() + "' " + //DataBase.dbo
-                                    "AND  TABLE_NAME = 'F_DOCENTETE')) " +
-                            "BEGIN " +
-                                "SELECT FIELD(0, 0); " +    //Return 1
-                            "END " +
-                        "ELSE " +
-                            "BEGIN " +
-                                "SELECT FIELD(0, 1); " +    //Return 0
-                            "END";
+                return "IF EXISTS (SELECT * FROM "+ settings.Prefix+ ".INFORMATION_SCHEMA.TABLES " +
+                                    "WHERE TABLE_NAME = 'Veolog_Pending' ) " +
+                        "BEGIN " +
+                            "SELECT 1 as Value " +    //Return 1
+                        "END " +
+                    "ELSE " +
+                        "BEGIN " +
+                            "SELECT 0 as Value " +    //Return 0
+                        "END";
             }
             else
             {
@@ -689,16 +769,16 @@ namespace ConnecteurSage.Helpers
         {
             if (sqlConnexion)
             {
-                return "CREATE TABLE " + getPrefix() + "Velog_Pending{" +
+                return "CREATE TABLE " + getPrefix() + "Veolog_Pending(" +
                     "ID INT PRIMARY KEY NOT NULL, "+
                     "CMD_ID VARCHAR(255)," +
                     "CMD_REF VARCHAR(255)," +
                     "STATUT VARCHAR(255)" +
-                    "}";
+                    ")";
             }
             else
             {
-                return "CREATE TABLE Velog_Pending{" +
+                return "CREATE TABLE Veolog_Pending{" +
                     "ID INT PRIMARY KEY NOT NULL, " +
                     "CMD_ID VARCHAR(255)," +
                     "CMD_REF VARCHAR(255)," +
@@ -707,31 +787,54 @@ namespace ConnecteurSage.Helpers
             }
         }
 
-        public static string changeOrderStatut(bool sqlConnexion, string cmd_NumCommande)
+        public static string insertOrderInVeolog_Pending(bool sqlConnexion, string cmd_cbMarq, string cmd_DoRef, string cmd_DoPiece, string cmd_statut)
         {
             if (sqlConnexion)
             {
-                return "UPDATE " + getPrefix() + "F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '"+ cmd_NumCommande + "' ";
+                return "INSERT INTO " + getPrefix() + "Veolog_Pending(CMD_cbMarq, CMD_REF, CMD_PIECE, CMD_STATUT) VALUE(" + cmd_cbMarq + ", '" + cmd_DoRef + "', '" + cmd_DoPiece + "', '" + cmd_statut + "')";
+            }
+            else
+            {
+                return "INSERT INTO Veolog_Pending(CMD_cbMarq, CMD_REF, CMD_PIECE, CMD_STATUT) VALUE(" + cmd_cbMarq + ", '" + cmd_DoRef + "', '" + cmd_DoPiece + "', '" + cmd_statut + "')";
+            }
+        }
+
+        public static string getCommandeFromVeolog_Pending(bool sqlConnexion, string cmd_cbMarq)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT CMD_PIECE FROM " + getPrefix() + "Veolog_Pending WHERE cbMarq = '" + cmd_cbMarq + "'";
+            }
+            else
+            {
+                return "SELECT CMD_PIECE FROM Veolog_Pending WHERE cbMarq = '" + cmd_cbMarq + "'";
+            }
+        }
+
+        public static string deleteVelog_PendingTableData(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                return "DELETE FROM " + getPrefix() + "Veolog_Pending";
+            }
+            else
+            {
+                return "DELETE FROM Veolog_Pending";
+            }
+        }
+
+        public static string changeOrderStatutById(bool sqlConnexion, string cmd_NumCommande)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '" + cmd_NumCommande + "' ";
             }
             else
             {
                 return "UPDATE F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '" + cmd_NumCommande + "'";
             }
-
-            ConfigurationExport export = new ConfigurationExport();
-            export.Load();
-
-            if (sqlConnexion)
-            {
-                return "SELECT cbMarq, DO_Statut FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
-            }
-            else
-            {
-                return "SELECT cbMarq, DO_Statut FROM F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
-            }
         }
-
-                #endregion
+     #endregion
 
     }
 }
