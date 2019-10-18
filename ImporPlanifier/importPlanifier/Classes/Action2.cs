@@ -30,7 +30,8 @@ namespace importPlanifier.Classes
         /* JL LOG */
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
-        private string outputFileError = Directory.GetCurrentDirectory() + @"\LOG\Error_File\";
+        private string directoryName_SuccessFile = Directory.GetCurrentDirectory() + @"\" + "Success File";
+        private string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
         private StreamWriter logFileWriter_general = null;
         private StreamWriter logFileWriter_import = null;
 
@@ -104,9 +105,15 @@ namespace importPlanifier.Classes
                 //Create log directory
                 Directory.CreateDirectory(logDirectoryName_import);
             }
-            if (!Directory.Exists(outputFileError))
+            if (!Directory.Exists(directoryName_SuccessFile))
             {
-                System.IO.Directory.CreateDirectory(outputFileError);
+                // Create Success File
+                Directory.CreateDirectory(directoryName_SuccessFile);
+            }
+            if (!Directory.Exists(directoryName_ErrorFile))
+            {
+                // Create Error File
+                Directory.CreateDirectory(directoryName_ErrorFile);
             }
 
             //Create log file
@@ -1078,6 +1085,11 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+
+                                //deplacer les fichiers csv
+                                File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                                 logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine("");
@@ -1097,6 +1109,11 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information Fatale *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Le stock est importe avec succès");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import succès");
+
+                                    //deplacer les fichiers csv
+                                    File.Move(filename.Name, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                                     logFileWriter_general.Close();
                                 }
                                 else
@@ -1107,6 +1124,11 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+
+                                    //deplacer les fichiers csv
+                                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                                     logFileWriter_general.Close();
                                 }
                             }
@@ -1198,6 +1220,11 @@ namespace importPlanifier.Classes
                             logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                             logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+
+                            //deplacer les fichiers csv
+                            File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                             logFileWriter_general.Close();
 
 
@@ -1206,6 +1233,11 @@ namespace importPlanifier.Classes
                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                            //deplacer les fichiers csv
+                            File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                             logFileWriter_import.Close();
 
                         }
@@ -1291,12 +1323,22 @@ namespace importPlanifier.Classes
                                 {
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
+
+                                    //deplacer les fichiers csv
+                                    File.Move(filename.Name, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                                     logFileWriter_general.Close();
                                 }
                                 else
                                 {
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+
+                                    //deplacer les fichiers csv
+                                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                                     logFileWriter_general.Close();
                                 }
                             }
@@ -1305,6 +1347,11 @@ namespace importPlanifier.Classes
                         {
                             logFileWriter_import.WriteLine("");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+
+                            //deplacer les fichiers csv
+                            File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                         }
                     }
                     else
@@ -1334,13 +1381,17 @@ namespace importPlanifier.Classes
                 //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
                 if (File.Exists(dir + @"\" + filename) && tabCommandeError.Count > 0)
                 {
-                    var errorfilename = string.Format("{0:ddMMyyyy_HHmmss}_" + filename, DateTime.Now);
-                    System.IO.File.Move(dir + @"\" + filename, outputFileError + @"\" + errorfilename);
+                    //var errorfilename = string.Format("{0:ddMMyyyy_HHmmss}_" + filename, DateTime.Now);
+                    //System.IO.File.Move(dir + @"\" + filename, outputFileError + @"\" + errorfilename);
 
                     logFileWriter_import.WriteLine("");
                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
-                    logFileWriter_import.WriteLine(DateTime.Now + " : le fichier a été déplacé dans ===> " + errorfilename);
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                    //deplacer les fichiers csv
+                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
                     logFileWriter_import.Close();
                 }
 
@@ -3626,6 +3677,12 @@ namespace importPlanifier.Classes
                 LogFile.WriteLine(DateTime.Now + " : Erreur[46] - " + "Erreur Calcule de conditionnement :" + e.Message);
                 return 0;
             }
+        }
+
+        // Get the current time in milliseconds
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssffff");
         }
     }
 }

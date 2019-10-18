@@ -19,6 +19,8 @@ namespace ConnecteurSage.Forms
     {
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
+        private string directoryName_SuccessFile = Directory.GetCurrentDirectory() + @"\" + "Success File";
+        private string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
 
         private StreamWriter logFileWriter_general = null;
         private StreamWriter logFileWriter_import = null;
@@ -95,13 +97,23 @@ namespace ConnecteurSage.Forms
             //Check if the Log directory exists
             if (!Directory.Exists(logDirectoryName_general))
             {
-                //Create log directory
+                // Create log directory
                 Directory.CreateDirectory(logDirectoryName_general);
             }
             if (!Directory.Exists(logDirectoryName_import))
             {
-                //Create log directory
+                // Create log directory
                 Directory.CreateDirectory(logDirectoryName_import);
+            }
+            if (!Directory.Exists(directoryName_SuccessFile))
+            {
+                // Create Success File
+                Directory.CreateDirectory(directoryName_SuccessFile);
+            }
+            if (!Directory.Exists(directoryName_ErrorFile))
+            {
+                // Create Error File
+                Directory.CreateDirectory(directoryName_ErrorFile);
             }
 
             //Create log file
@@ -161,6 +173,8 @@ namespace ConnecteurSage.Forms
 
                     if (order.Id == "erreur")
                     {
+                        
+
                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                         logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
@@ -169,6 +183,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : orderId erreur");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -187,6 +206,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : orderId est null");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -209,6 +233,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -227,6 +256,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -245,6 +279,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -265,6 +304,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : "+existe+".");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -280,6 +324,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : N° de pièce : '" + existe + "' trouvée dans la Base de Données");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                       return;
@@ -302,6 +351,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -318,6 +372,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -334,6 +393,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         Close();
                         return;
@@ -355,6 +419,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         return;
                     }
@@ -392,6 +461,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : deviseCommande == erreur");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         return;
                     }
@@ -451,6 +525,11 @@ namespace ConnecteurSage.Forms
                                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                                     logFileWriter_import.WriteLine(DateTime.Now + " : article est null");
                                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                                    //deplacer les fichiers csv
+                                                    File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                                     logFileWriter_import.Close();
                                                     return;
                                                 }
@@ -539,6 +618,11 @@ namespace ConnecteurSage.Forms
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                                        //deplacer les fichiers csv
+                                                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                                         logFileWriter_import.Close();
                                                         return;
                                                     }
@@ -577,6 +661,11 @@ namespace ConnecteurSage.Forms
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                                        //deplacer les fichiers csv
+                                                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                                         logFileWriter_import.Close();
                                                         return;
                                                     }
@@ -603,6 +692,11 @@ namespace ConnecteurSage.Forms
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier "+filename+".", "Erreur de lecture.");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                                //deplacer les fichiers csv
+                                                File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                                 logFileWriter_import.Close();
                                                 return;
                                             }
@@ -653,6 +747,11 @@ namespace ConnecteurSage.Forms
                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                        //deplacer les fichiers csv
+                                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                         logFileWriter_import.WriteLine("");
                                         logFileWriter_import.Close();
                                         return;
@@ -724,7 +823,11 @@ namespace ConnecteurSage.Forms
                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = "+order.Lines.Count());
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter_import.WriteLine("");
+
+                                        //deplacer les fichiers csv
+                                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                         logFileWriter_import.Close();
                                         return;
                                     }
@@ -827,6 +930,11 @@ namespace ConnecteurSage.Forms
                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                        //deplacer les fichiers csv
+                                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                         logFileWriter_import.WriteLine("");
                                         logFileWriter_import.Close();
                                         return;
@@ -867,6 +975,11 @@ namespace ConnecteurSage.Forms
                                         //{
                                         //    UpdateCommandeTaxes(order.FNT_MONTANTTOTALTAXES.ToString().Replace(",","."),order.Id);
                                         //}
+
+                                        //deplacer les fichiers csv
+                                        File.Move(filename, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                         Close();
 
                                         //// Creer dossier sortie "LOG Directory" --------------------------
@@ -899,6 +1012,11 @@ namespace ConnecteurSage.Forms
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                    //deplacer les fichiers csv
+                                    File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                     logFileWriter_import.Close();
                                 }
                             }
@@ -916,6 +1034,11 @@ namespace ConnecteurSage.Forms
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                //deplacer les fichiers csv
+                                File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                 logFileWriter_import.Close();
                                 return;
                             }
@@ -934,6 +1057,11 @@ namespace ConnecteurSage.Forms
                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                            //deplacer les fichiers csv
+                            File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                             logFileWriter_import.Close();
                             return;
                         }
@@ -952,6 +1080,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : rreur dans la deuxième ligne du fichier.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
                         return;
                     }
@@ -1016,6 +1149,11 @@ namespace ConnecteurSage.Forms
                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                            //deplacer les fichiers csv
+                            File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                             logFileWriter_import.Close();
                         }
                         else
@@ -1029,6 +1167,11 @@ namespace ConnecteurSage.Forms
 
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès");
+
+                                //deplacer les fichiers csv
+                                File.Move(filename, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                 logFileWriter_general.Close();
                             }
                             else
@@ -1038,6 +1181,11 @@ namespace ConnecteurSage.Forms
 
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+
+                                //deplacer les fichiers csv
+                                File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                 logFileWriter_general.Close();
                             }
                         }
@@ -1051,6 +1199,11 @@ namespace ConnecteurSage.Forms
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                         logFileWriter_import.Close();
 
                     }
@@ -1117,6 +1270,10 @@ namespace ConnecteurSage.Forms
 
                             logFileWriter_import.WriteLine("");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+
+                            //deplacer les fichiers csv
+                            File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
                         }
                         else
                         {
@@ -1130,6 +1287,10 @@ namespace ConnecteurSage.Forms
 
                         logFileWriter_import.WriteLine("");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
                     }
                 }
                 else if (lines[0].Split(';')[0] == "E") //Veolog DESADV
@@ -1178,9 +1339,14 @@ namespace ConnecteurSage.Forms
                                 else
                                 {
                                     MessageBox.Show("Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé");
+                                    
+                                    //deplacer les fichiers csv
+                                    File.Move(filename, directoryName_ErrorFile + @"\"+ GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                     logFileWriter_import.Close();
                                     return;
@@ -1227,6 +1393,10 @@ namespace ConnecteurSage.Forms
 
                             logFileWriter_import.WriteLine("");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+
+                            //deplacer les fichiers csv
+                            File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
                         }
                         else
                         {
@@ -1237,6 +1407,11 @@ namespace ConnecteurSage.Forms
 
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
+
+                                //deplacer les fichiers csv
+                                File.Move(filename, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                 logFileWriter_general.Close();
                             }
                             else
@@ -1246,6 +1421,11 @@ namespace ConnecteurSage.Forms
 
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+
+                                //deplacer les fichiers csv
+                                File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                                 logFileWriter_general.Close();
                             }
                         }
@@ -1256,6 +1436,12 @@ namespace ConnecteurSage.Forms
 
                         logFileWriter_import.WriteLine("");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+
+                        //deplacer les fichiers csv
+                        File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
+
                     }
                 }
                 else
@@ -1267,6 +1453,11 @@ namespace ConnecteurSage.Forms
                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                     logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la première ligne du fichier.");
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                    //deplacer les fichiers csv
+                    File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
                     logFileWriter_import.Close();
                     return;
                 }
@@ -1284,6 +1475,10 @@ namespace ConnecteurSage.Forms
                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Exception *********************");
                 logFileWriter_import.WriteLine(DateTime.Now + " : ERREUR[0]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!.");
                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                //deplacer les fichiers csv
+                File.Move(filename, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
             }
 
             logFileWriter_import.Close();
@@ -3091,6 +3286,12 @@ namespace ConnecteurSage.Forms
                MessageBox.Show("Erreur Calcule de conditionnement :" + e.Message);
                return 0;
            }
+        }
+
+        // Get the current time in milliseconds
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssffff");
         }
     }
 }
