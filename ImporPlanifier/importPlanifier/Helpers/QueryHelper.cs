@@ -622,11 +622,11 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_Num, CA_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise, CT_Langue, CT_Facture, CT_Taux02, N_CatCompta, CO_No, N_CatTarif FROM " + getPrefix() + "F_Comptet WHERE CT_Num IN('" + CT_Num + "')";
+                return "SELECT CT_Num, CA_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise, CT_Langue, CT_Facture, CT_Taux02, N_CatCompta, CO_No, N_CatTarif, N_Expedition FROM " + getPrefix() + "F_Comptet WHERE CT_Num IN('" + CT_Num + "')";
             }
             else
             {
-                return "SELECT CT_Num, CA_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise, CT_Langue, CT_Facture, CT_Taux02, N_CatCompta, CO_No, N_CatTarif FROM F_Comptet WHERE CT_Num IN('" + CT_Num + "')";
+                return "SELECT CT_Num, CA_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise, CT_Langue, CT_Facture, CT_Taux02, N_CatCompta, CO_No, N_CatTarif, N_Expedition FROM F_Comptet WHERE CT_Num IN('" + CT_Num + "')";
             }
         }
 
@@ -710,18 +710,30 @@ namespace importPlanifier.Helpers
             }
         }
 
+        public static string insertStockVeologDocumment(bool sqlConnexion, string[,] stock, int x)
+        {
+            if (sqlConnexion)
+            {
+                return "";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         public static string getCoommandeById(bool sqlConnexion, string cbMarq)
         {
             if (sqlConnexion)
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,', ',cli.CT_CodePostal,' - ',cli.CT_Ville, ', ',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Adresse, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, cmd.DO_MOTIF, liv.LI_Contact " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,', ',cli.CT_CodePostal,',',cli.CT_Ville, ', ',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail " +
                     "FROM " + getPrefix() + "F_COMPTET as cli, " + getPrefix() + "F_DOCENTETE as cmd, " + getPrefix() + "F_livraison liv " +
                     "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";
             }
             else
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,', ',cli.CT_CodePostal,' - ',cli.CT_Ville, ', ',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Adresse, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, cmd.DO_MOTIF, liv.LI_Contact " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,', ',cli.CT_CodePostal,',',cli.CT_Ville, ', ',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail " +
                     "FROM F_COMPTET as cli, F_DOCENTETE as cmd, F_livraison liv " +
                     "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";
@@ -732,7 +744,7 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, DO_COORD01, COMMENTAIRES, DO_COURS)" +
+                string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, DO_COORD01, COMMENTAIRES, DO_COURS) " +
                                 "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + reference_client[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date + "'}, NULL, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + DO_Ref + "', 21, 2, " + reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, 0, '', '" + reference_doc + ": document from logistic.', 0.000000)";
                 return sql;
             }

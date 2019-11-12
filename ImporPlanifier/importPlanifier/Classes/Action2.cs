@@ -158,12 +158,12 @@ namespace importPlanifier.Classes
                     nbr++;
                     FileExiste = true;
                     Console.WriteLine(DateTime.Now + " : un fichier \".csv\" trouvé :");
-                    Console.WriteLine(DateTime.Now + " : -----> " + nbr + "- " + filename);
+                    Console.WriteLine(DateTime.Now + " : -----> " + nbr + " - " + filename);
                     Console.WriteLine(DateTime.Now + " : Scan fichier...");
 
                     logFileWriter_general.WriteLine(DateTime.Now + " : Numbre de fichier \".csv\" trouvé : " + fileListing.GetFiles("*.csv").Length);
 
-                    logFileWriter_import.WriteLine(DateTime.Now + " : -----> Fichier " + index + " : " + fileListing.GetFiles("*.csv")[index].Name);
+                    logFileWriter_import.WriteLine(DateTime.Now + " : -----> Fichier " + index + " : " + filename.Name);
                     logFileWriter_import.WriteLine(DateTime.Now + " : Scan fichier...");
                     Console.WriteLine(DateTime.Now + " : Ficher " + index + " : " + filename);
 
@@ -946,8 +946,6 @@ namespace importPlanifier.Classes
 
                         if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
                         {
-
-                            //Console.WriteLine("OK");
                             string reference_me_doc = lastNumberReference("ME", logFileWriter_import);    //"ME00004";//get last reference number for entry STOCK document MEXXXXX and increment it
                             string reference_ms_doc = lastNumberReference("MS", logFileWriter_import);    //"MS00007";//get last reference number for removal STOCK document MSXXXXX and increment it
 
@@ -1109,10 +1107,12 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information Fatale *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Le stock est importe avec succès");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import succès");
+                                    logFileWriter_general.WriteLine("");
+                                    logFileWriter_general.WriteLine("");
 
                                     //deplacer les fichiers csv
-                                    File.Move(filename.Name, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    //File.Move(filename.Name, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
 
                                     logFileWriter_general.Close();
                                 }
@@ -1124,92 +1124,18 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine("");
+                                    logFileWriter_general.WriteLine("");
 
                                     //deplacer les fichiers csv
-                                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    //File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
 
                                     logFileWriter_general.Close();
                                 }
                             }
 
 
-                        }
-                        else if (lines[0].Split(';')[0] == "DESADV") //check if the document is an desadv stock document to handle further
-                        {
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier DESADV Trouvé");
-                            logFileWriter_general.WriteLine("");
-
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import DESADV.");
-
-                            if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
-                            {
-                                int i = 0;
-                                string totallines = "";
-                                Desadv d = new Desadv(); //creating new object type desadv and storing values
-                                List<DesadvLine> dl = new List<DesadvLine>(); //creating new object type desadvline and storing item values
-
-                                foreach (string ligneDuFichier in lines) //read lines by line
-                                {
-
-                                    string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
-
-                                    if (tab[1] == "HEADER") //checking if its header of file for control
-                                    {
-                                        Desadv desadv_info = new Desadv();
-
-                                        desadv_info.reference = tab[2];
-                                        desadv_info.datelivraison = tab[3];
-                                        desadv_info.datecreation = DateTime.UtcNow.ToString("yyyyMMddHHmmss").ToString();
-                                        desadv_info.poids = tab[4];
-                                        desadv_info.expeditiontype = tab[5];
-                                        desadv_info.referenceclient = tab[6];
-
-                                        d = desadv_info; //adding the object into the list type stock
-                                    }
-
-                                    if (tab[1] == "LINES") //checking if its line of document inside the file for control
-                                    {
-                                        DesadvLine desadvline_info = new DesadvLine();
-
-                                        desadvline_info.position = tab[2];
-                                        desadvline_info.libelle = tab[3];
-                                        desadvline_info.barcode = tab[4];
-                                        desadvline_info.qtecommandee = tab[5];
-                                        desadvline_info.qtyexpediee = tab[6];
-                                        desadvline_info.poidproduit = tab[7];
-                                        desadvline_info.volumeproduit = tab[8];
-
-                                        dl.Add(desadvline_info);
-                                    }
-
-                                    i++;
-                                }
-
-                                // *once list is filled with values, start executing queries for each line - one by one.*
-
-                                if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
-                                {
-                                    Console.WriteLine("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
-
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
-                                }
-                                else
-                                {
-                                    //insertDesadv(d, dl);//insert or update the database with the values obtained from the document
-                                }
-
-                            }
-                            else
-                            {
-                                Console.WriteLine("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
-
-                                logFileWriter_import.WriteLine("");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                            }
                         }
                         else
                         {
@@ -1242,7 +1168,290 @@ namespace importPlanifier.Classes
 
                         }
                     }
-                    else if (lines[0].Split(';')[0] == "E") //Veolog DESADV
+                    else if (lines[0].Split(';')[0] == "L") //Import Veolog Stock doc
+                    {
+                        logFileWriter_general.WriteLine("");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Stock Trouvé");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                        logFileWriter_general.WriteLine("");
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog Stock Inventaire.");
+
+                        bool stockVeologCheck = false;
+                        int lineCount = 0;
+                        string totallines = "";
+                        string[,] valid_info_stock_line = new string[lines.Length, 4];
+
+                        //Loop the documment lines
+                        for (int lineIndex=0; lineIndex < lines.Length; lineIndex++)
+                        {
+
+                            //Check if the document line is correct at each line
+                            if (lines[lineIndex].Split(';').Length == 8)
+                            {
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Verification Des Lignes Du Documment *********************");
+
+                                //  info_stock[0] == Type Ligne
+                                //  info_stock[1] == Code Article (reference)
+                                //  info_stock[2] == EAN (barcode)
+                                //  info_stock[3] == Stock
+
+                                string[] info_stock = lines[lineIndex].Split(';');
+
+                                Console.WriteLine("0: "+ info_stock[0] + " | 1: " + info_stock[1] + " | 2: " + info_stock[2] + " | 3: " + info_stock[3] + " | 4: " + info_stock[4] + " | 5: " + info_stock[5] + " | 6: " + info_stock[6] + " | 7: " + info_stock[7]);
+
+                                if (info_stock[0] == "L") 
+                                {
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Ligne "+ (lineIndex + 1) + " | Type ligne => VALIDE ");
+
+
+                                    try
+                                    {
+                                        if (info_stock[1] != "")
+                                        {
+                                            logFileWriter_import.WriteLine(DateTime.Now + " :  Code acticle => TROUVE ");
+                                            valid_info_stock_line[lineIndex, 0] = info_stock[1];
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Code acticle => PAS TROUVE ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                            goto skipLine;
+                                        }
+
+                                        if (info_stock[2] != "")
+                                        {
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : EAN (Code Barre) => TROUVE ");
+                                            valid_info_stock_line[lineIndex, 1] = info_stock[2];
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | EAN (Code Barre) ===> PAS TROUVE ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                            goto skipLine;
+                                        }
+
+                                        if (info_stock[3] != "")
+                                        {
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Quantités disponibles (Stock actuel) => TROUVE ");
+                                            valid_info_stock_line[lineIndex, 2] = info_stock[3];
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Quantités disponibles (Stock actuel) => PAS TROUVE ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                            goto skipLine;
+                                        }
+
+                                        if (info_stock[4] != "")
+                                        {
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de lot  => TROUVE ");
+                                            valid_info_stock_line[lineIndex, 3] = info_stock[4];
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de lot  => PAS TROUVE ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                            valid_info_stock_line[lineIndex, 3] = info_stock[4];
+                                        }
+
+                                        lineCount++;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Dans le Documment *********************");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1));
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Message |\n"+ex.Message);
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Stack |\n"+ex.StackTrace);
+
+                                        logFileWriter_general.Flush();
+                                        logFileWriter_import.Flush();
+                                        logFileWriter_import.Close();
+                                        logFileWriter_general.Close();
+                                    }
+                                }
+                                else
+                                {
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Type ligne ===> PAS RECONNU / PAS TROUVE");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ n'est pas correct ou vide!!! ");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                }
+
+                                skipLine: ;
+                            }
+                            else
+                            {
+                                if(lines[lineIndex].Split(';')[0] == "F" && lines[lineIndex].Split(';').Length == 2)
+                                {
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Fin de la lecture du documment Veolog Stock.");
+                                    totallines = lines[lineIndex].Split(';')[1];
+                                    stockVeologCheck = true;
+                                    break;
+                                }
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                            }
+                        }
+
+                        //Valid documment END
+                        //Reached to the end of the document
+                        List<Stock> s = new List<Stock>();
+                        if (stockVeologCheck)
+                        {
+                            //  valid_info_stock_line[0,0] == Code Article (reference)
+                            //  valid_info_stock_line[0,1] == EAN (barcode)
+                            //  valid_info_stock_line[0,2] == Stock
+                            //  valid_info_stock_line[0,3] == Numéro de lot 
+
+                            for (int x=0; x< valid_info_stock_line.GetLength(0); x++)
+                            {
+                                Stock stock_info = new Stock("", valid_info_stock_line[x,0], valid_info_stock_line[x, 1], valid_info_stock_line[x, 2], valid_info_stock_line[x, 3], "", "");
+                                s.Add(stock_info); //adding the object into the list type stock
+                            }
+
+                            if (lineCount != Convert.ToInt16(totallines))
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Erreur du pied de page");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.\nCertain stock ne sera pas mit a jour!!!");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : La taille du Stock liste: "+ lineCount + " || Nombre total du stock dans le fihier: "+totallines);
+
+                                logFileWriter_general.Flush();
+                                logFileWriter_general.Close();
+                            }
+                            else
+                            {
+                                if (insertStockVeolog(s, logFileWriter_import) != null)
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès");
+
+                                    string file_name_str = fileListing.GetFiles("*.csv")[index].Name;
+
+                                    //deplacer les fichiers csv
+                                    File.Move(file_name_str, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + file_name_str);
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + file_name_str + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + file_name_str);
+
+                                    //logFileWriter_general.Close();
+                                }
+                                else
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+
+                                    //deplacer les fichiers csv
+                                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+
+                                    logFileWriter_general.Flush();
+                                    logFileWriter_general.Close();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            logFileWriter_import.WriteLine("");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Fin de la lecture du documment Veolog Stock, non valide.");
+                        }
+                    }
+                    else if (lines[0].Split(';')[0] == "DESADV") //check if the document is an desadv stock document to handle further
+                    {
+                        logFileWriter_general.WriteLine("");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Fichier DESADV Trouvé");
+                        logFileWriter_general.WriteLine("");
+
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Import DESADV.");
+
+                        if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
+                        {
+                            int i = 0;
+                            string totallines = "";
+                            Desadv d = new Desadv(); //creating new object type desadv and storing values
+                            List<DesadvLine> dl = new List<DesadvLine>(); //creating new object type desadvline and storing item values
+
+                            foreach (string ligneDuFichier in lines) //read lines by line
+                            {
+
+                                string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                if (tab[1] == "HEADER") //checking if its header of file for control
+                                {
+                                    Desadv desadv_info = new Desadv();
+
+                                    desadv_info.reference = tab[2];
+                                    desadv_info.datelivraison = tab[3];
+                                    desadv_info.datecreation = DateTime.UtcNow.ToString("yyyyMMddHHmmss").ToString();
+                                    desadv_info.poids = tab[4];
+                                    desadv_info.expeditiontype = tab[5];
+                                    desadv_info.referenceclient = tab[6];
+
+                                    d = desadv_info; //adding the object into the list type stock
+                                }
+
+                                if (tab[1] == "LINES") //checking if its line of document inside the file for control
+                                {
+                                    DesadvLine desadvline_info = new DesadvLine();
+
+                                    desadvline_info.position = tab[2];
+                                    desadvline_info.libelle = tab[3];
+                                    desadvline_info.barcode = tab[4];
+                                    desadvline_info.qtecommandee = tab[5];
+                                    desadvline_info.qtyexpediee = tab[6];
+                                    desadvline_info.poidproduit = tab[7];
+                                    desadvline_info.volumeproduit = tab[8];
+
+                                    dl.Add(desadvline_info);
+                                }
+
+                                i++;
+                            }
+
+                            // *once list is filled with values, start executing queries for each line - one by one.*
+
+                            if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
+                            {
+                                Console.WriteLine("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
+
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                            }
+                            else
+                            {
+                                //insertDesadv(d, dl);//insert or update the database with the values obtained from the document
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
+
+                            logFileWriter_import.WriteLine("");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                        }
+                    }
+                    else if (lines[0].Split(';')[0] == "E") //Import Veolog DESADV doc
                     {
                         logFileWriter_general.WriteLine("");
                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
@@ -1325,21 +1534,29 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
 
                                     //deplacer les fichiers csv
-                                    File.Move(filename.Name, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    string theFileName = filename.Name;
+                                    //string newFileLocation = directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
+                                    //File.Move(theFileName, newFileLocation);
+                                    //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine("");
 
-                                    logFileWriter_general.Close();
+                                    //logFileWriter_general.Close();
                                 }
                                 else
                                 {
+                                    logFileWriter_import.WriteLine("");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+                                    tabCommandeError.Add(filename.ToString());
 
                                     //deplacer les fichiers csv
-                                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                                    //string theFileName = filename.Name;
+                                    //string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
+                                    //File.Move(theFileName, newFileLocation);
+                                    //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
 
-                                    logFileWriter_general.Close();
+                                    //logFileWriter_general.Close();
                                 }
                             }
                         }
@@ -1347,10 +1564,13 @@ namespace importPlanifier.Classes
                         {
                             logFileWriter_import.WriteLine("");
                             logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                            tabCommandeError.Add(filename.ToString());
 
                             //deplacer les fichiers csv
-                            File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                            //string theFileName = filename.Name;
+                            //string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
+                            //File.Move(filename.Name, newFileLocation);
+                            //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
                         }
                     }
@@ -1358,9 +1578,19 @@ namespace importPlanifier.Classes
                     {
 
                         //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
+                        logFileWriter_import.WriteLine("");
                         logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
-                        tabCommandeError.Add(filename.ToString());
-                        goto goOut;
+
+                        string theFileName = filename.Name;
+                        string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
+                        File.Move(filename.Name, newFileLocation);
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+
+                        logFileWriter_general.Flush();
+                        logFileWriter_import.Flush();
+                        logFileWriter_general.Close();
+                        logFileWriter_import.Close();
+                        //tabCommandeError.Add(filename.ToString());
                     }
                 }
                 catch (Exception e)
@@ -1372,11 +1602,9 @@ namespace importPlanifier.Classes
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
 
                     logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    tabCommandeError.Add(filename.ToString());
-                    goto goOut;
-                }
 
-                goOut: ;
+                    tabCommandeError.Add(filename.ToString());
+                }
 
                 //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
                 if (File.Exists(dir + @"\" + filename) && tabCommandeError.Count > 0)
@@ -1389,10 +1617,12 @@ namespace importPlanifier.Classes
                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
 
                     //deplacer les fichiers csv
-                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
+                    string theFileName = filename.Name;
+                    string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
+                    File.Move(filename.Name, newFileLocation);
+                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
-                    logFileWriter_import.Close();
+                    //logFileWriter_import.Close();
                 }
 
             }
@@ -1411,45 +1641,36 @@ namespace importPlanifier.Classes
 
             Boolean envoiMail = false;
 
-            // Envoi de mail
-            if (tabCommandeError.Count != 0)
+        // Envoi de mail
+        /*
+        if (tabCommandeError.Count != 0)
+        {
+            ConfSendMail cMail = getInfoMail();
+            if (cMail != null)
             {
-                ConfSendMail cMail = getInfoMail();
-                if (cMail != null)
+                if (cMail.active)
                 {
-                    if (cMail.active)
+                    if (cMail.dest1 == "" && cMail.dest2 == "" && cMail.dest3 == "")
                     {
-                        if (cMail.dest1 == "" && cMail.dest2 == "" && cMail.dest3 == "")
-                        {
-                            LogFile.WriteLine(DateTime.Now + " : Send Mail..Erreur Adresse de distinataire");
-                        }
-                        string commande = "";
-                        for (int i = 0; i < tabCommandeError.Count; i++)
-                        {
-                            commande = commande + (i + 1) + " - " + tabCommandeError[i] + "\n";
-                        }
-                        Console.WriteLine(DateTime.Now + " : Envoi de mail en cours..");
-                        logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
-                        logFileWriter_general.WriteLine("");
-                        logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
-                        logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                        logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                        logFileWriter_general.Close();
-
-                        //Envoi
-                        EnvoiMail(cMail, "Erreur d'import de documents commerciaux", "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux a echoué :\n" + commande + "\nVeuillez vérifier dans le fichier Log ci-joint, les problèmes qui sont survenus au moment de l'importation.\n\nNB: Les fichiers sont déplacé dans un dossier nommé : \"Error file\".\n\nCordialement,\n\nConnecteur SAGE.", cheminLogFile);
-
-                        envoiMail = true;
+                        LogFile.WriteLine(DateTime.Now + " : Send Mail..Erreur Adresse de distinataire");
                     }
-                    else
+                    string commande = "";
+                    for (int i = 0; i < tabCommandeError.Count; i++)
                     {
-                        logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
-                        logFileWriter_general.WriteLine("");
-                        logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
-                        logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                        logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                        logFileWriter_general.Close();
+                        commande = commande + (i + 1) + " - " + tabCommandeError[i] + "\n";
                     }
+                    Console.WriteLine(DateTime.Now + " : Envoi de mail en cours..");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                    logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+                    logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+                    logFileWriter_general.Close();
+
+                    //Envoi
+                    EnvoiMail(cMail, "Erreur d'import de documents commerciaux", "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux a echoué :\n" + commande + "\nVeuillez vérifier dans le fichier Log ci-joint, les problèmes qui sont survenus au moment de l'importation.\n\nNB: Les fichiers sont déplacé dans un dossier nommé : \"Error file\".\n\nCordialement,\n\nConnecteur SAGE.", cheminLogFile);
+
+                    envoiMail = true;
                 }
                 else
                 {
@@ -1461,23 +1682,7 @@ namespace importPlanifier.Classes
                     logFileWriter_general.Close();
                 }
             }
-
-            if (!FileExiste && !envoiMail)
-            {
-                //Console.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
-                logFileWriter_general.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
-                logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
-                logFileWriter_general.WriteLine("");
-                logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
-                logFileWriter_general.Close();
-                logFileWriter_import.Close();
-                //var newlog = string.Format("logFile(0) {0:dd-MM-yyyy HH.mm.ss}.log", DateTime.Now);
-                //System.IO.File.Move(outputFile + @"\logFile.log", dir + @"\" + newlog);
-                //System.IO.Directory.Delete(outputFile);
-                goto goError;
-
-            }
-            if (FileExiste && tabCommandeError.Count == 0)
+            else
             {
                 logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
                 logFileWriter_general.WriteLine("");
@@ -1485,11 +1690,37 @@ namespace importPlanifier.Classes
                 logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
                 logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
                 logFileWriter_general.Close();
-                logFileWriter_import.Close();
             }
+        }
 
+        if (!FileExiste && !envoiMail)
+        {
+            //Console.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
+            logFileWriter_general.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
+            logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+            logFileWriter_general.WriteLine("");
+            logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+            logFileWriter_general.Close();
+            logFileWriter_import.Close();
+            //var newlog = string.Format("logFile(0) {0:dd-MM-yyyy HH.mm.ss}.log", DateTime.Now);
+            //System.IO.File.Move(outputFile + @"\logFile.log", dir + @"\" + newlog);
+            //System.IO.Directory.Delete(outputFile);
+            goto goError;
 
-        goError: ;
+        }
+        if (FileExiste && tabCommandeError.Count == 0)
+        {
+            logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+            logFileWriter_general.WriteLine("");
+            logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+            logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+            logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+            logFileWriter_general.Close();
+            logFileWriter_import.Close();
+        }
+
+        */
+        goError:;
             //Console.WriteLine(DateTime.Now + " : Fin de l'execution");
             //Console.WriteLine("Nombre de fichier scanner : " + nbr);
 
@@ -1499,6 +1730,8 @@ namespace importPlanifier.Classes
 
             //Console.Read();
 
+            logFileWriter_general.Flush();
+            logFileWriter_import.Flush();
             logFileWriter_general.Close();
             logFileWriter_import.Close();
         }
@@ -2010,6 +2243,455 @@ namespace importPlanifier.Classes
             return list_of_products;
         }
 
+        public static string[,] insertStockVeolog(List<Stock> s, StreamWriter logFileWriter)
+        {
+            string[,] list_of_products = new string[(s.Count-1), 27];
+            int positive_item = 0;
+            int negative_item = 0;
+            DateTime d = DateTime.Now;
+            string curr_date_time = d.ToString("yyyy-MM-dd hh:mm:ss");
+            string curr_date = d.ToString("yyyy-MM-dd");
+            string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
+
+            string reference_ME_doc = "";  //Doc ME
+            string reference_MS_doc = "";   //Doc MS
+
+
+            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+            {
+                try
+                {
+                    connexion.Open();
+                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Connexion ouverte.");
+
+                    int counter = 0;
+
+                    foreach (Stock line in s)
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Lire la ligne de l'article.");
+
+                        int total_negative = 0;
+                        int total_positive = 0;
+                        string name_article = "";
+                        string DL_PoidsNet = "0";
+                        string DL_PoidsBrut = "0";
+                        string DL_PrixUnitaire = "0";
+
+                        // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
+
+                        //getProductNameByReference
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Exécuter la requête");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : " + QueryHelper.getProductNameByReference(true, line.reference));
+                        logFileWriter.WriteLine("");
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference(true, line.reference), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    name_article = (reader[0].ToString());  // sum up the total_negative variable. - check query
+                                    DL_PoidsNet = (reader[1].ToString()); // get unit weight NET - check query
+                                    DL_PoidsBrut = (reader[2].ToString()); // get unit weight BRUT - check query  
+                                    DL_PrixUnitaire = (reader[3].ToString()); // get unit price  - check query 
+                                }
+                                else // If no rows returned
+                                {
+                                    //do nothing.
+                                }
+                            }
+                        }
+
+                        if(name_article != "")
+                        {
+                            bool isSameStock = true;
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Article trouvé.");
+                            logFileWriter.WriteLine("");
+
+                            reference_ME_doc = lastNumberReference("ME", logFileWriter);   //Doc ME
+                            reference_MS_doc = lastNumberReference("MS", logFileWriter);   //Doc MS
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Exécuter la requête getNegativeStockOfAProduct");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : " + QueryHelper.getNegativeStockOfAProduct(true, line.reference));
+
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getNegativeStockOfAProduct(true, line.reference), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                            {
+                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                {
+                                    while (reader.Read()) // reads lines/rows from the query
+                                    {
+                                        if (reader[0].ToString() != null && reader[0].ToString() != "")
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == " + reader[0].ToString());
+                                            total_negative += Convert.ToInt32(reader[0].ToString().Split(',')[0]);  // sum up the total_negative variable.
+                                        }
+                                        else
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == Null alors elle devient 0.");
+                                            total_negative += Convert.ToInt32(0);  // sum up the total_positive variable.
+                                        }
+                                    }
+                                }
+                            }
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : getNegativeStockOfAProduct OK.");
+                            logFileWriter.WriteLine("");
+
+
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getPositiveStockOfAProduct(true, line.reference), connexion)) //execute the function within this statement : getPositiveStockOfAProduct()
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Exécuter la requête getPositiveStockOfAProduct");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : " + QueryHelper.getPositiveStockOfAProduct(true, line.reference));
+
+                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                {
+                                    while (reader.Read()) // reads lines/rows from the query
+                                    {
+                                        if (reader[0].ToString() != null && reader[0].ToString() != "")
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == " + reader[0].ToString());
+                                            total_positive += Convert.ToInt32(reader[0].ToString().Split(',')[0]);  // sum up the total_positive variable.
+                                        }
+                                        else
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == Null alors elle devient 0.");
+                                            total_positive += Convert.ToInt32(0);  // sum up the total_positive variable.
+                                        }
+                                    }
+                                }
+                            }
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : getPositiveStockOfAProduct OK.");
+                            logFileWriter.WriteLine("");
+
+
+                            int current_stock = (total_positive - total_negative); // substract negative stock from the positive one = to obtain the initial current stock.
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Reference: " + line.reference + " total_positive: " + total_positive + " - total_negative: " + total_negative + " = current_stock : " + current_stock + ".");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current stock BDD:" + current_stock + " || current stock Veolog: " + line.stock.Replace(",",".") + " .");
+
+                            //transform line.stock to int format
+                            line.stock = line.stock.Split(',')[0]; ;    //line.stock.Replace(",", ".");
+
+                            if (current_stock < Convert.ToInt16(line.stock)) // if current stock in database is inferior from the one received in file : means add stock
+                            {
+                                //MessageBox.Show("current_stock : " + current_stock + " < " + "Line.stock : " + Convert.ToInt16(line.stock));
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current_stock_BDD : " + current_stock + " < " + "current_stock_Veolog : " + Convert.ToInt32(line.stock) + ".");
+
+                                try
+                                {
+                                    positive_item += 1000; //increment line by 1000 for format 1000,2000,etc
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : negativ_item: " + negative_item + ".");
+
+
+                                    // ME00000 : ME prefix will be used to create document
+                                    list_of_products[counter, 0] = "2"; // DO_Domaine
+                                    list_of_products[counter, 1] = "20"; //DO_Type
+                                    list_of_products[counter, 2] = "20"; //DO_DocType
+                                    list_of_products[counter, 3] = "1"; //CT_NUM
+                                    list_of_products[counter, 4] = reference_ME_doc; //DO_Piece
+                                    list_of_products[counter, 5] = curr_date; //DO_Date
+                                    list_of_products[counter, 6] = curr_date; //DL_DateBC
+                                    list_of_products[counter, 7] = (positive_item).ToString(); // DL_Ligne line number 1000,2000
+                                    list_of_products[counter, 8] = curr_date_seconds; // DO_Ref
+                                    list_of_products[counter, 9] = line.reference; // AR_Ref
+                                    list_of_products[counter, 10] = "1"; //DL_Valorise
+                                    list_of_products[counter, 11] = "1"; //DE_NO
+                                    list_of_products[counter, 12] = name_article; // DL_Design
+                                    list_of_products[counter, 13] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); //line.stock; // DL_Qte
+                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
+                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
+                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
+                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
+                                    list_of_products[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                    if (list_of_products[counter, 16].Equals("0")) { list_of_products[counter, 16] = "0.000000"; } else if (!list_of_products[counter, 16].Contains(".")) { list_of_products[counter, 16] = list_of_products[counter, 16] + ".000000"; }
+                                    list_of_products[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                    if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
+                                    list_of_products[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
+                                    list_of_products[counter, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                    list_of_products[counter, 20] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
+                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
+                                    list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                    list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
+                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
+                                    if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
+                                    if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
+                                    list_of_products[counter, 23] = ""; //PF_Num
+                                    list_of_products[counter, 24] = "0"; //DL_No
+                                    list_of_products[counter, 25] = "0"; //DL_FactPoids
+                                    list_of_products[counter, 26] = "0"; //DL_Escompte
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Exception Tableau ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Le tableau 'ME' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                                    logFileWriter.Flush();
+                                    logFileWriter.Close();
+                                    return null;
+                                }
+
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products en tant qu'index ME.");
+                            }
+
+                            if (current_stock > Convert.ToInt16(line.stock)) // if current stock in database is superior from the one received in file : means remove stock
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current_stock_BDD : " + current_stock + " > " + "current_stock_Veolog : " + line.stock + ".");
+
+                                try
+                                {
+                                    negative_item += 1000; //increment line by 1000 for format 1000,2000,etc
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : negativ_item: " + negative_item + ".");
+
+
+                                    // MS00000 : MS prefix will be used to create document
+                                    list_of_products[counter, 0] = "2"; // DO_Domaine
+                                    list_of_products[counter, 1] = "21"; //DO_Type
+                                    list_of_products[counter, 2] = "21"; //DO_DocType
+                                    list_of_products[counter, 3] = "1"; //CT_NUM
+                                    list_of_products[counter, 4] = reference_MS_doc; //DO_Piece
+                                    list_of_products[counter, 5] = curr_date; //DO_Date
+                                    list_of_products[counter, 6] = curr_date; //DL_DateBC
+                                    list_of_products[counter, 7] = (negative_item).ToString(); // DL_Ligne line number 1000,2000
+                                    list_of_products[counter, 8] = curr_date_seconds; // DO_Ref
+                                    list_of_products[counter, 9] = line.reference; // AR_Ref
+                                    list_of_products[counter, 10] = "1"; //DL_Valorise
+                                    list_of_products[counter, 11] = "1"; //DE_NO
+                                    list_of_products[counter, 12] = name_article; // DL_Design
+                                    list_of_products[counter, 13] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", "");  //line.stock; // DL_Qte
+                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
+                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
+                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
+                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
+                                    list_of_products[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                    if (list_of_products[counter, 16].Equals("0")) { list_of_products[counter, 16] = "0.000000"; } else if (!list_of_products[counter, 16].Contains(".")) { list_of_products[counter, 16] = list_of_products[counter, 16] + ".000000"; }
+                                    list_of_products[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                    if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
+                                    list_of_products[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
+                                    list_of_products[counter, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                    list_of_products[counter, 20] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
+                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
+                                    list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                    list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
+                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
+                                    if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
+                                    if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
+                                    list_of_products[counter, 23] = ""; //PF_Num
+                                    list_of_products[counter, 24] = "0"; //DL_No
+                                    list_of_products[counter, 25] = "0"; //DL_FactPoids
+                                    list_of_products[counter, 26] = "0"; //DL_Escompte
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Exception Tableau ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                                    logFileWriter.Flush();
+                                    logFileWriter.Close();
+                                    return null;
+                                }
+
+                                //MessageBox.Show("Product added into the table list_of_products as MS index ");
+
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products en tant qu'index MS.");
+                            }
+
+                            if (current_stock == Convert.ToInt16(line.stock))
+                            {
+                                isSameStock = false;
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Information ********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current_stock_BDD : " + current_stock + " == current_stock_Veolog : " + line.stock);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import non effectué");
+                                logFileWriter.WriteLine("");
+                            }
+
+
+                            if (positive_item > 0 && isSameStock) //check if any product for 20::addstock exists : this case > 0 ; if 1000+ then OK generate document ME_____.
+                            {
+                                //generate document ME_____ in database.
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Vérifier si un produit pour 20 = ME");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time));
+
+                                try
+                                {
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time), connexion); //calling the query and parsing the parameters into it
+                                    command.ExecuteReader(); // executing the query
+
+                                }
+                                catch (OdbcException ex)
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** OdbcException ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                                    logFileWriter.Flush();
+                                    logFileWriter.Close();
+                                    return null;
+                                }
+                                string[,] products_ME = new string[(s.Count - 1), 27]; // create array with enough space
+
+                                //insert documentline into the database with articles having 20 as value @index 2
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert documentline into the database with articles having 20 as value @index 2");
+
+                                for (int x = 0; x < list_of_products.GetLength(0); x++)
+                                {
+                                    //logFileWriter.WriteLine("x: " + x + " || list_of_products.GetLength(0) : " + list_of_products.GetLength(0));
+                                    if (list_of_products[x, 1] == "20")
+                                    {
+                                        for (int y = 0; y < list_of_products.GetLength(1); y++)
+                                        {
+                                            //logFileWriter.WriteLine("x: " + x + " ; y: " + y + " || list_of_products.GetLength(1) : " + list_of_products.GetLength(1));
+
+                                            products_ME[x, y] = list_of_products[x, y];
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : products_ME[" + x + "," + y + "] = " + products_ME[x, y]);
+                                        }
+
+                                        //insert the article to documentline in the database
+                                        try
+                                        {
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert the article " + products_ME[x, 12] + " (Ref:" + products_ME[x, 9] + ") to documentline in the database");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_ME, x));
+
+                                            OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_ME, x), connexion);
+                                            command.ExecuteReader();
+
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert termine!");
+                                        }
+                                        catch (OdbcException ex)
+                                        {
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** OdbcException ********************");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                                            logFileWriter.Flush();
+                                            logFileWriter.Close();
+                                            return null;
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            if (negative_item > 0 && isSameStock) //check if any product for 21::stockremoval exists : this case > 0 ; if 1000+ then OK generate document MS_____.
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Vérifier si un produit pour 21 = MS");
+                                logFileWriter.Write(DateTime.Now + " | insertStockVeolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time));
+
+                                //generate document MS_____. in database.
+                                try
+                                {
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time), connexion); //calling the query and parsing the parameters into it
+                                    command.ExecuteReader(); // executing the query
+                                }
+                                catch (OdbcException ex)
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ********************** OdbcException *********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                                    logFileWriter.Flush();
+                                    logFileWriter.Close();
+                                    return null;
+                                }
+
+                                string[,] products_MS = new string[(s.Count - 1), 27]; // create array with enough space
+
+                                //insert documentline into the database with articles having 20 as value @index 2
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert documentline into the database with articles having 20 as value @index 2");
+
+                                for (int x = 0; x < list_of_products.GetLength(0); x++)
+                                {
+                                    if (list_of_products[x, 1] == "21")
+                                    {
+                                        for (int y = 0; y < list_of_products.GetLength(1); y++)
+                                        {
+                                            products_MS[x, y] = list_of_products[x, y];
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : products_MS[" + x + "," + y + "] = " + products_MS[x, y]);
+                                        }
+
+                                        //insert the article to documentline in the database
+                                        try
+                                        {
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert the article " + products_MS[x, 12] + " (Ref:" + products_MS[x, 9] + ") to documentline in the database");
+
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_MS, x));
+
+                                            OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_MS, x), connexion);
+                                            command.ExecuteReader();
+                                        }
+                                        catch (OdbcException ex)
+                                        {
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ********************** OdbcException *********************");
+                                            logFileWriter.WriteLine(DateTime.Now + " | inseinsertStockVeologrtStock() : Message :" + ex.Message);
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                                            logFileWriter.Flush();
+                                            logFileWriter.Close();
+                                            return null;
+                                        }
+                                    }
+                                }
+                            }
+
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + counter);
+                            logFileWriter.WriteLine("");
+                            counter++; // increment by 1 per product [multi-dimensional array]
+
+                        }
+                        else
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Erreur Référence ********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : La Référence (Ref: " + line.reference + ") du produit dans le fichier n'existe pas dans la BDD.");
+
+                            //logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                            //logFileWriter.Close();
+                            //return null;
+                        }
+
+                    }   // end foreach
+
+
+
+                    connexion.Close(); //disconnect from database
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Connexion fermée.");
+
+                }
+                catch (Exception ex)
+                {
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ********************** Exception 2 *********************");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :: " + ex.Message);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :: " + ex.StackTrace);
+                    logFileWriter.Flush();
+                    logFileWriter.Close();
+                    connexion.Close();  //disconnect from database
+                    return null;
+                }
+            }
+
+            logFileWriter.WriteLine("");
+
+            return list_of_products;
+        }
+
         private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 27];    // new string [x,y]
@@ -2061,6 +2743,7 @@ namespace importPlanifier.Classes
                                 else// If no rows returned
                                 {
                                     //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
                                 }
                             }
                         }
@@ -2075,10 +2758,13 @@ namespace importPlanifier.Classes
                                 if (reader.Read()) // If any rows returned
                                 {
                                     ref_client = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Une reponse. Ref Client ===> "+ ref_client);
                                 }
                                 else// If no rows returned
                                 {
                                     //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. Ref Client ===> " + ref_client);
+
                                 }
                             }
                         }
@@ -2092,7 +2778,7 @@ namespace importPlanifier.Classes
                             {
                                 if (reader.Read()) // If any rows returned
                                 {
-                                    list_of_client_info = new string[12];
+                                    list_of_client_info = new string[13];
                                     list_of_client_info[0] = reader[0].ToString();      // CT_Num
                                     list_of_client_info[1] = reader[1].ToString();      // CA_Num 
                                     list_of_client_info[2] = reader[2].ToString();      // CG_NumPrinc
@@ -2104,11 +2790,13 @@ namespace importPlanifier.Classes
                                     list_of_client_info[8] = reader[8].ToString().Replace(',', '.');      // DO_TxEscompte = CT_Taux02
                                     list_of_client_info[9] = reader[9].ToString();      // N_CatCompta
                                     list_of_client_info[10] = reader[10].ToString();    // CO_No
-                                    list_of_client_info[11] = reader[11].ToString();//  DO_Tarif = N_CatTarif
+                                    list_of_client_info[11] = reader[11].ToString();    //  DO_Tarif = N_CatTarif
+                                    list_of_client_info[12] = reader[12].ToString();    //  DO_Expedit = N_Expedition du tier
                                 }
                                 else// If no rows returned
                                 {
                                     //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. list_of_client_info est null");
                                 }
                             }
                         }
@@ -2186,7 +2874,7 @@ namespace importPlanifier.Classes
 
 
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(false, "3", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, list_of_client_info, dh.Etat));
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, list_of_client_info, dh.Etat));
 
                     //generate document BLF_____. in database.
                     try
@@ -2226,7 +2914,7 @@ namespace importPlanifier.Classes
                             try
                             {
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert the article " + products_MS[x, 15] + " (Ref:" + products_MS[x, 10] + ") to documentline in the database");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert the article " + products_MS[x, 12] + " (Ref:" + products_MS[x, 9] + ") to documentline in the database");
 
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.insertDesadvDocumentLine_Veolog(true, products_MS, x));
 
@@ -2276,7 +2964,8 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask ME");
 
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+
+                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -2313,24 +3002,38 @@ namespace importPlanifier.Classes
                         return null;
                     }
 
-                    //ME00001
-                    int chiffreTotal = 7;
-                    int lastMaskID = Convert.ToInt16(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
-
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    try
                     {
-                        zeros += "0";
+                        //ME00001
+                        int chiffreTotal = 7;
+                        int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                        int newMaskID = lastMaskID + 1;
+
+                        result = mask; // put ME before adding '0'
+                        string zeros = "";
+                        string result_ = result + "" + newMaskID;
+
+                        for (int i = result_.Length; i < chiffreTotal; i++)
+                        {
+                            zeros += "0";
+                        }
+                        result += zeros + "" + newMaskID;
+
+                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask ME : " + result);
                     }
-                    result += zeros + "" + newMaskID;
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Exception *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : Nouveau mask ME ne peut pas etre cree");
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter.Close();
+                    }
 
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask ME : " + result);
+                    
                 }
-
+                logFileWriter.WriteLine("");
                 return result;
             }
             else if (mask == "MS")
@@ -2338,13 +3041,13 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask MS");
 
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
                     try
                     {
                         connection.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(false, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
 
                         using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                         {
@@ -2373,29 +3076,44 @@ namespace importPlanifier.Classes
                         return null;
                     }
 
-                    //MS00001
-                    int chiffreTotal = 7;
-                    int lastMaskID = Convert.ToInt16(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
 
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    try
                     {
-                        zeros += "0";
-                    }
-                    result += zeros + "" + newMaskID;
+                        //MS00001
+                        int chiffreTotal = 7;
+                        int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                        int newMaskID = lastMaskID + 1;
 
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask MS : " + result);
+                        result = mask; // put ME before adding '0'
+                        string zeros = "";
+                        string result_ = result + "" + newMaskID;
+
+                        for (int i = result_.Length; i < chiffreTotal; i++)
+                        {
+                            zeros += "0";
+                        }
+                        result += zeros + "" + newMaskID;
+
+                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask MS : " + result);
+                    }
+                    catch(Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Exception *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : Nouveau mask ME ne peut pas etre cree");
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter.Close();
+                    }
                 }
+                logFileWriter.WriteLine("");
                 return result;
             }
             else if (mask == "BL")
             {
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BL");
+                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
 
                 using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                 {
@@ -2449,6 +3167,7 @@ namespace importPlanifier.Classes
 
                     logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BL : " + result);
                 }
+                logFileWriter.WriteLine("");
                 return result;
             }
             return null;
@@ -3611,6 +4330,8 @@ namespace importPlanifier.Classes
 
             //this.SendToVeolog();
 
+            Console.WriteLine("");
+            Console.WriteLine("");
             Console.WriteLine("getting path : ");
             Classes.Path path = new Path(); 
             path.Load();

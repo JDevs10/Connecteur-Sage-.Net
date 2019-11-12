@@ -58,18 +58,21 @@ namespace ConnecteurSage.Forms
                            while(reader.Read())
                             {
                                 Order order = new Order(reader[0].ToString(), reader[1].ToString(), 
-                                    reader[2].ToString().Replace(", ",",")+"."+reader[3].ToString()+"."+reader[6].ToString()+"."+reader[7].ToString(),
-                                    reader[8].ToString(), reader[9].ToString().Replace("00:00:00",""),
+                                    reader[2].ToString()+", "+reader[3].ToString()+", "+reader[6].ToString()+", "+reader[7].ToString(),
+                                    reader[8].ToString(), reader[9].ToString(),
                                     reader[10].ToString(), reader[11].ToString(),
                                     reader[12].ToString(), reader[13].ToString(), reader[15].ToString(),
                                     (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[0] : null),
                                     (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[1] : null),
                                     reader[15].ToString()
                                     );
-                                //order.cbMarq = reader[16].ToString();
-                                //order.Reference = reader[17].ToString();
-                                //order.statut = reader[18].ToString();
+
+                                order.telephone = reader[16].ToString();
+                                order.email = reader[17].ToString();
+                                //order.commentaires = "";
+                                //order.Transporteur = "";
                                 listCommande.Add(order);
+                                
                             }
                         }
                     }
@@ -285,7 +288,26 @@ namespace ConnecteurSage.Forms
                         if (veolog_format)
                         {
                             //format Veolog
-                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;Veolog;35 Avenue de Bethunes;ZI de Bethunes;;95310;Saint Ouen l'Aumone;FR;766666666;a.bertolino@veolog.fr;20180917;1200;ENLEVEMENT;;;COMMANDE DE TEST"); // E line
+                            string[] adresse = new string[4];
+                            string[] date_time = new string[2];
+
+                            adresse = CommandeAExporter.adresseLivraison.Split(','); //CommandeAExporter.adresseLivraison.Split(',');
+                            date_time = CommandeAExporter.DateCommande.Split(' ');
+
+                            CommandeAExporter.commentaires = "";
+
+                            //Split the adresse
+                            CommandeAExporter.adresse = adresse[0];
+                            CommandeAExporter.codepostale = adresse[1];
+                            CommandeAExporter.ville = adresse[2];
+                            CommandeAExporter.pays = adresse[3];
+
+                            //Split the DateTime
+                            CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
+                            string[] time = date_time[1].Split(':');
+                            CommandeAExporter.HeureCommande = time[0] + time[1];
+
+                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";ZI de Bethunes;;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.HeureCommande + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
 
                             CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 
@@ -559,6 +581,16 @@ namespace ConnecteurSage.Forms
                                     customersDataGridView.Columns["DO_MOTIF"].HeaderText = "N° commande";
                                 if (customersDataGridView.Columns["codeAcheteur"] != null)
                                     customersDataGridView.Columns["codeAcheteur"].Visible = false;
+
+                                //test
+                                if (customersDataGridView.Columns["telephone"] != null)
+                                    customersDataGridView.Columns["telephone"].Visible = false;
+                                if (customersDataGridView.Columns["email"] != null)
+                                    customersDataGridView.Columns["email"].Visible = false;
+                                if (customersDataGridView.Columns["HeureCommande"] != null)
+                                    customersDataGridView.Columns["HeureCommande"].Visible = false;
+                                if (customersDataGridView.Columns["Transporteur"] != null)
+                                    customersDataGridView.Columns["Transporteur"].Visible = false;
 
                                 if (customersDataGridView.Columns["adresse"] != null)
                                     customersDataGridView.Columns["adresse"].Visible = false;

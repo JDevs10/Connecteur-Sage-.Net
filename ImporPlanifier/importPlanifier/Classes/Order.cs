@@ -18,7 +18,9 @@ namespace importPlanifier.Classes
           deviseCommande = "0";
       }
 
-      public Order(string NumCommande, string codeClient, string adresseLivraison, string deviseCommande, string DateCommande, string DateLivraison, string conditionLivraison, string MontantTotal, string NomClient, string DO_MOTIF, string codeAcheteur, string codeFournisseur, string nom_contact)
+        // DO_Piece, cli.CT_Num, Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.N_Expedition, cli.CT_Telephone, cli.CT_EMail, cli.CT_Commentaire
+
+        public Order(string NumCommande, string codeClient, string adresseLivraison, string deviseCommande, string DateCommande, string DateLivraison, string conditionLivraison, string MontantTotal, string NomClient, string DO_MOTIF, string codeAcheteur, string codeFournisseur, string nom_contact)
       {
           this.NumCommande = NumCommande;
           this.codeClient = codeClient;
@@ -109,8 +111,12 @@ namespace importPlanifier.Classes
     public string NomClient { get; set; }
     public string cbMarq { get; set; }
     public string statut { get; set; }
+    public string telephone { get; set; }
+    public string email { get; set; }
+    public string HeureCommande { get; set; }
+    public string Transporteur { get; set; }
 
-    #endregion
+        #endregion
 
 
     }

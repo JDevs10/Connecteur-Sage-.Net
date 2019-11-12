@@ -134,12 +134,15 @@ namespace ConnecteurSage.Classes
     public decimal FNT_MONTANTTOTALTAXES { get; set; }
     public decimal DL_MONTANTHT { get; set; }
     public decimal DL_MONTANTTTC { get; set; }
-   
+    public string telephone { get; set; }
+    public string email { get; set; }
+    public string HeureCommande { get; set; }
+    public string Transporteur { get; set; }
 
-    #endregion
+        #endregion
 
 
-  }
+    }
 
   /// <summary>
   /// Classe repésentant une ligne de vente de la commande

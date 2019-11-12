@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Data.Odbc;
 using ConnecteurSage.Helpers;
 using System.Threading;
+using System.Net.Mail;
 
 namespace ConnecteurSage.Forms
 {
@@ -979,6 +980,67 @@ namespace ConnecteurSage.Forms
                                         //deplacer les fichiers csv
                                         File.Move(filename, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+
+                                        //Envoyer une alert Mail
+
+                                        Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("Software\\Sage\\Connecteur sage");  //Récupérer le mail enregistré
+                                        bool mailActivated = false;
+                                        string[] mail_info = new string[7];
+
+                                        if (key != null)
+                                        {
+                                            mailActivated = key.GetValue("active").ToString() == "" ? false : (key.GetValue("active").ToString() == "True" ? true : false);
+                                            mail_info[0] = key.GetValue("smtp").ToString();
+                                            mail_info[1] = key.GetValue("port").ToString();
+                                            mail_info[2] = Utils.Decrypt(key.GetValue("password").ToString());
+                                            mail_info[3] = key.GetValue("login").ToString();
+                                            mail_info[4] = key.GetValue("dest1").ToString();
+                                            mail_info[5] = key.GetValue("dest2").ToString();
+                                            mail_info[6] = key.GetValue("dest3").ToString();
+
+                                            if (!mailActivated)
+                                            {
+                                                MessageBox.Show("Le service Mail est désactivé. \nAucune notification envoyer !", "Information Email",
+                                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                return;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //Aunune Mail enregistre
+
+                                        }
+
+                                        if (mailActivated)
+                                        {
+                                            try
+                                            {
+                                                MailMessage mail = new MailMessage();
+                                                SmtpClient SmtpServer = new SmtpClient(mail_info[0]);
+                                                mail.From = new MailAddress(mail_info[3]);
+
+                                                if (mail_info[4] != null && mail_info[4] != ""){   mail.To.Add(mail_info[4]);  }
+                                                if (mail_info[4] != null && mail_info[4] != ""){   mail.To.Add(mail_info[5]);  }
+                                                if (mail_info[4] != null && mail_info[4] != ""){   mail.To.Add(mail_info[6]);  }
+                                                mail.Subject = "Test Mail - 1";
+                                                mail.Body = "mail with attachment. \nImport with succes !!!";
+
+                                                System.Net.Mail.Attachment attachment;
+                                                attachment = new System.Net.Mail.Attachment(filename);
+                                                mail.Attachments.Add(attachment);
+
+                                                SmtpServer.Port = Convert.ToInt16(mail_info[1]);
+                                                SmtpServer.Credentials = new System.Net.NetworkCredential(mail_info[3], mail_info[2]);
+                                                SmtpServer.EnableSsl = true;
+
+                                                SmtpServer.Send(mail);
+                                                MessageBox.Show("mail Send");
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Console.WriteLine(ex.ToString());
+                                            }
+                                        }
 
                                         Close();
 
