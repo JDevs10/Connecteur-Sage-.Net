@@ -232,3 +232,4 @@ C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csproj.CopyComplete
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.exe
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.pdb
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csprojAssemblyReference.cache
