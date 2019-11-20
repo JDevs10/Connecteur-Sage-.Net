@@ -3385,7 +3385,6 @@ namespace ConnecteurSage.Forms
             return list_of_cmd_lines;
         }
 
-
         public static Boolean insertCommandeLine(Client client, Order order, OrderLine orderLine)
         {
             // Insertion dans la base sage : cbase

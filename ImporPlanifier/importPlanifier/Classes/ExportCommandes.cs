@@ -6,6 +6,7 @@ using importPlanifier.Helpers;
 using System.Data.Odbc;
 using System.Data;
 using System.IO;
+using System.Globalization;
 
 namespace importPlanifier.Classes
 {
@@ -159,6 +160,7 @@ namespace importPlanifier.Classes
                 }
             }
 
+            logFileWriter.Flush();
             //Console.WriteLine("OK1 countLimit:" + countLimit + " ");
 
             for (int index=0; index< countLimit; index++)
@@ -317,8 +319,11 @@ namespace importPlanifier.Classes
                                     var veolog_format = ((export.exportBonsCommandes_Format == "Velog") ? true : false);
                                     if (veolog_format)
                                     {
+                                        ConfigurationDNS dns = new ConfigurationDNS();
+                                        dns.LoadSQL();
+                                        
                                         veolog_format = true;
-                                        fileName = string.Format("orders_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
+                                        fileName = string.Format("orders_"+dns.Prefix+"_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
                                     }
                                     else
                                     {
@@ -346,10 +351,36 @@ namespace importPlanifier.Classes
                                         CommandeAExporter.adresse = adresse[0];
                                         CommandeAExporter.codepostale = adresse[1];
                                         CommandeAExporter.ville = adresse[2];
+
+                                        // Get the country
                                         CommandeAExporter.pays = adresse[3];
 
+                                        //Get Country ISO
+                                        CommandeAExporter.pays = adresse[3];
+
+                                        CountryFormatISO iso = new CountryFormatISO();
+                                        string[,] country_iso = iso.getAllStaticCountryISOCode();
+
+                                        if (CommandeAExporter.pays == "")
+                                        {
+                                            CommandeAExporter.pays = "France";
+                                        }
+
+                                        for (int i = 0; i < country_iso.GetLength(0); i++)
+                                        {
+                                            if (country_iso[i, 0].ToUpper().Equals(CommandeAExporter.pays.ToUpper()))
+                                            {
+                                                CommandeAExporter.pays = country_iso[i, 1];
+                                            }
+                                        }
+
+
                                         //Split the DateTime
-                                        CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
+                                        var date = Convert.ToDateTime(CommandeAExporter.DateCommande);
+
+                                        //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
+                                        CommandeAExporter.DateCommande = date.Year + date.Month + date.Day + "";
+
                                         string[] time = date_time[1].Split(':');
                                         CommandeAExporter.HeureCommande = time[0] + time[1];
 

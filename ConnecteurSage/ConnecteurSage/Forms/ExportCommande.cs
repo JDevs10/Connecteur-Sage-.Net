@@ -56,9 +56,9 @@ namespace ConnecteurSage.Forms
                         using (IDataReader reader = command.ExecuteReader())
                         {
                            while(reader.Read())
-                            {
+                           {
                                 Order order = new Order(reader[0].ToString(), reader[1].ToString(), 
-                                    reader[2].ToString()+", "+reader[3].ToString()+", "+reader[6].ToString()+", "+reader[7].ToString(),
+                                    reader[2].ToString()+","+reader[3].ToString()+","+reader[6].ToString()+","+reader[7].ToString(),
                                     reader[8].ToString(), reader[9].ToString(),
                                     reader[10].ToString(), reader[11].ToString(),
                                     reader[12].ToString(), reader[13].ToString(), reader[15].ToString(),
@@ -73,7 +73,7 @@ namespace ConnecteurSage.Forms
                                 //order.Transporteur = "";
                                 listCommande.Add(order);
                                 
-                            }
+                           }
                         }
                     }
                     return listCommande;
@@ -276,8 +276,11 @@ namespace ConnecteurSage.Forms
 
                     if (resultDialog5 == DialogResult.Yes)
                     {
+                        ConfigurationDNS dns = new ConfigurationDNS();
+                        dns.LoadSQL();
+
                         veolog_format = true;
-                        fileName = string.Format("orders_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
+                        fileName = string.Format("orders_"+ dns.Prefix+ "_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
                     }
 
                     bool veolog_file_check = false;
@@ -287,11 +290,11 @@ namespace ConnecteurSage.Forms
 
                         if (veolog_format)
                         {
-                            //format Veolog
+                            //Format Veolog
                             string[] adresse = new string[4];
                             string[] date_time = new string[2];
 
-                            adresse = CommandeAExporter.adresseLivraison.Split(','); //CommandeAExporter.adresseLivraison.Split(',');
+                            adresse = CommandeAExporter.adresseLivraison.Split(',');    // CommandeAExporter.adresseLivraison.Split(',');
                             date_time = CommandeAExporter.DateCommande.Split(' ');
 
                             CommandeAExporter.commentaires = "";
@@ -302,8 +305,39 @@ namespace ConnecteurSage.Forms
                             CommandeAExporter.ville = adresse[2];
                             CommandeAExporter.pays = adresse[3];
 
+                            /*
+                            string str = CommandeAExporter.adresse;
+                            int tts = str.Length - 1;
+                            string str1 = str.Substring(0, tts);
+                            CommandeAExporter.adresse = str1;
+
+                            string str2 = CommandeAExporter.adresse;
+                            int tts1 = str2.Length - 1;
+                            string str3 = str.Substring(0, tts1);
+                            CommandeAExporter.adresse = str3;
+                            */
+
+                            CountryFormatISO iso = new CountryFormatISO();
+                            string[,] country_iso = iso.getAllStaticCountryISOCode();
+
+                            if(CommandeAExporter.pays == "")
+                            {
+                                CommandeAExporter.pays = "France";
+                            }
+
+                            for (int i = 0; i < country_iso.GetLength(0); i++)
+                            {
+                                if (country_iso[i, 0].ToUpper().Equals(CommandeAExporter.pays.ToUpper()))
+                                {
+                                    CommandeAExporter.pays = country_iso[i, 1];
+                                }
+                            }
                             //Split the DateTime
-                            CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
+                            var date = Convert.ToDateTime(CommandeAExporter.DateCommande);
+
+                            //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
+                            CommandeAExporter.DateCommande = date.Year + date.Month + date.Day +"";
+
                             string[] time = date_time[1].Split(':');
                             CommandeAExporter.HeureCommande = time[0] + time[1];
 

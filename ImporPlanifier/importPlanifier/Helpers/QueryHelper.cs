@@ -37,11 +37,11 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta FROM "+getPrefix()+"F_COMPTET where CT_EDI1='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta FROM "+getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             else
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta FROM F_COMPTET where CT_EDI1='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             
         }
@@ -62,11 +62,11 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_Num FROM "+getPrefix()+"F_COMPTET where CT_EDI1='" + id + "' and CT_Type=1";
+                return "SELECT CT_Num FROM "+getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=1";
             }
             else
             {
-                return "SELECT CT_Num FROM F_COMPTET where CT_EDI1='" + id + "' and CT_Type=1";
+                return "SELECT CT_Num FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=1";
             }
         }
 
@@ -248,11 +248,11 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_EDI1 from "+getPrefix()+"f_comptet where CT_intitule='" + intitule + "'";
+                return "SELECT CT_EdiCode from " + getPrefix()+"f_comptet where CT_intitule='" + intitule + "'";
             }
             else
             {
-                return "SELECT CT_EDI1 from f_comptet where CT_intitule='" + intitule + "'";
+                return "SELECT CT_EdiCode from f_comptet where CT_intitule='" + intitule + "'";
             }
         }
 
@@ -404,13 +404,13 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT doc.DO_PIECE, cli.CT_EDI1, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01,liv.li_contact " +
+                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01,liv.li_contact " +
                  "FROM " + getPrefix() + "F_comptet cli, " + getPrefix() + "P_condlivr cond, " + getPrefix() + "F_docentete doc, " + getPrefix() + "F_LIVRAISON liv " +
                  "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=1) AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition) AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
             }
             else
             {
-                return "SELECT doc.DO_PIECE, cli.CT_EDI1, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01,liv.li_contact " +
+                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01,liv.li_contact " +
                  "FROM F_comptet cli, P_condlivr cond, F_docentete doc, F_LIVRAISON liv " +
                  "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=1) AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition) AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
             }
@@ -498,11 +498,11 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_Num,CT_Intitule,CT_Adresse,CT_APE,CT_CodePostal,CT_CodeRegion,CT_Complement,CT_CONTACT,CT_EDI1,CT_email,CT_Identifiant, CT_Ville,CT_Pays,CT_Siret,CT_Telephone,N_DEVISE,CT_SvFormeJuri  FROM " + getPrefix() + "F_COMPTET where CT_Type=0 and CT_Num='" + do_tiers + "'";
+                return "SELECT CT_Num,CT_Intitule,CT_Adresse,CT_APE,CT_CodePostal,CT_CodeRegion,CT_Complement,CT_CONTACT,CT_EdiCode,CT_email,CT_Identifiant, CT_Ville,CT_Pays,CT_Siret,CT_Telephone,N_DEVISE,CT_SvFormeJuri  FROM " + getPrefix() + "F_COMPTET where CT_Type=0 and CT_Num='" + do_tiers + "'";
             }
             else
             {
-                return "SELECT CT_Num,CT_Intitule,CT_Adresse,CT_APE,CT_CodePostal,CT_CodeRegion,CT_Complement,CT_CONTACT,CT_EDI1,CT_email,CT_Identifiant, CT_Ville,CT_Pays,CT_Siret,CT_Telephone,N_DEVISE,CT_SvFormeJuri  FROM F_COMPTET where CT_Type=0 and CT_Num='" + do_tiers + "'";
+                return "SELECT CT_Num,CT_Intitule,CT_Adresse,CT_APE,CT_CodePostal,CT_CodeRegion,CT_Complement,CT_CONTACT,CT_EdiCode,CT_email,CT_Identifiant, CT_Ville,CT_Pays,CT_Siret,CT_Telephone,N_DEVISE,CT_SvFormeJuri  FROM F_COMPTET where CT_Type=0 and CT_Num='" + do_tiers + "'";
             }
         }
 
@@ -726,14 +726,14 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,', ',cli.CT_CodePostal,',',cli.CT_Ville, ', ',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,',',cli.CT_CodePostal,',',cli.CT_Ville, ',',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail " +
                     "FROM " + getPrefix() + "F_COMPTET as cli, " + getPrefix() + "F_DOCENTETE as cmd, " + getPrefix() + "F_livraison liv " +
                     "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";
             }
             else
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,', ',cli.CT_CodePostal,',',cli.CT_Ville, ', ',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,',',cli.CT_CodePostal,',',cli.CT_Ville, ',',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail " +
                     "FROM F_COMPTET as cli, F_DOCENTETE as cmd, F_livraison liv " +
                     "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";

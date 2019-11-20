@@ -223,6 +223,7 @@
     <Compile Include="Forms\Validation.Designer.cs">
       <DependentUpon>Validation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\CountryFormatISO.cs" />
     <Compile Include="Helpers\QueryHelper.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Program.cs" />

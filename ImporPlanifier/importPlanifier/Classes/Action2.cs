@@ -23,7 +23,7 @@ namespace importPlanifier.Classes
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         private string dir;
         private static int nbr = 0;
-        private static StreamWriter LogFile;
+        //private static StreamWriter LogFile;
         private static string cheminLogFile;
         private static List<string> MessageErreur;
 
@@ -60,10 +60,10 @@ namespace importPlanifier.Classes
             dir = path.path;
             Console.WriteLine("Import/Export planifier Sage!!");
             Console.WriteLine("Execution en cours..");
-            //Console.WriteLine("##############################################");
-            //Console.WriteLine("############ L'import planifier ##############");
-            //Console.WriteLine("##############################################");
-            //Console.WriteLine("");
+            Console.WriteLine("##############################################");
+            Console.WriteLine("############ L'import planifier ##############");
+            Console.WriteLine("##############################################");
+            Console.WriteLine("");
 
             if (dir == null)
             {
@@ -173,7 +173,6 @@ namespace importPlanifier.Classes
 
                         logFileWriter_import.WriteLine(DateTime.Now + " : -----> Fichier " + index + " : " + filename.Name);
                         logFileWriter_import.WriteLine(DateTime.Now + " : Scan fichier...");
-                        Console.WriteLine(DateTime.Now + " : Ficher " + index + " : " + filename);
 
 
                         long pos = 1;
@@ -193,22 +192,24 @@ namespace importPlanifier.Classes
                             //Boolean insertAdressLivr = false;
                             Order order = new Order();
 
-                            order.Id = get_next_num_piece_commande();
+                            order.Id = get_next_num_piece_commande(logFileWriter_import);
 
                             if (order.Id == "erreur")
                             {
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : orderId erreur");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
-
+                            
                             if (order.Id == null)
                             {
                                 Console.WriteLine("Erreur [10] : numéro de piece non valide");
@@ -216,18 +217,21 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : orderId est null");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
                             order.Lines = new List<OrderLine>();
 
                             order.NumCommande = lines[0].Split(';')[1];
+
                             if (order.NumCommande.Length > 10)
                             {
                                 Console.WriteLine("Numéro de commande doit être < 10");
@@ -235,13 +239,15 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
                             if (order.NumCommande == "")
@@ -251,13 +257,15 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
                             if (!IsNumeric(order.NumCommande))
@@ -267,16 +275,18 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
-                            string existe = existeCommande(order.NumCommande);
+                            string existe = existeCommande(order.NumCommande, logFileWriter_import);
 
                             if (existe != null && existe != "erreur")
                             {
@@ -285,13 +295,15 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + ".");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
                             if (existe == "erreur")
@@ -299,68 +311,121 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : N° de pièce : '" + existe + "' trouvée dans la Base de Données");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
+
 
                             order.codeClient = lines[0].Split(';')[2];
                             order.codeAcheteur = lines[0].Split(';')[3];
                             order.codeFournisseur = lines[0].Split(';')[4];
                             //order.adresseLivraison = lines[0].Split(';')[7];
 
+                            if(order.codeClient == "")
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
 
-                            Client client = getClient(order.codeClient, 1);
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code client dans le fichier est vide, verifier le code client.");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
+                            }
+
+                            if (order.codeAcheteur == "")
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code acheteur dans le fichier est vide, verifier le code client.");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
+                            }
+
+                            if (order.codeFournisseur == "")
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code fournisseur dans le fichier est vide, verifier le code client.");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
+                            }
+
+                            Client client = getClient(order.codeClient, 1, logFileWriter_import);
                             if (client == null)
                             {
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
-                            Client client2 = getClient(order.codeAcheteur, 2);
+
+                            Client client2 = getClient(order.codeAcheteur, 2, logFileWriter_import);
                             if (client2 == null)
                             {
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
 
-                            if (existeFourniseur(order.codeFournisseur) == null)
+                            if (existeFourniseur(order.codeFournisseur, logFileWriter_import) == null)
                             {
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
+
 
                             order.adresseLivraison = lines[0].Split(';')[7];
                             string[] tab_adress = order.adresseLivraison.Split('.');
+
                             if (tab_adress.Length != 5)
                             {
                                 Console.WriteLine("La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays");
@@ -368,14 +433,16 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
                             order.nom_contact = tab_adress[0];
                             order.adresse = tab_adress[1].Replace("'", "''");
@@ -384,8 +451,7 @@ namespace importPlanifier.Classes
                             order.pays = tab_adress[4];
 
 
-                            List<AdresseLivraison> listAdress = get_adresse_livraison(new AdresseLivraison(1, client.CT_Num, order.nom_contact, order.adresse, order.codepostale, order.ville, order.pays));
-
+                            List<AdresseLivraison> listAdress = get_adresse_livraison(new AdresseLivraison(1, client.CT_Num, order.nom_contact, order.adresse, order.codepostale, order.ville, order.pays), logFileWriter_import);
 
                             // Ajouter ville dans la réference
                             //string[] part = order.adresseLivraison.Split('.');
@@ -398,23 +464,25 @@ namespace importPlanifier.Classes
 
                             if (order.deviseCommande != "")
                             {
-                                order.deviseCommande = getDevise(order.deviseCommande);
+                                order.deviseCommande = getDevise(order.deviseCommande, logFileWriter_import);
                             }
+
 
                             if (order.deviseCommande == "erreur")
                             {
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : deviseCommande == erreur");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
-
 
                             if (lines[1].Split(';')[0] == "ORDHD1" && lines[1].Split(';').Length == 5)
                             {
@@ -428,7 +496,7 @@ namespace importPlanifier.Classes
 
                                     if (order.conditionLivraison != "")
                                     {
-                                        order.conditionLivraison = get_condition_livraison(order.conditionLivraison);
+                                        order.conditionLivraison = get_condition_livraison(order.conditionLivraison, logFileWriter_import);
                                     }
 
                                     if (string.IsNullOrEmpty(order.conditionLivraison))
@@ -449,6 +517,7 @@ namespace importPlanifier.Classes
 
                                             string[] tab = ligneDuFichier.Split(';');
 
+
                                             switch (tab[0])
                                             {
                                                 case "ORDLIN":
@@ -456,28 +525,24 @@ namespace importPlanifier.Classes
                                                     {
                                                         OrderLine line = new OrderLine();
                                                         line.NumLigne = tab[1];
-                                                        line.article = getArticle(tab[2]);
-
+                                                        line.article = getArticle(tab[2], logFileWriter_import);
 
                                                         if (line.article == null)
                                                         {
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                            logFileWriter_general.Close();
+                                                            //logFileWriter_import.Close();
+                                                            //return;
 
-                                                            logFileWriter_import.WriteLine("");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : article est null");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_import.Close();
-                                                            return;
+                                                            tabCommandeError.Add(filename.ToString());
+                                                            goto goErrorLoop;
                                                         }
 
 
-                                                        line.article.Conditionnement = getConditionnementArticle(line.article.AR_REF);
+                                                        line.article.Conditionnement = getConditionnementArticle(line.article.AR_REF, logFileWriter_import);
 
-
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : tab ===> line.article.Conditionnement");
                                                         if (line.article.AR_Nomencl == "2" || line.article.AR_Nomencl == "3")
                                                         {
                                                             line.article.AR_REFCompose = line.article.AR_REF;
@@ -485,12 +550,12 @@ namespace importPlanifier.Classes
 
                                                         if (line.article.gamme1 != "0")
                                                         {
-                                                            line.article.gamme1 = testGamme(0, line.article.AR_REF, line.article.gamme1);
+                                                            line.article.gamme1 = testGamme(0, line.article.AR_REF, line.article.gamme1, logFileWriter_import);
                                                         }
 
                                                         if (line.article.gamme2 != "0")
                                                         {
-                                                            line.article.gamme2 = testGamme(1, line.article.AR_REF, line.article.gamme2);
+                                                            line.article.gamme2 = testGamme(1, line.article.AR_REF, line.article.gamme2, logFileWriter_import);
                                                         }
 
                                                         line.Quantite = tab[9].Replace(",", ".");
@@ -503,13 +568,11 @@ namespace importPlanifier.Classes
                                                         }
 
 
-
                                                         if (line.article.Conditionnement != null)
                                                         {
-                                                            int quantite_Conditionnement = Calcule_conditionnement(d, line.article.Conditionnement.EC_QUANTITE);
+                                                            int quantite_Conditionnement = Calcule_conditionnement(d, line.article.Conditionnement.EC_QUANTITE, logFileWriter_import);
                                                             line.Calcule_conditionnement = quantite_Conditionnement.ToString();
                                                         }
-
 
 
                                                         line.PrixNetHT = tab[14].Replace(",", ".");
@@ -519,6 +582,7 @@ namespace importPlanifier.Classes
                                                         {
                                                             line.DateLivraison = "Null";
                                                         }
+
 
                                                         //if (line.article.AR_UnitePoids == "2")
                                                         //{
@@ -545,14 +609,16 @@ namespace importPlanifier.Classes
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                            logFileWriter_general.Close();
+                                                            //logFileWriter_general.Close();
 
                                                             logFileWriter_import.WriteLine("");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_import.Close();
-                                                            return;
+                                                            //logFileWriter_import.Close();
+                                                            //return;
+                                                            tabCommandeError.Add(filename.ToString());
+                                                            goto goErrorLoop;
                                                         }
                                                         //}
                                                         //}
@@ -566,8 +632,10 @@ namespace importPlanifier.Classes
                                                         }
                                                         total = total + Decimal.Parse(tab[11].Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
 
+
                                                         decimal prix = Decimal.Parse(line.PrixNetHT, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
                                                         decimal prixSage = Decimal.Parse(line.article.AR_PRIXVEN.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+
 
                                                         if (prix != prixSage)
                                                         {
@@ -575,14 +643,16 @@ namespace importPlanifier.Classes
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                            logFileWriter_general.Close();
+                                                            //logFileWriter_general.Close();
 
                                                             logFileWriter_import.WriteLine("");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_import.Close();
-                                                            return;
+                                                            //logFileWriter_import.Close();
+                                                            //return;
+                                                            tabCommandeError.Add(filename.ToString());
+                                                            goto goErrorLoop;
                                                         }
 
                                                         order.Lines.Add(line);
@@ -594,14 +664,16 @@ namespace importPlanifier.Classes
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                        logFileWriter_general.Close();
+                                                        //logFileWriter_general.Close();
 
                                                         logFileWriter_import.WriteLine("");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier " + filename + ".", "Erreur de lecture.");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                        logFileWriter_import.Close();
-                                                        return;
+                                                        //logFileWriter_import.Close();
+                                                        //return;
+                                                        tabCommandeError.Add(filename.ToString());
+                                                        goto goErrorLoop;
                                                     }
                                                     break;
 
@@ -638,21 +710,23 @@ namespace importPlanifier.Classes
                                                 order.deviseCommande = client.N_Devise;
                                             }
 
-                                            order.StockId = getStockId();
+                                            order.StockId = getStockId(logFileWriter_import);
                                             if (string.IsNullOrEmpty(order.StockId))
                                             {
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                logFileWriter_general.Close();
+                                                //logFileWriter_general.Close();
 
                                                 logFileWriter_import.WriteLine("");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
-                                                logFileWriter_import.Close();
-                                                return;
+                                                //logFileWriter_import.Close();
+                                                //return;
+                                                tabCommandeError.Add(filename.ToString());
+                                                goto goErrorLoop;
                                             }
 
                                             if (!prixDef)
@@ -715,14 +789,16 @@ namespace importPlanifier.Classes
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                logFileWriter_general.Close();
+                                                //logFileWriter_general.Close();
 
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = " + order.Lines.Count());
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
-                                                logFileWriter_import.Close();
-                                                return;
+                                                //logFileWriter_import.Close();
+                                                //return;
+                                                tabCommandeError.Add(filename.ToString());
+                                                goto goErrorLoop;
                                             }
                                             MessageErreur = new List<string>();
 
@@ -812,20 +888,22 @@ namespace importPlanifier.Classes
                                             //}
                                             //}
 
-                                            order.adresseLivraison = getNumLivraison(client.CT_Num);
+                                            order.adresseLivraison = getNumLivraison(client.CT_Num, logFileWriter_import);
                                             if (string.IsNullOrEmpty(order.adresseLivraison))
                                             {
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                logFileWriter_general.Close();
+                                                //logFileWriter_general.Close();
 
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
-                                                logFileWriter_import.Close();
-                                                return;
+                                                //logFileWriter_import.Close();
+                                                //return;
+                                                tabCommandeError.Add(filename.ToString());
+                                                goto goErrorLoop;
                                             }
 
                                             if (insertCommande(client, order))
@@ -881,13 +959,15 @@ namespace importPlanifier.Classes
                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                            logFileWriter_general.Close();
+                                            //logFileWriter_general.Close();
 
                                             logFileWriter_import.WriteLine("");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                            logFileWriter_import.Close();
+                                            //logFileWriter_import.Close();
+                                            tabCommandeError.Add(filename.ToString());
+                                            goto goErrorLoop;
                                         }
                                     }
                                     else
@@ -897,14 +977,16 @@ namespace importPlanifier.Classes
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                        logFileWriter_general.Close();
+                                        //logFileWriter_general.Close();
 
                                         logFileWriter_import.WriteLine("");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter_import.Close();
-                                        return;
+                                        //logFileWriter_import.Close();
+                                        //return;
+                                        tabCommandeError.Add(filename.ToString());
+                                        goto goErrorLoop;
                                     }
                                 }
                                 else
@@ -914,14 +996,16 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Close();
+                                    //logFileWriter_general.Close();
 
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Close();
-                                    return;
+                                    //logFileWriter_import.Close();
+                                    //return;
+                                    tabCommandeError.Add(filename.ToString());
+                                    goto goErrorLoop;
                                 }
                             }
                             else
@@ -931,14 +1015,16 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                logFileWriter_general.Close();
+                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : rreur dans la deuxième ligne du fichier.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_import.Close();
-                                return;
+                                //logFileWriter_import.Close();
+                                //return;
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
 
                         }
@@ -1102,7 +1188,10 @@ namespace importPlanifier.Classes
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Close();
+                                    //logFileWriter_import.Close();
+
+                                    tabCommandeError.Add(filename.ToString());
+                                    goto goErrorLoop;
                                 }
                                 else
                                 {
@@ -1139,7 +1228,9 @@ namespace importPlanifier.Classes
                                         //File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
                                         //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
 
-                                        logFileWriter_general.Close();
+                                        //logFileWriter_general.Close();
+                                        tabCommandeError.Add(filename.ToString());
+                                        goto goErrorLoop;
                                     }
                                 }
 
@@ -1155,24 +1246,21 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
 
-                                //deplacer les fichiers csv
-                                File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-
-                                logFileWriter_general.Close();
-
-
 
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
 
-                                //deplacer les fichiers csv
+                                //deplacer les fichiers cs
+                                /*
                                 File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
 
                                 logFileWriter_import.Close();
+                                */
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
 
                             }
                         }
@@ -1286,10 +1374,12 @@ namespace importPlanifier.Classes
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Message |\n" + ex.Message);
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Stack |\n" + ex.StackTrace);
 
+                                            /*
                                             logFileWriter_general.Flush();
                                             logFileWriter_import.Flush();
                                             logFileWriter_import.Close();
                                             logFileWriter_general.Close();
+                                            */
                                         }
                                     }
                                     else
@@ -1315,6 +1405,8 @@ namespace importPlanifier.Classes
                                     }
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                    tabCommandeError.Add(filename.ToString());
+                                    goto goErrorLoop;
                                 }
                             }
 
@@ -1447,6 +1539,8 @@ namespace importPlanifier.Classes
 
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                                    tabCommandeError.Add(filename.ToString());
+                                    goto goErrorLoop;
                                 }
                                 else
                                 {
@@ -1460,6 +1554,8 @@ namespace importPlanifier.Classes
 
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
                             }
                         }
                         else if (lines[0].Split(';')[0] == "E") //Import Veolog DESADV doc
@@ -1546,13 +1642,13 @@ namespace importPlanifier.Classes
 
                                         //deplacer les fichiers csv
                                         string theFileName = filename.Name;
-                                        //string newFileLocation = directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
-                                        //File.Move(theFileName, newFileLocation);
-                                        //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+                                        string newFileLocation = directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
+                                        File.Move(theFileName, newFileLocation);
+
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
                                         logFileWriter_import.WriteLine("");
                                         logFileWriter_import.WriteLine("");
 
-                                        //logFileWriter_general.Close();
                                     }
                                     else
                                     {
@@ -1560,14 +1656,7 @@ namespace importPlanifier.Classes
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
                                         tabCommandeError.Add(filename.ToString());
-
-                                        //deplacer les fichiers csv
-                                        //string theFileName = filename.Name;
-                                        //string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
-                                        //File.Move(theFileName, newFileLocation);
-                                        //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-
-                                        //logFileWriter_general.Close();
+                                        goto goErrorLoop;
                                     }
                                 }
                             }
@@ -1576,13 +1665,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                                 tabCommandeError.Add(filename.ToString());
-
-                                //deplacer les fichiers csv
-                                //string theFileName = filename.Name;
-                                //string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
-                                //File.Move(filename.Name, newFileLocation);
-                                //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
+                                goto goErrorLoop;
                             }
                         }
                         else
@@ -1591,17 +1674,8 @@ namespace importPlanifier.Classes
                             //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
                             logFileWriter_import.WriteLine("");
                             logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
-
-                            string theFileName = filename.Name;
-                            string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
-                            File.Move(filename.Name, newFileLocation);
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
-                            logFileWriter_general.Flush();
-                            logFileWriter_import.Flush();
-                            logFileWriter_general.Close();
-                            logFileWriter_import.Close();
-                            //tabCommandeError.Add(filename.ToString());
+                            tabCommandeError.Add(filename.ToString());
+                            goto goErrorLoop;
                         }
                     }
                     catch (Exception e)
@@ -1611,11 +1685,14 @@ namespace importPlanifier.Classes
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Exception *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                        logFileWriter_import.WriteLine(DateTime.Now + " : Erreur StackTrace :: " + e.StackTrace);
 
                         logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
 
                         tabCommandeError.Add(filename.ToString());
                     }
+
+                goErrorLoop:;
 
                     //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
                     if (File.Exists(dir + @"\" + filename) && tabCommandeError.Count > 0)
@@ -1623,19 +1700,26 @@ namespace importPlanifier.Classes
                         //var errorfilename = string.Format("{0:ddMMyyyy_HHmmss}_" + filename, DateTime.Now);
                         //System.IO.File.Move(dir + @"\" + filename, outputFileError + @"\" + errorfilename);
 
+                        logFileWriter_general.Flush();
+                        logFileWriter_import.Flush();
                         logFileWriter_import.WriteLine("");
                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
 
                         //deplacer les fichiers csv
                         string theFileName = filename.Name;
-                        string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
+                        string newFileLocation = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}.log", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name);
                         File.Move(filename.Name, newFileLocation);
                         logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
-                        //logFileWriter_import.Close();
                     }
 
+                    //End .csv loop
+                    tabCommandeError.Clear();
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_import.WriteLine("");
+                    logFileWriter_general.Flush();
+                    logFileWriter_import.Flush();
                 }
 
 
@@ -1655,14 +1739,14 @@ namespace importPlanifier.Classes
         // Envoi de mail
         if (tabCommandeError.Count != 0)
         {
-            ConfSendMail cMail = getInfoMail();
+            ConfSendMail cMail = getInfoMail(logFileWriter_import);
             if (cMail != null)
             {
                 if (cMail.active)
                 {
                     if (cMail.dest1 == "" && cMail.dest2 == "" && cMail.dest3 == "")
                     {
-                        LogFile.WriteLine(DateTime.Now + " : Send Mail..Erreur Adresse de distinataire");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Send Mail..Erreur Adresse de distinataire");
                     }
                     string commande = "";
                     for (int i = 0; i < tabCommandeError.Count; i++)
@@ -3294,7 +3378,7 @@ namespace importPlanifier.Classes
         // #####################################################################################################
         //##################################################################################################
 
-        public static Client getClient(string id)
+        public static Client getClient(string id, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3315,7 +3399,7 @@ namespace importPlanifier.Classes
                             else
                             {
                                 //Console.WriteLine(DateTime.Now + " : Erreur - Code Client " + id + " n'existe pas dans la base sage.");
-                                LogFile.WriteLine(DateTime.Now + " : Erreur - Code Client " + id + " n'existe pas dans la base sage.");
+                                writer.WriteLine(DateTime.Now + " : Erreur - Code Client " + id + " n'existe pas dans la base sage.");
 
                                 return null;
                             }
@@ -3328,7 +3412,8 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[6]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[6]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    writer.WriteLine(DateTime.Now + " : SQL ===> "+ QueryHelper.getClient(false, id));
+                    writer.WriteLine(DateTime.Now + " : Erreur[6]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     //Console.Read();
                     return null;
                 }
@@ -3336,7 +3421,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static string getStockId()
+        public static string getStockId(StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3359,7 +3444,7 @@ namespace importPlanifier.Classes
                             else
                             {
                                 //Console.WriteLine(DateTime.Now + " : Erreur - Il n'y a pas de stock enregistré.");
-                                LogFile.WriteLine(DateTime.Now + " : Erreur - Il n'y a pas de stock enregistré.");
+                                writer.WriteLine(DateTime.Now + " : Erreur - Il n'y a pas de stock enregistré.");
 
                                 return null;
                             }
@@ -3372,14 +3457,14 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[5]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[5]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[5]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     return null;
                 }
             }
 
         }
 
-        public static string getNumLivraison(string client_num)
+        public static string getNumLivraison(string client_num, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3402,7 +3487,7 @@ namespace importPlanifier.Classes
                             else
                             {
                                 //Console.WriteLine(DateTime.Now + " : Erreur - Numero de livraison n'existe pas pour le client " + client_num + ".");
-                                LogFile.WriteLine(DateTime.Now + " : Erreur - Numero de livraison n'existe pas pour le client " + client_num + ".");
+                                writer.WriteLine(DateTime.Now + " : Erreur - Numero de livraison n'existe pas pour le client " + client_num + ".");
 
                                 return null;
                             }
@@ -3415,7 +3500,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[4]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[4]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[4]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     //Console.Read();
                     return null;
                 }
@@ -3455,7 +3540,7 @@ namespace importPlanifier.Classes
         }
          * */
 
-        public static Boolean insertLigneCommande(Client client, Order order, OrderLine orderLine)
+        public static Boolean insertLigneCommande(Client client, Order order, OrderLine orderLine, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3471,10 +3556,10 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Echec d'insertion de la ligne " + orderLine.NumLigne + " de la commande " + order.NumCommande + ".");
-                    LogFile.WriteLine(DateTime.Now + " : Echec d'insertion de la ligne " + orderLine.NumLigne + " de la commande " + order.NumCommande + ".");
+                    writer.WriteLine(DateTime.Now + " : Echec d'insertion de la ligne " + orderLine.NumLigne + " de la commande " + order.NumCommande + ".");
 
                     //Console.WriteLine(DateTime.Now + " : Erreur[3]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[3]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[3]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     return false;
                 }
 
@@ -3488,7 +3573,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static Article getArticle(string code_article)
+        public static Article getArticle(string code_article, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3513,7 +3598,7 @@ namespace importPlanifier.Classes
                             else
                             {
                                 //Console.WriteLine(DateTime.Now + " : Erreur - code article " + code_article + " n'existe pas dans la base.");
-                                LogFile.WriteLine(DateTime.Now + " : Erreur - code article " + code_article + " n'existe pas dans la base.");
+                                writer.WriteLine(DateTime.Now + " : Erreur - code article " + code_article + " n'existe pas dans la base.");
 
                                 return null;
                             }
@@ -3526,7 +3611,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[2]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[2]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[2]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     return null;
                 }
             }
@@ -3572,7 +3657,7 @@ namespace importPlanifier.Classes
             catch (Exception e)
             {
                 Console.WriteLine(DateTime.Now + " : Erreur[1] - " + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                LogFile.WriteLine(DateTime.Now + " : Erreur[1] - " + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                //writer.WriteLine(DateTime.Now + " : Erreur[1] - " + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                 return null;
             }
@@ -3603,7 +3688,7 @@ namespace importPlanifier.Classes
         }
 
 
-        public static string testGamme(int type, string code_article, string gamme)
+        public static string testGamme(int type, string code_article, string gamme, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3646,7 +3731,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[18] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[18] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[18] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return gamme;
                 }
@@ -3655,7 +3740,7 @@ namespace importPlanifier.Classes
         }
 
 
-        public static string existeCommande(string num)
+        public static string existeCommande(string num, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3688,7 +3773,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[23] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[23] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[23] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return "erreur";
                 }
@@ -3696,7 +3781,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static string MaxNumPiece()
+        public static string MaxNumPiece(StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3729,7 +3814,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[24] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[24] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[24] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return "erreur";
                 }
@@ -3737,11 +3822,11 @@ namespace importPlanifier.Classes
 
         }
 
-        public static string NextNumPiece()
+        public static string NextNumPiece(StreamWriter writer)
         {
             try
             {
-                string NumCommande = MaxNumPiece();
+                string NumCommande = MaxNumPiece(writer);
 
                 NumCommande = NumCommande.Replace("BC", "");
 
@@ -3767,7 +3852,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 //Console.WriteLine(DateTime.Now + " : Erreur[25] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                LogFile.WriteLine(DateTime.Now + " : Erreur[25] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                writer.WriteLine(DateTime.Now + " : Erreur[25] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 return "erreur";
             }
 
@@ -3775,7 +3860,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static string get_next_num_piece_commande()
+        public static string get_next_num_piece_commande(StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3797,7 +3882,7 @@ namespace importPlanifier.Classes
                             }
                             else
                             {
-                                return NextNumPiece();
+                                return NextNumPiece(writer);
                             }
                         }
 
@@ -3808,7 +3893,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     return "erreur";
                 }
             }
@@ -3831,7 +3916,7 @@ namespace importPlanifier.Classes
         }
 
 
-        public static string get_condition_livraison(string c_mode)
+        public static string get_condition_livraison(string c_mode, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3864,14 +3949,14 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[29] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[29] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[29] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     return "erreur";
                 }
             }
 
         }
 
-        public static List<AdresseLivraison> get_adresse_livraison(AdresseLivraison adresse)
+        public static List<AdresseLivraison> get_adresse_livraison(AdresseLivraison adresse, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3900,14 +3985,14 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[30] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[30] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[30] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     return null;
                 }
             }
 
         }
 
-        public static Boolean insert_adresse_livraison(string client, AdresseLivraison adresse)
+        public static Boolean insert_adresse_livraison(string client, AdresseLivraison adresse, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3928,14 +4013,14 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[30] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[30] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[30] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     return false;
                 }
             }
 
         }
 
-        public static string existeFourniseur(string num)
+        public static string existeFourniseur(string num, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -3958,7 +4043,7 @@ namespace importPlanifier.Classes
                             else
                             {
                                 //Console.WriteLine(DateTime.Now + " : Erreur[35] - Code GLN fournisseur " + num + " n'existe pas.");
-                                LogFile.WriteLine(DateTime.Now + " : Erreur[35] - Code GLN fournisseur " + num + " n'existe pas.");
+                                writer.WriteLine(DateTime.Now + " : Erreur[35] - Code GLN fournisseur " + num + " n'existe pas.");
 
                                 return null;
                             }
@@ -3970,7 +4055,7 @@ namespace importPlanifier.Classes
                 catch (Exception ex)
                 {
                     //Console.WriteLine(DateTime.Now + " : Erreur[36] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[36] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[36] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return "erreur";
                 }
@@ -3978,7 +4063,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static string get_Last_insert_livraison(string client)
+        public static string get_Last_insert_livraison(string client, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -4002,7 +4087,7 @@ namespace importPlanifier.Classes
                             {
 
                                 //Console.WriteLine(DateTime.Now + " : Erreur[39] - Numero de livraison n'existe pas");
-                                LogFile.WriteLine(DateTime.Now + " : Erreur[39] - Numero de livraison n'existe pas");
+                                writer.WriteLine(DateTime.Now + " : Erreur[39] - Numero de livraison n'existe pas");
 
 
                                 return null;
@@ -4016,7 +4101,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[37] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[37] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[37] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return null;
                 }
@@ -4024,7 +4109,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static Client getClient(string id, int flag)
+        public static Client getClient(string id, int flag, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -4046,18 +4131,13 @@ namespace importPlanifier.Classes
                             {
                                 if (flag == 1)
                                 {
-                                    //Console.WriteLine(DateTime.Now + " : Erreur[41] - GLN émetteur  " + id + " n'existe pas dans la base sage.");
-                                    LogFile.WriteLine(DateTime.Now + " : Erreur[41] - GLN émetteur  " + id + " n'existe pas dans la base sage.");
-
-
+                                    // Console.WriteLine(DateTime.Now + " : Erreur[41] - GLN émetteur  " + id + " n'existe pas dans la base sage.");
+                                    writer.WriteLine(DateTime.Now + " : Erreur[41] - GLN émetteur  " + id + " n'existe pas dans la base sage.");
                                 }
                                 if (flag == 2)
                                 {
-
-                                    //Console.WriteLine(DateTime.Now + " : Erreur[40] - GLN destinataire  " + id + " n'existe pas dans la base sage.");
-                                    LogFile.WriteLine(DateTime.Now + " : Erreur[40] - GLN destinataire  " + id + " n'existe pas dans la base sage.");
-
-
+                                    // Console.WriteLine(DateTime.Now + " : Erreur[40] - GLN destinataire  " + id + " n'existe pas dans la base sage.");
+                                    writer.WriteLine(DateTime.Now + " : Erreur[40] - GLN destinataire  " + id + " n'existe pas dans la base sage.");
                                 }
                                 return null;
                             }
@@ -4068,9 +4148,10 @@ namespace importPlanifier.Classes
                 }
                 catch (Exception ex)
                 {
-                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    //Console.WriteLine(DateTime.Now + " : Erreur[38] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[38] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    // Exceptions pouvant survenir durant l'exécution de la requête SQL
+                    // Console.WriteLine(DateTime.Now + " : Erreur[38] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getClient(false, id));
+                    writer.WriteLine(DateTime.Now + " : Erreur[38] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return null;
                 }
@@ -4078,7 +4159,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static string getDevise(string codeIso)
+        public static string getDevise(string codeIso, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -4111,7 +4192,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[42] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[44] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[44] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return "erreur";
                 }
@@ -4119,7 +4200,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static ConfSendMail getInfoMail()
+        public static ConfSendMail getInfoMail(StreamWriter writer)
         {
             try
             {
@@ -4145,7 +4226,7 @@ namespace importPlanifier.Classes
             }
             catch (Exception ex)
             {
-                LogFile.WriteLine(DateTime.Now + " : Erreur[43] - " + ex.Message);
+                writer.WriteLine(DateTime.Now + " : Erreur[43] - " + ex.Message);
 
                 return null;
             }
@@ -4219,7 +4300,7 @@ namespace importPlanifier.Classes
             }
         }
 
-        public static Boolean TestSiNumPieceExisteDeja(string num)
+        public static Boolean TestSiNumPieceExisteDeja(string num, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -4250,7 +4331,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[42] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[42] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[42] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return false;
                 }
@@ -4258,7 +4339,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static List<string> TestIntituleLivraison(string Intitule)
+        public static List<string> TestIntituleLivraison(string Intitule, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -4287,7 +4368,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[42] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[45] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[45] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return null;
                 }
@@ -4295,7 +4376,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static Conditionnement getConditionnementArticle(string code_article)
+        public static Conditionnement getConditionnementArticle(string code_article, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -4326,7 +4407,7 @@ namespace importPlanifier.Classes
                 catch (Exception ex)
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[47] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " : Erreur[47] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     return null;
                 }
             }
@@ -4388,7 +4469,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static int Calcule_conditionnement(decimal quantite, string quantite_conditionnement)
+        public static int Calcule_conditionnement(decimal quantite, string quantite_conditionnement, StreamWriter writer)
         {
             try
             {
@@ -4404,7 +4485,7 @@ namespace importPlanifier.Classes
             }
             catch (Exception e)
             {
-                LogFile.WriteLine(DateTime.Now + " : Erreur[46] - " + "Erreur Calcule de conditionnement :" + e.Message);
+                writer.WriteLine(DateTime.Now + " : Erreur[46] - " + "Erreur Calcule de conditionnement :" + e.Message);
                 return 0;
             }
         }

@@ -144,6 +144,7 @@
     <Compile Include="Classes\Veolog_DESADV.cs" />
     <Compile Include="Classes\Veolog_DESADV_Colis.cs" />
     <Compile Include="Classes\Veolog_DESADV_Lines.cs" />
+    <Compile Include="Helpers\CountryFormatISO.cs" />
     <Compile Include="Helpers\QueryHelper.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Program.cs" />
