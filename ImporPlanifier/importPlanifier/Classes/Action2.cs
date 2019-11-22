@@ -30,7 +30,7 @@ namespace importPlanifier.Classes
         /* JL LOG */
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
-        private string directoryName_SuccessFile = Directory.GetCurrentDirectory() + @"\" + "Success File";
+        private string directoryName_SuccesFile = Directory.GetCurrentDirectory() + @"\" + "Success File";
         private string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
         private StreamWriter logFileWriter_general = null;
         private StreamWriter logFileWriter_import = null;
@@ -56,6 +56,7 @@ namespace importPlanifier.Classes
             List<string> tabCommande = new List<string>();
             List<string> tabCommandeError = new List<string>();
             List<Order> ordersList = new List<Order>();
+
             Classes.Path path = getPath();
             dir = path.path;
             Console.WriteLine("Import/Export planifier Sage!!");
@@ -105,10 +106,10 @@ namespace importPlanifier.Classes
                 //Create log directory
                 Directory.CreateDirectory(logDirectoryName_import);
             }
-            if (!Directory.Exists(directoryName_SuccessFile))
+            if (!Directory.Exists(directoryName_SuccesFile))
             {
                 // Create Success File
-                Directory.CreateDirectory(directoryName_SuccessFile);
+                Directory.CreateDirectory(directoryName_SuccesFile);
             }
             if (!Directory.Exists(directoryName_ErrorFile))
             {
@@ -119,7 +120,8 @@ namespace importPlanifier.Classes
             //Create log file
             var logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG_General_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
             var logFile_general = File.Create(logFileName_general);
-            var logFileName_import = logDirectoryName_import + @"\" + string.Format("LOG_Import_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFileName_import_N = string.Format("LOG_Import_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            var logFileName_import = logDirectoryName_import + @"\" + logFileName_import_N;
             var logFile_import = File.Create(logFileName_import);
 
             //Write in the log file 
@@ -143,23 +145,25 @@ namespace importPlanifier.Classes
             logFileWriter_import.WriteLine("");
             */
 
-            using (StreamWriter logFileWriter_import = new StreamWriter(logFile_import))
+            int numberOfFiles = fileListing.GetFiles("*.csv").Length;
+            if (numberOfFiles > 0)
+            {
+                using (StreamWriter logFileWriter_import = new StreamWriter(logFile_import))
             {
                 logFileWriter_import.WriteLine("#####################################################################################");
                 logFileWriter_import.WriteLine("################################ ConnecteurSage Sage ################################");
                 logFileWriter_import.WriteLine("#####################################################################################");
                 logFileWriter_import.WriteLine("");
 
+                string[,] moveFilesTo = new string[numberOfFiles, 3];  //This 2 dimension table will store the old and new file location
 
-                /* 
-                    action : import documents
-                */
                 // Recherche des fichiers .csv
-                //foreach (FileInfo filename in fileListing.GetFiles("*.csv"))
-                for (int index = 0; index < fileListing.GetFiles("*.csv").Length; index++)
+                foreach (FileInfo filename in fileListing.GetFiles("*.csv"))
+                //for (int index = 0; index < fileListing.GetFiles("*.csv").Length; index++)
                 {
-                    Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + fileListing.GetFiles("*.csv")[index].Name);
-                    FileInfo filename = fileListing.GetFiles("*.csv")[index];
+                    //Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + fileListing.GetFiles("*.csv")[index].Name);
+                    Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + filename.Name);
+                    //FileInfo filename = fileListing.GetFiles("*.csv")[index];
 
                     try
                     {
@@ -171,7 +175,7 @@ namespace importPlanifier.Classes
 
                         logFileWriter_general.WriteLine(DateTime.Now + " : Numbre de fichier \".csv\" trouvé : " + fileListing.GetFiles("*.csv").Length);
 
-                        logFileWriter_import.WriteLine(DateTime.Now + " : -----> Fichier " + index + " : " + filename.Name);
+                        logFileWriter_import.WriteLine(DateTime.Now + " : -----> Fichier " + nbr + " : " + filename.Name);
                         logFileWriter_import.WriteLine(DateTime.Now + " : Scan fichier...");
 
 
@@ -207,6 +211,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
                             
@@ -225,6 +234,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -247,6 +261,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -265,6 +284,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -283,6 +307,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -303,6 +332,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -319,6 +353,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -339,6 +378,11 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -353,6 +397,11 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -367,6 +416,11 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -384,6 +438,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -402,6 +461,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -419,6 +483,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -442,6 +511,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
                             order.nom_contact = tab_adress[0];
@@ -481,6 +555,11 @@ namespace importPlanifier.Classes
                                 //logFileWriter_import.Close();
                                 //return;
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -536,6 +615,11 @@ namespace importPlanifier.Classes
                                                             //return;
 
                                                             tabCommandeError.Add(filename.ToString());
+
+                                                            //mettre l'encien et le nouveau chemins du fichier csv
+                                                            moveFilesTo[(nbr - 1), 0] = "erreur";
+                                                            moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                            moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                                             goto goErrorLoop;
                                                         }
 
@@ -609,15 +693,18 @@ namespace importPlanifier.Classes
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                            //logFileWriter_general.Close();
 
                                                             logFileWriter_import.WriteLine("");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                            //logFileWriter_import.Close();
-                                                            //return;
+
                                                             tabCommandeError.Add(filename.ToString());
+
+                                                            //mettre l'encien et le nouveau chemins du fichier csv
+                                                            moveFilesTo[(nbr - 1), 0] = "erreur";
+                                                            moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                            moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                                             goto goErrorLoop;
                                                         }
                                                         //}
@@ -643,15 +730,18 @@ namespace importPlanifier.Classes
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                            //logFileWriter_general.Close();
 
                                                             logFileWriter_import.WriteLine("");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                            //logFileWriter_import.Close();
-                                                            //return;
+                                                            
                                                             tabCommandeError.Add(filename.ToString());
+
+                                                            //mettre l'encien et le nouveau chemins du fichier csv
+                                                            moveFilesTo[(nbr - 1), 0] = "erreur";
+                                                            moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                            moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                                             goto goErrorLoop;
                                                         }
 
@@ -664,15 +754,18 @@ namespace importPlanifier.Classes
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                        //logFileWriter_general.Close();
 
                                                         logFileWriter_import.WriteLine("");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier " + filename + ".", "Erreur de lecture.");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                        //logFileWriter_import.Close();
-                                                        //return;
+                                                        
                                                         tabCommandeError.Add(filename.ToString());
+
+                                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                                        moveFilesTo[(nbr - 1), 0] = "erreur";
+                                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                        moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                                         goto goErrorLoop;
                                                     }
                                                     break;
@@ -716,16 +809,19 @@ namespace importPlanifier.Classes
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                //logFileWriter_general.Close();
 
                                                 logFileWriter_import.WriteLine("");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
-                                                //logFileWriter_import.Close();
-                                                //return;
+                                                
                                                 tabCommandeError.Add(filename.ToString());
+
+                                                //mettre l'encien et le nouveau chemins du fichier csv
+                                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                                 goto goErrorLoop;
                                             }
 
@@ -789,15 +885,18 @@ namespace importPlanifier.Classes
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                //logFileWriter_general.Close();
 
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = " + order.Lines.Count());
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
-                                                //logFileWriter_import.Close();
-                                                //return;
+                                                
                                                 tabCommandeError.Add(filename.ToString());
+
+                                                //mettre l'encien et le nouveau chemins du fichier csv
+                                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                                 goto goErrorLoop;
                                             }
                                             MessageErreur = new List<string>();
@@ -894,15 +993,18 @@ namespace importPlanifier.Classes
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                //logFileWriter_general.Close();
 
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
-                                                //logFileWriter_import.Close();
-                                                //return;
+                                                
                                                 tabCommandeError.Add(filename.ToString());
+
+                                                //mettre l'encien et le nouveau chemins du fichier csv
+                                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                                 goto goErrorLoop;
                                             }
 
@@ -949,6 +1051,11 @@ namespace importPlanifier.Classes
 
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : " + nbr_ + "/" + order.Lines.Count + " ligne(s) enregistrée(s).\n" + mot);
                                                 logFileWriter_import.WriteLine("");
+
+                                                //mettre l'encien et le nouveau chemins du fichier csv
+                                                moveFilesTo[(nbr - 1), 0] = "succes";
+                                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                                moveFilesTo[(nbr - 1), 2] = directoryName_SuccesFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                             }
 
                                         }
@@ -959,14 +1066,18 @@ namespace importPlanifier.Classes
                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                            //logFileWriter_general.Close();
 
                                             logFileWriter_import.WriteLine("");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                            //logFileWriter_import.Close();
+
                                             tabCommandeError.Add(filename.ToString());
+
+                                            //mettre l'encien et le nouveau chemins du fichier csv
+                                            moveFilesTo[(nbr - 1), 0] = "erreur";
+                                            moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                            moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                             goto goErrorLoop;
                                         }
                                     }
@@ -977,15 +1088,18 @@ namespace importPlanifier.Classes
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                        //logFileWriter_general.Close();
 
                                         logFileWriter_import.WriteLine("");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                        //logFileWriter_import.Close();
-                                        //return;
+                                        
                                         tabCommandeError.Add(filename.ToString());
+
+                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                        moveFilesTo[(nbr - 1), 0] = "erreur";
+                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                        moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                         goto goErrorLoop;
                                     }
                                 }
@@ -996,15 +1110,18 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    //logFileWriter_general.Close();
 
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    //logFileWriter_import.Close();
-                                    //return;
+                                    
                                     tabCommandeError.Add(filename.ToString());
+
+                                    //mettre l'encien et le nouveau chemins du fichier csv
+                                    moveFilesTo[(nbr - 1), 0] = "erreur";
+                                    moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                    moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                     goto goErrorLoop;
                                 }
                             }
@@ -1015,15 +1132,18 @@ namespace importPlanifier.Classes
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                //logFileWriter_general.Close();
 
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : rreur dans la deuxième ligne du fichier.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                //logFileWriter_import.Close();
-                                //return;
+                                
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
 
@@ -1178,19 +1298,17 @@ namespace importPlanifier.Classes
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
 
-                                    //deplacer les fichiers csv
-                                    File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-
-                                    logFileWriter_general.Close();
-
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    //logFileWriter_import.Close();
 
                                     tabCommandeError.Add(filename.ToString());
+                                    //mettre l'encien et le nouveau chemins du fichier csv
+                                    moveFilesTo[(nbr - 1), 0] = "erreur";
+                                    moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                    moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
+
                                     goto goErrorLoop;
                                 }
                                 else
@@ -1205,13 +1323,11 @@ namespace importPlanifier.Classes
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Le stock est importe avec succès");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Import succès");
                                         logFileWriter_general.WriteLine("");
-                                        logFileWriter_general.WriteLine("");
 
-                                        //deplacer les fichiers csv
-                                        //File.Move(filename.Name, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                        //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-
-                                        logFileWriter_general.Close();
+                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                        moveFilesTo[(nbr - 1), 0] = "succes";
+                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                        moveFilesTo[(nbr - 1), 2] = directoryName_SuccesFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                     }
                                     else
                                     {
@@ -1222,14 +1338,12 @@ namespace importPlanifier.Classes
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                         logFileWriter_general.WriteLine("");
-                                        logFileWriter_general.WriteLine("");
-
-                                        //deplacer les fichiers csv
-                                        //File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                        //logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-
-                                        //logFileWriter_general.Close();
+                                        
                                         tabCommandeError.Add(filename.ToString());
+                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                        moveFilesTo[(nbr - 1), 0] = "erreur";
+                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                        moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                         goto goErrorLoop;
                                     }
                                 }
@@ -1252,14 +1366,12 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
 
-                                //deplacer les fichiers cs
-                                /*
-                                File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename.Name + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-
-                                logFileWriter_import.Close();
-                                */
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
 
                             }
@@ -1374,12 +1486,13 @@ namespace importPlanifier.Classes
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Message |\n" + ex.Message);
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Stack |\n" + ex.StackTrace);
 
-                                            /*
-                                            logFileWriter_general.Flush();
-                                            logFileWriter_import.Flush();
-                                            logFileWriter_import.Close();
-                                            logFileWriter_general.Close();
-                                            */
+                                            tabCommandeError.Add(filename.ToString());
+
+                                            //mettre l'encien et le nouveau chemins du fichier csv
+                                            moveFilesTo[(nbr - 1), 0] = "erreur";
+                                            moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                            moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
+                                            goto goErrorLoop;
                                         }
                                     }
                                     else
@@ -1403,9 +1516,16 @@ namespace importPlanifier.Classes
                                         stockVeologCheck = true;
                                         break;
                                     }
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                                     tabCommandeError.Add(filename.ToString());
+
+                                    //mettre l'encien et le nouveau chemins du fichier csv
+                                    moveFilesTo[(nbr - 1), 0] = "erreur";
+                                    moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                    moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                     goto goErrorLoop;
                                 }
                             }
@@ -1437,8 +1557,12 @@ namespace importPlanifier.Classes
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.\nCertain stock ne sera pas mit a jour!!!");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : La taille du Stock liste: " + lineCount + " || Nombre total du stock dans le fihier: " + totallines);
 
-                                    logFileWriter_general.Flush();
-                                    logFileWriter_general.Close();
+                                    tabCommandeError.Add(filename.ToString());
+                                    //mettre l'encien et le nouveau chemins du fichier csv
+                                    moveFilesTo[(nbr - 1), 0] = "erreur";
+                                    moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                    moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
+                                    goto goErrorLoop;
                                 }
                                 else
                                 {
@@ -1447,28 +1571,20 @@ namespace importPlanifier.Classes
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès");
 
-                                        string file_name_str = fileListing.GetFiles("*.csv")[index].Name;
-                                        string newFileLocation = directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + filename.Name;
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nom du fichier ===> " + filename.FullName);
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nouveau fichier ===> " + newFileLocation);
-
-                                        //deplacer les fichiers csv
-                                        File.Move(filename.FullName, newFileLocation);
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + file_name_str + "' est déplacé dans ===> " + newFileLocation);
-
-                                        //logFileWriter_general.Close();
+                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                        moveFilesTo[(nbr - 1), 0] = "succes";
+                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                        moveFilesTo[(nbr - 1), 2] = directoryName_SuccesFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                     }
                                     else
                                     {
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
 
-                                        //deplacer les fichiers csv
-                                        File.Move(filename.Name, directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name));
-
-                                        logFileWriter_general.Flush();
-                                        logFileWriter_general.Close();
+                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                        moveFilesTo[(nbr - 1), 0] = "erreur";
+                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                        moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                     }
                                 }
                             }
@@ -1539,7 +1655,13 @@ namespace importPlanifier.Classes
 
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                                    
                                     tabCommandeError.Add(filename.ToString());
+
+                                    //mettre l'encien et le nouveau chemins du fichier csv
+                                    moveFilesTo[(nbr - 1), 0] = "erreur";
+                                    moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                    moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                     goto goErrorLoop;
                                 }
                                 else
@@ -1554,7 +1676,13 @@ namespace importPlanifier.Classes
 
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
                         }
@@ -1637,25 +1765,32 @@ namespace importPlanifier.Classes
                                 {
                                     if (insertDesadv_Veolog(reference_DESADV_doc, dh, dl, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
                                     {
+                                        logFileWriter_general.Flush();
+                                        logFileWriter_import.Flush();
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
 
-                                        //deplacer les fichiers csv
-                                        string theFileName = filename.Name;
-                                        string newFileLocation = directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename.Name);
-                                        File.Move(theFileName, newFileLocation);
+                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                        moveFilesTo[(nbr - 1), 0] = "succes";
+                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                        moveFilesTo[(nbr - 1), 2] = directoryName_SuccesFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
 
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine("");
-
+                                        goto goErrorLoop;
                                     }
                                     else
                                     {
+                                        logFileWriter_general.Flush();
+                                        logFileWriter_import.Flush();
                                         logFileWriter_import.WriteLine("");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+
                                         tabCommandeError.Add(filename.ToString());
+                                        //mettre l'encien et le nouveau chemins du fichier csv
+                                        moveFilesTo[(nbr - 1), 0] = "erreur";
+                                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                        moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
+
                                         goto goErrorLoop;
                                     }
                                 }
@@ -1664,7 +1799,13 @@ namespace importPlanifier.Classes
                             {
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+
                                 tabCommandeError.Add(filename.ToString());
+
+                                //mettre l'encien et le nouveau chemins du fichier csv
+                                moveFilesTo[(nbr - 1), 0] = "erreur";
+                                moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                                moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                                 goto goErrorLoop;
                             }
                         }
@@ -1674,7 +1815,14 @@ namespace importPlanifier.Classes
                             //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
                             logFileWriter_import.WriteLine("");
                             logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
+
                             tabCommandeError.Add(filename.ToString());
+
+                            //mettre l'encien et le nouveau chemins du fichier csv
+                            moveFilesTo[(nbr - 1), 0] = "erreur";
+                            moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                            moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
+
                             goto goErrorLoop;
                         }
                     }
@@ -1690,38 +1838,26 @@ namespace importPlanifier.Classes
                         logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
 
                         tabCommandeError.Add(filename.ToString());
+
+                        //mettre l'encien et le nouveau chemins du fichier csv
+                        moveFilesTo[(nbr - 1), 0] = "erreur";
+                        moveFilesTo[(nbr - 1), 1] = dir + @"\" + filename.Name; //old file location
+                        moveFilesTo[(nbr - 1), 2] = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name); //new file location
                     }
 
                 goErrorLoop:;
 
-                    //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
-                    if (File.Exists(dir + @"\" + filename) && tabCommandeError.Count > 0)
-                    {
-                        //var errorfilename = string.Format("{0:ddMMyyyy_HHmmss}_" + filename, DateTime.Now);
-                        //System.IO.File.Move(dir + @"\" + filename, outputFileError + @"\" + errorfilename);
-
-                        logFileWriter_general.Flush();
-                        logFileWriter_import.Flush();
-                        logFileWriter_import.WriteLine("");
-                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
-                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-
-                        //deplacer les fichiers csv
-                        string theFileName = filename.Name;
-                        string newFileLocation = directoryName_ErrorFile + @"\" + string.Format("{0:dd-MM-yyyy_HH.mm.ss}.log", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename.Name);
-                        File.Move(filename.Name, newFileLocation);
-                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
-                    }
 
                     //End .csv loop
-                    tabCommandeError.Clear();
+                    //tabCommandeError.Clear();
                     logFileWriter_general.WriteLine("");
                     logFileWriter_import.WriteLine("");
                     logFileWriter_general.Flush();
                     logFileWriter_import.Flush();
                 }
 
+                //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
+                moveFileTo(logFileWriter_import, moveFilesTo);
 
                 logFileWriter_import.Flush();
                 logFileWriter_import.Close();
@@ -1734,48 +1870,145 @@ namespace importPlanifier.Classes
             }
             */
 
-            Boolean envoiMail = false;
+            //Boolean envoiMail = false;
 
-        // Envoi de mail
-        if (tabCommandeError.Count != 0)
-        {
-            ConfSendMail cMail = getInfoMail(logFileWriter_import);
-            if (cMail != null)
-            {
-                if (cMail.active)
+                //#################################################### Envoi de mail ####################################################
+
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("##########################  Allert Mail  #############################");
+
+                //use the prefix for the subjet name in the mail
+                ConfigurationDNS dns = new ConfigurationDNS();
+                dns.LoadSQL();
+                string subjet = "[" + dns.Prefix + "] Erreur d'import de document commerciaux";
+                string commande = "Voici les imports en erreur suivant:\n";
+                string body;
+
+                if (tabCommandeError.Count != 0)
                 {
-                    if (cMail.dest1 == "" && cMail.dest2 == "" && cMail.dest3 == "")
-                    {
-                        logFileWriter_general.WriteLine(DateTime.Now + " : Send Mail..Erreur Adresse de distinataire");
-                    }
-                    string commande = "";
                     for (int i = 0; i < tabCommandeError.Count; i++)
                     {
                         commande = commande + (i + 1) + " - " + tabCommandeError[i] + "\n";
                     }
-                    Console.WriteLine(DateTime.Now + " : Envoi de mail en cours..");
-                    logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
-                    logFileWriter_general.WriteLine("");
-                    logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
-                    logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                    logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                    logFileWriter_general.Close();
-
-                    //Envoi
-                    EnvoiMail(cMail, "Erreur d'import de documents commerciaux", "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux a echoué :\n" + commande + "\nVeuillez vérifier dans le fichier Log ci-joint, les problèmes qui sont survenus au moment de l'importation.\n\nNB: Les fichiers sont déplacé dans un dossier nommé : \"Error file\".\n\nCordialement,\n\nConnecteur SAGE.", logFileName_import);   //cheminLogFile
-                    envoiMail = true;
+                    body = "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux a echoué :\n" + commande + "\n\nVeuillez vérifier dans le fichier Log ci-joint, les problèmes qui sont survenus au moment de l'importation.\n\nNB: Les fichiers sont déplacé dans un dossier nommé : \"Error file\".\n\nCordialement,\n\nConnecteur SAGE.";
                 }
                 else
                 {
-                    logFileWriter_general.WriteLine("");
-                    logFileWriter_general.WriteLine("");
-                    logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
-                    logFileWriter_general.WriteLine("");
-                    logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
-                    logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                    logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
-                    logFileWriter_general.Close();
+                    subjet = "[" + dns.Prefix + "] Import de document commerciaux";
+                    body = "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux avec succès.\n\nCordialement,\n\n\nConnecteur SAGE.";
                 }
+                Console.WriteLine(DateTime.Now + " : Envoi de mail en cours..");
+
+                // copy le log du fichier, puis utiliser
+                string[] newLogFileNamePiece = logFileName_import_N.Split('.');   // LOG_Import_{0:dd-MM-yyyy HH.mm.ss}.txt
+                string newLogFileName = newLogFileNamePiece[0] + "." + newLogFileNamePiece[1] + "." + newLogFileNamePiece[2] + "_Copy_." + newLogFileNamePiece[3];   // LOG_Import_{0:dd-MM-yyyy HH.mm.ss}_Copy_.txt
+                File.Copy(logDirectoryName_import + @"\" + logFileName_import_N, logDirectoryName_import + @"\" + newLogFileName);
+
+                //Envoi
+                EnvoiMail(
+                    logFileWriter_general,
+                    getInfoMail(logFileWriter_general),
+                    subjet,
+                    body,
+                    logDirectoryName_import + @"\" + newLogFileName);
+                //envoiMail = true;
+
+                //remove copied file
+                string fileX = logDirectoryName_import + @"\" + newLogFileName;
+                try
+                {
+                    File.Delete(fileX);
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Supprimer le fichier \"" + fileX + "\" ");
+                }
+                catch (Exception ex)
+                {
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : ********** Erreur Fichier ********** ");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Can't delete copied log. ");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : File ===> " + fileX);
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Message:  " + ex.Message);
+                    logFileWriter_general.WriteLine(DateTime.Now + " : StackTrace:  " + ex.StackTrace);
+                }
+
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+                logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+            }
+            else
+            {
+                logFileWriter_general.WriteLine(DateTime.Now + " : Aucun Fichier .csv trouvé!");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+            }
+
+        /*
+    if (tabCommandeError.Count != 0)
+    {
+        ConfSendMail cMail = getInfoMail(logFileWriter_general);
+        if (cMail != null)
+        {
+            if (cMail.active)
+            {
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("##########################  Allert Mail  #############################");
+                if (cMail.dest1 == "" && cMail.dest2 == "" && cMail.dest3 == "")
+                {
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Send Mail..Erreur Adresse de distinataire");
+                }
+
+                //use the prefix for the subjet name in the mail
+                ConfigurationDNS dns = new ConfigurationDNS();
+                dns.LoadSQL();
+                string subjet = "[" + dns.Prefix + "] Erreur d'import de document commerciaux";
+                string commande = "Voici les imports en erreur suivant:\n";
+                string body = "";
+
+                if (tabCommandeError.Count != 0)
+                {
+                    for (int i = 0; i < tabCommandeError.Count; i++)
+                    {
+                        commande = commande + (i + 1) + " - " + tabCommandeError[i] + "\n";
+                    }
+                    body = "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux a echoué :\n" + commande + "\n\nVeuillez vérifier dans le fichier Log ci-joint, les problèmes qui sont survenus au moment de l'importation.\n\nNB: Les fichiers sont déplacé dans un dossier nommé : \"Error file\".\n\nCordialement,\n\nConnecteur SAGE.";
+                }
+                else
+                {
+                    subjet = "[" + dns.Prefix + "] Import de document commerciaux";
+                    commande = "";
+                    body = "Bonjour,\n\nL'import d'un ou plusieurs documents commerciaux avec succès.\n\nCordialement,\n\n\nConnecteur SAGE.";
+                }
+                Console.WriteLine(DateTime.Now + " : Envoi de mail en cours..");
+
+                // copy le log du fichier, puis utiliser
+                string[] newLogFileNamePiece = logFileName_import.Split('.');   // LOG_Import_{0:dd-MM-yyyy HH.mm.ss}.txt
+                string newLogFileName = newLogFileNamePiece[0] + newLogFileNamePiece[1] + newLogFileNamePiece[2] + "_Copy_" + newLogFileNamePiece[3];   // LOG_Import_{0:dd-MM-yyyy HH.mm.ss}_Copy_.txt
+                File.Copy(logDirectoryName_import + @"\" + logFileName_import, logDirectoryName_import + @"\" + newLogFileName);
+
+                //Envoi
+                EnvoiMail(
+                    logFileWriter_general, 
+                    cMail,
+                    subjet, 
+                    body,
+                    newLogFileName);
+                envoiMail = true;
+
+                    //remove copied file
+                    string fileX = logDirectoryName_import + @"\" + newLogFileName;
+                File.Delete(fileX);
+                logFileWriter_general.WriteLine(DateTime.Now + " : Supprimer le fichier \""+fileX+"\" ");
+
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+                logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+                logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
             }
             else
             {
@@ -1789,22 +2022,7 @@ namespace importPlanifier.Classes
                 logFileWriter_general.Close();
             }
         }
-
-        if (!FileExiste && !envoiMail)
-        {
-            //Console.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
-            logFileWriter_general.WriteLine("");
-            logFileWriter_general.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
-            logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
-            logFileWriter_general.WriteLine("");
-            logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
-            //var newlog = string.Format("logFile(0) {0:dd-MM-yyyy HH.mm.ss}.log", DateTime.Now);
-            //System.IO.File.Move(outputFile + @"\logFile.log", dir + @"\" + newlog);
-            //System.IO.Directory.Delete(outputFile);
-            goto goError;
-
-        }
-        if (FileExiste && tabCommandeError.Count == 0)
+        else
         {
             logFileWriter_general.WriteLine("");
             logFileWriter_general.WriteLine("");
@@ -1813,7 +2031,33 @@ namespace importPlanifier.Classes
             logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
             logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
             logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+            logFileWriter_general.Close();
         }
+    //}
+
+    if (!FileExiste && !envoiMail)
+    {
+        //Console.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
+        logFileWriter_general.WriteLine("");
+        logFileWriter_general.WriteLine(DateTime.Now + " : Il y a pas de fichier .csv dans le dossier.");
+        logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+        logFileWriter_general.WriteLine("");
+        logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+
+        goto goError;
+
+    }
+    if (FileExiste && tabCommandeError.Count == 0)
+    {
+        logFileWriter_general.WriteLine("");
+        logFileWriter_general.WriteLine("");
+        logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
+        logFileWriter_general.WriteLine("");
+        logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
+        logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
+        logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+    }
+    */
 
         goError:;
             //Console.WriteLine(DateTime.Now + " : Fin de l'execution");
@@ -1827,6 +2071,40 @@ namespace importPlanifier.Classes
 
             logFileWriter_general.Flush();
             logFileWriter_general.Close();
+        }
+
+        private static void moveFileTo(StreamWriter writer, string[,] filesLocation)
+        {
+            writer.Flush();
+            writer.WriteLine("");
+            writer.WriteLine("");
+            writer.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
+
+            for (int x = 0; x < filesLocation.GetLength(0); x++)
+            {
+                if (!File.Exists(filesLocation[x,1]))
+                {
+                    writer.WriteLine(DateTime.Now + " | moveFileTo() : Fichier \""+ filesLocation[x, 1] + "\" n'existe pas!");
+                }
+                else
+                {
+                    writer.WriteLine(DateTime.Now + " | moveFileTo() : Fichier \"" + filesLocation[x, 1] + "\" existe!");
+                    if(filesLocation[x, 0] == "erreur")
+                    {
+                        writer.WriteLine(DateTime.Now + " | moveFileTo() : Import annulée");
+                        File.Move(filesLocation[x, 1], filesLocation[x, 2]);
+                        writer.WriteLine(DateTime.Now + " : Le fichier '" + filesLocation[x, 1] + "' est déplacé dans ===> " + filesLocation[x, 2]);
+                    }
+                    else if (filesLocation[x, 0] == "succes")
+                    {
+                        writer.WriteLine(DateTime.Now + " | moveFileTo() : Import succès");
+                        File.Move(filesLocation[x, 1], filesLocation[x, 2]);
+                        writer.WriteLine(DateTime.Now + " : Le fichier '" + filesLocation[x, 1] + "' est déplacé dans ===> " + filesLocation[x, 2]);
+                    }
+                    writer.WriteLine("");
+                }
+                writer.Flush();
+            }
         }
 
         public static Boolean insertCommande(Client client, Order order)
@@ -2901,6 +3179,12 @@ namespace importPlanifier.Classes
 
                             try
                             {
+                                /*
+                                 * Pour un document de Vente : DO_Type est compris entre 0 et 7
+                                 * DO_Expedit = N_Expedition du tiers (repris dans F_CompteT)
+                                 */
+                                dh.Etat = list_of_client_info[12];
+
                                 position_item += 1000;
 
                                 // DESADV prefix will be used to create document
@@ -4200,6 +4484,153 @@ namespace importPlanifier.Classes
 
         }
 
+        public static ConfSendMail getInfoMail(StreamWriter logWriter)
+        {
+            try
+            {
+                Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("Software\\Sage\\Connecteur sage");
+                if (key != null)
+                {
+                    logWriter.WriteLine(DateTime.Now + " | getInfoMail() : Configuration Email Trouver");
+
+                    ConfSendMail confMail = new ConfSendMail();
+                    confMail.active = key.GetValue("active").ToString() == "" ? false : (key.GetValue("active").ToString() == "True" ? true : false);
+                    confMail.smtp = key.GetValue("smtp").ToString();
+                    confMail.port = key.GetValue("port").ToString() == "" ? 0 : int.Parse(key.GetValue("port").ToString());
+                    confMail.password = Utils.Decrypt(key.GetValue("password").ToString());
+                    confMail.login = key.GetValue("login").ToString();
+                    confMail.dest1 = key.GetValue("dest1").ToString();
+                    confMail.dest2 = key.GetValue("dest2").ToString();
+                    confMail.dest3 = key.GetValue("dest3").ToString();
+                    return confMail;
+                }
+                else
+                {
+                    logWriter.WriteLine(DateTime.Now + " | getInfoMail() : Configuration Email Non Trouver");
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logWriter.WriteLine("");
+                logWriter.WriteLine(DateTime.Now + "********** Erreur récupération Email **********");
+                logWriter.WriteLine(DateTime.Now + " | getInfoMail() - Message : " + ex.Message);
+                logWriter.WriteLine(DateTime.Now + " | getInfoMail() - StackTrace :" + ex.StackTrace);
+                logWriter.WriteLine("");
+
+                return null;
+            }
+        }
+
+        public static void EnvoiMail(StreamWriter logWriter, ConfSendMail confMail, string subject, string body, string attachement)
+        {
+            if (confMail != null)
+            {
+                try
+                {
+                    logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Configurer la configuration d'envoi Email");
+
+                    // Objet mail
+                    MailMessage msg = new MailMessage();
+
+                    // Expéditeur (obligatoire). Notez qu'on peut spécifier le nom
+                    msg.From = new MailAddress(confMail.login, "Connecteur SAGE");
+                    logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Expéditeur ==> " + confMail.login + " est configuré");
+
+                    // Destinataires (il en faut au moins un)
+                    if (!string.IsNullOrEmpty(confMail.dest1))
+                    {
+                        msg.To.Add(new MailAddress(confMail.dest1, confMail.dest1));
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Destinataires 1 ==> " + confMail.dest1 + " est configuré");
+                    }
+                    if (!string.IsNullOrEmpty(confMail.dest2))
+                    {
+                        msg.To.Add(new MailAddress(confMail.dest2, confMail.dest2));
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Destinataires 2 ==> " + confMail.dest2 + " est configuré");
+                    }
+                    if (!string.IsNullOrEmpty(confMail.dest3))
+                    {
+                        msg.To.Add(new MailAddress(confMail.dest3, confMail.dest3));
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Destinataires 3 ==> " + confMail.dest3 + " est configuré");
+                    }
+                    //msg.To.Add(new MailAddress("agent.smith@matrix.com", "Agent Smith"));
+
+                    // Destinataire(s) en copie (facultatif)
+                    //msg.Cc.Add(new MailAddress("wonder.woman@superhero.com", "Wonder Woman"));
+
+                    msg.Subject = subject;
+                    logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Subject est configuré");
+
+                    // Texte du mail (facultatif)
+                    msg.Body = body;
+                    logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Body est configuré");
+
+                    // Fichier joint si besoin (facultatif)
+                    if (attachement != null && attachement != "" && File.Exists(attachement))
+                    {
+                        msg.Attachments.Add(new Attachment(attachement));
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Attachment 1 ==> " + attachement + " est configuré");
+                    }
+                    else
+                    {
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Attachement 1 ==> " + attachement + " n'existe pas");
+                    }
+
+                    SmtpClient client;
+
+                    if (confMail.smtp != "" && confMail.login != "" && confMail.password != "")
+                    {
+                        // Envoi du message SMTP
+                        client = new SmtpClient(confMail.smtp, confMail.port);
+                        client.Credentials = new NetworkCredential(confMail.login, confMail.password);
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Client Smtp et Login est configuré");
+                    }
+                    else
+                    {
+                        client = new SmtpClient("smtp.gmail.com", 587);
+                        client.Credentials = new NetworkCredential("connecteur.sage@gmail.com", "@Amyaj2013");
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Client Smtp par default est configuré");
+                    }
+
+                    client.EnableSsl = true;
+                    logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : Client SSL est configuré");
+
+                    //NetworkInformation s = new NetworkCredential;
+                    ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+                    {
+                        logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : ServicePointManager.ServerCertificateValidationCallback ==> true");
+                        return true;
+                    };
+                    // Envoi du mail
+                    client.Send(msg);
+                    msg.Attachments.Dispose();  //this release all the attachements from the mail that was send, so i can delete it after!
+
+                    logWriter.WriteLine(DateTime.Now + ": Envoi de Mail..OK");
+                    Console.WriteLine(DateTime.Now + " | EnvoiMail() : Envoi de Mail..OK");
+
+                }
+                catch (Exception ex)
+                {
+                    logWriter.WriteLine("");
+                    logWriter.WriteLine(DateTime.Now + "********** Erreur Envoie Email **********");
+                    logWriter.WriteLine(DateTime.Now + " | EnvoiMail() - Message : " + ex.Message);
+                    logWriter.WriteLine(DateTime.Now + " | EnvoiMail() - StackTrace :" + ex.StackTrace);
+                    logWriter.WriteLine("");
+                }
+            }
+            else
+            {
+                logWriter.WriteLine("");
+                logWriter.WriteLine(DateTime.Now + "********** Warning ConfSendMail **********");
+                logWriter.WriteLine(DateTime.Now + " | EnvoiMail() : ConfSendMail est null!");
+                logWriter.WriteLine("");
+            }
+            logWriter.Flush();
+        }
+
+
+        /*
         public static ConfSendMail getInfoMail(StreamWriter writer)
         {
             try
@@ -4299,7 +4730,7 @@ namespace importPlanifier.Classes
                 Console.WriteLine(DateTime.Now + " : " + e.Message);
             }
         }
-
+         */
         public static Boolean TestSiNumPieceExisteDeja(string num, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase

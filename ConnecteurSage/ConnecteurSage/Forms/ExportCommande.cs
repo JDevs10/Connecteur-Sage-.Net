@@ -341,7 +341,7 @@ namespace ConnecteurSage.Forms
                             string[] time = date_time[1].Split(':');
                             CommandeAExporter.HeureCommande = time[0] + time[1];
 
-                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";ZI de Bethunes;;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.HeureCommande + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
+                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";;;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.HeureCommande + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
 
                             CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 

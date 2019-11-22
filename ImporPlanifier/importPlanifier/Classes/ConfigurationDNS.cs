@@ -42,6 +42,7 @@ namespace importPlanifier.Classes
                 ConfigurationDNS setting = new ConfigurationDNS();
                 setting = (ConfigurationDNS)reader.Deserialize(file);
 
+                this.Prefix = setting.Prefix;
                 this.DNS_1 = setting.DNS_1;
                 this.Nom_1 = setting.Nom_1;
                 this.Password_1 = Utils.Decrypt(setting.Password_1);
@@ -59,6 +60,7 @@ namespace importPlanifier.Classes
                 ConfigurationDNS setting = new ConfigurationDNS();
                 setting = (ConfigurationDNS)reader.Deserialize(file);
 
+                this.Prefix = setting.Prefix;
                 this.DNS_2 = setting.DNS_2;
                 this.Nom_2 = setting.Nom_2;
                 this.Password_2 = Utils.Decrypt(setting.Password_2);
