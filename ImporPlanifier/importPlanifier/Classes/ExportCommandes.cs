@@ -233,7 +233,8 @@ namespace importPlanifier.Classes
                                 CommandeAExporter.email = reader[14].ToString();
                                 CommandeAExporter.commentaires = "";
                                 CommandeAExporter.Transporteur = "";
-                                }
+
+                            }
 
                             }
                             if (CommandeAExporter != null)
@@ -384,10 +385,8 @@ namespace importPlanifier.Classes
 
 
                                         //Split the DateTime
-                                        var date = Convert.ToDateTime(CommandeAExporter.DateCommande);
-
-                                        //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
-                                        CommandeAExporter.DateCommande = date.Year + date.Month + date.Day + "";
+                                        string[] date = date_time[0].Split('/');
+                                        CommandeAExporter.DateCommande = date[2] + date[1] + date[0];
 
                                         string[] time = date_time[1].Split(':');
                                         CommandeAExporter.HeureCommande = time[0] + time[1];

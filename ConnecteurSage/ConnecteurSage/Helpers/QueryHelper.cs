@@ -404,7 +404,7 @@ namespace ConnecteurSage.Helpers
             else
             {
                 //          SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01, liv.li_contact, cli.CT_Telephone, cli.CT_EMail
-                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET,doc.do_tiers,doc.do_motif,doc.do_coord01, liv.li_contact, cli.CT_Telephone, cli.CT_EMail " + //, doc.cbMarq, doc.DO_Ref, doc.DO_Statut
+                return "SELECT doc.DO_PIECE, cli.CT_EdiCode, liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_COMPLEMENT, liv.LI_VILLE, liv.LI_PAYS, doc.DO_DEVISE, doc.DO_DATE, doc.DO_DATELIVR, cond.C_MODE, doc.FNT_TOTALHTNET, doc.do_tiers, doc.do_motif, doc.do_coord01, liv.li_contact, cli.CT_Telephone, cli.CT_EMail " + //, doc.cbMarq, doc.DO_Ref, doc.DO_Statut
                     "FROM F_COMPTET cli, P_condlivr cond, F_docentete doc, F_LIVRAISON liv " +
                     "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=1) AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition) AND (cli.CT_NUM=doc.do_tiers)";
             }

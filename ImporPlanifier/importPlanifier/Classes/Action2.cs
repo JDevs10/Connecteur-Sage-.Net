@@ -1396,7 +1396,7 @@ namespace importPlanifier.Classes
                             {
 
                                 //Check if the document line is correct at each line
-                                if (lines[lineIndex].Split(';').Length == 8)
+                                if (lines[lineIndex].Split(';').Length == 6)
                                 {
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Verification Des Lignes Du Documment *********************");
@@ -1408,7 +1408,7 @@ namespace importPlanifier.Classes
 
                                     string[] info_stock = lines[lineIndex].Split(';');
 
-                                    Console.WriteLine("0: " + info_stock[0] + " | 1: " + info_stock[1] + " | 2: " + info_stock[2] + " | 3: " + info_stock[3] + " | 4: " + info_stock[4] + " | 5: " + info_stock[5] + " | 6: " + info_stock[6] + " | 7: " + info_stock[7]);
+                                    //Console.WriteLine("0: " + info_stock[0] + " | 1: " + info_stock[1] + " | 2: " + info_stock[2] + " | 3: " + info_stock[3] + " | 4: " + info_stock[4] + " | 5: " + info_stock[5]);
 
                                     if (info_stock[0] == "L")
                                     {
@@ -1444,8 +1444,6 @@ namespace importPlanifier.Classes
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | EAN (Code Barre) ===> PAS TROUVE ");
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
-                                                goto skipLine;
                                             }
 
                                             if (info_stock[3] != "")
@@ -2641,8 +2639,8 @@ namespace importPlanifier.Classes
                     {
                         logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Lire la ligne de l'article.");
 
-                        int total_negative = 0;
-                        int total_positive = 0;
+                        long total_negative = 0;
+                        long total_positive = 0;
                         string name_article = "";
                         string DL_PoidsNet = "0";
                         string DL_PoidsBrut = "0";
@@ -2694,12 +2692,12 @@ namespace importPlanifier.Classes
                                         if (reader[0].ToString() != null && reader[0].ToString() != "")
                                         {
                                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == " + reader[0].ToString());
-                                            total_negative += Convert.ToInt32(reader[0].ToString().Split(',')[0]);  // sum up the total_negative variable.
+                                            total_negative += Convert.ToInt64(reader[0].ToString().Split(',')[0]);  // sum up the total_negative variable.
                                         }
                                         else
                                         {
                                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == Null alors elle devient 0.");
-                                            total_negative += Convert.ToInt32(0);  // sum up the total_positive variable.
+                                            total_negative += Convert.ToInt64(0);  // sum up the total_positive variable.
                                         }
                                     }
                                 }
@@ -2720,12 +2718,12 @@ namespace importPlanifier.Classes
                                         if (reader[0].ToString() != null && reader[0].ToString() != "")
                                         {
                                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == " + reader[0].ToString());
-                                            total_positive += Convert.ToInt32(reader[0].ToString().Split(',')[0]);  // sum up the total_positive variable.
+                                            total_positive += Convert.ToInt64(reader[0].ToString().Split(',')[0]);  // sum up the total_positive variable.
                                         }
                                         else
                                         {
                                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Valeur de la BDD == Null alors elle devient 0.");
-                                            total_positive += Convert.ToInt32(0);  // sum up the total_positive variable.
+                                            total_positive += Convert.ToInt64(0);  // sum up the total_positive variable.
                                         }
                                     }
                                 }
@@ -2734,14 +2732,14 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine("");
 
 
-                            int current_stock = (total_positive - total_negative); // substract negative stock from the positive one = to obtain the initial current stock.
+                            long current_stock = (total_positive - total_negative); // substract negative stock from the positive one = to obtain the initial current stock.
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Reference: " + line.reference + " total_positive: " + total_positive + " - total_negative: " + total_negative + " = current_stock : " + current_stock + ".");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current stock BDD:" + current_stock + " || current stock Veolog: " + line.stock.Replace(",",".") + " .");
 
                             //transform line.stock to int format
                             line.stock = line.stock.Split(',')[0]; ;    //line.stock.Replace(",", ".");
 
-                            if (current_stock < Convert.ToInt16(line.stock)) // if current stock in database is inferior from the one received in file : means add stock
+                            if (current_stock < Convert.ToInt32(line.stock)) // if current stock in database is inferior from the one received in file : means add stock
                             {
                                 //MessageBox.Show("current_stock : " + current_stock + " < " + "Line.stock : " + Convert.ToInt16(line.stock));
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current_stock_BDD : " + current_stock + " < " + "current_stock_Veolog : " + Convert.ToInt32(line.stock) + ".");
@@ -2806,7 +2804,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products en tant qu'index ME.");
                             }
 
-                            if (current_stock > Convert.ToInt16(line.stock)) // if current stock in database is superior from the one received in file : means remove stock
+                            if (current_stock > Convert.ToInt32(line.stock)) // if current stock in database is superior from the one received in file : means remove stock
                             {
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current_stock_BDD : " + current_stock + " > " + "current_stock_Veolog : " + line.stock + ".");
 
@@ -3036,6 +3034,10 @@ namespace importPlanifier.Classes
                             //return null;
                         }
 
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Compteur : ********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + counter);
+                        logFileWriter.WriteLine("");
                     }   // end foreach
 
 
@@ -3138,6 +3140,12 @@ namespace importPlanifier.Classes
 
                                 }
                             }
+                        }
+
+                        if(ref_client == "")
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Pas de reference client ===> import annuler!");
+                            return null;
                         }
 
                         //get Client Reference by Ref
