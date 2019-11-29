@@ -1378,6 +1378,7 @@ namespace importPlanifier.Classes
                         }
                         else if (lines[0].Split(';')[0] == "L") //Import Veolog Stock doc
                         {
+                            Console.WriteLine(DateTime.Now + " : Fichier Veolog Stock Trouvé");
                             logFileWriter_general.WriteLine("");
                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                             logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Stock Trouvé");
@@ -1392,6 +1393,7 @@ namespace importPlanifier.Classes
                             string[,] valid_info_stock_line = new string[lines.Length, 4];
 
                             //Loop the documment lines
+                            Console.WriteLine(DateTime.Now + " : ********************** Verification Des Lignes Du Documment *********************");
                             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
                             {
 
@@ -1502,6 +1504,7 @@ namespace importPlanifier.Classes
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
                                     }
 
+                                    Console.WriteLine(DateTime.Now + " : **** Verification terminé " + lineIndex + " ****");
                                 skipLine:;
                                 }
                                 else
@@ -1541,7 +1544,8 @@ namespace importPlanifier.Classes
                                 for (int x = 0; x < valid_info_stock_line.GetLength(0); x++)
                                 {
                                     Stock stock_info = new Stock("", valid_info_stock_line[x, 0], valid_info_stock_line[x, 1], valid_info_stock_line[x, 2], valid_info_stock_line[x, 3], "", "");
-                                    s.Add(stock_info); //adding the object into the list type stock
+                                    s.Add(stock_info);  //adding the object into the list type stock
+                                    Console.WriteLine(DateTime.Now + " : **** Validation de l'info du stock terminé " + (x + 1) + " ****");
                                 }
 
                                 if (lineCount != Convert.ToInt16(totallines))
@@ -2764,7 +2768,7 @@ namespace importPlanifier.Classes
                                     list_of_products[counter, 10] = "1"; //DL_Valorise
                                     list_of_products[counter, 11] = "1"; //DE_NO
                                     list_of_products[counter, 12] = name_article; // DL_Design
-                                    list_of_products[counter, 13] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); //line.stock; // DL_Qte
+                                    list_of_products[counter, 13] = (Convert.ToInt64(current_stock) - Convert.ToInt64(line.stock)).ToString().Replace(",", ".").Replace("-", ""); //line.stock; // DL_Qte
                                     list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
                                     if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
                                     list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
@@ -2775,7 +2779,7 @@ namespace importPlanifier.Classes
                                     if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
                                     list_of_products[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
                                     list_of_products[counter, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
-                                    list_of_products[counter, 20] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
+                                    list_of_products[counter, 20] = (Convert.ToInt64(current_stock) - Convert.ToInt64(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
                                     if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
                                     list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
                                     list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
@@ -2828,7 +2832,7 @@ namespace importPlanifier.Classes
                                     list_of_products[counter, 10] = "1"; //DL_Valorise
                                     list_of_products[counter, 11] = "1"; //DE_NO
                                     list_of_products[counter, 12] = name_article; // DL_Design
-                                    list_of_products[counter, 13] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", "");  //line.stock; // DL_Qte
+                                    list_of_products[counter, 13] = (Convert.ToInt64(current_stock) - Convert.ToInt64(line.stock)).ToString().Replace(",", ".").Replace("-", "");  //line.stock; // DL_Qte
                                     list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
                                     if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
                                     list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
@@ -2839,7 +2843,7 @@ namespace importPlanifier.Classes
                                     if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
                                     list_of_products[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
                                     list_of_products[counter, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
-                                    list_of_products[counter, 20] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
+                                    list_of_products[counter, 20] = (Convert.ToInt64(current_stock) - Convert.ToInt64(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
                                     if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
                                     list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
                                     list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
@@ -2870,7 +2874,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products en tant qu'index MS.");
                             }
 
-                            if (current_stock == Convert.ToInt16(line.stock))
+                            if (current_stock == Convert.ToInt32(line.stock))
                             {
                                 isSameStock = false;
                                 logFileWriter.WriteLine("");
@@ -2923,6 +2927,8 @@ namespace importPlanifier.Classes
                                             products_ME[x, y] = list_of_products[x, y];
                                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : products_ME[" + x + "," + y + "] = " + products_ME[x, y]);
                                         }
+
+                                        
 
                                         //insert the article to documentline in the database
                                         try
@@ -3018,8 +3024,8 @@ namespace importPlanifier.Classes
                             }
 
 
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + counter);
-                            logFileWriter.WriteLine("");
+                            //logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + (counter + 1));
+                            //logFileWriter.WriteLine("");
                             counter++; // increment by 1 per product [multi-dimensional array]
 
                         }
@@ -3036,7 +3042,10 @@ namespace importPlanifier.Classes
 
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Compteur : ********************");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + counter);
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + (counter + 1));
+
+                        Console.WriteLine(DateTime.Now + " : **** Insert du documment avec ces lignes "+ (counter + 1) + " ****");
+
                         logFileWriter.WriteLine("");
                     }   // end foreach
 
