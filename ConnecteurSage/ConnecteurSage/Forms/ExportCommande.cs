@@ -67,12 +67,13 @@ namespace ConnecteurSage.Forms
                                     reader[15].ToString()
                                     );
 
-                                order.telephone = reader[17].ToString();
-                                order.email = reader[18].ToString();
+                                order.telephone = reader[16].ToString();
+                                order.email = reader[17].ToString();
                                 //order.commentaires = "";
                                 //order.Transporteur = "";
                                 listCommande.Add(order);
-                            }
+                                
+                           }
                         }
                     }
                     return listCommande;
@@ -331,24 +332,18 @@ namespace ConnecteurSage.Forms
                                     CommandeAExporter.pays = country_iso[i, 1];
                                 }
                             }
+                            //Split the DateTime
+                            var date = Convert.ToDateTime(CommandeAExporter.DateCommande);
 
-                        //MessageBox.Show("CommandeAExporter.DateCommande || " + CommandeAExporter.DateCommande);
-
-                            ////Split the DateTime
-                            //var date = Convert.ToDateTime(CommandeAExporter.DateCommande);
-
-                            ////CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
-                            //CommandeAExporter.DateCommande = date.Year + date.Month + date.Day +"";
-
-                            string[] date = date_time[0].Split('/');
-                            CommandeAExporter.DateCommande = date[2] + date[1] + date[0];
+                            //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
+                            CommandeAExporter.DateCommande = date.Year + date.Month + date.Day +"";
 
                             string[] time = date_time[1].Split(':');
                             CommandeAExporter.HeureCommande = time[0] + time[1];
 
-                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";;;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.HeureCommande + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
+                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";ZI de Bethunes;;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.HeureCommande + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
 
-                            CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande);
+                            CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 
                             int qteTotal = 0;
                             string[] declarerpourrien = new string[2];
@@ -722,9 +717,6 @@ namespace ConnecteurSage.Forms
 
             CommandeAExporter = order;
 
-            MessageBox.Show(DateTime.Now + " | ExportCommande() : Commande N°" + CommandeAExporter.NumCommande + " :\n" +
-                                    "- 0 | CommandeAExporter.telephone == > " + CommandeAExporter.telephone + "\n" +
-                                    "- 1 | CommandeAExporter.email == > " + CommandeAExporter.email + "\n");
         }
 
         /// <summary>
