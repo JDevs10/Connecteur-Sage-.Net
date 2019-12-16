@@ -133,8 +133,8 @@ namespace importPlanifier.Classes
                     {
                         while (reader.Read()) // reads lines/rows from the query
                         {
-                            if (reader[1].ToString().Equals("0"))
-                            {
+                            //if (reader[1].ToString().Equals("1"))
+                            //{
                                 if (countLimit < 100)
                                 {
                                     lits_of_stock[countLimit, 0] = reader[0].ToString(); // cbMarq
@@ -142,7 +142,7 @@ namespace importPlanifier.Classes
                                     //Console.WriteLine(DateTime.Now + " | ExportCommande() : cbMarq = " + reader[0].ToString() + " DO_Statut = " + reader[1].ToString());
                                     countLimit++;
                                 }
-                            }
+                            //}
                         }
                     }
                     connexion.Close();
@@ -155,7 +155,7 @@ namespace importPlanifier.Classes
                     Console.WriteLine(DateTime.Now + " : ExportCommande() |  SQL ===> " + QueryHelper.getCommandeStatut(true));
                     Console.WriteLine(DateTime.Now + " : ExportCommande() |  Message : " + ex.Message + ".");
                     Console.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
-                    Console.ReadLine();
+                    //Console.ReadLine();
                     return;
                 }
             }
@@ -291,32 +291,14 @@ namespace importPlanifier.Classes
                                     var fileName = string.Format("EDI_ORDERS." + CommandeAExporter.codeClient + "." + CommandeAExporter.NumCommande + "." + ConvertDate(CommandeAExporter.DateCommande) + "." + CommandeAExporter.adresseLivraison + ".{0:yyyyMMddhhmmss}.csv", DateTime.Now);
 
                                     fileName = fileName.Replace("...", ".");
-                                    /*
-                                    DialogResult resultDialog5 = MessageBox.Show("Voulez-vous générer l'exportation du fichier en format Veolog?",
-                                                                "Information !",
-                                                                MessageBoxButtons.YesNo,
-                                                                MessageBoxIcon.Question,
-                                                                MessageBoxDefaultButton.Button2);
-                                    var veolog_format = false;
 
-                                    if (resultDialog5 == DialogResult.No)
-                                    {
-                                        veolog_format = false;
-                                        fileName = fileName.Replace("..", ".");
-                                    }
-
-                                    if (resultDialog5 == DialogResult.Yes)
-                                    {
-                                        veolog_format = true;
-                                        fileName = string.Format("orders_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
-                                    }
-                                    */
 
                                     //Verifier le format utilise depuis le fichier de config
                                     ConfigurationExport export = new ConfigurationExport();
                                     export.Load();
 
-                                    var veolog_format = ((export.exportBonsCommandes_Format == "Velog") ? true : false);
+                                    bool veolog_format = (export.exportBonsCommandes_Format == "Veolog" ? true : false);
+                                    Console.WriteLine("veolog_format : "+ veolog_format);
                                     if (veolog_format)
                                     {
                                         ConfigurationDNS dns = new ConfigurationDNS();
@@ -465,9 +447,42 @@ namespace importPlanifier.Classes
                                         //Console.ReadLine();
                                     }
 
-                                    //changer le statut de la commande
+                                    //update veolog delivery date
                                     if (veolog_file_check)
                                     {
+                                        try
+                                        {
+                                            string date = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \""+ date + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
+
+                                            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                            {
+                                                connection.Open();
+
+                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, date));
+                                                OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, date), connection);
+                                                {
+                                                    using (IDataReader reader = command1.ExecuteReader())
+                                                    {
+                                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison veolog à jour !");
+                                                    }
+                                                }
+                                                connection.Close();
+                                                logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                            return;
+                                        }
+
+
+                                        //update order statut
                                         try
                                         {
                                             logFileWriter.WriteLine("");
@@ -552,7 +567,6 @@ namespace importPlanifier.Classes
                                         }
                                     */
                                     }
-
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Commande exportée avec succés.");
 
                                 jamp:;
@@ -584,7 +598,7 @@ namespace importPlanifier.Classes
                         }
                         */
 
-                        Console.WriteLine(DateTime.Now + " | ExportCommande() : Connexion close.");
+                        //Console.WriteLine(DateTime.Now + " | ExportCommande() : Connexion close.");
                         connexion.Close();
                     }
                     catch (OdbcException ex)
@@ -598,7 +612,9 @@ namespace importPlanifier.Classes
                     }
                 }
 
+                logFileWriter.Flush();
             }
+            logFileWriter.Close();
         }
         #endregion
 

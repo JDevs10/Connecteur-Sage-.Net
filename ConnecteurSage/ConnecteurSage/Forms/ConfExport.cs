@@ -30,13 +30,13 @@ namespace ConnecteurSage.Forms
             string[] list2 = new string[3];     //List des formats d'export
             list2[0] = "";
             list2[1] = "Plat";
-            list2[2] = "Velog";
+            list2[2] = "Véolog";
 
             string[] list3 = new string[4];     //List des statuts
             list3[0] = "";
-            list3[1] = "La Saisie";
+            list3[1] = "Saisie";
             list3[2] = "Confirmé";
-            list3[3] = "Accepté";
+            list3[3] = "A Préparé";
 
 
             // Init les comboBoxs
@@ -123,21 +123,16 @@ namespace ConnecteurSage.Forms
             string[] list = new string[3];
             list[0] = "";
             list[1] = "Plat";
-            list[2] = "Velog";
+            list[2] = "Véolog";
             return list;
         }
         public static string[,] getStatutExport()
         {
             string[,] list = new string[4,2];
-            list[0, 0] = "";
-            list[1, 0] = "La Saisie";
-            list[2, 0] = "Confirmé";
-            list[3, 0] = "Accepté";
-
-            list[0, 1] = "";
-            list[1, 1] = "0";
-            list[2, 1] = "1";
-            list[3, 1] = "2";
+            list[0, 0] = "";            list[0, 1] = "";
+            list[1, 0] = "Saisie";      list[1, 1] = "0";   // Order created
+            list[2, 0] = "Confirmé";    list[2, 1] = "1";   // Order ready to be send in EDI to Veolog
+            list[3, 0] = "A Préparé";   list[3, 1] = "2";   // Order send to Veolog
             return list;
         }
         public static string getStatutValue(string value)

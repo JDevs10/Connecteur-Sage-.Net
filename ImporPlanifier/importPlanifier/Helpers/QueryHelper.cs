@@ -710,15 +710,15 @@ namespace importPlanifier.Helpers
             }
         }
 
-        public static string insertStockVeologDocumment(bool sqlConnexion, string[,] stock, int x)
+        public static string updateVeologDeliveryDate(bool sqlConnexion, string orderReference, string date)
         {
             if (sqlConnexion)
             {
-                return "";
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET Veolog = '"+ date + "' WHERE DO_Piece = '"+ orderReference + "'";
             }
             else
             {
-                return "";
+                return "UPDATE F_DOCENTETE SET Veolog = '" + date + "' WHERE DO_Piece = '" + orderReference + "'";
             }
         }
 

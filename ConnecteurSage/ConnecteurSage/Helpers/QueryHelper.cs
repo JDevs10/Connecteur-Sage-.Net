@@ -728,6 +728,18 @@ namespace ConnecteurSage.Helpers
             }
         }
 
+        public static string updateVeologDeliveryDate(bool sqlConnexion, string orderReference, string date)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET Veolog = '" + date + "' WHERE DO_Piece = '" + orderReference + "'";
+            }
+            else
+            {
+                return "UPDATE F_DOCENTETE SET Veolog = '" + date + "' WHERE DO_Piece = '" + orderReference + "'";
+            }
+        }
+
         public static string getCommandeStatut(bool sqlConnexion)
         {
             ConfigurationExport export = new ConfigurationExport();
@@ -740,6 +752,18 @@ namespace ConnecteurSage.Helpers
             else
             {
                 return "SELECT cbMarq, DO_Statut FROM F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
+            }
+        }
+
+        public static string changeOrderStatut(bool sqlConnexion, string cmd_NumCommande)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '" + cmd_NumCommande + "' ";
+            }
+            else
+            {
+                return "UPDATE F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = '" + cmd_NumCommande + "'";
             }
         }
 

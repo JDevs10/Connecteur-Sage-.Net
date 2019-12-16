@@ -377,6 +377,81 @@ namespace ConnecteurSage.Forms
                                     veolog_file_check = true;
                                 }
                             }
+
+
+                            //update veolog delivery date
+                            try
+                                {
+                                string deliveryDate = "" + DateTime.Now;
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \"" + date + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
+
+                                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                {
+                                    connection.Open();
+
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, deliveryDate));
+                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, deliveryDate), connection);
+                                    {
+                                        using (IDataReader reader = command1.ExecuteReader())
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison veolog à jour !");
+                                        }
+                                    }
+                                    connection.Close();
+                                    logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
+                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                                logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                                logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                return;
+                            }
+
+
+                            //update order statut
+                            try
+                            {
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
+
+                                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                {
+                                    connection.Open();
+
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande));
+                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande), connection);
+                                    {
+                                        using (IDataReader reader = command1.ExecuteReader())
+                                        {
+                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Statut de la commande à jour !");
+                                    }
+                                    }
+                                    connection.Close();
+                                    logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
+                                }
+
+                            }
+                            catch (Exception ex)
+                            {
+                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur Commande Statut!!",
+                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                                logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                                logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                return;
+                            }
+
                         }
                         else
                         {

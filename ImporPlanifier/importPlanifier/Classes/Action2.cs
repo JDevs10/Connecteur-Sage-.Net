@@ -56,6 +56,7 @@ namespace importPlanifier.Classes
             List<string> tabCommande = new List<string>();
             List<string> tabCommandeError = new List<string>();
             List<Order> ordersList = new List<Order>();
+
             Classes.Path path = getPath();
             dir = path.path;
             Console.WriteLine("Import/Export planifier Sage!!");
@@ -4435,7 +4436,6 @@ namespace importPlanifier.Classes
             Console.WriteLine(DateTime.Now + " : export.exportBonsLivraisons => " + export.exportBonsLivraisons);
             Console.WriteLine(DateTime.Now + " : export.exportBonsCommandes => " + export.exportBonsCommandes);
             Console.WriteLine(DateTime.Now + " : export.exportStock => " + export.exportStock);
-            Console.WriteLine("");
 
             if (((export.exportFactures == "True") ? true : false))
             {
@@ -4466,7 +4466,6 @@ namespace importPlanifier.Classes
             }
             Console.WriteLine("");
             Console.WriteLine(DateTime.Now + " : Done Export");
-
         }
 
         public static int Calcule_conditionnement(decimal quantite, string quantite_conditionnement, StreamWriter writer)

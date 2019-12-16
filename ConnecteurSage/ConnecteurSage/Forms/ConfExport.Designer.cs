@@ -247,7 +247,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(72, 14);
             this.label3.TabIndex = 10;
-            this.label3.Text = "Export Srock";
+            this.label3.Text = "Export Stock";
             // 
             // comboBox3
             // 
