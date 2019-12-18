@@ -636,11 +636,11 @@ namespace ConnecteurSage.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT DO_TIERS FROM " + getPrefix() + "F_DOCENTETE WHERE DO_REF IN('" + reference_cmd + "') ";
+                return "SELECT DO_TIERS FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece IN('" + reference_cmd + "') ";
             }
             else
             {
-                return "SELECT DO_TIERS FROM F_DOCENTETE WHERE DO_REF IN('" + reference_cmd + "') ";
+                return "SELECT DO_TIERS FROM F_DOCENTETE WHERE DO_Piece IN('" + reference_cmd + "') ";
             }
         }
 

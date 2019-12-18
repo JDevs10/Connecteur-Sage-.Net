@@ -1601,6 +1601,29 @@ namespace importPlanifier.Classes
                                         desadv_info.Heure_De_Expedition = tab[4];
                                         desadv_info.Etat = tab[5];
 
+                                        if (desadv_info.Etat == "X")
+                                        {
+                                            desadv_info.Etat = "1";
+                                        }
+                                        else if (desadv_info.Etat == "P")
+                                        {
+                                            desadv_info.Etat = "0";
+                                        }
+                                        else
+                                        {
+                                            //deplacer les fichiers csv
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+                                            tabCommandeError.Add(filename.ToString());
+
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                            goto goErrorLoop;
+                                        }
+
                                         dh = desadv_info;
                                     }
                                     /*
@@ -2394,7 +2417,7 @@ namespace importPlanifier.Classes
                                     name_article = (reader[0].ToString());  // sum up the total_negative variable. - check query
                                     DL_PoidsNet = (reader[1].ToString()); // get unit weight NET - check query
                                     DL_PoidsBrut = (reader[2].ToString()); // get unit weight BRUT - check query  
-                                    DL_PrixUnitaire = (reader[3].ToString()); // get unit price  - check query 
+                                    DL_PrixUnitaire = (reader[3].ToString()); // get unit price  - check query
                                 }
                                 else // If no rows returned
                                 {

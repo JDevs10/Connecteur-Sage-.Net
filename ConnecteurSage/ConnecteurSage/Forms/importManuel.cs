@@ -1645,7 +1645,7 @@ namespace ConnecteurSage.Forms
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_ErrorFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(filename));
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                     logFileWriter_import.Close();
                                     return;
