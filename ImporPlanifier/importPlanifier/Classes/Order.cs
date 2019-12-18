@@ -114,6 +114,7 @@ namespace importPlanifier.Classes
     public string telephone { get; set; }
     public string email { get; set; }
     public string HeureCommande { get; set; }
+    public string HeureLivraison { get; set; }
     public string Transporteur { get; set; }
 
         #endregion

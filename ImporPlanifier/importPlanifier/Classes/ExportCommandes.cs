@@ -173,39 +173,6 @@ namespace importPlanifier.Classes
                     try
                     {
                         connexion.Open();
-                        /*
-                        bool check_cmd_VeologPendingTable = false;
-                        string cmd_VeologPendingTable_ref = "";
-
-                        //Check if the order exist in the Veolog_Pending table
-                        try
-                        {
-                            OdbcCommand command1 = new OdbcCommand(QueryHelper.getCommandeFromVeolog_Pending(true, lits_of_stock[index, 0]), connexion);
-
-                            Console.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeFromVeolog_Pending(true, lits_of_stock[index, 0]));
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeFromVeolog_Pending(true, lits_of_stock[index, 0]));
-
-                            using (IDataReader reader = command1.ExecuteReader())
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    cmd_VeologPendingTable_ref = reader[0].ToString();
-                                    check_cmd_VeologPendingTable = true;
-                                }
-                            }
-                        }catch(OdbcException ex)
-                        {
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : ********************** OdbcException *********************");
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Message :" + ex.Message);
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : StackTrace :" + ex.StackTrace);
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Import annulée");
-                            return;
-                        }
-
-                        if (check_cmd_VeologPendingTable)
-                        {
-                        */
 
                         OdbcCommand command = new OdbcCommand(QueryHelper.getCoommandeById(true, lits_of_stock[index, 0]), connexion);
 
@@ -297,7 +264,7 @@ namespace importPlanifier.Classes
                                     ConfigurationExport export = new ConfigurationExport();
                                     export.Load();
 
-                                    bool veolog_format = (export.exportBonsCommandes_Format == "Veolog" ? true : false);
+                                    bool veolog_format = (export.exportBonsCommandes_Format == "Véolog" ? true : false);
                                     Console.WriteLine("veolog_format : "+ veolog_format);
                                     if (veolog_format)
                                     {
@@ -305,7 +272,7 @@ namespace importPlanifier.Classes
                                         dns.LoadSQL();
                                         
                                         veolog_format = true;
-                                        fileName = string.Format("orders_"+dns.Prefix+"_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
+                                        fileName = string.Format("orders_"+dns.Prefix+"_{0:yyyyMMdd}_"+CommandeAExporter.NumCommande+".csv", DateTime.Now);
                                     }
                                     else
                                     {
@@ -314,7 +281,7 @@ namespace importPlanifier.Classes
                                     }
 
                                     bool veolog_file_check = false;
-                                    using (StreamWriter writer = new StreamWriter(exportPath + @"\" + fileName, false, Encoding.Default))
+                                    using (StreamWriter orderFileWriter = new StreamWriter(exportPath + @"\" + fileName, false, Encoding.Default))
                                     {
                                         logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ecrire le fichier dans : " + exportPath + @"\" + exportPath + @"\" + fileName);
 
@@ -324,10 +291,10 @@ namespace importPlanifier.Classes
                                         {
                                         //format Veolog 
                                         string[] adresse = new string[4];
-                                        string[] date_time = new string[2];
+                                        string[] date_time_delivery = new string[2];
 
                                         adresse = CommandeAExporter.adresseLivraison.Split(',');
-                                        date_time = CommandeAExporter.DateCommande.Split(' ');
+                                        date_time_delivery = CommandeAExporter.DateLivraison.Split(' ');
 
                                         //Split the adresse
                                         CommandeAExporter.adresse = adresse[0];
@@ -358,15 +325,15 @@ namespace importPlanifier.Classes
 
 
                                         //Split the DateTime
-                                        var date = Convert.ToDateTime(CommandeAExporter.DateCommande);
+                                        var date_delivery = Convert.ToDateTime(CommandeAExporter.DateLivraison);
 
                                         //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
-                                        CommandeAExporter.DateCommande = date.Year + date.Month + date.Day + "";
+                                        CommandeAExporter.DateLivraison = date_delivery.Year + "" + date_delivery.Month + "" + date_delivery.Day + "";
 
-                                        string[] time = date_time[1].Split(':');
-                                        CommandeAExporter.HeureCommande = time[0] + time[1];
+                                        string[] time_delivery = date_time_delivery[1].Split(':');
+                                        CommandeAExporter.HeureLivraison = time_delivery[0] + "" + time_delivery[1];
 
-                                        writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;"+ CommandeAExporter.NomClient + ";"+ CommandeAExporter.adresse + ";ZI de Bethunes;;"+ CommandeAExporter.codepostale + ";"+ CommandeAExporter.ville + ";"+ CommandeAExporter.pays + ";"+ CommandeAExporter.telephone + ";"+ CommandeAExporter.email + ";"+ CommandeAExporter.DateCommande + ";"+ CommandeAExporter.HeureCommande + ";"+ CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.commentaires); // E line
+                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;"+ CommandeAExporter.NomClient + ";"+ CommandeAExporter.adresse + ";ZI de Bethunes;;"+ CommandeAExporter.codepostale + ";"+ CommandeAExporter.ville + ";"+ CommandeAExporter.pays + ";"+ CommandeAExporter.telephone + ";"+ CommandeAExporter.email + ";"+ CommandeAExporter.DateLivraison + ";"+ CommandeAExporter.HeureLivraison + ";"+ CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.commentaires); // E line
 
                                             CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 
@@ -387,28 +354,28 @@ namespace importPlanifier.Classes
                                                 declarerpourrien = CommandeAExporter.Lines[i].Quantite.Split(',');
                                                 qteTotal = qteTotal + Convert.ToInt16(declarerpourrien[0]);
 
-                                                writer.WriteLine("L;;" + ((CommandeAExporter.Lines[i].codeArticle.Length > 30) ? CommandeAExporter.Lines[i].codeArticle.Substring(0, 30) : CommandeAExporter.Lines[i].codeArticle) + ";;" + declarerpourrien[0] + ";"); // L line
+                                                orderFileWriter.WriteLine("L;;" + ((CommandeAExporter.Lines[i].codeArticle.Length > 30) ? CommandeAExporter.Lines[i].codeArticle.Substring(0, 30) : CommandeAExporter.Lines[i].codeArticle) + ";;" + declarerpourrien[0] + ";"); // L line
 
                                             }
-                                            writer.WriteLine("F;" + CommandeAExporter.Lines.Count + ";" + qteTotal + ";"); // F line
-                                            writer.Close();
+                                            orderFileWriter.WriteLine("F;" + CommandeAExporter.Lines.Count + ";" + qteTotal + ";"); // F line
+                                            orderFileWriter.Close();
 
                                         }
                                         else
                                         {
-                                            //Format Fichier plat
-                                            writer.WriteLine("ORDERS;" + CommandeAExporter.DO_MOTIF + ";" + CommandeAExporter.codeClient + ";" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.codeFournisseur + ";;;" + CommandeAExporter.nom_contact + "." + CommandeAExporter.adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter.deviseCommande + ";;");
+                                        //Format Fichier plat
+                                        orderFileWriter.WriteLine("ORDERS;" + CommandeAExporter.DO_MOTIF + ";" + CommandeAExporter.codeClient + ";" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.codeFournisseur + ";;;" + CommandeAExporter.nom_contact + "." + CommandeAExporter.adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter.deviseCommande + ";;");
                                             if (CommandeAExporter.DateCommande != "")
                                             {
                                                 CommandeAExporter.DateCommande = ConvertDate(CommandeAExporter.DateCommande);
                                             }
 
-                                            //if (CommandeAExporter.DateCommande != " ")
-                                            //{
-                                            //    CommandeAExporter.conditionLivraison = "";
-                                            //}
+                                        //if (CommandeAExporter.DateCommande != " ")
+                                        //{
+                                        //    CommandeAExporter.conditionLivraison = "";
+                                        //}
 
-                                            writer.WriteLine("ORDHD1;" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.conditionLivraison + ";;");
+                                        orderFileWriter.WriteLine("ORDHD1;" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.conditionLivraison + ";;");
 
                                             CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande);
 
@@ -424,11 +391,11 @@ namespace importPlanifier.Classes
                                                     CommandeAExporter.Lines[i].codeFournis = "";
                                                 }
 
-                                                writer.WriteLine("ORDLIN;" + CommandeAExporter.Lines[i].NumLigne + ";" + CommandeAExporter.Lines[i].codeArticle + ";GS1;" + CommandeAExporter.Lines[i].codeAcheteur + ";" + CommandeAExporter.Lines[i].codeFournis + ";;A;" + CommandeAExporter.Lines[i].descriptionArticle + ";" + CommandeAExporter.Lines[i].Quantite.Replace(",", ".") + ";LM;" + CommandeAExporter.Lines[i].MontantLigne.Replace(",", ".") + ";;;" + CommandeAExporter.Lines[i].PrixNetHT.Replace(",", ".") + ";;;LM;;;;" + ConvertDate(CommandeAExporter.Lines[i].DateLivraison) + ";");
+                                            orderFileWriter.WriteLine("ORDLIN;" + CommandeAExporter.Lines[i].NumLigne + ";" + CommandeAExporter.Lines[i].codeArticle + ";GS1;" + CommandeAExporter.Lines[i].codeAcheteur + ";" + CommandeAExporter.Lines[i].codeFournis + ";;A;" + CommandeAExporter.Lines[i].descriptionArticle + ";" + CommandeAExporter.Lines[i].Quantite.Replace(",", ".") + ";LM;" + CommandeAExporter.Lines[i].MontantLigne.Replace(",", ".") + ";;;" + CommandeAExporter.Lines[i].PrixNetHT.Replace(",", ".") + ";;;LM;;;;" + ConvertDate(CommandeAExporter.Lines[i].DateLivraison) + ";");
                                             }
-                                            writer.WriteLine("ORDEND;" + CommandeAExporter.MontantTotal.ToString().Replace(",", ".") + ";");
+                                            orderFileWriter.WriteLine("ORDEND;" + CommandeAExporter.MontantTotal.ToString().Replace(",", ".") + ";");
 
-                                            writer.Close();
+                                            orderFileWriter.Close();
                                         }
                                     }
 
@@ -452,16 +419,16 @@ namespace importPlanifier.Classes
                                     {
                                         try
                                         {
-                                            string date = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                                            string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
                                             logFileWriter.WriteLine("");
-                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \""+ date + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \""+ delivery_date_veolog + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
                                             using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                                             {
                                                 connection.Open();
 
-                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, date));
-                                                OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, date), connection);
+                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog));
+                                                OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog), connection);
                                                 {
                                                     using (IDataReader reader = command1.ExecuteReader())
                                                     {
@@ -517,55 +484,6 @@ namespace importPlanifier.Classes
                                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                             return;
                                         }
-
-                                        //Put the order in Veolog_Pending table
-                                        /*
-                                        try
-                                        {
-                                            logFileWriter.WriteLine("");
-                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Insérer la commande dans la table 'Veolog_Pending' pour ne plus l'exporter.");
-
-                                            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
-                                            {
-                                                connection.Open();
-
-                                                //CommandeAExporter.cbMarq      ===> cbMarq
-                                                //CommandeAExporter.Reference   ===> DO_Ref
-                                                //CommandeAExporter.NumCommande ===> DO_Piece
-                                                //CommandeAExporter.statut      ===> DO_Statut
-
-                                                try
-                                                {
-                                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.insertOrderInVeolog_Pending(true, CommandeAExporter.cbMarq, CommandeAExporter.Reference, CommandeAExporter.NumCommande, CommandeAExporter.statut));
-                                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.insertOrderInVeolog_Pending(true, CommandeAExporter.cbMarq, CommandeAExporter.Reference, CommandeAExporter.NumCommande, CommandeAExporter.statut), connection);
-                                                    command1.ExecuteReader();
-                                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL Execute with success!");
-                                                }
-                                                catch (OdbcException ex)
-                                                {
-                                                    logFileWriter.WriteLine("");
-                                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : ********************** OdbcException *********************");
-                                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Message :" + ex.Message);
-                                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : StackTrace :" + ex.StackTrace);
-                                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Import annulée");
-                                                    return;
-                                                }
-
-                                                connection.Close();
-                                                logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
-                                            }
-
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                                            logFileWriter.WriteLine("");
-                                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
-                                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
-                                            return;
-                                        }
-                                    */
                                     }
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Commande exportée avec succés.");
 

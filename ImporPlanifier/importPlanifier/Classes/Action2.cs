@@ -82,15 +82,6 @@ namespace importPlanifier.Classes
                 goto goError;
             }
 
-            DirectoryInfo fileListing = new DirectoryInfo(dir);
-            string infoPlan = InfoTachePlanifier();
-            if (infoPlan == null)
-            {
-                Console.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
-                Console.WriteLine(DateTime.Now + " : Import annulée");
-                goto goError;
-            }
-
             //Console.WriteLine("Dossier : " + fileListing);
             //Console.WriteLine("");
             //Console.WriteLine(DateTime.Now + " : Scan du dossier ...");
@@ -129,6 +120,22 @@ namespace importPlanifier.Classes
             logFileWriter_general.WriteLine("################################ ConnecteurSage Sage ################################");
             logFileWriter_general.WriteLine("#####################################################################################");
             logFileWriter_general.WriteLine("");
+
+            //Get all .csv files in the folder
+            DirectoryInfo fileListing = new DirectoryInfo(dir);
+
+            //Get Tache Planifier
+            string infoPlan = InfoTachePlanifier();
+            if (infoPlan == null)
+            {
+                Console.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
+                Console.WriteLine(DateTime.Now + " : Import annulée");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+
+                goto goError;
+            }
+
             logFileWriter_general.WriteLine(DateTime.Now + " : "+infoPlan);
             logFileWriter_general.WriteLine(DateTime.Now + " : Dossier : " + fileListing);
             logFileWriter_general.WriteLine("");

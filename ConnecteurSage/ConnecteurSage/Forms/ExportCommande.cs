@@ -280,7 +280,7 @@ namespace ConnecteurSage.Forms
                         dns.LoadSQL();
 
                         veolog_format = true;
-                        fileName = string.Format("orders_"+ dns.Prefix+ "_{0:yyyyMMddhhmmss}.csv", DateTime.Now);
+                        fileName = string.Format("orders_"+ dns.Prefix+ "_{0:yyyyMMdd}_" + CommandeAExporter.NumCommande + ".csv", DateTime.Now);
                     }
 
                     bool veolog_file_check = false;
@@ -292,10 +292,10 @@ namespace ConnecteurSage.Forms
                         {
                             //Format Veolog
                             string[] adresse = new string[4];
-                            string[] date_time = new string[2];
+                            string[] date_time_delivery = new string[2];
 
                             adresse = CommandeAExporter.adresseLivraison.Split(',');    // CommandeAExporter.adresseLivraison.Split(',');
-                            date_time = CommandeAExporter.DateCommande.Split(' ');
+                            date_time_delivery = CommandeAExporter.DateLivraison.Split(' ');
 
                             CommandeAExporter.commentaires = "";
 
@@ -304,18 +304,6 @@ namespace ConnecteurSage.Forms
                             CommandeAExporter.codepostale = adresse[1];
                             CommandeAExporter.ville = adresse[2];
                             CommandeAExporter.pays = adresse[3];
-
-                            /*
-                            string str = CommandeAExporter.adresse;
-                            int tts = str.Length - 1;
-                            string str1 = str.Substring(0, tts);
-                            CommandeAExporter.adresse = str1;
-
-                            string str2 = CommandeAExporter.adresse;
-                            int tts1 = str2.Length - 1;
-                            string str3 = str.Substring(0, tts1);
-                            CommandeAExporter.adresse = str3;
-                            */
 
                             CountryFormatISO iso = new CountryFormatISO();
                             string[,] country_iso = iso.getAllStaticCountryISOCode();
@@ -333,15 +321,15 @@ namespace ConnecteurSage.Forms
                                 }
                             }
                             //Split the DateTime
-                            var date = Convert.ToDateTime(CommandeAExporter.DateCommande);
+                            var date_delivery = Convert.ToDateTime(CommandeAExporter.DateCommande);
 
                             //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
-                            CommandeAExporter.DateCommande = date.Year + date.Month + date.Day +"";
+                            CommandeAExporter.DateLivraison = date_delivery.Year + "" + date_delivery.Month + "" + date_delivery.Day +"";
 
-                            string[] time = date_time[1].Split(':');
-                            CommandeAExporter.HeureCommande = time[0] + time[1];
+                            string[] time_delivery = date_time_delivery[1].Split(':');
+                            CommandeAExporter.HeureLivraison = time_delivery[0] + "" + time_delivery[1];
 
-                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";ZI de Bethunes;;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.HeureCommande + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
+                            writer.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";ZI de Bethunes;;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
 
                             CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 
@@ -382,16 +370,16 @@ namespace ConnecteurSage.Forms
                             //update veolog delivery date
                             try
                                 {
-                                string deliveryDate = "" + DateTime.Now;
+                                string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \"" + date + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
+                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
                                 using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                                 {
                                     connection.Open();
 
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, deliveryDate));
-                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, deliveryDate), connection);
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog));
+                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog), connection);
                                     {
                                         using (IDataReader reader = command1.ExecuteReader())
                                         {
