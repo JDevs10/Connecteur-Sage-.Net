@@ -445,6 +445,7 @@ namespace importPlanifier.Classes
                                             logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
                                             logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                            logFileWriter.Flush();
                                             return;
                                         }
 
@@ -482,6 +483,7 @@ namespace importPlanifier.Classes
                                             logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
                                             logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                            logFileWriter.Flush();
                                             return;
                                         }
                                     }
@@ -496,6 +498,7 @@ namespace importPlanifier.Classes
                                 {
                                     //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : ERREUR :: " + ex.Message);
+                                    logFileWriter.Flush();
                                     Console.WriteLine(DateTime.Now + " | ExportCommande() : ERREUR :: " + ex.Message);
                                     Console.ReadLine();
                                 //logFileWriter.Close();

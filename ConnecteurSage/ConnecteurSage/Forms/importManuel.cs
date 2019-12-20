@@ -1621,8 +1621,8 @@ namespace ConnecteurSage.Forms
                             if (tab[0] == "E") //checking if its header of file for control
                             {
                                 Veolog_DESADV desadv_info = new Veolog_DESADV();
-                                desadv_info.Commande_Donneur_Ordre = tab[1];
-                                desadv_info.Commande_Client_Livre = tab[2];
+                                desadv_info.Ref_Commande_Donneur_Ordre = tab[1];
+                                desadv_info.Ref_Commande_Client_Livre = tab[2];
                                 desadv_info.Date_De_Expedition = tab[3];
                                 desadv_info.Heure_De_Expedition = tab[4];
                                 desadv_info.Etat = tab[5];
@@ -3126,7 +3126,7 @@ namespace ConnecteurSage.Forms
 
         private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
         {
-            string[,] list_of_cmd_lines = new string[dl.Count, 27];    // new string [x,y]
+            string[,] list_of_cmd_lines = new string[dl.Count, 28];    // new string [x,y]
             string[] list_of_client_info = null;
 
             int position_item = 0;
@@ -3142,6 +3142,7 @@ namespace ConnecteurSage.Forms
             string DL_PoidsNet = "0";
             string DL_PoidsBrut = "0";
             string DL_PrixUnitaire = "0";
+            string DL_PUTTC = "0";
 
             // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
@@ -3170,7 +3171,8 @@ namespace ConnecteurSage.Forms
                                     name_article = (reader[1].ToString());        // sum up the total_negative variable. - check query
                                     DL_PoidsNet = (reader[2].ToString());         // get unit weight NET - check query
                                     DL_PoidsBrut = (reader[3].ToString());        // get unit weight BRUT - check query  
-                                    DL_PrixUnitaire = (reader[4].ToString());     // get unit price  - check query 
+                                    DL_PrixUnitaire = (reader[4].ToString());     // get unit price  - check query
+                                    DL_PUTTC = (reader[5].ToString());            // get unit price ttc
                                 }
                                 else// If no rows returned
                                 {
@@ -3181,8 +3183,8 @@ namespace ConnecteurSage.Forms
 
                         //get Client Reference From CMD Ref
                         logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Commande_Donneur_Ordre));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
                             using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
@@ -3278,6 +3280,7 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 24] = "0"; //DL_No
                                 list_of_cmd_lines[counter, 25] = "0"; //DL_FactPoids
                                 list_of_cmd_lines[counter, 26] = "0"; //DL_Escompte
+                                list_of_cmd_lines[counter, 27] = DL_PUTTC.Replace(",", "."); //DL_PUTTC
 
                             }
                             catch (Exception ex)
@@ -3299,13 +3302,54 @@ namespace ConnecteurSage.Forms
                     // ===== End Foreach =====
 
 
+                    //Get ref client CMD, nature_OP_P && total ht
+                    string nature_op_p_ = "";
+                    string do_totalHT_ = "";
+                    string do_totalHTNet_ = "";
+                    string do_totalTTC_ = "";
+                    string do_NetAPayer_ = "";
+                    string do_MontantRegle_ = "";
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupérer la référence Commande client livré, la narure OP ou P et le total ht de la commande " + dh.Ref_Commande_Donneur_Ordre);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                dh.Ref_Commande_Client_Livre = reader[0].ToString();
+                                nature_op_p_ = reader[1].ToString();
+                                do_totalHT_ = reader[2].ToString().Replace(",", ".");
+                                do_totalHTNet_ = reader[3].ToString().Replace(",", ".");
+                                do_totalTTC_ = reader[4].ToString().Replace(",", ".");
+                                do_NetAPayer_ = reader[5].ToString().Replace(",", ".");
+                                do_MontantRegle_ = reader[6].ToString().Replace(",", ".");
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
+                            }
+                        }
+                    }
+
+                    //get veolog delivery date and time
+                    string year = dh.Date_De_Expedition.Substring(0, 4);
+                    string month = dh.Date_De_Expedition.Substring(4, 2);
+                    string day = dh.Date_De_Expedition.Substring(6, 2);
+                    string hour = dh.Date_De_Expedition.Substring(0, 2);
+                    string mins = dh.Date_De_Expedition.Substring(2, 2);
+                    string veologDeliverDate = year + "-" + month + "-" + day;
+                    string veologDeliverTime = hour + ":" + mins + ":0.000";
+                    string veologDeliveryDateTime = veologDeliverDate + " " + veologDeliverTime;
+
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(false, "3", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, list_of_client_info, dh.Etat));
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliverDate, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
 
                     //generate document BLF_____. in database.
                     try
                     {
-                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, dh.Commande_Donneur_Ordre, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
+                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliverDate, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
                         command.ExecuteReader(); // executing the query
                     }
                     catch (OdbcException ex)
@@ -3320,7 +3364,7 @@ namespace ConnecteurSage.Forms
                     }
 
 
-                    string[,] products_MS = new string[position_item / 1000, 27]; // create array with enough space
+                    string[,] products_DESADV = new string[position_item / 1000, 28]; // create array with enough space
 
                     //insert documentline into the database with articles having 20 as value @index 2
                     logFileWriter.WriteLine("");
@@ -3332,19 +3376,19 @@ namespace ConnecteurSage.Forms
                         {
                             for (int y = 0; y < list_of_cmd_lines.GetLength(1); y++)
                             {
-                                products_MS[x, y] = list_of_cmd_lines[x, y];
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : products_BL_L[" + x + "," + y + "] = " + products_MS[x, y]);
+                                products_DESADV[x, y] = list_of_cmd_lines[x, y];
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : products_BL_L[" + x + "," + y + "] = " + products_DESADV[x, y]);
                             }
 
                             //insert the article to documentline in the database
                             try
                             {
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert the article " + products_MS[x, 15] + " (Ref:" + products_MS[x, 10] + ") to documentline in the database");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert the article " + products_DESADV[x, 15] + " (Ref:" + products_DESADV[x, 10] + ") to documentline in the database");
 
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.insertDesadvDocumentLine_Veolog(true, products_MS, x));
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.insertDesadvDocumentLine_Veolog(true, products_DESADV, x));
 
-                                OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocumentLine_Veolog(true, products_MS, x), connection);
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocumentLine_Veolog(true, products_DESADV, x), connection);
                                 command.ExecuteReader();
                             }
                             catch (OdbcException ex)
@@ -3361,6 +3405,31 @@ namespace ConnecteurSage.Forms
                                 return null;
                             }
                         }
+                    }
+
+                    //set Veolog date time import
+                    try
+                    {
+                        string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog au DESADV \"" + reference_DESADV_doc + "\".");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog), connection);
+                        {
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Date de livraison veolog à jour !");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                        return null;
                     }
 
                 }

@@ -64,7 +64,7 @@ C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\Release\pl\Microsoft.Win32.TaskScheduler.resources.dll
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\Release\ru\Microsoft.Win32.TaskScheduler.resources.dll
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\bin\Release\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll
-C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.csprojAssemblyReference.cache
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.csproj.CopyComplete
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.exe
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.pdb
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\importPlanifier\obj\Release\importPlanifier.csprojAssemblyReference.cache
