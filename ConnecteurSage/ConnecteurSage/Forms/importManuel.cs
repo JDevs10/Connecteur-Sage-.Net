@@ -1288,9 +1288,8 @@ namespace ConnecteurSage.Forms
                     //Loop the documment lines
                     for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
                     {
-
                         //Check if the document line is correct at each line
-                        if (lines[lineIndex].Split(';').Length == 8)
+                        if (lines[lineIndex].Split(';').Length == 6)
                         {
                             logFileWriter_import.WriteLine("");
                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Verification Des Lignes Du Documment *********************");
@@ -1302,7 +1301,7 @@ namespace ConnecteurSage.Forms
 
                             string[] info_stock = lines[lineIndex].Split(';');
 
-                            Console.WriteLine("0: " + info_stock[0] + " | 1: " + info_stock[1] + " | 2: " + info_stock[2] + " | 3: " + info_stock[3] + " | 4: " + info_stock[4] + " | 5: " + info_stock[5] + " | 6: " + info_stock[6] + " | 7: " + info_stock[7]);
+                            Console.WriteLine("0: " + info_stock[0] + " | 1: " + info_stock[1] + " | 2: " + info_stock[2] + " | 3: " + info_stock[3] + " | 4: " + info_stock[4] + " | 5: " + info_stock[5]);
 
                             if (info_stock[0] == "L")
                             {
@@ -1312,94 +1311,56 @@ namespace ConnecteurSage.Forms
 
                                 try
                                 {
-                                    if (info_stock[1] != "")
+                                    if (info_stock[1] != "" && info_stock[3] != "")
                                     {
-                                        logFileWriter_import.WriteLine(DateTime.Now + " :  Code acticle => TROUVE ");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " :  Code acticle (" + info_stock[1] + ") => TROUVE ");
                                         valid_info_stock_line[lineIndex, 0] = info_stock[1];
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Ligne " + (lineIndex + 1) + " | Code acticle => PAS TROUVE\nLe champ est vide!!!\nCet article ne sera pas mis à jour dans la base de données", "*** ERREUR Du Documment ***");
 
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Code acticle => PAS TROUVE ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
-                                        goto skipLine;
-                                    }
-
-                                    if (info_stock[2] != "")
-                                    {
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : EAN (Code Barre) => TROUVE ");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : EAN (Code Barre) \"" + info_stock[2] + "\" => TROUVE ");
                                         valid_info_stock_line[lineIndex, 1] = info_stock[2];
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Ligne " + (lineIndex + 1) + " | EAN (Code Barre) ===> PAS TROUVE\nLe champ est vide!!!\nCet article ne sera pas mis à jour dans la base de données", "*** ERREUR Du Documment ***");
 
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | EAN (Code Barre) ===> PAS TROUVE ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
-                                        goto skipLine;
-                                    }
-
-                                    if (info_stock[3] != "")
-                                    {
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Quantités disponibles (Stock actuel) => TROUVE ");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Stock actuel (" + info_stock[3] + ") => TROUVE ");
                                         valid_info_stock_line[lineIndex, 2] = info_stock[3];
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Ligne " + (lineIndex + 1) + " | Quantités disponibles (Stock actuel) => PAS TROUVE\nLe champ est vide!!!\nCet article ne sera pas mis à jour dans la base de données", "*** ERREUR Du Documment ***");
 
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Quantités disponibles (Stock actuel) => PAS TROUVE ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
-                                        goto skipLine;
-                                    }
-
-                                    if (info_stock[4] != "")
-                                    {
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de lot  => TROUVE ");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de lot (" + info_stock[4] + ")  => TROUVE ");
                                         valid_info_stock_line[lineIndex, 3] = info_stock[4];
                                     }
                                     else
                                     {
-                                        MessageBox.Show("Ligne " + (lineIndex + 1) + " | Numéro de lot  => PAS TROUVE\nLe champ est vide!!!\nCet article ne sera pas mis à jour dans la base de données", "*** WARNING Du Documment ***");
-
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de lot  => PAS TROUVE ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
-                                        valid_info_stock_line[lineIndex, 3] = info_stock[4];
+                                        if (info_stock[1] == "")
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Code acticle => PAS TROUVE ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                        }
+                                        if (info_stock[3] == "")
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Quantités disponibles (Stock actuel) => PAS TROUVE ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                        }
                                     }
 
-                                    lineCount++;
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show("Ligne " + (lineIndex + 1) + " | Message |\n" + ex.Message, " *** ERREUR Dans le Documment ***");
-
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Dans le Documment *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1));
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Message |\n" + ex.Message);
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Stack |\n" + ex.StackTrace);
 
-                                    logFileWriter_general.Flush();
-                                    logFileWriter_import.Flush();
-                                    logFileWriter_import.Close();
-                                    logFileWriter_general.Close();
                                 }
+
+                                lineCount++;
+                                logFileWriter_import.Flush();
                             }
                             else
                             {
-                                MessageBox.Show("Ligne " + (lineIndex + 1) + " | Type ligne ===> PAS RECONNU / PAS TROUVE.\nLe champ n'est pas correct ou vide!!!\nCet article ne sera pas mis à jour dans la base de données.", "*** ERREUR Dans le Documment ***");
-
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Type ligne ===> PAS RECONNU / PAS TROUVE");
@@ -1407,7 +1368,6 @@ namespace ConnecteurSage.Forms
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
                             }
 
-                        skipLine:;
                         }
                         else
                         {
@@ -1417,15 +1377,27 @@ namespace ConnecteurSage.Forms
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Fin de la lecture du documment Veolog Stock.");
                                 totallines = lines[lineIndex].Split(';')[1];
                                 stockVeologCheck = true;
+                                logFileWriter_import.Flush();
                                 break;
                             }
-                            MessageBox.Show("Ligne " + (lineIndex + 1) + " | Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "*** ERREUR Dans le Documment ***");
-
+                            logFileWriter_import.Flush();
                             logFileWriter_import.WriteLine("");
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu. Ligne size == " + lines[lineIndex].Split(';').Length);
+
+
+                            logFileWriter_general.Flush();
+                            logFileWriter_import.Flush();
+                            logFileWriter_import.WriteLine("");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                            //deplacer les fichiers csv
+                            string theFileName = filename;
+                            string newFileLocation = directoryName_ErrorFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + System.IO.Path.GetFileName(theFileName);
+                            File.Move(theFileName, newFileLocation);
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
                         }
                     }
-
                     //Valid documment END
                     //Reached to the end of the document
                     List<Stock> s = new List<Stock>();
@@ -1456,27 +1428,22 @@ namespace ConnecteurSage.Forms
                             logFileWriter_import.WriteLine(DateTime.Now + " : La taille du Stock liste: " + lineCount + " || Nombre total du stock dans le fihier: " + totallines);
 
                             logFileWriter_general.Flush();
-                            logFileWriter_general.Close();
                         }
                         else
                         {
-                            if (insertStockVeolog(s, logFileWriter_import) != null)
+                            if (insertStockVeolog(s, logFileWriter_import) == true)
                             {
                                 MessageBox.Show("Importe avec succès.", "*** Information ***");
 
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès.");
 
-                                string file_name_str = filename;
-                                string newFileLocation = directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + filename;
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Nom du fichier ===> " + filename);
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Nouveau fichier ===> " + newFileLocation);
-
                                 //deplacer les fichiers csv
-                                File.Move(filename, newFileLocation);
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + file_name_str + "' est déplacé dans ===> " + newFileLocation);
+                                string theFileName = filename;
+                                string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(theFileName);
+                                File.Move(theFileName, newFileLocation);
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
-                                //logFileWriter_general.Close();
                             }
                             else
                             {
@@ -1485,17 +1452,17 @@ namespace ConnecteurSage.Forms
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock.");
 
-                                //deplacer les fichiers csv
-                                //string file_name_str = filename;
-                                string newFileLocation = directoryName_ErrorFile + @"\" + GetTimestamp(new DateTime()) + "_" + filename;
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Nom du fichier ===> " + filename);
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Nouveau fichier ===> " + newFileLocation);
-
-                                File.Move(filename, newFileLocation);
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + newFileLocation);
-
                                 logFileWriter_general.Flush();
-                                logFileWriter_general.Close();
+                                logFileWriter_import.Flush();
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Fichier *********************");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+
+                                //deplacer les fichiers csv
+                                string theFileName = filename;
+                                string newFileLocation = directoryName_ErrorFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + System.IO.Path.GetFileName(theFileName);
+                                File.Move(theFileName, newFileLocation);
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
                             }
                         }
                     }
@@ -1708,10 +1675,13 @@ namespace ConnecteurSage.Forms
                                 logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
 
                                 //deplacer les fichiers csv
-                                File.Move(filename, directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + filename + "' est déplacé dans ===> " + directoryName_SuccessFile + @"\" + GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
+                                string theFileName = filename;
+                                string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(theFileName);
+                                File.Move(theFileName, newFileLocation);
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
-                                logFileWriter_general.Close();
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine("");
                             }
                             else
                             {
@@ -1781,6 +1751,7 @@ namespace ConnecteurSage.Forms
             }
 
             logFileWriter_import.Close();
+            logFileWriter_general.Close();
         }
 
         public static string lastNumberReference(string mask, StreamWriter logFileWriter)
@@ -2660,19 +2631,34 @@ namespace ConnecteurSage.Forms
             return list_of_products;  
         }
 
-        public static string[,] insertStockVeolog(List<Stock> s, StreamWriter logFileWriter)
+        public static bool insertStockVeolog(List<Stock> s, StreamWriter logFileWriter)
         {
-            string[,] list_of_products = new string[(s.Count - 1), 27];
+            bool endResults = false;
+            string[,] list_of_products_ME = new string[(s.Count - 1), 72];
+            string[,] list_of_products_MS = new string[(s.Count - 1), 72];
             int positive_item = 0;
             int negative_item = 0;
             DateTime d = DateTime.Now;
             string curr_date_time = d.ToString("yyyy-MM-dd hh:mm:ss");
             string curr_date = d.ToString("yyyy-MM-dd");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
+            double DO_TotalHT_ME = 0.0;
+            double DO_TotalTTC_ME = 0.0;
+            double DO_TotalHT_MS = 0.0;
+            double DO_TotalTTC_MS = 0.0;
+            string reference_ME_doc = lastNumberReference("ME", logFileWriter);   //Doc ME
+            if (reference_ME_doc == null)
+            {
+                logFileWriter.Flush();
+                return false;
+            }
 
-            string reference_ME_doc = "";  //Doc ME
-            string reference_MS_doc = "";   //Doc MS
-
+            string reference_MS_doc = lastNumberReference("MS", logFileWriter);   //Doc MS
+            if (reference_MS_doc == null)
+            {
+                logFileWriter.Flush();
+                return false;
+            }
 
             using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
             {
@@ -2681,7 +2667,11 @@ namespace ConnecteurSage.Forms
                     connexion.Open();
                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Connexion ouverte.");
 
-                    int counter = 0;
+                    int counter_ME = 0;
+                    int counter_MS = 0;
+                    int product_count = 1;
+                    bool create_ME_doc = false;
+                    bool create_MS_doc = false;
 
                     foreach (Stock line in s)
                     {
@@ -2693,6 +2683,7 @@ namespace ConnecteurSage.Forms
                         string DL_PoidsNet = "0";
                         string DL_PoidsBrut = "0";
                         string DL_PrixUnitaire = "0";
+                        string DL_PUTTC = "0";
 
                         // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
@@ -2710,7 +2701,7 @@ namespace ConnecteurSage.Forms
                                     name_article = (reader[0].ToString());  // sum up the total_negative variable. - check query
                                     DL_PoidsNet = (reader[1].ToString()); // get unit weight NET - check query
                                     DL_PoidsBrut = (reader[2].ToString()); // get unit weight BRUT - check query  
-                                    DL_PrixUnitaire = (reader[3].ToString()); // get unit price  - check query 
+                                    DL_PrixUnitaire = (reader[3].ToString()); // get unit price  - check query
                                 }
                                 else // If no rows returned
                                 {
@@ -2721,13 +2712,8 @@ namespace ConnecteurSage.Forms
 
                         if (name_article != "")
                         {
-                            bool isSameStock = true;
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Article trouvé.");
                             logFileWriter.WriteLine("");
-
-                            reference_ME_doc = lastNumberReference("ME", logFileWriter);   //Doc ME
-                            reference_MS_doc = lastNumberReference("MS", logFileWriter);   //Doc MS
-
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Exécuter la requête getNegativeStockOfAProduct");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : " + QueryHelper.getNegativeStockOfAProduct(true, line.reference));
 
@@ -2780,12 +2766,12 @@ namespace ConnecteurSage.Forms
                             logFileWriter.WriteLine("");
 
 
-                            int current_stock = (total_positive - total_negative); // substract negative stock from the positive one = to obtain the initial current stock.
+                            int current_stock = (total_positive - total_negative); // substract positive stock from the negative one = to obtain the initial current stock.
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Reference: " + line.reference + " total_positive: " + total_positive + " - total_negative: " + total_negative + " = current_stock : " + current_stock + ".");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current stock BDD:" + current_stock + " || current stock Veolog: " + line.stock.Replace(",", ".") + " .");
 
                             //transform line.stock to int format
-                            line.stock = line.stock.Split(',')[0]; ;    //line.stock.Replace(",", ".");
+                            line.stock = line.stock.Split(',')[0];    //line.stock.Replace(",", ".");
 
                             if (current_stock < Convert.ToInt16(line.stock)) // if current stock in database is inferior from the one received in file : means add stock
                             {
@@ -2794,63 +2780,121 @@ namespace ConnecteurSage.Forms
 
                                 try
                                 {
+                                    create_ME_doc = true;
                                     positive_item += 1000; //increment line by 1000 for format 1000,2000,etc
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : negativ_item: " + negative_item + ".");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : positive_item: " + positive_item + ".");
+
+                                    int addAmount = Convert.ToInt32(line.stock) - Convert.ToInt32(current_stock);
+
+                                    //calculate product ttc
+                                    double product_ttc = 0.0;
+                                    double product_ht = Convert.ToDouble(DL_PrixUnitaire);
+                                    double product_20_P = (product_ht * 20) / 100;
+                                    product_ttc = product_ht + product_20_P;
+                                    DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+
+                                    DO_TotalHT_ME = DO_TotalHT_ME + (Convert.ToDouble(addAmount) * product_ht);
+                                    DO_TotalTTC_ME = DO_TotalTTC_ME + (Convert.ToDouble(addAmount) * product_ttc);
 
 
                                     // ME00000 : ME prefix will be used to create document
-                                    list_of_products[counter, 0] = "2"; // DO_Domaine
-                                    list_of_products[counter, 1] = "20"; //DO_Type
-                                    list_of_products[counter, 2] = "20"; //DO_DocType
-                                    list_of_products[counter, 3] = "1"; //CT_NUM
-                                    list_of_products[counter, 4] = reference_ME_doc; //DO_Piece
-                                    list_of_products[counter, 5] = curr_date; //DO_Date
-                                    list_of_products[counter, 6] = curr_date; //DL_DateBC
-                                    list_of_products[counter, 7] = (positive_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter, 8] = curr_date_seconds; // DO_Ref
-                                    list_of_products[counter, 9] = line.reference; // AR_Ref
-                                    list_of_products[counter, 10] = "1"; //DL_Valorise
-                                    list_of_products[counter, 11] = "1"; //DE_NO
-                                    list_of_products[counter, 12] = name_article; // DL_Design
-                                    list_of_products[counter, 13] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); //line.stock; // DL_Qte
-                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
-                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
-                                    list_of_products[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
-                                    if (list_of_products[counter, 16].Equals("0")) { list_of_products[counter, 16] = "0.000000"; } else if (!list_of_products[counter, 16].Contains(".")) { list_of_products[counter, 16] = list_of_products[counter, 16] + ".000000"; }
-                                    list_of_products[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
-                                    if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
-                                    list_of_products[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
-                                    list_of_products[counter, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
-                                    list_of_products[counter, 20] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
-                                    list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
-                                    if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
-                                    list_of_products[counter, 23] = ""; //PF_Num
-                                    list_of_products[counter, 24] = "0"; //DL_No
-                                    list_of_products[counter, 25] = "0"; //DL_FactPoids
-                                    list_of_products[counter, 26] = "0"; //DL_Escompte
+                                    list_of_products_ME[counter_ME, 0] = "2"; // DO_Domaine
+                                    list_of_products_ME[counter_ME, 1] = "20"; //DO_Type
+                                    list_of_products_ME[counter_ME, 2] = "20"; //DO_DocType
+                                    list_of_products_ME[counter_ME, 3] = "1"; //CT_NUM
+                                    list_of_products_ME[counter_ME, 4] = reference_ME_doc; //DO_Piece
+                                    list_of_products_ME[counter_ME, 5] = curr_date; //DO_Date
+                                    list_of_products_ME[counter_ME, 6] = curr_date; //DL_DateBC
+                                    list_of_products_ME[counter_ME, 7] = (positive_item).ToString(); // DL_Ligne line number 1000,2000
+                                    list_of_products_ME[counter_ME, 8] = curr_date_seconds; // DO_Ref
+                                    list_of_products_ME[counter_ME, 9] = line.reference; // AR_Ref
+                                    list_of_products_ME[counter_ME, 10] = "1"; //DL_Valorise
+                                    list_of_products_ME[counter_ME, 11] = "1"; //DE_NO
+                                    list_of_products_ME[counter_ME, 12] = name_article; // DL_Design
+                                    list_of_products_ME[counter_ME, 13] = (addAmount + "").Replace(",", ".").Replace("-", ""); //line.stock; // DL_Qte
+                                    list_of_products_ME[counter_ME, 14] = (Convert.ToDouble(addAmount) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
+                                    if (list_of_products_ME[counter_ME, 14].Equals("0")) { list_of_products_ME[counter_ME, 14] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 14].Contains(".")) { list_of_products_ME[counter_ME, 14] = list_of_products_ME[counter_ME, 14] + ".000000"; }
+                                    list_of_products_ME[counter_ME, 15] = (Convert.ToDouble(addAmount) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
+                                    if (list_of_products_ME[counter_ME, 15].Equals("0")) { list_of_products_ME[counter_ME, 15] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 15].Contains(".")) { list_of_products_ME[counter_ME, 15] = list_of_products_ME[counter_ME, 15] + ".000000"; }
+                                    list_of_products_ME[counter_ME, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                    if (list_of_products_ME[counter_ME, 16].Equals("0")) { list_of_products_ME[counter_ME, 16] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 16].Contains(".")) { list_of_products_ME[counter_ME, 16] = list_of_products_ME[counter_ME, 16] + ".000000"; }
+                                    list_of_products_ME[counter_ME, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                    if (list_of_products_ME[counter_ME, 17].Equals("0")) { list_of_products_ME[counter_ME, 17] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 17].Contains(".")) { list_of_products_ME[counter_ME, 17] = list_of_products_ME[counter_ME, 17] + ".000000"; }
+                                    list_of_products_ME[counter_ME, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
+                                    list_of_products_ME[counter_ME, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                    list_of_products_ME[counter_ME, 20] = (addAmount + "").ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
+                                    if (list_of_products_ME[counter_ME, 20].Equals("0")) { list_of_products_ME[counter_ME, 20] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 20].Contains(".")) { list_of_products_ME[counter_ME, 20] = list_of_products_ME[counter_ME, 20] + ".000000"; }
+                                    list_of_products_ME[counter_ME, 21] = (Convert.ToDouble(addAmount) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                    list_of_products_ME[counter_ME, 22] = (Convert.ToDouble(addAmount) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
+                                    if (list_of_products_ME[counter_ME, 20].Equals("0")) { list_of_products_ME[counter_ME, 20] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 20].Contains(".")) { list_of_products_ME[counter_ME, 20] = list_of_products_ME[counter_ME, 20] + ".000000"; }
+                                    if (list_of_products_ME[counter_ME, 21].Equals("0")) { list_of_products_ME[counter_ME, 21] = "0.0"; } else if (!list_of_products_ME[counter_ME, 21].Contains(".")) { list_of_products_ME[counter_ME, 21] = list_of_products_ME[counter_ME, 21] + ".0"; }
+                                    if (list_of_products_ME[counter_ME, 22].Equals("0")) { list_of_products_ME[counter_ME, 22] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 22].Contains(".")) { list_of_products_ME[counter_ME, 22] = list_of_products_ME[counter_ME, 22] + ".000000"; }
+                                    list_of_products_ME[counter_ME, 23] = ""; //PF_Num
+                                    list_of_products_ME[counter_ME, 24] = "0"; //DL_No
+                                    list_of_products_ME[counter_ME, 25] = "0"; //DL_FactPoids
+                                    list_of_products_ME[counter_ME, 26] = "0"; //DL_Escompte
+
+                                    list_of_products_ME[counter_ME, 27] = DL_PUTTC; //DL_PUTTC
+                                    list_of_products_ME[counter_ME, 28] = "0";   //DL_TTC
+                                    list_of_products_ME[counter_ME, 29] = "";   //DL_PieceBC
+                                    list_of_products_ME[counter_ME, 30] = "";   //DL_PieceBL
+                                    list_of_products_ME[counter_ME, 31] = curr_date;   // DL_DateBL
+                                    list_of_products_ME[counter_ME, 32] = "0";   //DL_TNomencl
+                                    list_of_products_ME[counter_ME, 33] = "0";   //DL_TRemPied
+                                    list_of_products_ME[counter_ME, 34] = "0";   //DL_TRemExep
+                                    list_of_products_ME[counter_ME, 35] = "" + addAmount;    //DL_QteBC
+                                    list_of_products_ME[counter_ME, 36] = "" + addAmount;    //DL_QteBL
+                                    list_of_products_ME[counter_ME, 37] = "0.000000";    //DL_Remise01REM_Valeur
+                                    list_of_products_ME[counter_ME, 38] = "0";           //DL_Remise01REM_Type
+                                    list_of_products_ME[counter_ME, 39] = "0.000000";    //DL_Remise02REM_Valeur
+                                    list_of_products_ME[counter_ME, 40] = "0";           //DL_Remise02REM_Type
+                                    list_of_products_ME[counter_ME, 41] = "0.000000";    //DL_Remise03REM_Valeur
+                                    list_of_products_ME[counter_ME, 42] = "0";           //DL_Remise03REM_Type
+                                    list_of_products_ME[counter_ME, 43] = "1";                   //DL_NoRef
+                                    list_of_products_ME[counter_ME, 44] = "0";                   //DL_TypePL
+                                    list_of_products_ME[counter_ME, 45] = "0.000000";            //DL_PUDevise
+                                    list_of_products_ME[counter_ME, 46] = "";                    //CA_Num
+                                    list_of_products_ME[counter_ME, 47] = "0.000000";            //DL_Frais
+                                    list_of_products_ME[counter_ME, 48] = "";                    //AC_RefClient
+                                    list_of_products_ME[counter_ME, 49] = "0";                   //DL_PiecePL
+                                    list_of_products_ME[counter_ME, 50] = curr_date;                    //DL_DatePL
+                                    list_of_products_ME[counter_ME, 51] = "" + addAmount;                   //DL_QtePL
+                                    list_of_products_ME[counter_ME, 52] = "";                    //DL_NoColis
+                                    list_of_products_ME[counter_ME, 53] = "0";                   //DL_NoLink
+                                    list_of_products_ME[counter_ME, 54] = "0";                    //CO_No
+                                    list_of_products_ME[counter_ME, 55] = "0";                //DT_No
+                                    list_of_products_ME[counter_ME, 56] = "";                    //DL_PieceDE
+                                    list_of_products_ME[counter_ME, 57] = curr_date;                   //DL_DateDe
+                                    list_of_products_ME[counter_ME, 58] = "" + addAmount;                    //DL_QteDE
+                                    list_of_products_ME[counter_ME, 59] = "0";                  //DL_NoSousTotal
+                                    list_of_products_ME[counter_ME, 60] = "0";                //CA_No
+                                    list_of_products_ME[counter_ME, 61] = "0.000000";            // DL_PUBC
+                                    list_of_products_ME[counter_ME, 62] = "C20";                  // DL_CodeTaxe1
+                                    list_of_products_ME[counter_ME, 63] = "20.000000";           // DL_Taxe1
+                                    list_of_products_ME[counter_ME, 64] = "0.000000";            // DL_Taxe2
+                                    list_of_products_ME[counter_ME, 65] = "0.000000";            // DL_Taxe3
+                                    list_of_products_ME[counter_ME, 66] = "0";                   // DL_TypeTaux1
+                                    list_of_products_ME[counter_ME, 67] = "0";                   // DL_TypeTaxe1
+                                    list_of_products_ME[counter_ME, 68] = "0";                   // DL_TypeTaux2
+                                    list_of_products_ME[counter_ME, 69] = "0";                   // DL_TypeTaxe2
+                                    list_of_products_ME[counter_ME, 70] = "0";                   // DL_TypeTaux3
+                                    list_of_products_ME[counter_ME, 71] = "0";                   // DL_TypeTaxe3
 
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show("Le tableau 'ME' à 2 dimensions ne fonctionne pas correctement, message :\n" + ex.Message, "*** Exception Tableau ***");
-
+                                    //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
                                     logFileWriter.WriteLine("");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Exception Tableau ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Exception Tableau ****************************************");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Le tableau 'ME' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    logFileWriter.Close();
-                                    return null;
+                                    return false;
                                 }
 
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products en tant qu'index ME.");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products_ME en tant qu'index ME.");
+                                counter_ME++;
                             }
 
                             if (current_stock > Convert.ToInt16(line.stock)) // if current stock in database is superior from the one received in file : means remove stock
@@ -2859,268 +2903,327 @@ namespace ConnecteurSage.Forms
 
                                 try
                                 {
+                                    create_MS_doc = true;
                                     negative_item += 1000; //increment line by 1000 for format 1000,2000,etc
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : negativ_item: " + negative_item + ".");
 
+                                    int removeAmount = Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock);
+
+                                    //calculate product ttc
+                                    double product_ttc = 0.0;
+                                    double product_ht = Convert.ToDouble(DL_PrixUnitaire);
+                                    double product_20_P = (product_ht * 20) / 100;
+                                    product_ttc = product_ht + product_20_P;
+                                    DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+
+                                    DO_TotalHT_MS = DO_TotalHT_MS + (Convert.ToDouble(removeAmount) * product_ht);
+                                    DO_TotalTTC_MS = DO_TotalTTC_MS + (Convert.ToDouble(removeAmount) * product_ttc);
 
                                     // MS00000 : MS prefix will be used to create document
-                                    list_of_products[counter, 0] = "2"; // DO_Domaine
-                                    list_of_products[counter, 1] = "21"; //DO_Type
-                                    list_of_products[counter, 2] = "21"; //DO_DocType
-                                    list_of_products[counter, 3] = "1"; //CT_NUM
-                                    list_of_products[counter, 4] = reference_MS_doc; //DO_Piece
-                                    list_of_products[counter, 5] = curr_date; //DO_Date
-                                    list_of_products[counter, 6] = curr_date; //DL_DateBC
-                                    list_of_products[counter, 7] = (negative_item).ToString(); // DL_Ligne line number 1000,2000
-                                    list_of_products[counter, 8] = curr_date_seconds; // DO_Ref
-                                    list_of_products[counter, 9] = line.reference; // AR_Ref
-                                    list_of_products[counter, 10] = "1"; //DL_Valorise
-                                    list_of_products[counter, 11] = "1"; //DE_NO
-                                    list_of_products[counter, 12] = name_article; // DL_Design
-                                    list_of_products[counter, 13] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", "");  //line.stock; // DL_Qte
-                                    list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
-                                    if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
-                                    list_of_products[counter, 15] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
-                                    if (list_of_products[counter, 15].Equals("0")) { list_of_products[counter, 15] = "0.000000"; } else if (!list_of_products[counter, 15].Contains(".")) { list_of_products[counter, 15] = list_of_products[counter, 15] + ".000000"; }
-                                    list_of_products[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
-                                    if (list_of_products[counter, 16].Equals("0")) { list_of_products[counter, 16] = "0.000000"; } else if (!list_of_products[counter, 16].Contains(".")) { list_of_products[counter, 16] = list_of_products[counter, 16] + ".000000"; }
-                                    list_of_products[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
-                                    if (list_of_products[counter, 17].Equals("0")) { list_of_products[counter, 17] = "0.000000"; } else if (!list_of_products[counter, 17].Contains(".")) { list_of_products[counter, 17] = list_of_products[counter, 17] + ".000000"; }
-                                    list_of_products[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
-                                    list_of_products[counter, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
-                                    list_of_products[counter, 20] = (Convert.ToInt32(current_stock) - Convert.ToInt32(line.stock)).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    list_of_products[counter, 21] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
-                                    list_of_products[counter, 22] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
-                                    if (list_of_products[counter, 20].Equals("0")) { list_of_products[counter, 20] = "0.000000"; } else if (!list_of_products[counter, 20].Contains(".")) { list_of_products[counter, 20] = list_of_products[counter, 20] + ".000000"; }
-                                    if (list_of_products[counter, 21].Equals("0")) { list_of_products[counter, 21] = "0.0"; } else if (!list_of_products[counter, 21].Contains(".")) { list_of_products[counter, 21] = list_of_products[counter, 21] + ".0"; }
-                                    if (list_of_products[counter, 22].Equals("0")) { list_of_products[counter, 22] = "0.000000"; } else if (!list_of_products[counter, 22].Contains(".")) { list_of_products[counter, 22] = list_of_products[counter, 22] + ".000000"; }
-                                    list_of_products[counter, 23] = ""; //PF_Num
-                                    list_of_products[counter, 24] = "0"; //DL_No
-                                    list_of_products[counter, 25] = "0"; //DL_FactPoids
-                                    list_of_products[counter, 26] = "0"; //DL_Escompte
+                                    list_of_products_MS[counter_MS, 0] = "2"; // DO_Domaine
+                                    list_of_products_MS[counter_MS, 1] = "21"; //DO_Type
+                                    list_of_products_MS[counter_MS, 2] = "21"; //DO_DocType
+                                    list_of_products_MS[counter_MS, 3] = "1"; //CT_NUM
+                                    list_of_products_MS[counter_MS, 4] = reference_MS_doc; //DO_Piece
+                                    list_of_products_MS[counter_MS, 5] = curr_date; //DO_Date
+                                    list_of_products_MS[counter_MS, 6] = curr_date; //DL_DateBC
+                                    list_of_products_MS[counter_MS, 7] = (negative_item).ToString(); // DL_Ligne line number 1000,2000
+                                    list_of_products_MS[counter_MS, 8] = curr_date_seconds; // DO_Ref
+                                    list_of_products_MS[counter_MS, 9] = line.reference; // AR_Ref
+                                    list_of_products_MS[counter_MS, 10] = "1"; //DL_Valorise
+                                    list_of_products_MS[counter_MS, 11] = "1"; //DE_NO
+                                    list_of_products_MS[counter_MS, 12] = name_article; // DL_Design
+                                    list_of_products_MS[counter_MS, 13] = (removeAmount).ToString().Replace(",", ".").Replace("-", "");  //line.stock; // DL_Qte
+                                    list_of_products_MS[counter_MS, 14] = (Convert.ToDouble(removeAmount) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
+                                    if (list_of_products_MS[counter_MS, 14].Equals("0")) { list_of_products_MS[counter_MS, 14] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 14].Contains(".")) { list_of_products_MS[counter_MS, 14] = list_of_products_MS[counter_MS, 14] + ".000000"; }
+                                    list_of_products_MS[counter_MS, 15] = (Convert.ToDouble(removeAmount) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
+                                    if (list_of_products_MS[counter_MS, 15].Equals("0")) { list_of_products_MS[counter_MS, 15] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 15].Contains(".")) { list_of_products_MS[counter_MS, 15] = list_of_products_MS[counter_MS, 15] + ".000000"; }
+                                    list_of_products_MS[counter_MS, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                    if (list_of_products_MS[counter_MS, 16].Equals("0")) { list_of_products_MS[counter_MS, 16] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 16].Contains(".")) { list_of_products_MS[counter_MS, 16] = list_of_products_MS[counter_MS, 16] + ".000000"; }
+                                    list_of_products_MS[counter_MS, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                    if (list_of_products_MS[counter_MS, 17].Equals("0")) { list_of_products_MS[counter_MS, 17] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 17].Contains(".")) { list_of_products_MS[counter_MS, 17] = list_of_products_MS[counter_MS, 17] + ".000000"; }
+                                    list_of_products_MS[counter_MS, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
+                                    list_of_products_MS[counter_MS, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                    list_of_products_MS[counter_MS, 20] = (removeAmount).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
+                                    if (list_of_products_MS[counter_MS, 20].Equals("0")) { list_of_products_MS[counter_MS, 20] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 20].Contains(".")) { list_of_products_MS[counter_MS, 20] = list_of_products_MS[counter_MS, 20] + ".000000"; }
+                                    list_of_products_MS[counter_MS, 21] = (Convert.ToDouble(removeAmount) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                    list_of_products_MS[counter_MS, 22] = (Convert.ToDouble(removeAmount) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
+                                    if (list_of_products_MS[counter_MS, 20].Equals("0")) { list_of_products_MS[counter_MS, 20] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 20].Contains(".")) { list_of_products_MS[counter_MS, 20] = list_of_products_MS[counter_MS, 20] + ".000000"; }
+                                    if (list_of_products_MS[counter_MS, 21].Equals("0")) { list_of_products_MS[counter_MS, 21] = "0.0"; } else if (!list_of_products_MS[counter_MS, 21].Contains(".")) { list_of_products_MS[counter_MS, 21] = list_of_products_MS[counter_MS, 21] + ".0"; }
+                                    if (list_of_products_MS[counter_MS, 22].Equals("0")) { list_of_products_MS[counter_MS, 22] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 22].Contains(".")) { list_of_products_MS[counter_MS, 22] = list_of_products_MS[counter_MS, 22] + ".000000"; }
+                                    list_of_products_MS[counter_MS, 23] = ""; //PF_Num
+                                    list_of_products_MS[counter_MS, 24] = "0"; //DL_No
+                                    list_of_products_MS[counter_MS, 25] = "0"; //DL_FactPoids
+                                    list_of_products_MS[counter_MS, 26] = "0"; //DL_Escompte
+
+                                    list_of_products_MS[counter_MS, 27] = DL_PUTTC; //DL_PUTTC
+                                    list_of_products_MS[counter_MS, 28] = "0";   //DL_TTC
+                                    list_of_products_MS[counter_MS, 29] = "";   //DL_PieceBC
+                                    list_of_products_MS[counter_MS, 30] = "";   //DL_PieceBL
+                                    list_of_products_MS[counter_MS, 31] = curr_date;   // DL_DateBL
+                                    list_of_products_MS[counter_MS, 32] = "0";   //DL_TNomencl
+                                    list_of_products_MS[counter_MS, 33] = "0";   //DL_TRemPied
+                                    list_of_products_MS[counter_MS, 34] = "0";   //DL_TRemExep
+                                    list_of_products_MS[counter_MS, 35] = "" + removeAmount;    //DL_QteBC
+                                    list_of_products_MS[counter_MS, 36] = "" + removeAmount;    //DL_QteBL
+                                    list_of_products_MS[counter_MS, 37] = "0.000000";    //DL_Remise01REM_Valeur
+                                    list_of_products_MS[counter_MS, 38] = "0";           //DL_Remise01REM_Type
+                                    list_of_products_MS[counter_MS, 39] = "0.000000";    //DL_Remise02REM_Valeur
+                                    list_of_products_MS[counter_MS, 40] = "0";           //DL_Remise02REM_Type
+                                    list_of_products_MS[counter_MS, 41] = "0.000000";    //DL_Remise03REM_Valeur
+                                    list_of_products_MS[counter_MS, 42] = "0";           //DL_Remise03REM_Type
+                                    list_of_products_MS[counter_MS, 43] = "1";                   //DL_NoRef
+                                    list_of_products_MS[counter_MS, 44] = "0";                   //DL_TypePL
+                                    list_of_products_MS[counter_MS, 45] = "0.000000";            //DL_PUDevise
+                                    list_of_products_MS[counter_MS, 46] = "";                    //CA_Num
+                                    list_of_products_MS[counter_MS, 47] = "0.000000";            //DL_Frais
+                                    list_of_products_MS[counter_MS, 48] = "";                    //AC_RefClient
+                                    list_of_products_MS[counter_MS, 49] = "0";                   //DL_PiecePL
+                                    list_of_products_MS[counter_MS, 50] = curr_date;                    //DL_DatePL
+                                    list_of_products_MS[counter_MS, 51] = "" + removeAmount;                   //DL_QtePL
+                                    list_of_products_MS[counter_MS, 52] = "";                    //DL_NoColis
+                                    list_of_products_MS[counter_MS, 53] = "0";                   //DL_NoLink
+                                    list_of_products_MS[counter_MS, 54] = "0";                    //CO_No
+                                    list_of_products_MS[counter_MS, 55] = "0";                //DT_No
+                                    list_of_products_MS[counter_MS, 56] = "";                    //DL_PieceDE
+                                    list_of_products_MS[counter_MS, 57] = curr_date;                   //DL_DateDe
+                                    list_of_products_MS[counter_MS, 58] = "" + removeAmount;                    //DL_QteDE
+                                    list_of_products_MS[counter_MS, 59] = "0";                  //DL_NoSousTotal
+                                    list_of_products_MS[counter_MS, 60] = "0";                //CA_No
+                                    list_of_products_MS[counter_MS, 61] = "0.000000";            // DL_PUBC
+                                    list_of_products_MS[counter_MS, 62] = "C20";                  // DL_CodeTaxe1
+                                    list_of_products_MS[counter_MS, 63] = "20.000000";           // DL_Taxe1
+                                    list_of_products_MS[counter_MS, 64] = "0.000000";            // DL_Taxe2
+                                    list_of_products_MS[counter_MS, 65] = "0.000000";            // DL_Taxe3
+                                    list_of_products_MS[counter_MS, 66] = "0";                   // DL_TypeTaux1
+                                    list_of_products_MS[counter_MS, 67] = "0";                   // DL_TypeTaxe1
+                                    list_of_products_MS[counter_MS, 68] = "0";                   // DL_TypeTaux2
+                                    list_of_products_MS[counter_MS, 69] = "0";                   // DL_TypeTaxe2
+                                    list_of_products_MS[counter_MS, 70] = "0";                   // DL_TypeTaux3
+                                    list_of_products_MS[counter_MS, 71] = "0";                   // DL_TypeTaxe3
 
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show("Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :\n" + ex.Message, "*** Exception Tableau ***");
-
+                                    //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
                                     logFileWriter.WriteLine("");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Exception Tableau ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Exception Tableau ****************************************");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    logFileWriter.Close();
-                                    return null;
+                                    return false;
                                 }
 
                                 //MessageBox.Show("Product added into the table list_of_products as MS index ");
 
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products en tant qu'index MS.");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Produit '" + name_article + "' est ajouté à la table list_of_products_MS en tant qu'index MS.");
+                                counter_MS++;
                             }
 
                             if (current_stock == Convert.ToInt16(line.stock))
                             {
-                                isSameStock = false;
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Information ********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Information ****************************************");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : current_stock_BDD : " + current_stock + " == current_stock_Veolog : " + line.stock);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import non effectué");
                                 logFileWriter.WriteLine("");
+                                logFileWriter.Flush();
                             }
 
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + product_count + "");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Ligne du produit \"" + name_article + "\" (" + line.reference + ") est terminé!!!");
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine("");
+                            logFileWriter.Flush();
+                        }
+                        else
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Warning Référence ****************************************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : La Référence (Ref: " + line.reference + ") du produit dans le fichier n'existe pas dans la BDD.");
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine("");
+                            logFileWriter.Flush();
+                        }
+                        product_count++;
+                    }   // end foreach
 
-                            if (positive_item > 0 && isSameStock) //check if any product for 20::addstock exists : this case > 0 ; if 1000+ then OK generate document ME_____.
+
+                    // add veolog import date
+                    string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Ajouter la date d'import \"" + delivery_date_veolog + "\" de Veolog au Stock \"" + reference_ME_doc + "\" et \"" + reference_MS_doc + "\".");
+
+                    if (create_ME_doc) //Generate document ME (Doc_Entete && DocLigne) if i need to.
+                    {
+                        //generate document ME_____ in database.
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Générer un document ME");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertVeologStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, (DO_TotalHT_ME + "").Replace(",", "."), (DO_TotalTTC_ME + "").Replace(",", "."), delivery_date_veolog));
+
+                        try
+                        {
+                            OdbcCommand command = new OdbcCommand(QueryHelper.insertVeologStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, (DO_TotalHT_ME + "").Replace(",", "."), (DO_TotalTTC_ME + "").Replace(",", "."), delivery_date_veolog), connexion); //calling the query and parsing the parameters into it
+                            command.ExecuteReader(); // executing the query
+
+                        }
+                        catch (OdbcException ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** OdbcException ********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                            logFileWriter.Flush();
+                            return false;
+                        }
+                        string[,] products_ME = new string[(s.Count - 1), 72]; // create array with enough space
+
+                        //insert documentline into the database with articles having 20 as value @index 2
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert documentline into the database with articles having 20 as value @index 2");
+
+                        for (int x = 0; x < list_of_products_ME.GetLength(0); x++)
+                        {
+                            //logFileWriter.WriteLine("x: " + x + " || list_of_products.GetLength(0) : " + list_of_products.GetLength(0));
+                            if (list_of_products_ME[x, 1] == "20")
                             {
-                                //generate document ME_____ in database.
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Vérifier si un produit pour 20 = ME");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time));
+                                for (int y = 0; y < list_of_products_ME.GetLength(1); y++)
+                                {
+                                    //logFileWriter.WriteLine("x: " + x + " ; y: " + y + " || list_of_products.GetLength(1) : " + list_of_products.GetLength(1));
 
+                                    products_ME[x, y] = list_of_products_ME[x, y];
+                                    //logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : products_ME[" + x + "," + y + "] = " + products_ME[x, y]);
+                                }
+
+                                //insert the article to documentline in the database
                                 try
                                 {
-                                    OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "20", reference_ME_doc, curr_date, curr_date_seconds, curr_date_time), connexion); //calling the query and parsing the parameters into it
-                                    command.ExecuteReader(); // executing the query
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert the article " + products_ME[x, 12] + " (Ref:" + products_ME[x, 9] + ") to documentline in the database");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : requette sql ===> " + QueryHelper.insertVeologStockDocumentLine(true, products_ME, x));
 
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.insertVeologStockDocumentLine(true, products_ME, x), connexion);
+                                    command.ExecuteReader();
+
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert termine!");
                                 }
                                 catch (OdbcException ex)
                                 {
-                                    MessageBox.Show("Message :\n" + ex.Message, "*** OdbcException ***");
-
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** OdbcException ********************");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    logFileWriter.Close();
-                                    return null;
+                                    return false;
                                 }
-                                string[,] products_ME = new string[(s.Count - 1), 27]; // create array with enough space
-
-                                //insert documentline into the database with articles having 20 as value @index 2
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert documentline into the database with articles having 20 as value @index 2");
-
-                                for (int x = 0; x < list_of_products.GetLength(0); x++)
-                                {
-                                    //logFileWriter.WriteLine("x: " + x + " || list_of_products.GetLength(0) : " + list_of_products.GetLength(0));
-                                    if (list_of_products[x, 1] == "20")
-                                    {
-                                        for (int y = 0; y < list_of_products.GetLength(1); y++)
-                                        {
-                                            //logFileWriter.WriteLine("x: " + x + " ; y: " + y + " || list_of_products.GetLength(1) : " + list_of_products.GetLength(1));
-
-                                            products_ME[x, y] = list_of_products[x, y];
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : products_ME[" + x + "," + y + "] = " + products_ME[x, y]);
-                                        }
-
-                                        //insert the article to documentline in the database
-                                        try
-                                        {
-                                            logFileWriter.WriteLine("");
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert the article " + products_ME[x, 12] + " (Ref:" + products_ME[x, 9] + ") to documentline in the database");
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_ME, x));
-
-                                            OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_ME, x), connexion);
-                                            command.ExecuteReader();
-
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert termine!");
-                                        }
-                                        catch (OdbcException ex)
-                                        {
-                                            MessageBox.Show("Message :\n" + ex.Message, "*** OdbcException ***");
-
-                                            logFileWriter.WriteLine("");
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** OdbcException ********************");
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
-                                            logFileWriter.Flush();
-                                            logFileWriter.Close();
-                                            return null;
-                                        }
-                                    }
-                                }
-
                             }
+                        }
 
-                            if (negative_item > 0 && isSameStock) //check if any product for 21::stockremoval exists : this case > 0 ; if 1000+ then OK generate document MS_____.
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Information ****************************************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Document ME insert avec succès");
+                        logFileWriter.WriteLine("");
+                    }
+
+                    if (create_MS_doc) //Generate document MS (Doc_Entete && DocLigne) if i need to.
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Générer un document MS");
+                        logFileWriter.Write(DateTime.Now + " | insertStockVeolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertVeologStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, (DO_TotalHT_MS + "").Replace(",", "."), (DO_TotalTTC_MS + "").Replace(",", "."), delivery_date_veolog));
+
+                        //generate document MS_____. in database.
+                        try
+                        {
+                            OdbcCommand command = new OdbcCommand(QueryHelper.insertVeologStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, (DO_TotalHT_MS + "").Replace(",", "."), (DO_TotalTTC_MS + "").Replace(",", "."), delivery_date_veolog), connexion); //calling the query and parsing the parameters into it
+                            command.ExecuteReader(); // executing the query
+                        }
+                        catch (OdbcException ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ********************** OdbcException *********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
+                            logFileWriter.Flush();
+                            return false;
+                        }
+
+                        string[,] products_MS = new string[(s.Count - 1), 72]; // create array with enough space
+
+                        //insert documentline into the database with articles having 20 as value @index 2
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert documentline into the database with articles having 21 as value @index 2");
+
+                        for (int x = 0; x < list_of_products_MS.GetLength(0); x++)
+                        {
+                            if (list_of_products_MS[x, 1] == "21")
                             {
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Vérifier si un produit pour 21 = MS");
-                                logFileWriter.Write(DateTime.Now + " | insertStockVeolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time));
+                                for (int y = 0; y < list_of_products_MS.GetLength(1); y++)
+                                {
+                                    products_MS[x, y] = list_of_products_MS[x, y];
+                                    //logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : products_MS[" + x + "," + y + "] = " + products_MS[x, y]);
+                                }
 
-                                //generate document MS_____. in database.
+                                //insert the article to documentline in the database
                                 try
                                 {
-                                    OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocument(true, "21", reference_MS_doc, curr_date, curr_date_seconds, curr_date_time), connexion); //calling the query and parsing the parameters into it
-                                    command.ExecuteReader(); // executing the query
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert the article " + products_MS[x, 12] + " (Ref:" + products_MS[x, 9] + ") to documentline in the database");
+
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : requette sql ===> " + QueryHelper.insertVeologStockDocumentLine(true, products_MS, x));
+
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.insertVeologStockDocumentLine(true, products_MS, x), connexion);
+                                    command.ExecuteReader();
                                 }
                                 catch (OdbcException ex)
                                 {
-                                    MessageBox.Show("Message :\n" + ex.Message, "*** OdbcException ***");
-
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ********************** OdbcException *********************");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | inseinsertStockVeologrtStock() : Message :" + ex.Message);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    logFileWriter.Close();
-                                    return null;
-                                }
-
-                                string[,] products_MS = new string[(s.Count - 1), 27]; // create array with enough space
-
-                                //insert documentline into the database with articles having 20 as value @index 2
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert documentline into the database with articles having 20 as value @index 2");
-
-                                for (int x = 0; x < list_of_products.GetLength(0); x++)
-                                {
-                                    if (list_of_products[x, 1] == "21")
-                                    {
-                                        for (int y = 0; y < list_of_products.GetLength(1); y++)
-                                        {
-                                            products_MS[x, y] = list_of_products[x, y];
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : products_MS[" + x + "," + y + "] = " + products_MS[x, y]);
-                                        }
-
-                                        //insert the article to documentline in the database
-                                        try
-                                        {
-                                            logFileWriter.WriteLine("");
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : insert the article " + products_MS[x, 12] + " (Ref:" + products_MS[x, 9] + ") to documentline in the database");
-
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : requette sql ===> " + QueryHelper.insertStockDocumentLine(true, products_MS, x));
-
-                                            OdbcCommand command = new OdbcCommand(QueryHelper.insertStockDocumentLine(true, products_MS, x), connexion);
-                                            command.ExecuteReader();
-                                        }
-                                        catch (OdbcException ex)
-                                        {
-                                            MessageBox.Show("Message :\n" + ex.Message, "*** OdbcException ***");
-
-                                            logFileWriter.WriteLine("");
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ********************** OdbcException *********************");
-                                            logFileWriter.WriteLine(DateTime.Now + " | inseinsertStockVeologrtStock() : Message :" + ex.Message);
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
-                                            logFileWriter.Flush();
-                                            logFileWriter.Close();
-                                            return null;
-                                        }
-                                    }
+                                    return false;
                                 }
                             }
-
-
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Compteur Produit ===> " + counter);
-                            logFileWriter.WriteLine("");
-                            counter++; // increment by 1 per product [multi-dimensional array]
-
-                        }
-                        else
-                        {
-                            MessageBox.Show("La Référence (Ref: " + line.reference + ") du produit dans le fichier n'existe pas dans la BDD.", "*** Erreur Référence ***");
-
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ******************** Erreur Référence ********************");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : La Référence (Ref: " + line.reference + ") du produit dans le fichier n'existe pas dans la BDD.");
-
-                            //logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
-                            //logFileWriter.Close();
-                            //return null;
                         }
 
-                    }   // end foreach
-
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Information ****************************************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Document MS insert avec succès");
+                        logFileWriter.WriteLine("");
+                    }
 
 
                     connexion.Close(); //disconnect from database
+                    endResults = true;
+                    logFileWriter.WriteLine("");
                     logFileWriter.WriteLine("");
                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Connexion fermée.");
 
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Message :\n" + ex.Message, "*** Exception 2 ***");
-
                     logFileWriter.WriteLine("");
                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : ********************** Exception 2 *********************");
                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Message :: " + ex.Message);
                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :: " + ex.StackTrace);
                     logFileWriter.Flush();
-                    logFileWriter.Close();
                     connexion.Close();  //disconnect from database
-                    return null;
+                    return false;
                 }
             }
 
             logFileWriter.WriteLine("");
 
-            return list_of_products;
+            return endResults;
         }
 
 
@@ -3152,155 +3255,6 @@ namespace ConnecteurSage.Forms
                 {
                     connection.Open(); //opening the connection
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Connexion ouverte.");
-
-                    int counter = 0;
-
-                    foreach (Veolog_DESADV_Lines line in dl) //read item by item
-                    {
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Lire la ligne de l'article.");
-
-                        //get Product Name By Reference
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> "+ QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
-                        {
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // If any rows returned
-                                {
-                                    ref_article = (reader[0].ToString());         // get product ref
-                                    name_article = (reader[1].ToString());        // sum up the total_negative variable. - check query
-                                    DL_PoidsNet = (reader[2].ToString());         // get unit weight NET - check query
-                                    DL_PoidsBrut = (reader[3].ToString());        // get unit weight BRUT - check query  
-                                    DL_PrixUnitaire = (reader[4].ToString());     // get unit price  - check query
-                                    DL_PUTTC = (reader[5].ToString());            // get unit price ttc
-                                }
-                                else// If no rows returned
-                                {
-                                    //do nothing.
-                                }
-                            }
-                        }
-
-                        //get Client Reference From CMD Ref
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
-                        {
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // If any rows returned
-                                {
-                                    ref_client = reader[0].ToString();
-                                }
-                                else// If no rows returned
-                                {
-                                    //do nothing.
-                                }
-                            }
-                        }
-
-                        //get Client Reference by Ref
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_client));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
-                        {
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // If any rows returned
-                                {
-                                    list_of_client_info = new string[12];
-                                    list_of_client_info[0] = reader[0].ToString();      // CT_Num
-                                    list_of_client_info[1] = reader[1].ToString();      // CA_Num 
-                                    list_of_client_info[2] = reader[2].ToString();      // CG_NumPrinc
-                                    list_of_client_info[3] = reader[3].ToString();      // CT_NumPayeur
-                                    list_of_client_info[4] = reader[4].ToString();      // N_Condition
-                                    list_of_client_info[5] = reader[5].ToString();      // N_Devise
-                                    list_of_client_info[6] = reader[6].ToString();      // CT_Langue
-                                    list_of_client_info[7] = reader[7].ToString();      // DO_NbFacture = CT_Facture
-                                    list_of_client_info[8] = reader[8].ToString().Replace(',','.');      // DO_TxEscompte = CT_Taux02
-                                    list_of_client_info[9] = reader[9].ToString();      // N_CatCompta
-                                    list_of_client_info[10] = reader[10].ToString();    // CO_No
-                                    list_of_client_info[11] = reader[11].ToString();//  DO_Tarif = N_CatTarif
-                                }
-                                else// If no rows returned
-                                {
-                                    //do nothing.
-                                }
-                            }
-                        }
-
-                        if (ref_article != "" && name_article != "" && list_of_client_info != null)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Article trouvé.");
-                            logFileWriter.WriteLine("");
-
-                            try
-                            {
-                                position_item += 1000;
-
-                                // DESADV prefix will be used to create document
-                                list_of_cmd_lines[counter, 0] = "0"; // DO_Domaine
-                                list_of_cmd_lines[counter, 1] = "3"; //DO_Type
-                                list_of_cmd_lines[counter, 2] = "3"; //DO_DocType
-                                list_of_cmd_lines[counter, 3] = list_of_client_info[0]; //CT_NUM
-                                list_of_cmd_lines[counter, 4] = reference_DESADV_doc; //DO_Piece
-                                list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
-                                list_of_cmd_lines[counter, 6] = curr_date; //DL_DateBC
-                                list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
-                                list_of_cmd_lines[counter, 8] = curr_date_seconds; // DO_Ref
-                                list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
-                                list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
-                                list_of_cmd_lines[counter, 11] = "1"; //DE_NO
-                                list_of_cmd_lines[counter, 12] = name_article; // DL_Design
-                                list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
-                                list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
-                                if (list_of_cmd_lines[counter, 14].Equals("0")) { list_of_cmd_lines[counter, 14] = "0.000000"; } else if (!list_of_cmd_lines[counter, 14].Contains(".")) { list_of_cmd_lines[counter, 14] = list_of_cmd_lines[counter, 14] + ".000000"; }
-                                
-                                list_of_cmd_lines[counter, 15] = Convert.ToDouble(DL_PoidsBrut).ToString().Replace(",", "."); // DL_PoidsBrut
-                                if (list_of_cmd_lines[counter, 15].Equals("0")) { list_of_cmd_lines[counter, 15] = "0.000000"; } else if (!list_of_cmd_lines[counter, 15].Contains(".")) { list_of_cmd_lines[counter, 15] = list_of_cmd_lines[counter, 15] + ".000000"; }
-                                
-                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
-                                if (list_of_cmd_lines[counter, 16].Equals("0")) { list_of_cmd_lines[counter, 16] = "0.000000"; } else if (!list_of_cmd_lines[counter, 16].Contains(".")) { list_of_cmd_lines[counter, 16] = list_of_cmd_lines[counter, 16] + ".000000"; }
-                                
-                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
-                                if (list_of_cmd_lines[counter, 17].Equals("0")) { list_of_cmd_lines[counter, 17] = "0.000000"; } else if (!list_of_cmd_lines[counter, 17].Contains(".")) { list_of_cmd_lines[counter, 17] = list_of_cmd_lines[counter, 17] + ".000000"; }
-                                
-                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
-                                list_of_cmd_lines[counter, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
-                                list_of_cmd_lines[counter, 20] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
-                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
-                                
-                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
-                                list_of_cmd_lines[counter, 22] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantTTC
-                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
-                                if (list_of_cmd_lines[counter, 21].Equals("0")) { list_of_cmd_lines[counter, 21] = "0.000000"; } else if (!list_of_cmd_lines[counter, 21].Contains(".")) { list_of_cmd_lines[counter, 21] = list_of_cmd_lines[counter, 21] + ".0"; }
-                                if (list_of_cmd_lines[counter, 22].Equals("0")) { list_of_cmd_lines[counter, 22] = "0.000000"; } else if (!list_of_cmd_lines[counter, 22].Contains(".")) { list_of_cmd_lines[counter, 22] = list_of_cmd_lines[counter, 22] + ".000000"; }
-                                
-                                list_of_cmd_lines[counter, 23] = ""; //PF_Num
-                                list_of_cmd_lines[counter, 24] = "0"; //DL_No
-                                list_of_cmd_lines[counter, 25] = "0"; //DL_FactPoids
-                                list_of_cmd_lines[counter, 26] = "0"; //DL_Escompte
-                                list_of_cmd_lines[counter, 27] = DL_PUTTC.Replace(",", "."); //DL_PUTTC
-
-                            }
-                            catch (Exception ex)
-                            {
-                                //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Exception ********************");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
-                                logFileWriter.Close();
-                                return null;
-                            }
-                        }
-
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Compter => "+ counter);
-                        counter++;
-                    }
-                    // ===== End Foreach =====
-
 
                     //Get ref client CMD, nature_OP_P && total ht
                     string nature_op_p_ = "";
@@ -3343,6 +3297,215 @@ namespace ConnecteurSage.Forms
                     string veologDeliverTime = hour + ":" + mins + ":0.000";
                     string veologDeliveryDateTime = veologDeliverDate + " " + veologDeliverTime;
 
+                    int counter = 0;
+
+                    foreach (Veolog_DESADV_Lines line in dl) //read item by item
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Lire la ligne de l'article.");
+
+                        //get Product Name By Reference
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    ref_article = (reader[0].ToString());         // get product ref
+                                    name_article = (reader[1].ToString());        // sum up the total_negative variable. - check query
+                                    DL_PoidsNet = (reader[2].ToString());         // get unit weight NET - check query
+                                    DL_PoidsBrut = (reader[3].ToString());        // get unit weight BRUT - check query  
+                                    DL_PrixUnitaire = (reader[4].ToString());     // get unit price ht - check query 
+                                    //DL_PUTTC = (reader[5].ToString());            // get unit price ttc
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
+                                }
+                            }
+                        }
+
+                        //get Client Reference From CMD Ref
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    ref_client = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Une reponse. Ref Client ===> " + ref_client);
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. Ref Client ===> " + ref_client);
+
+                                }
+                            }
+                        }
+
+                        //get Client Reference by Ref
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_client));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    list_of_client_info = new string[13];
+                                    list_of_client_info[0] = reader[0].ToString();      // CT_Num
+                                    list_of_client_info[1] = reader[1].ToString();      // CA_Num 
+                                    list_of_client_info[2] = reader[2].ToString();      // CG_NumPrinc
+                                    list_of_client_info[3] = reader[3].ToString();      // CT_NumPayeur
+                                    list_of_client_info[4] = reader[4].ToString();      // N_Condition
+                                    list_of_client_info[5] = reader[5].ToString();      // N_Devise
+                                    list_of_client_info[6] = reader[6].ToString();      // CT_Langue
+                                    list_of_client_info[7] = reader[7].ToString();      // DO_NbFacture = CT_Facture
+                                    list_of_client_info[8] = reader[8].ToString().Replace(',', '.');      // DO_TxEscompte = CT_Taux02
+                                    list_of_client_info[9] = reader[9].ToString();      // N_CatCompta
+                                    list_of_client_info[10] = reader[10].ToString();    // CO_No
+                                    list_of_client_info[11] = reader[11].ToString();    //  DO_Tarif = N_CatTarif
+                                    list_of_client_info[12] = reader[12].ToString();    //  DO_Expedit = N_Expedition du tier
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. list_of_client_info est null");
+                                }
+                            }
+                        }
+
+                        if (ref_article != "" && name_article != "" && list_of_client_info != null)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Article trouvé.");
+                            logFileWriter.WriteLine("");
+
+                            try
+                            {
+                                //DL_Ligne
+                                position_item += 1000;
+
+                                //calculate product ttc
+                                double product_ttc = 0.0;
+                                double product_ht = Convert.ToDouble(DL_PrixUnitaire);
+                                double product_20_P = (product_ht * 20) / 100;
+                                product_ttc = product_ht + product_20_P;
+                                DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+
+                                // DESADV prefix will be used to create document
+                                list_of_cmd_lines[counter, 0] = "0"; // DO_Domaine
+                                list_of_cmd_lines[counter, 1] = "3"; //DO_Type
+                                list_of_cmd_lines[counter, 2] = "3"; //DO_DocType
+                                list_of_cmd_lines[counter, 3] = list_of_client_info[0]; //CT_NUM
+                                list_of_cmd_lines[counter, 4] = reference_DESADV_doc; //DO_Piece
+                                list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
+                                list_of_cmd_lines[counter, 6] = curr_date; //DL_DateBC
+                                list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
+                                list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Client_Livre; // DO_Ref
+                                list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
+                                list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
+                                list_of_cmd_lines[counter, 11] = "1"; //DE_NO
+                                list_of_cmd_lines[counter, 12] = name_article; // DL_Design
+                                list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
+                                list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
+                                if (list_of_cmd_lines[counter, 14].Equals("0")) { list_of_cmd_lines[counter, 14] = "0.000000"; } else if (!list_of_cmd_lines[counter, 14].Contains(".")) { list_of_cmd_lines[counter, 14] = list_of_cmd_lines[counter, 14] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 15] = Convert.ToDouble(DL_PoidsBrut).ToString().Replace(",", "."); // DL_PoidsBrut
+                                if (list_of_cmd_lines[counter, 15].Equals("0")) { list_of_cmd_lines[counter, 15] = "0.000000"; } else if (!list_of_cmd_lines[counter, 15].Contains(".")) { list_of_cmd_lines[counter, 15] = list_of_cmd_lines[counter, 15] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                if (list_of_cmd_lines[counter, 16].Equals("0")) { list_of_cmd_lines[counter, 16] = "0.000000"; } else if (!list_of_cmd_lines[counter, 16].Contains(".")) { list_of_cmd_lines[counter, 16] = list_of_cmd_lines[counter, 16] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                if (list_of_cmd_lines[counter, 17].Equals("0")) { list_of_cmd_lines[counter, 17] = "0.000000"; } else if (!list_of_cmd_lines[counter, 17].Contains(".")) { list_of_cmd_lines[counter, 17] = list_of_cmd_lines[counter, 17] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
+                                list_of_cmd_lines[counter, 19] = "Heure"; DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                list_of_cmd_lines[counter, 20] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
+                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                list_of_cmd_lines[counter, 22] = (Convert.ToDouble(line.Quantite_Colis) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
+                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+                                if (list_of_cmd_lines[counter, 21].Equals("0")) { list_of_cmd_lines[counter, 21] = "0.000000"; } else if (!list_of_cmd_lines[counter, 21].Contains(".")) { list_of_cmd_lines[counter, 21] = list_of_cmd_lines[counter, 21] + ".0"; }
+                                if (list_of_cmd_lines[counter, 22].Equals("0")) { list_of_cmd_lines[counter, 22] = "0.000000"; } else if (!list_of_cmd_lines[counter, 22].Contains(".")) { list_of_cmd_lines[counter, 22] = list_of_cmd_lines[counter, 22] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 23] = ""; //PF_Num
+                                list_of_cmd_lines[counter, 24] = "0"; //DL_No
+                                list_of_cmd_lines[counter, 25] = "0"; //DL_FactPoids
+                                list_of_cmd_lines[counter, 26] = "0"; //DL_Escompte
+                                list_of_cmd_lines[counter, 27] = DL_PUTTC; //DL_PUTTC
+                                list_of_cmd_lines[counter, 28] = "0";   //DL_TTC
+
+                                list_of_cmd_lines[counter, 29] = "";   //DL_PieceBC
+                                list_of_cmd_lines[counter, 30] = "";   //DL_PieceBL
+                                list_of_cmd_lines[counter, 31] = curr_date;   // DL_DateBL
+                                list_of_cmd_lines[counter, 32] = "0";   //DL_TNomencl
+                                list_of_cmd_lines[counter, 33] = "0";   //DL_TRemPied
+                                list_of_cmd_lines[counter, 34] = "0";   //DL_TRemExep
+                                list_of_cmd_lines[counter, 35] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");   //DL_QteBC
+                                list_of_cmd_lines[counter, 36] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");   //DL_QteBL
+                                list_of_cmd_lines[counter, 37] = "0.000000";    //DL_Remise01REM_Valeur
+                                list_of_cmd_lines[counter, 38] = "0";           //DL_Remise01REM_Type
+                                list_of_cmd_lines[counter, 39] = "0.000000";    //DL_Remise02REM_Valeur
+                                list_of_cmd_lines[counter, 40] = "0";           //DL_Remise02REM_Type
+                                list_of_cmd_lines[counter, 41] = "0.000000";    //DL_Remise03REM_Valeur
+                                list_of_cmd_lines[counter, 42] = "0";           //DL_Remise03REM_Type
+                                list_of_cmd_lines[counter, 43] = "1";                   //DL_NoRef
+                                list_of_cmd_lines[counter, 44] = "0";                   //DL_TypePL
+                                list_of_cmd_lines[counter, 45] = "0.000000";            //DL_PUDevise
+                                list_of_cmd_lines[counter, 46] = "";                    //CA_Num
+                                list_of_cmd_lines[counter, 47] = "0.000000";            //DL_Frais
+                                list_of_cmd_lines[counter, 48] = "";                    //AC_RefClient
+                                list_of_cmd_lines[counter, 49] = "0";                   //DL_PiecePL
+                                list_of_cmd_lines[counter, 50] = curr_date;                    //DL_DatePL
+                                list_of_cmd_lines[counter, 51] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                   //DL_QtePL
+                                list_of_cmd_lines[counter, 52] = "";                    //DL_NoColis
+                                list_of_cmd_lines[counter, 53] = "0";                   //DL_NoLink
+                                list_of_cmd_lines[counter, 54] = "0";                    //CO_No
+                                list_of_cmd_lines[counter, 55] = "0";                //DT_No
+                                list_of_cmd_lines[counter, 56] = "";                    //DL_PieceDE
+                                list_of_cmd_lines[counter, 57] = curr_date;                   //DL_DateDe
+                                list_of_cmd_lines[counter, 58] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                    //DL_QteDE
+                                list_of_cmd_lines[counter, 59] = "0";                  //DL_NoSousTotal
+                                list_of_cmd_lines[counter, 60] = "0";                //CA_No
+                                list_of_cmd_lines[counter, 61] = "0.000000";            // DL_PUBC
+                                list_of_cmd_lines[counter, 62] = "C20";                  // DL_CodeTaxe1
+                                list_of_cmd_lines[counter, 63] = "20.000000";           // DL_Taxe1
+                                list_of_cmd_lines[counter, 64] = "0.000000";            // DL_Taxe2
+                                list_of_cmd_lines[counter, 65] = "0.000000";            // DL_Taxe3
+                                list_of_cmd_lines[counter, 66] = "0";                   // DL_TypeTaux1
+                                list_of_cmd_lines[counter, 67] = "0";                   // DL_TypeTaxe1
+                                list_of_cmd_lines[counter, 68] = "0";                   // DL_TypeTaux2
+                                list_of_cmd_lines[counter, 69] = "0";                   // DL_TypeTaxe2
+                                list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
+                                list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
+
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message, "Erreur !",
+                                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Exception ********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                logFileWriter.Close();
+                                return null;
+                            }
+                        }
+
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Compter => " + counter);
+                        counter++;
+                    }
+                    // ===== End Foreach =====
+
+
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliverDate, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
 
@@ -3354,6 +3517,7 @@ namespace ConnecteurSage.Forms
                     }
                     catch (OdbcException ex)
                     {
+                        MessageBox.Show(ex.Message, "Erreur !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException *********************");
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
@@ -3364,7 +3528,7 @@ namespace ConnecteurSage.Forms
                     }
 
 
-                    string[,] products_DESADV = new string[position_item / 1000, 28]; // create array with enough space
+                    string[,] products_DESADV = new string[position_item / 1000, 72]; // create array with enough space
 
                     //insert documentline into the database with articles having 20 as value @index 2
                     logFileWriter.WriteLine("");
@@ -3384,7 +3548,7 @@ namespace ConnecteurSage.Forms
                             try
                             {
                                 logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert the article " + products_DESADV[x, 15] + " (Ref:" + products_DESADV[x, 10] + ") to documentline in the database");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : insert the article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") to documentline in the database");
 
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.insertDesadvDocumentLine_Veolog(true, products_DESADV, x));
 
@@ -3394,8 +3558,7 @@ namespace ConnecteurSage.Forms
                             catch (OdbcException ex)
                             {
                                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                                MessageBox.Show(" ERREUR[1]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", ""), "Erreur!!",
-                                                            MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                MessageBox.Show(ex.Message, "Erreur !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException *********************");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
@@ -3425,22 +3588,18 @@ namespace ConnecteurSage.Forms
                     }
                     catch (Exception ex)
                     {
+                        MessageBox.Show(ex.Message, "Erreur !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         return null;
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    MessageBox.Show(" ERREUR[4]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""), "Erreur!!",
-                                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    // Exceptions pouvant survenir durant l'exécution de la requête SQL
                     // return list_of_products[0][0];//return false because the query failed to execute
-
-                    MessageBox.Show("OK 10");
 
                     logFileWriter.WriteLine("");
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** Exception 3 *********************");

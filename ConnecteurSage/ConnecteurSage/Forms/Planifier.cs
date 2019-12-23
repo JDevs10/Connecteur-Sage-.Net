@@ -11,6 +11,7 @@ using System.Xml;
 using ConnecteurSage.Helpers;
 using System.Data.SqlClient;
 using System.Xml.Serialization;
+using ConnecteurSage.Classes;
 
 namespace ConnecteurSage.Forms
 {
@@ -267,6 +268,19 @@ namespace ConnecteurSage.Forms
 
         public void EnregistrerLaTache(string date,string time)
         {
+            string taskName = "importCommandeSage";
+            ConfigurationDNS settings = new ConfigurationDNS();
+            settings.LoadSQL();
+
+            if (settings.Prefix == "CFCI")
+            {
+                taskName = "importCommandeSage_CFCI";
+            }
+            else if (settings.Prefix == "TABLEWEAR")
+            {
+                taskName = "importCommandeSage_TW";
+            }
+
             TaskService ts = new TaskService();
             TaskDefinition td = ts.NewTask();
             DailyTrigger dt = (DailyTrigger)td.Triggers.Add(new DailyTrigger(1));
@@ -277,7 +291,7 @@ namespace ConnecteurSage.Forms
                 dt.Repetition.Interval = TimeSpan.FromHours(int.Parse(comboBox2.Text));
             }
             td.Actions.Add(new ExecAction(pathModule + @"\importPlanifier.exe", null, null));
-            ts.RootFolder.RegisterTaskDefinition("importCommandeSage", td);
+            ts.RootFolder.RegisterTaskDefinition(taskName, td);
         }
 
         public Classes.Path ReturnPath()
