@@ -125,7 +125,7 @@ namespace importPlanifier.Classes
             DirectoryInfo fileListing = new DirectoryInfo(dir);
 
             //Get Tache Planifier
-            string infoPlan = InfoTachePlanifier();
+            string infoPlan = InfoTachePlanifier(logFileWriter_general);
             if (infoPlan == null)
             {
                 Console.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
@@ -1465,6 +1465,7 @@ namespace importPlanifier.Classes
                                 //Veolog_DESADV_Colis dc = new Veolog_DESADV_Colis();
                                 Veolog_DESADV_Lines dll = new Veolog_DESADV_Lines();
 
+                                List<String> doubleProductCheck = new List<String>();
                                 List<Veolog_DESADV_Lines> dl = new List<Veolog_DESADV_Lines>(); //creating new object type desadvline and storing item values
 
                                 foreach (string ligneDuFichier in lines) //read lines by line
@@ -1518,15 +1519,26 @@ namespace importPlanifier.Classes
                                     */
                                     if (tab[0] == "L") //checking if its line of document inside the file for control
                                     {
-                                        Veolog_DESADV_Lines desadvLine_info = new Veolog_DESADV_Lines();
+                                        //check if an article exist in my check list
+                                        if (!doubleProductCheck.Contains(tab[2]))
+                                        {
+                                            Veolog_DESADV_Lines desadvLine_info = new Veolog_DESADV_Lines();
 
-                                        desadvLine_info.Numero_Ligne_Order = tab[1];
-                                        desadvLine_info.Code_Article = tab[2];
-                                        desadvLine_info.Quantite_Colis = tab[3];
-                                        desadvLine_info.Numero_Lot = tab[4];
+                                            desadvLine_info.Numero_Ligne_Order = tab[1];
+                                            desadvLine_info.Code_Article = tab[2];
+                                            desadvLine_info.Quantite_Colis = tab[3];
+                                            desadvLine_info.Numero_Lot = tab[4];
 
-                                        dl.Add(desadvLine_info);
-
+                                            dl.Add(desadvLine_info);
+                                            doubleProductCheck.Add(desadvLine_info.Code_Article);
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_general.WriteLine("");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \""+tab[2]+"\" encore!");
+                                            logFileWriter_general.WriteLine("");
+                                        }
                                         i++;
                                     }
 
@@ -2840,7 +2852,7 @@ namespace importPlanifier.Classes
 
         private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
         {
-            string[,] list_of_cmd_lines = new string[dl.Count, 72];    // new string [x,y]
+            string[,] list_of_cmd_lines = new string[dl.Count, 80];    // new string [x,y]
             string[] list_of_client_info = null;
 
             int position_item = 0;
@@ -2855,7 +2867,8 @@ namespace importPlanifier.Classes
             string name_article = "";
             string DL_PoidsNet = "0";
             string DL_PoidsBrut = "0";
-            string DL_PrixUnitaire = "0";
+            string DL_PrixUnitaire_buyPrice = "0";
+            string DL_PrixUnitaire_salePriceHT = "0";
             string DL_PUTTC = "0";
 
             // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
@@ -2912,22 +2925,29 @@ namespace importPlanifier.Classes
 
                     foreach (Veolog_DESADV_Lines line in dl) //read item by item
                     {
+                        string COLIS_article = "";
+                        string PCB_article = "";
+                        string COMPLEMENT_article = "";
+
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Lire la ligne de l'article.");
 
                         //get Product Name By Reference
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getProductNameByReference_DESADV(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
                             using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
                                 if (reader.Read()) // If any rows returned
                                 {
-                                    ref_article = (reader[0].ToString());         // get product ref
-                                    name_article = (reader[1].ToString());        // sum up the total_negative variable. - check query
-                                    DL_PoidsNet = (reader[2].ToString());         // get unit weight NET - check query
-                                    DL_PoidsBrut = (reader[3].ToString());        // get unit weight BRUT - check query  
-                                    DL_PrixUnitaire = (reader[4].ToString());     // get unit price ht - check query 
-                                    //DL_PUTTC = (reader[5].ToString());            // get unit price ttc
+                                    ref_article = (reader[0].ToString());                   // get product ref
+                                    name_article = (reader[1].ToString());                  // sum up the total_negative variable. - check query
+                                    DL_PoidsNet = (reader[2].ToString());                   // get unit weight NET - check query
+                                    DL_PoidsBrut = (reader[3].ToString());                  // get unit weight BRUT - check query  
+                                    //DL_PrixUnitaire_buyPrice = (reader[4].ToString());      // get (Prix d'achat) unit price - check query 
+                                    DL_PrixUnitaire_salePriceHT = (reader[4].ToString());   // get (Prix de vente) unit price ht - check query
+                                    COLIS_article = reader[5].ToString();
+                                    PCB_article = reader[6].ToString();
+                                    COMPLEMENT_article = reader[7].ToString();
                                 }
                                 else// If no rows returned
                                 {
@@ -2967,7 +2987,7 @@ namespace importPlanifier.Classes
                             {
                                 if (reader.Read()) // If any rows returned
                                 {
-                                    list_of_client_info = new string[13];
+                                    list_of_client_info = new string[14];
                                     list_of_client_info[0] = reader[0].ToString();      // CT_Num
                                     list_of_client_info[1] = reader[1].ToString();      // CA_Num 
                                     list_of_client_info[2] = reader[2].ToString();      // CG_NumPrinc
@@ -2990,6 +3010,36 @@ namespace importPlanifier.Classes
                             }
                         }
 
+                        //get client delivery adress
+                        if (list_of_client_info != null)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientDeliveryAddress_DESADV(true, ref_client));
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientDeliveryAddress_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                            {
+                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                {
+                                    if (reader.Read()) // If any rows returned
+                                    {
+                                        list_of_client_info[13] = reader[0].ToString();    // LI_No
+                                    }
+                                    else// If no rows returned
+                                    {
+                                        //do nothing.
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. list_of_client_info est null");
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Erreur ********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucun client trouver.");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                            return null;
+                        }
+
+
                         if (ref_article != "" && name_article != "" && list_of_client_info != null)
                         {
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Article trouvé.");
@@ -3002,7 +3052,7 @@ namespace importPlanifier.Classes
 
                                 //calculate product ttc
                                 double product_ttc = 0.0;
-                                double product_ht = Convert.ToDouble(DL_PrixUnitaire);
+                                double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
                                 double product_20_P = (product_ht * 20) / 100;
                                 product_ttc = product_ht + product_20_P;
                                 DL_PUTTC = ("" + product_ttc).Replace(",", ".");
@@ -3028,18 +3078,18 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 15] = Convert.ToDouble(DL_PoidsBrut).ToString().Replace(",", "."); // DL_PoidsBrut
                                 if (list_of_cmd_lines[counter, 15].Equals("0")) { list_of_cmd_lines[counter, 15] = "0.000000"; } else if (!list_of_cmd_lines[counter, 15].Contains(".")) { list_of_cmd_lines[counter, 15] = list_of_cmd_lines[counter, 15] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixUnitaire
                                 if (list_of_cmd_lines[counter, 16].Equals("0")) { list_of_cmd_lines[counter, 16] = "0.000000"; } else if (!list_of_cmd_lines[counter, 16].Contains(".")) { list_of_cmd_lines[counter, 16] = list_of_cmd_lines[counter, 16] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixRU
                                 if (list_of_cmd_lines[counter, 17].Equals("0")) { list_of_cmd_lines[counter, 17] = "0.000000"; } else if (!list_of_cmd_lines[counter, 17].Contains(".")) { list_of_cmd_lines[counter, 17] = list_of_cmd_lines[counter, 17] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
-                                list_of_cmd_lines[counter, 19] = "Heure";    DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_CMUP
+                                list_of_cmd_lines[counter, 19] = "Heure";    //DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
                                 list_of_cmd_lines[counter, 20] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
                                 if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire_salePriceHT)).ToString().Replace(",", "."); //DL_MontantHT
                                 list_of_cmd_lines[counter, 22] = (Convert.ToDouble(line.Quantite_Colis) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
                                 if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
                                 if (list_of_cmd_lines[counter, 21].Equals("0")) { list_of_cmd_lines[counter, 21] = "0.000000"; } else if (!list_of_cmd_lines[counter, 21].Contains(".")) { list_of_cmd_lines[counter, 21] = list_of_cmd_lines[counter, 21] + ".0"; }
@@ -3096,6 +3146,15 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
                                 list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
 
+                                list_of_cmd_lines[counter, 72] = "3";                                           // DL_MvtStock
+                                list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
+                                list_of_cmd_lines[counter, 74] = COLIS_article.ToString().Replace(",", ".");    // COLIS
+                                list_of_cmd_lines[counter, 75] = PCB_article.ToString().Replace(",", ".");      // PCB
+                                list_of_cmd_lines[counter, 76] = COMPLEMENT_article;                            // COMPLEMENT
+                                list_of_cmd_lines[counter, 77] = "";                                            // PourVeolog
+                                list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
+                                list_of_cmd_lines[counter, 79] = "";                                            // DL_Operation
+
                             }
                             catch (Exception ex)
                             {
@@ -3137,7 +3196,7 @@ namespace importPlanifier.Classes
                     }
 
 
-                    string[,] products_DESADV = new string[position_item / 1000, 72]; // create array with enough space
+                    string[,] products_DESADV = new string[position_item / 1000, 80]; // create array with enough space
 
                     //insert documentline into the database with articles having 20 as value @index 2
                     logFileWriter.WriteLine("");
@@ -3185,8 +3244,8 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog au DESADV \"" + reference_DESADV_doc + "\".");
 
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog));
-                        OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog), connection);
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre), connection);
                         {
                             using (IDataReader reader = command.ExecuteReader())
                             {
@@ -3692,10 +3751,11 @@ namespace importPlanifier.Classes
         }
 
 
-        public string InfoTachePlanifier()
+        public string InfoTachePlanifier(StreamWriter writer)
         {
             try
             {
+                writer.WriteLine("");
                 string taskName = "importCommandeSage";
 
                 ConfigurationDNS settings = new ConfigurationDNS();
@@ -3709,6 +3769,7 @@ namespace importPlanifier.Classes
                 {
                     taskName = "importCommandeSage_TW";
                 }
+                writer.WriteLine(DateTime.Now + " | InfoTachePlanifier() : Trouver le nom de la tache = " + taskName);
 
                 TaskService ts = new TaskService();
                 if (ts.FindTask(taskName, true) != null)
@@ -3717,6 +3778,9 @@ namespace importPlanifier.Classes
                     TaskDefinition td = t.Definition;
                     //Console.WriteLine("L'import des commandes Planifiée :");
                     //Console.WriteLine("" + td.Triggers[0]);
+                    writer.WriteLine(DateTime.Now + " | InfoTachePlanifier() : taskName trigger[0] = "+ td.Triggers[0]);
+                    writer.WriteLine("");
+                    writer.WriteLine("");
                     return "" + td.Triggers[0];
                 }
                 else
@@ -3728,8 +3792,9 @@ namespace importPlanifier.Classes
             catch (Exception e)
             {
                 Console.WriteLine(DateTime.Now + " : Erreur[1] - " + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                //writer.WriteLine(DateTime.Now + " : Erreur[1] - " + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-
+                writer.WriteLine(DateTime.Now + " : Erreur[1] - " + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                writer.WriteLine("");
+                writer.WriteLine("");
                 return null;
             }
         }

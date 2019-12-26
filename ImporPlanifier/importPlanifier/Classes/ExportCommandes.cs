@@ -290,7 +290,7 @@ namespace importPlanifier.Classes
                                     if (veolog_format)
                                         {
                                         //format Veolog 
-                                        string[] adresse = new string[4];
+                                        string[] adresse = new string[5];
                                         string[] date_time_delivery = new string[2];
 
                                         adresse = CommandeAExporter.adresseLivraison.Split(',');
@@ -298,15 +298,14 @@ namespace importPlanifier.Classes
 
                                         //Split the adresse
                                         CommandeAExporter.adresse = adresse[0];
-                                        CommandeAExporter.codepostale = adresse[1];
-                                        CommandeAExporter.ville = adresse[2];
+                                        CommandeAExporter.adresse_2 = adresse[1];
+                                        CommandeAExporter.codepostale = adresse[2];
+                                        CommandeAExporter.ville = adresse[3];
 
                                         // Get the country
-                                        CommandeAExporter.pays = adresse[3];
+                                        CommandeAExporter.pays = adresse[4];
 
                                         //Get Country ISO
-                                        CommandeAExporter.pays = adresse[3];
-
                                         CountryFormatISO iso = new CountryFormatISO();
                                         string[,] country_iso = iso.getAllStaticCountryISOCode();
 
@@ -325,15 +324,16 @@ namespace importPlanifier.Classes
 
 
                                         //Split the DateTime
-                                        var date_delivery = Convert.ToDateTime(CommandeAExporter.DateLivraison);
+                                       DateTime date_delivery = Convert.ToDateTime(CommandeAExporter.DateLivraison);
 
                                         //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
-                                        CommandeAExporter.DateLivraison = date_delivery.Year + "" + date_delivery.Month + "" + date_delivery.Day + "";
+                                        //CommandeAExporter.DateLivraison = date_delivery.Year + "" + date_delivery.Month + "" + date_delivery.Day + "";
+                                        CommandeAExporter.DateLivraison = string.Format("{0:yyyyMMdd}", date_delivery);
 
                                         string[] time_delivery = date_time_delivery[1].Split(':');
                                         CommandeAExporter.HeureLivraison = time_delivery[0] + "" + time_delivery[1];
 
-                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";;;"+ CommandeAExporter.NomClient + ";"+ CommandeAExporter.adresse + ";ZI de Bethunes;;"+ CommandeAExporter.codepostale + ";"+ CommandeAExporter.ville + ";"+ CommandeAExporter.pays + ";"+ CommandeAExporter.telephone + ";"+ CommandeAExporter.email + ";"+ CommandeAExporter.DateLivraison + ";"+ CommandeAExporter.HeureLivraison + ";"+ CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.commentaires); // E line
+                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";"+CommandeAExporter.codeClient+";;"+ CommandeAExporter.NomClient + ";"+ CommandeAExporter.adresse + ";"+CommandeAExporter.adresse_2+";;"+ CommandeAExporter.codepostale + ";"+ CommandeAExporter.ville + ";"+ CommandeAExporter.pays + ";"+ CommandeAExporter.telephone + ";"+ CommandeAExporter.email + ";"+ CommandeAExporter.DateLivraison + ";"+ CommandeAExporter.HeureLivraison + ";"+ CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.commentaires); // E line
 
                                             CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
 

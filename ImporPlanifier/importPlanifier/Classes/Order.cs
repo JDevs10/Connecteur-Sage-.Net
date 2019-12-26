@@ -103,6 +103,7 @@ namespace importPlanifier.Classes
     public List<OrderLine> Lines { get; set; }
     public string nom_contact { get; set; }
     public string adresse { get; set; }
+    public string adresse_2 { get; set; }
     public string codepostale { get; set; }
     public string ville { get; set; }
     public string pays { get; set; }
