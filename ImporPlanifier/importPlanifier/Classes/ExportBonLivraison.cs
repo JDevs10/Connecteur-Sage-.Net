@@ -16,7 +16,7 @@ namespace importPlanifier.Classes
         //private Customer customer = new Customer();
         private string pathExport;
 
-        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON";
+        public string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON";
         private StreamWriter logFileWriter_export = null;
 
         public ExportBonLivraison(string path)

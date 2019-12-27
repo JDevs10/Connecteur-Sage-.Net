@@ -16,7 +16,7 @@ namespace importPlanifier.Classes
         //private List<DocumentVente> FacturesAExporter;
         //private Customer client = new Customer();
 
-        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE";
+        public string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE";
         private StreamWriter logFileWriter_export = null;
 
         private string pathExport;

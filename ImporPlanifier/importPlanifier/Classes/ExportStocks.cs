@@ -19,7 +19,7 @@ namespace importPlanifier.Classes
 
         private string pathExport;
 
-        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "STOCK";
+        public string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "STOCK";
         private StreamWriter logFileWriter_export = null;
 
         #endregion
