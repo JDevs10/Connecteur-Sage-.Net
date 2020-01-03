@@ -166,8 +166,8 @@ namespace importPlanifier.Classes
                 //foreach (FileInfo filename in fileListing.GetFiles("*.csv"))
                 for (int index = 0; index < fileListing.GetFiles("*.csv").Length; index++)
                 {
-                    Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + fileListing.GetFiles("*.csv")[index].Name);
                     FileInfo filename = fileListing.GetFiles("*.csv")[index];
+                    Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + filename.Name);
 
                     try
                     {
@@ -2270,6 +2270,8 @@ namespace importPlanifier.Classes
             double DO_TotalTTC_ME = 0.0;
             double DO_TotalHT_MS = 0.0;
             double DO_TotalTTC_MS = 0.0;
+            double DO_TotalPoid = 0.0;
+
             string reference_ME_doc = lastNumberReference("ME", logFileWriter);   //Doc ME
             if (reference_ME_doc == null)
             {
@@ -2308,6 +2310,10 @@ namespace importPlanifier.Classes
                         string DL_PoidsBrut = "0";
                         string DL_PrixUnitaire = "0";
                         string DL_PUTTC = "0";
+                        //string DL_PrixUnitaire_salePriceHT = "0";
+                        //string COLIS_article = "";
+                        //string PCB_article = "";
+                        //string COMPLEMENT_article = "";
 
                         // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
@@ -2326,6 +2332,10 @@ namespace importPlanifier.Classes
                                     DL_PoidsNet = (reader[1].ToString()); // get unit weight NET - check query
                                     DL_PoidsBrut = (reader[2].ToString()); // get unit weight BRUT - check query  
                                     DL_PrixUnitaire = (reader[3].ToString()); // get unit price  - check query
+                                    //DL_PrixUnitaire_salePriceHT = (reader[4].ToString());   // get (Prix de vente) unit price ht - check query
+                                    //COLIS_article = reader[5].ToString();
+                                    //PCB_article = reader[6].ToString();
+                                    //COMPLEMENT_article = reader[7].ToString();
                                 }
                                 else // If no rows returned
                                 {
@@ -2503,6 +2513,17 @@ namespace importPlanifier.Classes
                                     list_of_products_ME[counter_ME, 69] = "0";                   // DL_TypeTaxe2
                                     list_of_products_ME[counter_ME, 70] = "0";                   // DL_TypeTaux3
                                     list_of_products_ME[counter_ME, 71] = "0";                   // DL_TypeTaxe3
+
+                                    /*
+                                    list_of_products_ME[counter_ME, 72] = "3";                                           // DL_MvtStock
+                                    list_of_products_ME[counter_ME, 73] = "";                                            // AF_RefFourniss
+                                    list_of_products_ME[counter_ME, 74] = COLIS_article.ToString().Replace(",", ".");    // COLIS
+                                    list_of_products_ME[counter_ME, 75] = PCB_article.ToString().Replace(",", ".");      // PCB
+                                    list_of_products_ME[counter_ME, 76] = COMPLEMENT_article;                            // COMPLEMENT
+                                    list_of_products_ME[counter_ME, 77] = "";                                            // PourVeolog
+                                    list_of_products_ME[counter_ME, 78] = "";                                            // DL_PieceOFProd
+                                    list_of_products_ME[counter_ME, 79] = "";                                            // DL_Operation
+                                    */
 
                                 }
                                 catch (Exception ex)
@@ -2862,14 +2883,6 @@ namespace importPlanifier.Classes
             //string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
-            string ref_client = "";
-            string ref_article = "";
-            string name_article = "";
-            string DL_PoidsNet = "0";
-            string DL_PoidsBrut = "0";
-            string DL_PrixUnitaire_buyPrice = "0";
-            string DL_PrixUnitaire_salePriceHT = "0";
-            string DL_PUTTC = "0";
 
             // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
@@ -2887,6 +2900,7 @@ namespace importPlanifier.Classes
                     string do_totalTTC_ = "";
                     string do_NetAPayer_ = "";
                     string do_MontantRegle_ = "";
+
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupérer la référence Commande client livré, la narure OP ou P et le total ht de la commande " + dh.Ref_Commande_Donneur_Ordre);
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
@@ -2911,6 +2925,33 @@ namespace importPlanifier.Classes
                         }
                     }
 
+                    //Get the list of all Taxes (TVA)
+                    //So i can calculate the ttc later
+                    List<TVA> tvaList = null;
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupére tous les tva");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getAllTVA(true));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connection)) 
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                tvaList = new List<TVA>();
+                                tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                while (reader.Read())
+                                {
+                                    tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                }
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                tvaList = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
+                            }
+                        }
+                    }
+
                     //get veolog delivery date and time
                     string year = dh.Date_De_Expedition.Substring(0, 4);
                     string month = dh.Date_De_Expedition.Substring(4, 2);
@@ -2925,9 +2966,19 @@ namespace importPlanifier.Classes
 
                     foreach (Veolog_DESADV_Lines line in dl) //read item by item
                     {
+                        string ref_client = "";
+                        string ref_article = "";
+                        string name_article = "";
+                        string DL_PoidsNet = "0";
+                        string DL_PoidsBrut = "0";
+                        string DL_PrixUnitaire_buyPrice = "0";
+                        string DL_PrixUnitaire_salePriceHT = "0";
+                        string DL_PUTTC = "0";
                         string COLIS_article = "";
                         string PCB_article = "";
                         string COMPLEMENT_article = "";
+                        string DL_Taxe1 = "";
+                        string DL_CodeTaxe1 = "";
 
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Lire la ligne de l'article.");
 
@@ -2948,6 +2999,8 @@ namespace importPlanifier.Classes
                                     COLIS_article = reader[5].ToString();
                                     PCB_article = reader[6].ToString();
                                     COMPLEMENT_article = reader[7].ToString();
+                                    DL_Taxe1 = reader[8].ToString();
+                                    DL_CodeTaxe1 = reader[9].ToString();
                                 }
                                 else// If no rows returned
                                 {
@@ -3023,6 +3076,7 @@ namespace importPlanifier.Classes
                                     if (reader.Read()) // If any rows returned
                                     {
                                         list_of_client_info[14] = reader[0].ToString();    // LI_No
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Adresse de livraison ("+reader[0].ToString()+") trouvé!");
                                     }
                                     else// If no rows returned
                                     {
@@ -3053,10 +3107,53 @@ namespace importPlanifier.Classes
 
                                 //calculate product ttc
                                 double product_ttc = 0.0;
-                                double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
-                                double product_20_P = (product_ht * 20) / 100;
-                                product_ttc = product_ht + product_20_P;
-                                DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                try
+                                {
+                                    logFileWriter.WriteLine("");
+                                    if (tvaList != null)
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : List des TVA trouvé");
+                                        TVA tva = null;
+                                        foreach (TVA tva_ in tvaList)
+                                        {
+                                            if (tva_.TA_Code == DL_CodeTaxe1)
+                                            {
+                                                tva = tva_;
+                                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                break;
+                                            }
+                                        }
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * Convert.ToDouble(tva.TA_Taux)) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                    }
+                                    else
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Warning TVA ********************");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BL seront 0");
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * 0.0) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                    }
+                                    logFileWriter.Flush();
+                                }
+                                catch(Exception ex)
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Exception TVA ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                    logFileWriter.Flush();
+                                    return null;
+                                }
+                                
 
                                 // DESADV prefix will be used to create document
                                 list_of_cmd_lines[counter, 0] = "0"; // DO_Domaine
@@ -3136,8 +3233,8 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 59] = "0";                  //DL_NoSousTotal
                                 list_of_cmd_lines[counter, 60] = "0";                //CA_No
                                 list_of_cmd_lines[counter, 61] = "0.000000";            // DL_PUBC
-                                list_of_cmd_lines[counter, 62] = "C20";                  // DL_CodeTaxe1
-                                list_of_cmd_lines[counter, 63] = "20.000000";           // DL_Taxe1
+                                list_of_cmd_lines[counter, 62] = DL_CodeTaxe1;                  // DL_CodeTaxe1
+                                list_of_cmd_lines[counter, 63] = DL_Taxe1.ToString().Replace(",", ".");         // DL_Taxe1
                                 list_of_cmd_lines[counter, 64] = "0.000000";            // DL_Taxe2
                                 list_of_cmd_lines[counter, 65] = "0.000000";            // DL_Taxe3
                                 list_of_cmd_lines[counter, 66] = "0";                   // DL_TypeTaux1
@@ -3149,8 +3246,8 @@ namespace importPlanifier.Classes
 
                                 list_of_cmd_lines[counter, 72] = "3";                                           // DL_MvtStock
                                 list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
-                                list_of_cmd_lines[counter, 74] = COLIS_article.ToString().Replace(",", ".");    // COLIS
-                                list_of_cmd_lines[counter, 75] = PCB_article.ToString().Replace(",", ".");      // PCB
+                                list_of_cmd_lines[counter, 74] = ((COLIS_article == null || COLIS_article == "") ? "0.0" : COLIS_article).ToString().Replace(",", ".");    // COLIS
+                                list_of_cmd_lines[counter, 75] = ((PCB_article == null || PCB_article == "") ? "0.0" : PCB_article).ToString().Replace(",", ".");      // PCB
                                 list_of_cmd_lines[counter, 76] = COMPLEMENT_article;                            // COMPLEMENT
                                 list_of_cmd_lines[counter, 77] = "";                                            // PourVeolog
                                 list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
@@ -3165,7 +3262,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
-                                logFileWriter.Close();
+                                logFileWriter.Flush();
                                 return null;
                             }
                         }
@@ -3262,6 +3359,32 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         return null;
                     }
+
+                    //Delete the BC of the BL
+                    /*
+                    try
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Supprimer le Bon de Commande (BC) \"" + dh.Ref_Commande_Donneur_Ordre+"\".");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre), connection);
+                        {
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Bon de Commande supprimé!");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                        return null;
+                    }
+                    */
+
                 }
                 catch (Exception ex)
                 {
@@ -4556,8 +4679,6 @@ namespace importPlanifier.Classes
             this.ImportPlanifier();
 
             //this.SendToVeolog();
-
-            Console.WriteLine("");
             Console.WriteLine("");
             Console.WriteLine("getting path : ");
             Classes.Path path = new Path();
@@ -4575,37 +4696,37 @@ namespace importPlanifier.Classes
 
             if (((export.exportFactures == "True") ? true : false))
             {
+                Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : exportFactures");
                 Classes.ExportFactures a = new Classes.ExportFactures(path.path);
                 a.ExportFacture();
             }
-            Console.WriteLine("");
             if (((export.exportBonsLivraisons == "True") ? true : false))
             {
+                Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : exportBonsLivraisons");
                 Classes.ExportBonLivraison b = new Classes.ExportBonLivraison(path.path);
                 b.ExportBonLivraisonAction();
             }
-            Console.WriteLine("");
             if (((export.exportBonsCommandes == "True") ? true : false))
             {
+                Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : exportBonsCommandes");
                 Classes.ExportCommandes c = new Classes.ExportCommandes(path.path);
                 c.ExportCommande();
             }
-            Console.WriteLine("");
             if (((export.exportStock == "True") ? true : false))
             {
+                Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : exportStock");
                 Classes.ExportStocks s = new Classes.ExportStocks(path.path);
                 s.ExportStock();
             }
-            Console.WriteLine("");
             Console.WriteLine(DateTime.Now + " : Done Export");
 
-            cleanBackUpFiles("orders", "Véolog", path.path);
-            cleanBackUpFiles("orders", "Plat", path.path);
-            cleanBackUpFiles("logs", new string[] {logDirectoryName_general, logDirectoryName_import, new ExportFactures(path.path).logDirectoryName_export, new ExportBonLivraison(path.path).logDirectoryName_export, new ExportCommandes(path.path).logDirectoryName_export, new ExportStocks(path.path).logDirectoryName_export });
+            //cleanBackUpFiles("orders", "Véolog", path.path);
+            //cleanBackUpFiles("orders", "Plat", path.path);
+            //cleanBackUpFiles("logs", new string[] {logDirectoryName_general, logDirectoryName_import, new ExportFactures(path.path).logDirectoryName_export, new ExportBonLivraison(path.path).logDirectoryName_export, new ExportCommandes(path.path).logDirectoryName_export, new ExportStocks(path.path).logDirectoryName_export });
         }
 
         public static void cleanBackUpFiles(string exportFileType, string exportFormatType, string path)

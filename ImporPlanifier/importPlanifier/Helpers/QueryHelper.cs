@@ -599,12 +599,24 @@ namespace importPlanifier.Helpers
             if (sqlConnexion)
             {
                 //return "SELECT AR_Ref, AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch, AR_PrixVen FROM " + getPrefix() + "F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
-                return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '"+DO_Piece+"' AND AR_Ref = '" + reference_article + "' ";
+                return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT, DL_Taxe1, DL_CodeTaxe1 FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '"+DO_Piece+"' AND AR_Ref = '" + reference_article + "' ";
             }
             else
             {
                 //return "SELECT AR_Ref, AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch, AR_PrixVen FROM F_ARTICLE WHERE AR_Ref IN('" + reference_article + "') ";
-                return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT FROM F_DOCLIGNE WHERE DO_Piece = '" + DO_Piece + "' AND AR_Ref = '" + reference_article + "' ";
+                return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT, DL_Taxe1, DL_CodeTaxe1 FROM F_DOCLIGNE WHERE DO_Piece = '" + DO_Piece + "' AND AR_Ref = '" + reference_article + "' ";
+            }
+        }
+
+        public static string getAllTVA(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT TA_Intitule, TA_Taux, CG_Num, TA_Code, cbMarq FROM " + getPrefix() + "F_TAXE ";
+            }
+            else
+            {
+                return "SELECT TA_Intitule, TA_Taux, CG_Num, TA_Code, cbMarq FROM F_TAXE ";
             }
         }
 
@@ -809,7 +821,7 @@ namespace importPlanifier.Helpers
                 string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, " +
                     "LI_No, cbLI_No, DO_Imprim, CA_Num, DO_Souche, DO_Ecart, AB_No, CA_No, DO_Transfere, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_ValFrais, DO_TypeLigneFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, DO_FactureElec, DO_FactureFrs, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_EStatut, DO_StatutBAP, DO_Escompte, DO_DocType, DO_TypeCalcul, DO_AdressePaiement, DO_PaiementLigne, DO_MotifDevis, DO_Conversion) " +
                                 "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + reference_client[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date + "'}, {d '"+ veologDeliveryDateTime + "'}, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Client_Livre + "', 21, 2, " + reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '"+Nature_OP_P+"', "+DO_TotalHT+ ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle+", " +
-                                ""+ reference_client[13] + ", "+ reference_client[13] + ", 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)";
+                                ""+ reference_client[14] + ", "+ reference_client[14] + ", 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)";
                 return sql;
             }
             else

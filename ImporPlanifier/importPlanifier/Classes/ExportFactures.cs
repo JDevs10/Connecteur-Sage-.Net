@@ -515,13 +515,14 @@ namespace importPlanifier.Classes
         {
             try
             {
-                Console.WriteLine("OK 1");
+                string exportTo = "";
+
+
                 if (!Directory.Exists(logDirectoryName_export))
                 {
                     Directory.CreateDirectory(logDirectoryName_export);
                 }
 
-                Console.WriteLine("OK 2");
                 var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Facture_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
                 var logFile_export = File.Create(logFileName_export);
                 logFileWriter_export = new StreamWriter(logFile_export);
@@ -529,19 +530,15 @@ namespace importPlanifier.Classes
                 
                 try
                 {
-
-                    Console.WriteLine("OK 3");
                     logFileWriter_export.WriteLine("#####################################################################################");
                     logFileWriter_export.WriteLine("################################# Import Planifier ##################################");
                     logFileWriter_export.WriteLine("#####################################################################################");
                     logFileWriter_export.WriteLine("");
 
                     List<DocumentVente> FacturesAExporter = GetFacturesFromDataBase();
-                    Console.WriteLine("OK 4");
 
                     if (FacturesAExporter != null)
                     {
-                        Console.WriteLine("OK 5");
                         string outputFile = "";
                         var fileName = "";
 
@@ -574,6 +571,7 @@ namespace importPlanifier.Classes
                                 System.IO.Directory.CreateDirectory(outputFile);
                             }
 
+                            exportTo = @"Export\Plat_Facture";
 
                             using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName, false, Encoding.Default))
                             {
@@ -836,6 +834,9 @@ namespace importPlanifier.Classes
 
                             }
 
+                            //add to backup folder
+                            addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName, logFileWriter_export);
+
                             UpdateDocumentVente(FacturesAExporter[i].DO_Piece);
 
                         }
@@ -867,6 +868,53 @@ namespace importPlanifier.Classes
                 //logFileWriter_export.Close();
             }
             logFileWriter_export.Close();
+        }
+
+        public static void addFileToBackUp(string backUpFolderPath, string sourceFilePath, string filename, StreamWriter writer)
+        {
+            writer.WriteLine("");
+            //check if the backup folder exist
+            if (!Directory.Exists(backUpFolderPath))
+            {
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Create BackUp folder at \"" + backUpFolderPath + "\"");
+                Directory.CreateDirectory(backUpFolderPath);
+            }
+
+            //copy the file to the backup folder
+            if (File.Exists(backUpFolderPath + @"\" + filename))
+            {
+                int version = 0;
+                //Get all .csv files in the folder
+                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File \"" + backUpFolderPath + @"\" + filename + "\" exist so add version it");
+
+                for (int x = 0; x < fileListing.GetFiles("*.csv").Length; x++)
+                {
+                    string[] cutFileName = filename.Split('_');
+                    string withouExtension = cutFileName[3].Split('.')[0];
+                    string newFileName = cutFileName[0] + "_" + cutFileName[1] + "_" + cutFileName[2] + "_" + withouExtension;
+                    FileInfo Filename = fileListing.GetFiles("*.csv")[x];
+
+                    if ((Filename.Name).Contains(newFileName))
+                    {
+                        version++;
+                        writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Version: " + version + " || (" + Filename.Name + ").Contains(" + newFileName + ")");
+                    }
+                }
+                //File.Delete(destFilePath);
+                string[] cutFileName_1 = filename.Split('.');
+                string newFileName_1 = cutFileName_1[0] + "_v" + version + "." + cutFileName_1[1];
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + newFileName_1 + "\"");
+                File.Copy(sourceFilePath, backUpFolderPath + @"\" + newFileName_1);
+            }
+            else
+            {
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + filename + "\"");
+                File.Copy(sourceFilePath, backUpFolderPath + @"\" + filename);
+            }
+
+            writer.WriteLine("");
+            writer.Flush();
         }
 
         private string GetModeReglement(string do_piece)

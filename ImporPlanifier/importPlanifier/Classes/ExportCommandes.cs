@@ -89,6 +89,7 @@ namespace importPlanifier.Classes
             Classes.Path path = new Path();
             path.Load();
             string exportPath = path.path;
+            string exportTo = "";
 
             Order CommandeAExporter = null;
 
@@ -265,6 +266,7 @@ namespace importPlanifier.Classes
                                 Console.WriteLine("veolog_format : "+ veolog_format);
                                 if (veolog_format)
                                 {
+                                    exportTo = @"Export\Veolog_Commande";
                                     exportPath = exportPath + @"\Export_Veolog";
 
                                     if (!Directory.Exists(exportPath))
@@ -280,6 +282,7 @@ namespace importPlanifier.Classes
                                 }
                                 else
                                 {
+                                    exportTo = @"Export\Plat_Commande";
                                     exportPath = exportPath + @"\Export_Plat";
 
                                     if (!Directory.Exists(exportPath))
@@ -432,7 +435,7 @@ namespace importPlanifier.Classes
                                         veolog_file_check = true;
 
                                         //add to backup folder
-                                        addFileToBackUp(exportPath + @"\BackUp", exportPath + @"\" + fileName, exportPath + @"\BackUp\" + fileName, logFileWriter);
+                                        addFileToBackUp(path.path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
                                     }
                                 }
                                 else
@@ -451,20 +454,13 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \""+ delivery_date_veolog + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
-                                        using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog));
+                                        OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog), connexion);
                                         {
-                                            connection.Open();
-
-                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog));
-                                            OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog), connection);
+                                            using (IDataReader reader = command1.ExecuteReader())
                                             {
-                                                using (IDataReader reader = command1.ExecuteReader())
-                                                {
-                                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison veolog à jour !");
-                                                }
+                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison veolog à jour !");
                                             }
-                                            connection.Close();
-                                            logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
                                         }
                                     }
                                     catch (Exception ex)
@@ -484,23 +480,16 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
-                                        using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande));
+                                        OdbcCommand command1 = new OdbcCommand(QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande), connexion);
                                         {
-                                            connection.Open();
-
-                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande));
-                                            OdbcCommand command1 = new OdbcCommand(QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande), connection);
+                                            using (IDataReader reader = command1.ExecuteReader())
                                             {
-                                                using (IDataReader reader = command1.ExecuteReader())
+                                                while (reader.Read())
                                                 {
-                                                    while (reader.Read())
-                                                    {
-                                                        //Statut Update
-                                                    }
+                                                    //Statut Update
                                                 }
                                             }
-                                            connection.Close();
-                                            logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
                                         }
 
                                     }
@@ -562,8 +551,8 @@ namespace importPlanifier.Classes
         /// Chargement de la fenêtre
         /// </summary>
         /// <param name="e">paramètres de l'évènement</param>
-       
-        public static void addFileToBackUp(string backUpFolderPath, string sourceFilePath, string destFilePath, StreamWriter writer)
+
+        public static void addFileToBackUp(string backUpFolderPath, string sourceFilePath, string filename, StreamWriter writer)
         {
             writer.WriteLine("");
             //check if the backup folder exist
@@ -574,55 +563,39 @@ namespace importPlanifier.Classes
             }
 
             //copy the file to the backup folder
-            if (File.Exists(destFilePath))
+            if (File.Exists(backUpFolderPath + @"\" + filename))
             {
-                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File \"" + destFilePath + "\" exist so delete it");
-                File.Delete(destFilePath);
-            }
-            writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \""+destFilePath+"\"");
-            File.Copy(sourceFilePath, destFilePath);
+                int version = 0;
+                //Get all .csv files in the folder
+                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File \"" + backUpFolderPath + @"\" + filename + "\" exist so add version it");
 
-            //delete all files the backup folder after 2 weeks
-            DateTime today = DateTime.Now;
-            DateTime twoWeeksAgo = today.AddDays(-14);  //DateTime of 14 days ago
-
-            writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after "+twoWeeksAgo+"\n");
-
-            DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-            int filesDeleted = 0;
-            int allFiles = fileListing.GetFiles("*.csv").Length;
-            for (int index = 0; index < allFiles; index++)
-            {
-                FileInfo filename = fileListing.GetFiles("*.csv")[index];
-                DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
+                for(int x=0; x < fileListing.GetFiles("*.csv").Length; x++)
                 {
-                    //file was never modified
-                    if(fileDateTime < twoWeeksAgo)
+                    string[] cutFileName = filename.Split('_');
+                    string withouExtension = cutFileName[3].Split('.')[0];
+                    string newFileName = cutFileName[0] + "_" + cutFileName[1] + "_" + cutFileName[2] + "_" + withouExtension;
+                    FileInfo Filename = fileListing.GetFiles("*.csv")[x];
+
+                    if ((Filename.Name).Contains(newFileName))
                     {
-                        writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                        writer.WriteLine("");
-                        File.Delete(filename.FullName);
-                        filesDeleted++;
+                        version++;
+                        writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Version: " + version + " || (" + Filename.Name + ").Contains(" + newFileName + ")");
                     }
                 }
-                else
-                {
-                    //file was modified
-                    if (fileDateTimeModif < twoWeeksAgo)
-                    {
-                        writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                        writer.WriteLine("");
-                        File.Delete(filename.FullName);
-                        filesDeleted++;
-                    }
-                }
-                writer.Flush();
+                //File.Delete(destFilePath);
+                string[] cutFileName_1 = filename.Split('.');
+                string newFileName_1 = cutFileName_1[0] + "_v" + version + "." + cutFileName_1[1];
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + newFileName_1 + "\"");
+                File.Copy(sourceFilePath, backUpFolderPath + @"\" + newFileName_1);
             }
-            writer.WriteLine(DateTime.Now + " | addFileToBackUp() : "+filesDeleted+"/"+allFiles+" files were deleted.");
+            else
+            {
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + filename + "\"");
+                File.Copy(sourceFilePath, backUpFolderPath + @"\" + filename);
+            }
+            
+            writer.WriteLine("");
             writer.Flush();
         }
 
