@@ -152,7 +152,8 @@ namespace importPlanifier.Classes
                         i++; //increment for further adding/reading into the array
                     }
 
-                    string fileName = string.Format(exportStockPath + @"\" + "stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //creating the file.
+                    string fileName_ = string.Format("stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //file.
+                    string fileName = exportStockPath + @"\" + fileName_; //creating the file.
 
                     if (File.Exists(fileName)) //verifying if the file exists else delete and recreate
                     {
@@ -184,7 +185,7 @@ namespace importPlanifier.Classes
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
 
                     //add to backup folder
-                    addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName, logFileWriter_export);
+                    addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName_, logFileWriter_export);
                 }
 
             }
