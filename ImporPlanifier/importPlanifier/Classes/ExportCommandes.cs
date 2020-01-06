@@ -267,7 +267,10 @@ namespace importPlanifier.Classes
                                 if (veolog_format)
                                 {
                                     exportTo = @"Export\Veolog_Commande";
-                                    exportPath = exportPath + @"\Export_Veolog";
+                                    if (!exportPath.Contains("Export_Veolog"))
+                                    {
+                                        exportPath = exportPath + @"\Export_Veolog";
+                                    }
 
                                     if (!Directory.Exists(exportPath))
                                     {
@@ -283,7 +286,10 @@ namespace importPlanifier.Classes
                                 else
                                 {
                                     exportTo = @"Export\Plat_Commande";
-                                    exportPath = exportPath + @"\Export_Plat";
+                                    if (!exportPath.Contains("Export_Plat"))
+                                    {
+                                        exportPath = exportPath + @"\Export_Plat";
+                                    }
 
                                     if (!Directory.Exists(exportPath))
                                     {

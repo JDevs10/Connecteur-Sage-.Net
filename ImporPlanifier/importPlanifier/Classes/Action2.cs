@@ -1863,7 +1863,6 @@ namespace importPlanifier.Classes
 
                         if (name_article != "")
                         {
-
                             using (OdbcConnection connectionSQL = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
                             {
                                 connectionSQL.Open();
@@ -1934,7 +1933,7 @@ namespace importPlanifier.Classes
                                     list_of_products[counter, 9] = line.reference; // AR_Ref
                                     list_of_products[counter, 10] = "1"; //DL_Valorise
                                     list_of_products[counter, 11] = "1"; //DE_NO
-                                    list_of_products[counter, 12] = name_article; // DL_Design
+                                    list_of_products[counter, 12] = name_article.Replace("'","''"); // DL_Design
                                     list_of_products[counter, 13] = (Convert.ToInt16(current_stock) - Convert.ToInt16(line.stock)).ToString().Replace(",", ".").Replace("-", "");  //line.stock; // DL_Qte
                                     list_of_products[counter, 14] = (Convert.ToDouble(line.stock) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
                                     if (list_of_products[counter, 14].Equals("0")) { list_of_products[counter, 14] = "0.000000"; } else if (!list_of_products[counter, 14].Contains(".")) { list_of_products[counter, 14] = list_of_products[counter, 14] + ".000000"; }
@@ -2444,7 +2443,7 @@ namespace importPlanifier.Classes
                                     list_of_products_ME[counter_ME, 9] = line.reference; // AR_Ref
                                     list_of_products_ME[counter_ME, 10] = "1"; //DL_Valorise
                                     list_of_products_ME[counter_ME, 11] = "1"; //DE_NO
-                                    list_of_products_ME[counter_ME, 12] = name_article; // DL_Design
+                                    list_of_products_ME[counter_ME, 12] = name_article.Replace("'", "''"); // DL_Design
                                     list_of_products_ME[counter_ME, 13] = (addAmount+"").Replace(",", ".").Replace("-", ""); //line.stock; // DL_Qte
                                     list_of_products_ME[counter_ME, 14] = (Convert.ToDouble(addAmount) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
                                     if (list_of_products_ME[counter_ME, 14].Equals("0")) { list_of_products_ME[counter_ME, 14] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 14].Contains(".")) { list_of_products_ME[counter_ME, 14] = list_of_products_ME[counter_ME, 14] + ".000000"; }
@@ -2577,7 +2576,7 @@ namespace importPlanifier.Classes
                                     list_of_products_MS[counter_MS, 9] = line.reference; // AR_Ref
                                     list_of_products_MS[counter_MS, 10] = "1"; //DL_Valorise
                                     list_of_products_MS[counter_MS, 11] = "1"; //DE_NO
-                                    list_of_products_MS[counter_MS, 12] = name_article; // DL_Design
+                                    list_of_products_MS[counter_MS, 12] = name_article.Replace("'", "''"); // DL_Design
                                     list_of_products_MS[counter_MS, 13] = (removeAmount).ToString().Replace(",", ".").Replace("-", "");  //line.stock; // DL_Qte
                                     list_of_products_MS[counter_MS, 14] = (Convert.ToDouble(removeAmount) * Convert.ToDouble(DL_PoidsNet)).ToString().Replace(",", "."); // DL_PoidsNet
                                     if (list_of_products_MS[counter_MS, 14].Equals("0")) { list_of_products_MS[counter_MS, 14] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 14].Contains(".")) { list_of_products_MS[counter_MS, 14] = list_of_products_MS[counter_MS, 14] + ".000000"; }
@@ -3168,7 +3167,7 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
                                 list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
                                 list_of_cmd_lines[counter, 11] = "1"; //DE_NO
-                                list_of_cmd_lines[counter, 12] = name_article; // DL_Design
+                                list_of_cmd_lines[counter, 12] = name_article.Replace("'", "''"); // DL_Design
                                 list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
                                 list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
                                 if (list_of_cmd_lines[counter, 14].Equals("0")) { list_of_cmd_lines[counter, 14] = "0.000000"; } else if (!list_of_cmd_lines[counter, 14].Contains(".")) { list_of_cmd_lines[counter, 14] = list_of_cmd_lines[counter, 14] + ".000000"; }
@@ -3617,7 +3616,6 @@ namespace importPlanifier.Classes
             }
             return null;
         }
-
 
         public static Client getClient(string id, StreamWriter writer)
         {

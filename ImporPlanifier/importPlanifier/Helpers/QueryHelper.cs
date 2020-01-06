@@ -887,7 +887,7 @@ namespace importPlanifier.Helpers
                 return "IF (EXISTS (SELECT * " +
                                     "FROM INFORMATION_SCHEMA.TABLES " +
                                     "WHERE TABLE_SCHEMA = '" + getPrefix() + "' " + //DataBase.dbo
-                                    "AND  TABLE_NAME = 'F_DOCENTETE')) " +
+                                    "AND  TABLE_NAME = 'DOC_Numerotation')) " +
                             "BEGIN " +
                                 "SELECT FIELD(0, 0); " +    //Return 1
                             "END " +
@@ -902,26 +902,24 @@ namespace importPlanifier.Helpers
             }
         }
 
-        public static string createVelog_PendingTable(bool sqlConnexion)
+        public static string createDOC_NumerotationTable(bool sqlConnexion)
         {
             if (sqlConnexion)
             {
-                return "CREATE TABLE " + getPrefix() + "Velog_Pending{" +
-                    "ID INT PRIMARY KEY NOT NULL, "+
-                    "CMD_cbMarq INT(255)," +
-                    "CMD_REF VARCHAR(255)," +
-                    "CMD_PIECE VARCHAR(255)," +
-                    "CMD_STATUT VARCHAR(255)" +
+                return "CREATE TABLE " + getPrefix() + "DOC_Numerotation{" +
+                    "ID INT PRIMARY KEY NOT NULL, " +
+                    "BC INT(255)," +
+                    "BL VARCHAR(255)," +
+                    "STK VARCHAR(255)," +
                     "}";
             }
             else
             {
-                return "CREATE TABLE Velog_Pending{" +
+                return "CREATE TABLE DOC_Numerotation{" +
                     "ID INT PRIMARY KEY NOT NULL, " +
-                    "CMD_cbMarq VARCHAR(255)," +
-                    "CMD_REF VARCHAR(255)," +
-                    "CMD_PIECE VARCHAR(255)," +
-                    "CMD_STATUT VARCHAR(255)" +
+                    "BC INT(255)," +
+                    "BL VARCHAR(255)," +
+                    "STK VARCHAR(255)," +
                     "}";
             }
         }
