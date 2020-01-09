@@ -40,6 +40,7 @@
             this.labelCompanyName = new System.Windows.Forms.Label();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -70,7 +71,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.button10 = new System.Windows.Forms.Button();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -105,7 +105,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(218, 26);
             this.label3.TabIndex = 12;
-            this.label3.Text = "Connecteur Sage v0.6.0_CUSTOM \r\nImport et export de documents commerciaux.\r\n";
+            this.label3.Text = "Connecteur Sage v2.4.9\r\nImport et export de documents commerciaux.\r\n";
             // 
             // tabPage3
             // 
@@ -219,6 +219,16 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Config";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(124, 176);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(90, 23);
+            this.button10.TabIndex = 11;
+            this.button10.Text = "Initialisé";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button9
             // 
@@ -534,16 +544,6 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
-            // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(124, 176);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(90, 23);
-            this.button10.TabIndex = 11;
-            this.button10.Text = "Initialisé";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // Main
             // 

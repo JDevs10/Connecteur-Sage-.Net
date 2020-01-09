@@ -1428,13 +1428,17 @@ namespace ConnecteurSage.Forms
                             logFileWriter_import.WriteLine(DateTime.Now + " : La taille du Stock liste: " + lineCount + " || Nombre total du stock dans le fihier: " + totallines);
 
                             logFileWriter_general.Flush();
+                            logFileWriter_import.Flush();
                         }
                         else
                         {
+                            logFileWriter_import.Flush();
                             if (insertStockVeolog(s, logFileWriter_import) == true)
                             {
                                 MessageBox.Show("Importe avec succès.", "*** Information ***");
 
+                                logFileWriter_general.Flush();
+                                logFileWriter_import.Flush();
                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                 logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès.");
 
@@ -1579,6 +1583,7 @@ namespace ConnecteurSage.Forms
                         //Veolog_DESADV_Colis dc = new Veolog_DESADV_Colis();
                         Veolog_DESADV_Lines dll = new Veolog_DESADV_Lines();
 
+                        List<String> doubleProductCheck = new List<String>();
                         List<Veolog_DESADV_Lines> dl = new List<Veolog_DESADV_Lines>(); //creating new object type desadvline and storing item values
 
                         foreach (string ligneDuFichier in lines) //read lines by line
@@ -1609,6 +1614,9 @@ namespace ConnecteurSage.Forms
                                     //deplacer les fichiers csv
                                     File.Move(filename, directoryName_ErrorFile + @"\"+ GetTimestamp(new DateTime()) + "_" + System.IO.Path.GetFileName(filename));
 
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
@@ -1633,15 +1641,26 @@ namespace ConnecteurSage.Forms
                             */
                             if (tab[0] == "L") //checking if its line of document inside the file for control
                             {
-                                Veolog_DESADV_Lines desadvLine_info = new Veolog_DESADV_Lines();
+                                //check if an article exist in my check list
+                                if (!doubleProductCheck.Contains(tab[2]))
+                                {
+                                    Veolog_DESADV_Lines desadvLine_info = new Veolog_DESADV_Lines();
 
-                                desadvLine_info.Numero_Ligne_Order = tab[1];
-                                desadvLine_info.Code_Article = tab[2];
-                                desadvLine_info.Quantite_Colis = tab[3];
-                                desadvLine_info.Numero_Lot = tab[4];
+                                    desadvLine_info.Numero_Ligne_Order = tab[1];
+                                    desadvLine_info.Code_Article = tab[2];
+                                    desadvLine_info.Quantite_Colis = tab[3];
+                                    desadvLine_info.Numero_Lot = tab[4];
 
-                                dl.Add(desadvLine_info);
-
+                                    dl.Add(desadvLine_info);
+                                    doubleProductCheck.Add(desadvLine_info.Code_Article);
+                                }
+                                else
+                                {
+                                    logFileWriter_general.WriteLine("");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
+                                    logFileWriter_general.WriteLine("");
+                                }
                                 i++;
                             }
 
@@ -1754,6 +1773,55 @@ namespace ConnecteurSage.Forms
             logFileWriter_general.Close();
         }
 
+        public static int checkDOC_Numerotation(StreamWriter writer)
+        {
+            int result = -1;
+            writer.WriteLine("");
+            writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : Vérifier si la table de numérotation existe");
+
+            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+            {
+                try
+                {
+                    connexion.Open();
+                    writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : SQL => " + QueryHelper.checkDOC_NumerotationTable(true));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.checkDOC_NumerotationTable(true), connexion);
+                    using (IDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            if (reader[0].ToString() == "1")
+                            {
+                                result = 1;
+                                writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : La table de numérotation existe avec des données");
+                            }
+                            else
+                            {
+                                result = 0;
+                                writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : La table de numérotation existe sans des données");
+                            }
+                        }
+                        else
+                        {
+                            result = 0;
+                            writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : Aucune donnée n'existe pour la ligne/colonne.");
+                        }
+                    }
+                    connexion.Close();
+                }
+                catch (Exception ex)
+                {
+                    writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : ******************** Erreur ********************");
+                    writer.WriteLine(DateTime.Now + " : Erreur[201]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    result = -1;
+                    connexion.Close();
+                }
+            }
+            writer.WriteLine("");
+            return result;
+        }
+
+
         public static string lastNumberReference(string mask, StreamWriter logFileWriter)
         {
 
@@ -1765,18 +1833,50 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask ME");
 
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion()){
-                    try{
-                        connection.Open();
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                {
+                    try
+                    {
+                        connexion.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(false, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
-                            
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "STK_ME"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "STK_ME"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "ME200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask ME : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get the last doc reference in from the ME list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command1 = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command1.ExecuteReader()) // read rows of the executed query
                             {
                                 if (reader.Read()) // reads lines/rows from the query
                                 {
                                     db_result = reader[0].ToString();
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask ME : "+db_result);
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask ME : " + db_result);
                                 }
                                 else
                                 {
@@ -1784,40 +1884,51 @@ namespace ConnecteurSage.Forms
                                     logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask ME : " + db_result);
                                 }
                             }
-
-                    }catch(OdbcException ex)
+                        }
+                    }
+                    catch (OdbcException ex)
                     {
-                        
-
-                        MessageBox.Show("Message : " + ex.Message + ".");
+                        Console.WriteLine("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  ********************** OdbcException *********************");
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Import annulée");
-                        logFileWriter.Close();
                         return null;
                     }
 
-                    //ME00001
-                    int chiffreTotal = 7;
-                    logFileWriter.WriteLine(DateTime.Now+ " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
-                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
-
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    try
                     {
-                        zeros += "0";
+                        //ME00001
+                        int chiffreTotal = 7;
+                        int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                        int newMaskID = lastMaskID + 1;
+
+                        result = mask; // put ME before adding '0'
+                        string zeros = "";
+                        string result_ = result + "" + newMaskID;
+
+                        for (int i = result_.Length; i < chiffreTotal; i++)
+                        {
+                            zeros += "0";
+                        }
+                        result += zeros + "" + newMaskID;
+
+                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask ME : " + result);
                     }
-                    result += zeros + "" + newMaskID;
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Exception *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : Nouveau mask ME ne peut pas etre cree");
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        return null;
+                    }
 
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask ME : " + result);
+
                 }
-
+                logFileWriter.WriteLine("");
                 return result;
             }
             else if (mask == "MS")
@@ -1825,98 +1936,169 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask MS");
 
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
                 {
                     try
                     {
-                        connection.Open();
+                        connexion.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(false, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
-
-                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
                         {
-                            if (reader.Read()) // reads lines/rows from the query
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "STK_MS"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "STK_MS"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
                             {
-                                db_result = reader[0].ToString();
-                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask MS : " + db_result);
-                            }
-                            else
-                            {
-                                db_result = "MS00000";
-                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask MS : " + db_result);
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "MS200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask MS : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
                             }
                         }
 
+                        //Get the last doc reference in from the ME list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    db_result = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask MS : " + db_result);
+                                }
+                                else
+                                {
+                                    db_result = "MS00000";
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask MS : " + db_result);
+                                }
+                            }
+                        }
                     }
                     catch (OdbcException ex)
                     {
-                        MessageBox.Show("Message : " + ex.Message + ".");
+                        Console.WriteLine("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
                         logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
                         return null;
                     }
 
-                    //ME00001
-                    int chiffreTotal = 7;
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
-                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
 
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    try
                     {
-                        zeros += "0";
-                    }
-                    result += zeros + "" + newMaskID;
+                        //MS00001
+                        int chiffreTotal = 7;
+                        int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                        int newMaskID = lastMaskID + 1;
 
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask MS : " + result);
+                        result = mask; // put ME before adding '0'
+                        string zeros = "";
+                        string result_ = result + "" + newMaskID;
+
+                        for (int i = result_.Length; i < chiffreTotal; i++)
+                        {
+                            zeros += "0";
+                        }
+                        result += zeros + "" + newMaskID;
+
+                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask MS : " + result);
+                    }
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Exception *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : Nouveau mask ME ne peut pas etre cree");
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        return null;
+                    }
                 }
+                logFileWriter.WriteLine("");
                 return result;
             }
-            else if(mask == "BL")
+            else if (mask == "BL")
             {
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BL");
 
-                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
                 {
                     try
                     {
-                        connection.Open();
+                        connexion.Open();
 
-                        OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connection); //execute the function within this statement : getNegativeStockOfAProduct()
-
-                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
                         {
-                            if (reader.Read()) // reads lines/rows from the query
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BL"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BL"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
                             {
-                                db_result = reader[0].ToString();
-                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BL : " + db_result);
-                            }
-                            else
-                            {
-                                db_result = "BL00000";
-                                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BL : " + db_result);
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "BL200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BL : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
                             }
                         }
-                        
+
+                        //Get the last doc reference in from the ME list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    db_result = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BL : " + db_result);
+                                }
+                                else
+                                {
+                                    db_result = "BL00000";
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BL : " + db_result);
+                                }
+                            }
+                        }
+
                     }
                     catch (OdbcException ex)
                     {
-                        MessageBox.Show("Message : " + ex.Message + ".");
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
                         logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
                         logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        logFileWriter.Close();
                         return null;
                     }
 
@@ -1938,10 +2120,99 @@ namespace ConnecteurSage.Forms
 
                     logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BL : " + result);
                 }
+                logFileWriter.WriteLine("");
                 return result;
             }
+            else if (mask == "BC")
+            {
+                logFileWriter.WriteLine("");
+                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BC");
 
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                {
+                    try
+                    {
+                        connexion.Open();
 
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BC"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BC"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "BC200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BC : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get the last doc reference in from the ME list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    db_result = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BC : " + db_result);
+                                }
+                                else
+                                {
+                                    db_result = "BC00000";
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BC : " + db_result);
+                                }
+                            }
+                        }
+
+                    }
+                    catch (OdbcException ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        return null;
+                    }
+
+                    //ME00001
+                    int chiffreTotal = 7;
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                    int newMaskID = lastMaskID + 1;
+
+                    result = mask; // put ME before adding '0'
+                    string zeros = "";
+                    string result_ = result + "" + newMaskID;
+
+                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    {
+                        zeros += "0";
+                    }
+                    result += zeros + "" + newMaskID;
+
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BC : " + result);
+                }
+                logFileWriter.WriteLine("");
+                return result;
+            }
             return null;
         }
 
@@ -2646,6 +2917,8 @@ namespace ConnecteurSage.Forms
             double DO_TotalTTC_ME = 0.0;
             double DO_TotalHT_MS = 0.0;
             double DO_TotalTTC_MS = 0.0;
+            double DO_TotalPoid = 0.0;
+
             string reference_ME_doc = lastNumberReference("ME", logFileWriter);   //Doc ME
             if (reference_ME_doc == null)
             {
@@ -2673,17 +2946,48 @@ namespace ConnecteurSage.Forms
                     bool create_ME_doc = false;
                     bool create_MS_doc = false;
 
+                    //Get the list of all Taxes (TVA)
+                    //So i can calculate the ttc later
+                    List<TVA> tvaList = null;
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupére tous les tva");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getAllTVA(true));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connexion))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                tvaList = new List<TVA>();
+                                tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                while (reader.Read())
+                                {
+                                    tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                }
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                tvaList = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
+                            }
+                        }
+                    }
+
                     foreach (Stock line in s)
                     {
                         logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Lire la ligne de l'article.");
 
+                        
                         int total_negative = 0;
                         int total_positive = 0;
                         string name_article = "";
                         string DL_PoidsNet = "0";
                         string DL_PoidsBrut = "0";
-                        string DL_PrixUnitaire = "0";
+                        string DL_PrixUnitaire_buyPrice = "0";
+                        string DL_PrixUnitaire_salePriceHT = "0";
                         string DL_PUTTC = "0";
+                        string DL_Taxe1 = "";
+                        string DL_CodeTaxe1 = "";
 
                         // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
@@ -2701,7 +3005,7 @@ namespace ConnecteurSage.Forms
                                     name_article = (reader[0].ToString());  // sum up the total_negative variable. - check query
                                     DL_PoidsNet = (reader[1].ToString()); // get unit weight NET - check query
                                     DL_PoidsBrut = (reader[2].ToString()); // get unit weight BRUT - check query  
-                                    DL_PrixUnitaire = (reader[3].ToString()); // get unit price  - check query
+                                    DL_PrixUnitaire_salePriceHT = (reader[3].ToString()); // get unit price  - check query
                                 }
                                 else // If no rows returned
                                 {
@@ -2788,13 +3092,52 @@ namespace ConnecteurSage.Forms
 
                                     //calculate product ttc
                                     double product_ttc = 0.0;
-                                    double product_ht = Convert.ToDouble(DL_PrixUnitaire);
-                                    double product_20_P = (product_ht * 20) / 100;
-                                    product_ttc = product_ht + product_20_P;
-                                    DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                    try
+                                    {
+                                        logFileWriter.WriteLine("");
+                                        if (tvaList != null)
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : List des TVA trouvé");
+                                            TVA tva = null;
+                                            foreach (TVA tva_ in tvaList)
+                                            {
+                                                if (tva_.TA_Code == DL_CodeTaxe1)
+                                                {
+                                                    tva = tva_;
+                                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                    break;
+                                                }
+                                            }
 
-                                    DO_TotalHT_ME = DO_TotalHT_ME + (Convert.ToDouble(addAmount) * product_ht);
-                                    DO_TotalTTC_ME = DO_TotalTTC_ME + (Convert.ToDouble(addAmount) * product_ttc);
+                                            double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                            double product_20_P = (product_ht * Convert.ToDouble(tva.TA_Taux)) / 100;
+                                            product_ttc = product_ht + product_20_P;
+                                            DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                        }
+                                        else
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Warning TVA ********************");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BL seront 0");
+
+                                            double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                            double product_20_P = (product_ht * 0.0) / 100;
+                                            product_ttc = product_ht + product_20_P;
+                                            DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                        }
+                                        logFileWriter.Flush();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        logFileWriter.WriteLine("");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Exception TVA ********************");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                        logFileWriter.Flush();
+                                        return false;
+                                    }
 
 
                                     // ME00000 : ME prefix will be used to create document
@@ -2816,15 +3159,15 @@ namespace ConnecteurSage.Forms
                                     if (list_of_products_ME[counter_ME, 14].Equals("0")) { list_of_products_ME[counter_ME, 14] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 14].Contains(".")) { list_of_products_ME[counter_ME, 14] = list_of_products_ME[counter_ME, 14] + ".000000"; }
                                     list_of_products_ME[counter_ME, 15] = (Convert.ToDouble(addAmount) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
                                     if (list_of_products_ME[counter_ME, 15].Equals("0")) { list_of_products_ME[counter_ME, 15] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 15].Contains(".")) { list_of_products_ME[counter_ME, 15] = list_of_products_ME[counter_ME, 15] + ".000000"; }
-                                    list_of_products_ME[counter_ME, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                    list_of_products_ME[counter_ME, 16] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixUnitaire
                                     if (list_of_products_ME[counter_ME, 16].Equals("0")) { list_of_products_ME[counter_ME, 16] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 16].Contains(".")) { list_of_products_ME[counter_ME, 16] = list_of_products_ME[counter_ME, 16] + ".000000"; }
-                                    list_of_products_ME[counter_ME, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                    list_of_products_ME[counter_ME, 17] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixRU
                                     if (list_of_products_ME[counter_ME, 17].Equals("0")) { list_of_products_ME[counter_ME, 17] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 17].Contains(".")) { list_of_products_ME[counter_ME, 17] = list_of_products_ME[counter_ME, 17] + ".000000"; }
-                                    list_of_products_ME[counter_ME, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
-                                    list_of_products_ME[counter_ME, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                    list_of_products_ME[counter_ME, 18] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_CMUP
+                                    list_of_products_ME[counter_ME, 19] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // EU_Enumere
                                     list_of_products_ME[counter_ME, 20] = (addAmount + "").ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
                                     if (list_of_products_ME[counter_ME, 20].Equals("0")) { list_of_products_ME[counter_ME, 20] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 20].Contains(".")) { list_of_products_ME[counter_ME, 20] = list_of_products_ME[counter_ME, 20] + ".000000"; }
-                                    list_of_products_ME[counter_ME, 21] = (Convert.ToDouble(addAmount) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                    list_of_products_ME[counter_ME, 21] = (Convert.ToDouble(addAmount) * Convert.ToDouble(DL_PrixUnitaire_salePriceHT)).ToString().Replace(",", "."); //DL_MontantHT
                                     list_of_products_ME[counter_ME, 22] = (Convert.ToDouble(addAmount) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
                                     if (list_of_products_ME[counter_ME, 20].Equals("0")) { list_of_products_ME[counter_ME, 20] = "0.000000"; } else if (!list_of_products_ME[counter_ME, 20].Contains(".")) { list_of_products_ME[counter_ME, 20] = list_of_products_ME[counter_ME, 20] + ".000000"; }
                                     if (list_of_products_ME[counter_ME, 21].Equals("0")) { list_of_products_ME[counter_ME, 21] = "0.0"; } else if (!list_of_products_ME[counter_ME, 21].Contains(".")) { list_of_products_ME[counter_ME, 21] = list_of_products_ME[counter_ME, 21] + ".0"; }
@@ -2869,8 +3212,8 @@ namespace ConnecteurSage.Forms
                                     list_of_products_ME[counter_ME, 59] = "0";                  //DL_NoSousTotal
                                     list_of_products_ME[counter_ME, 60] = "0";                //CA_No
                                     list_of_products_ME[counter_ME, 61] = "0.000000";            // DL_PUBC
-                                    list_of_products_ME[counter_ME, 62] = "C20";                  // DL_CodeTaxe1
-                                    list_of_products_ME[counter_ME, 63] = "20.000000";           // DL_Taxe1
+                                    list_of_products_ME[counter_ME, 62] = DL_CodeTaxe1;                  // DL_CodeTaxe1
+                                    list_of_products_ME[counter_ME, 63] = DL_Taxe1.ToString().Replace(",", ".");           // DL_Taxe1
                                     list_of_products_ME[counter_ME, 64] = "0.000000";            // DL_Taxe2
                                     list_of_products_ME[counter_ME, 65] = "0.000000";            // DL_Taxe3
                                     list_of_products_ME[counter_ME, 66] = "0";                   // DL_TypeTaux1
@@ -2911,13 +3254,52 @@ namespace ConnecteurSage.Forms
 
                                     //calculate product ttc
                                     double product_ttc = 0.0;
-                                    double product_ht = Convert.ToDouble(DL_PrixUnitaire);
-                                    double product_20_P = (product_ht * 20) / 100;
-                                    product_ttc = product_ht + product_20_P;
-                                    DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                    try
+                                    {
+                                        logFileWriter.WriteLine("");
+                                        if (tvaList != null)
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : List des TVA trouvé");
+                                            TVA tva = null;
+                                            foreach (TVA tva_ in tvaList)
+                                            {
+                                                if (tva_.TA_Code == DL_CodeTaxe1)
+                                                {
+                                                    tva = tva_;
+                                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                    break;
+                                                }
+                                            }
 
-                                    DO_TotalHT_MS = DO_TotalHT_MS + (Convert.ToDouble(removeAmount) * product_ht);
-                                    DO_TotalTTC_MS = DO_TotalTTC_MS + (Convert.ToDouble(removeAmount) * product_ttc);
+                                            double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                            double product_20_P = (product_ht * Convert.ToDouble(tva.TA_Taux)) / 100;
+                                            product_ttc = product_ht + product_20_P;
+                                            DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                        }
+                                        else
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Warning TVA ********************");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BL seront 0");
+
+                                            double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                            double product_20_P = (product_ht * 0.0) / 100;
+                                            product_ttc = product_ht + product_20_P;
+                                            DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                        }
+                                        logFileWriter.Flush();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        logFileWriter.WriteLine("");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Exception TVA ********************");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                        logFileWriter.Flush();
+                                        return false;
+                                    }
 
                                     // MS00000 : MS prefix will be used to create document
                                     list_of_products_MS[counter_MS, 0] = "2"; // DO_Domaine
@@ -2938,15 +3320,15 @@ namespace ConnecteurSage.Forms
                                     if (list_of_products_MS[counter_MS, 14].Equals("0")) { list_of_products_MS[counter_MS, 14] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 14].Contains(".")) { list_of_products_MS[counter_MS, 14] = list_of_products_MS[counter_MS, 14] + ".000000"; }
                                     list_of_products_MS[counter_MS, 15] = (Convert.ToDouble(removeAmount) * Convert.ToDouble(DL_PoidsBrut)).ToString().Replace(",", "."); // DL_PoidsBrut
                                     if (list_of_products_MS[counter_MS, 15].Equals("0")) { list_of_products_MS[counter_MS, 15] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 15].Contains(".")) { list_of_products_MS[counter_MS, 15] = list_of_products_MS[counter_MS, 15] + ".000000"; }
-                                    list_of_products_MS[counter_MS, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                    list_of_products_MS[counter_MS, 16] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixUnitaire
                                     if (list_of_products_MS[counter_MS, 16].Equals("0")) { list_of_products_MS[counter_MS, 16] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 16].Contains(".")) { list_of_products_MS[counter_MS, 16] = list_of_products_MS[counter_MS, 16] + ".000000"; }
-                                    list_of_products_MS[counter_MS, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                    list_of_products_MS[counter_MS, 17] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixRU
                                     if (list_of_products_MS[counter_MS, 17].Equals("0")) { list_of_products_MS[counter_MS, 17] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 17].Contains(".")) { list_of_products_MS[counter_MS, 17] = list_of_products_MS[counter_MS, 17] + ".000000"; }
-                                    list_of_products_MS[counter_MS, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
-                                    list_of_products_MS[counter_MS, 19] = DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                    list_of_products_MS[counter_MS, 18] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_CMUP
+                                    list_of_products_MS[counter_MS, 19] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // EU_Enumere
                                     list_of_products_MS[counter_MS, 20] = (removeAmount).ToString().Replace(",", ".").Replace("-", ""); // EU_Qte; // EU_Qte
                                     if (list_of_products_MS[counter_MS, 20].Equals("0")) { list_of_products_MS[counter_MS, 20] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 20].Contains(".")) { list_of_products_MS[counter_MS, 20] = list_of_products_MS[counter_MS, 20] + ".000000"; }
-                                    list_of_products_MS[counter_MS, 21] = (Convert.ToDouble(removeAmount) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                    list_of_products_MS[counter_MS, 21] = (Convert.ToDouble(removeAmount) * Convert.ToDouble(DL_PrixUnitaire_salePriceHT)).ToString().Replace(",", "."); //DL_MontantHT
                                     list_of_products_MS[counter_MS, 22] = (Convert.ToDouble(removeAmount) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
                                     if (list_of_products_MS[counter_MS, 20].Equals("0")) { list_of_products_MS[counter_MS, 20] = "0.000000"; } else if (!list_of_products_MS[counter_MS, 20].Contains(".")) { list_of_products_MS[counter_MS, 20] = list_of_products_MS[counter_MS, 20] + ".000000"; }
                                     if (list_of_products_MS[counter_MS, 21].Equals("0")) { list_of_products_MS[counter_MS, 21] = "0.0"; } else if (!list_of_products_MS[counter_MS, 21].Contains(".")) { list_of_products_MS[counter_MS, 21] = list_of_products_MS[counter_MS, 21] + ".0"; }
@@ -2991,8 +3373,8 @@ namespace ConnecteurSage.Forms
                                     list_of_products_MS[counter_MS, 59] = "0";                  //DL_NoSousTotal
                                     list_of_products_MS[counter_MS, 60] = "0";                //CA_No
                                     list_of_products_MS[counter_MS, 61] = "0.000000";            // DL_PUBC
-                                    list_of_products_MS[counter_MS, 62] = "C20";                  // DL_CodeTaxe1
-                                    list_of_products_MS[counter_MS, 63] = "20.000000";           // DL_Taxe1
+                                    list_of_products_ME[counter_ME, 62] = DL_CodeTaxe1;                  // DL_CodeTaxe1
+                                    list_of_products_ME[counter_ME, 63] = DL_Taxe1.ToString().Replace(",", ".");           // DL_Taxe1
                                     list_of_products_MS[counter_MS, 64] = "0.000000";            // DL_Taxe2
                                     list_of_products_MS[counter_MS, 65] = "0.000000";            // DL_Taxe3
                                     list_of_products_MS[counter_MS, 66] = "0";                   // DL_TypeTaux1
@@ -3129,6 +3511,25 @@ namespace ConnecteurSage.Forms
                         logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Information ****************************************");
                         logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Document ME insert avec succès");
                         logFileWriter.WriteLine("");
+
+                        //update document numbering
+                        try
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Mettre à jour la numérotation du document \"" + reference_ME_doc + "\".");
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "STK_ME", reference_ME_doc));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "STK_ME", reference_ME_doc), connexion);
+                            IDataReader reader = command.ExecuteReader();
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Nouvelle numérotation à jour!");
+                        }
+                        catch (Exception ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                            return false;
+                        }
                     }
 
                     if (create_MS_doc) //Generate document MS (Doc_Entete && DocLigne) if i need to.
@@ -3199,6 +3600,25 @@ namespace ConnecteurSage.Forms
                         logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : **************************************** Information ****************************************");
                         logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Document MS insert avec succès");
                         logFileWriter.WriteLine("");
+
+                        //update document numbering
+                        try
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Mettre à jour la numérotation du document \"" + reference_MS_doc + "\".");
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "STK_MS", reference_MS_doc));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "STK_MS", reference_MS_doc), connexion);
+                            IDataReader reader = command.ExecuteReader();
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Nouvelle numérotation à jour!");
+                        }
+                        catch (Exception ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                            return false;
+                        }
                     }
 
 
@@ -3229,7 +3649,7 @@ namespace ConnecteurSage.Forms
 
         private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
         {
-            string[,] list_of_cmd_lines = new string[dl.Count, 28];    // new string [x,y]
+            string[,] list_of_cmd_lines = new string[dl.Count, 81];    // new string [x,y]
             string[] list_of_client_info = null;
 
             int position_item = 0;
@@ -3239,13 +3659,6 @@ namespace ConnecteurSage.Forms
             //string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
-            string ref_client = "";
-            string ref_article = "";
-            string name_article = "";
-            string DL_PoidsNet = "0";
-            string DL_PoidsBrut = "0";
-            string DL_PrixUnitaire = "0";
-            string DL_PUTTC = "0";
 
             // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
@@ -3263,6 +3676,7 @@ namespace ConnecteurSage.Forms
                     string do_totalTTC_ = "";
                     string do_NetAPayer_ = "";
                     string do_MontantRegle_ = "";
+
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupérer la référence Commande client livré, la narure OP ou P et le total ht de la commande " + dh.Ref_Commande_Donneur_Ordre);
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
@@ -3287,36 +3701,88 @@ namespace ConnecteurSage.Forms
                         }
                     }
 
+                    //Get the list of all Taxes (TVA)
+                    //So i can calculate the ttc later
+                    List<TVA> tvaList = null;
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupére tous les tva");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getAllTVA(true));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connection))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                tvaList = new List<TVA>();
+                                tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                while (reader.Read())
+                                {
+                                    tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                }
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                tvaList = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
+                            }
+                        }
+                    }
+
                     //get veolog delivery date and time
                     string year = dh.Date_De_Expedition.Substring(0, 4);
                     string month = dh.Date_De_Expedition.Substring(4, 2);
                     string day = dh.Date_De_Expedition.Substring(6, 2);
-                    string hour = dh.Date_De_Expedition.Substring(0, 2);
-                    string mins = dh.Date_De_Expedition.Substring(2, 2);
-                    string veologDeliverDate = year + "-" + month + "-" + day;
-                    string veologDeliverTime = hour + ":" + mins + ":0.000";
-                    string veologDeliveryDateTime = veologDeliverDate + " " + veologDeliverTime;
+                    string hour = dh.Heure_De_Expedition.Substring(0, 2);
+                    string mins = dh.Heure_De_Expedition.Substring(2, 2);
+                    string veologDeliveryDate = year + "-" + month + "-" + day;
+                    string veologDeliveryTime = hour + ":" + mins + ":00";
+                    string veologDeliveryDateTime = veologDeliveryDate + " " + veologDeliveryTime;
 
                     int counter = 0;
 
                     foreach (Veolog_DESADV_Lines line in dl) //read item by item
                     {
+                        string ref_client = "";
+                        string ref_article = "";
+                        string name_article = "";
+                        string DL_PoidsNet = "0";
+                        string DL_PoidsBrut = "0";
+                        string DL_PrixUnitaire_buyPrice = "0";
+                        string DL_PrixUnitaire_salePriceHT = "0";
+                        string DL_PUTTC = "0";
+                        string COLIS_article = "";
+                        string PCB_article = "";
+                        string COMPLEMENT_article = "";
+                        string DL_Taxe1 = "";
+                        string DL_CodeTaxe1 = "";
+                        string DL_PieceBC = "";
+                        string DL_DateBC = "";
+                        string DL_QteBC = "";
+
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Lire la ligne de l'article.");
 
                         //get Product Name By Reference
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getProductNameByReference_DESADV(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
                             using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
                                 if (reader.Read()) // If any rows returned
                                 {
-                                    ref_article = (reader[0].ToString());         // get product ref
-                                    name_article = (reader[1].ToString());        // sum up the total_negative variable. - check query
-                                    DL_PoidsNet = (reader[2].ToString());         // get unit weight NET - check query
-                                    DL_PoidsBrut = (reader[3].ToString());        // get unit weight BRUT - check query  
-                                    DL_PrixUnitaire = (reader[4].ToString());     // get unit price ht - check query 
-                                    //DL_PUTTC = (reader[5].ToString());            // get unit price ttc
+                                    ref_article = (reader[0].ToString());                   // get product ref
+                                    name_article = (reader[1].ToString());                  // sum up the total_negative variable. - check query
+                                    DL_PoidsNet = (reader[2].ToString());                   // get unit weight NET - check query
+                                    DL_PoidsBrut = (reader[3].ToString());                  // get unit weight BRUT - check query  
+                                    //DL_PrixUnitaire_buyPrice = (reader[4].ToString());      // get (Prix d'achat) unit price - check query 
+                                    DL_PrixUnitaire_salePriceHT = (reader[4].ToString());   // get (Prix de vente) unit price ht - check query
+                                    COLIS_article = reader[5].ToString();
+                                    PCB_article = reader[6].ToString();
+                                    COMPLEMENT_article = reader[7].ToString();
+                                    DL_Taxe1 = reader[8].ToString();
+                                    DL_CodeTaxe1 = reader[9].ToString();
+                                    DL_PieceBC = reader[10].ToString();
+                                    DL_DateBC = reader[11].ToString();
+                                    DL_QteBC = reader[12].ToString().Replace(",", ".");
                                 }
                                 else// If no rows returned
                                 {
@@ -3356,7 +3822,7 @@ namespace ConnecteurSage.Forms
                             {
                                 if (reader.Read()) // If any rows returned
                                 {
-                                    list_of_client_info = new string[13];
+                                    list_of_client_info = new string[15];
                                     list_of_client_info[0] = reader[0].ToString();      // CT_Num
                                     list_of_client_info[1] = reader[1].ToString();      // CA_Num 
                                     list_of_client_info[2] = reader[2].ToString();      // CG_NumPrinc
@@ -3370,6 +3836,7 @@ namespace ConnecteurSage.Forms
                                     list_of_client_info[10] = reader[10].ToString();    // CO_No
                                     list_of_client_info[11] = reader[11].ToString();    //  DO_Tarif = N_CatTarif
                                     list_of_client_info[12] = reader[12].ToString();    //  DO_Expedit = N_Expedition du tier
+                                    list_of_client_info[13] = reader[13].ToString();    //  CT_Intitule
                                 }
                                 else// If no rows returned
                                 {
@@ -3378,6 +3845,37 @@ namespace ConnecteurSage.Forms
                                 }
                             }
                         }
+
+                        //get client delivery adress
+                        if (list_of_client_info != null)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientDeliveryAddress_DESADV(true, ref_client));
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientDeliveryAddress_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                            {
+                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                {
+                                    if (reader.Read()) // If any rows returned
+                                    {
+                                        list_of_client_info[14] = reader[0].ToString();    // LI_No
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Adresse de livraison (" + reader[0].ToString() + ") trouvé!");
+                                    }
+                                    else// If no rows returned
+                                    {
+                                        //do nothing.
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. list_of_client_info est null");
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Erreur ********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucun client trouver.");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                            return null;
+                        }
+
 
                         if (ref_article != "" && name_article != "" && list_of_client_info != null)
                         {
@@ -3391,10 +3889,59 @@ namespace ConnecteurSage.Forms
 
                                 //calculate product ttc
                                 double product_ttc = 0.0;
-                                double product_ht = Convert.ToDouble(DL_PrixUnitaire);
-                                double product_20_P = (product_ht * 20) / 100;
-                                product_ttc = product_ht + product_20_P;
-                                DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                try
+                                {
+                                    logFileWriter.WriteLine("");
+                                    if (tvaList != null)
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : List des TVA trouvé");
+                                        TVA tva = null;
+                                        foreach (TVA tva_ in tvaList)
+                                        {
+                                            if (tva_.TA_Code == DL_CodeTaxe1)
+                                            {
+                                                tva = tva_;
+                                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                break;
+                                            }
+                                        }
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * Convert.ToDouble(tva.TA_Taux)) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                    }
+                                    else
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Warning TVA ********************");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BL seront 0");
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * 0.0) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Prix TTC créé");
+                                    }
+                                    logFileWriter.Flush();
+                                }
+                                catch (Exception ex)
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ******************** Exception TVA ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                    logFileWriter.Flush();
+                                    return null;
+                                }
+
+                                // input DL_DateBC: 03 - 01 - 2020 00:00:00;
+                                string original_date = DL_DateBC;
+                                string date = original_date.Split(' ')[0];
+                                string time = original_date.Split(' ')[1];
+                                DL_DateBC = date.Split('/')[2] + "-" + date.Split('/')[1] + "-" + date.Split('/')[0] + " " + time;
+                                // ouput DL_DateBC: 2020-01-03 00:00:00;
 
                                 // DESADV prefix will be used to create document
                                 list_of_cmd_lines[counter, 0] = "0"; // DO_Domaine
@@ -3402,14 +3949,14 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 2] = "3"; //DO_DocType
                                 list_of_cmd_lines[counter, 3] = list_of_client_info[0]; //CT_NUM
                                 list_of_cmd_lines[counter, 4] = reference_DESADV_doc; //DO_Piece
-                                list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
-                                list_of_cmd_lines[counter, 6] = curr_date; //DL_DateBC
+                                list_of_cmd_lines[counter, 5] = curr_date_time; //DO_Date
+                                list_of_cmd_lines[counter, 6] = DL_DateBC; //DL_DateBC
                                 list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
                                 list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Client_Livre; // DO_Ref
                                 list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
                                 list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
                                 list_of_cmd_lines[counter, 11] = "1"; //DE_NO
-                                list_of_cmd_lines[counter, 12] = name_article; // DL_Design
+                                list_of_cmd_lines[counter, 12] = name_article.Replace("'", "''"); // DL_Design
                                 list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
                                 list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
                                 if (list_of_cmd_lines[counter, 14].Equals("0")) { list_of_cmd_lines[counter, 14] = "0.000000"; } else if (!list_of_cmd_lines[counter, 14].Contains(".")) { list_of_cmd_lines[counter, 14] = list_of_cmd_lines[counter, 14] + ".000000"; }
@@ -3417,18 +3964,18 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 15] = Convert.ToDouble(DL_PoidsBrut).ToString().Replace(",", "."); // DL_PoidsBrut
                                 if (list_of_cmd_lines[counter, 15].Equals("0")) { list_of_cmd_lines[counter, 15] = "0.000000"; } else if (!list_of_cmd_lines[counter, 15].Contains(".")) { list_of_cmd_lines[counter, 15] = list_of_cmd_lines[counter, 15] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixUnitaire
                                 if (list_of_cmd_lines[counter, 16].Equals("0")) { list_of_cmd_lines[counter, 16] = "0.000000"; } else if (!list_of_cmd_lines[counter, 16].Contains(".")) { list_of_cmd_lines[counter, 16] = list_of_cmd_lines[counter, 16] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_PrixRU
+                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixRU
                                 if (list_of_cmd_lines[counter, 17].Equals("0")) { list_of_cmd_lines[counter, 17] = "0.000000"; } else if (!list_of_cmd_lines[counter, 17].Contains(".")) { list_of_cmd_lines[counter, 17] = list_of_cmd_lines[counter, 17] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire.ToString().Replace(",", "."); // DL_CMUP
-                                list_of_cmd_lines[counter, 19] = "Heure"; DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_CMUP
+                                list_of_cmd_lines[counter, 19] = "Heure";    //DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
                                 list_of_cmd_lines[counter, 20] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
                                 if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
 
-                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire)).ToString().Replace(",", "."); //DL_MontantHT
+                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire_salePriceHT)).ToString().Replace(",", "."); //DL_MontantHT
                                 list_of_cmd_lines[counter, 22] = (Convert.ToDouble(line.Quantite_Colis) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
                                 if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
                                 if (list_of_cmd_lines[counter, 21].Equals("0")) { list_of_cmd_lines[counter, 21] = "0.000000"; } else if (!list_of_cmd_lines[counter, 21].Contains(".")) { list_of_cmd_lines[counter, 21] = list_of_cmd_lines[counter, 21] + ".0"; }
@@ -3441,13 +3988,13 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 27] = DL_PUTTC; //DL_PUTTC
                                 list_of_cmd_lines[counter, 28] = "0";   //DL_TTC
 
-                                list_of_cmd_lines[counter, 29] = "";   //DL_PieceBC
-                                list_of_cmd_lines[counter, 30] = "";   //DL_PieceBL
-                                list_of_cmd_lines[counter, 31] = curr_date;   // DL_DateBL
+                                list_of_cmd_lines[counter, 29] = DL_PieceBC;   //DL_PieceBC
+                                list_of_cmd_lines[counter, 30] = reference_DESADV_doc;   //DL_PieceBL
+                                list_of_cmd_lines[counter, 31] = curr_date_time;   // DL_DateBL
                                 list_of_cmd_lines[counter, 32] = "0";   //DL_TNomencl
                                 list_of_cmd_lines[counter, 33] = "0";   //DL_TRemPied
                                 list_of_cmd_lines[counter, 34] = "0";   //DL_TRemExep
-                                list_of_cmd_lines[counter, 35] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");   //DL_QteBC
+                                list_of_cmd_lines[counter, 35] = DL_QteBC.ToString().Replace(",", "."); //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");   //DL_QteBC
                                 list_of_cmd_lines[counter, 36] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");   //DL_QteBL
                                 list_of_cmd_lines[counter, 37] = "0.000000";    //DL_Remise01REM_Valeur
                                 list_of_cmd_lines[counter, 38] = "0";           //DL_Remise01REM_Type
@@ -3461,21 +4008,21 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 46] = "";                    //CA_Num
                                 list_of_cmd_lines[counter, 47] = "0.000000";            //DL_Frais
                                 list_of_cmd_lines[counter, 48] = "";                    //AC_RefClient
-                                list_of_cmd_lines[counter, 49] = "0";                   //DL_PiecePL
-                                list_of_cmd_lines[counter, 50] = curr_date;                    //DL_DatePL
-                                list_of_cmd_lines[counter, 51] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                   //DL_QtePL
+                                list_of_cmd_lines[counter, 49] = "";                   //DL_PiecePL
+                                list_of_cmd_lines[counter, 50] = "NULL";                    //DL_DatePL
+                                list_of_cmd_lines[counter, 51] = "0.000000"; // Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                   //DL_QtePL
                                 list_of_cmd_lines[counter, 52] = "";                    //DL_NoColis
                                 list_of_cmd_lines[counter, 53] = "0";                   //DL_NoLink
                                 list_of_cmd_lines[counter, 54] = "0";                    //CO_No
                                 list_of_cmd_lines[counter, 55] = "0";                //DT_No
                                 list_of_cmd_lines[counter, 56] = "";                    //DL_PieceDE
-                                list_of_cmd_lines[counter, 57] = curr_date;                   //DL_DateDe
-                                list_of_cmd_lines[counter, 58] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                    //DL_QteDE
+                                list_of_cmd_lines[counter, 57] = "NULL";                   //DL_DateDe
+                                list_of_cmd_lines[counter, 58] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                    //DL_QteDE
                                 list_of_cmd_lines[counter, 59] = "0";                  //DL_NoSousTotal
                                 list_of_cmd_lines[counter, 60] = "0";                //CA_No
                                 list_of_cmd_lines[counter, 61] = "0.000000";            // DL_PUBC
-                                list_of_cmd_lines[counter, 62] = "C20";                  // DL_CodeTaxe1
-                                list_of_cmd_lines[counter, 63] = "20.000000";           // DL_Taxe1
+                                list_of_cmd_lines[counter, 62] = DL_CodeTaxe1;                  // DL_CodeTaxe1
+                                list_of_cmd_lines[counter, 63] = DL_Taxe1.ToString().Replace(",", ".");         // DL_Taxe1
                                 list_of_cmd_lines[counter, 64] = "0.000000";            // DL_Taxe2
                                 list_of_cmd_lines[counter, 65] = "0.000000";            // DL_Taxe3
                                 list_of_cmd_lines[counter, 66] = "0";                   // DL_TypeTaux1
@@ -3484,6 +4031,16 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 69] = "0";                   // DL_TypeTaxe2
                                 list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
                                 list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
+
+                                list_of_cmd_lines[counter, 72] = "3";                                           // DL_MvtStock
+                                list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
+                                list_of_cmd_lines[counter, 74] = ((COLIS_article == null || COLIS_article == "") ? "0.0" : COLIS_article).ToString().Replace(",", ".");    // COLIS
+                                list_of_cmd_lines[counter, 75] = ((PCB_article == null || PCB_article == "") ? "0.0" : PCB_article).ToString().Replace(",", ".");      // PCB
+                                list_of_cmd_lines[counter, 76] = COMPLEMENT_article;                            // COMPLEMENT
+                                list_of_cmd_lines[counter, 77] = "";                                            // PourVeolog
+                                list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
+                                list_of_cmd_lines[counter, 79] = "";
+                                list_of_cmd_lines[counter, 80] = veologDeliveryDateTime;    //DO_DateLivr
 
                             }
                             catch (Exception ex)
@@ -3495,7 +4052,7 @@ namespace ConnecteurSage.Forms
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
-                                logFileWriter.Close();
+                                logFileWriter.Flush();
                                 return null;
                             }
                         }
@@ -3507,12 +4064,12 @@ namespace ConnecteurSage.Forms
 
 
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliverDate, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
 
                     //generate document BLF_____. in database.
                     try
                     {
-                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliverDate, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
+                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
                         command.ExecuteReader(); // executing the query
                     }
                     catch (OdbcException ex)
@@ -3528,7 +4085,7 @@ namespace ConnecteurSage.Forms
                     }
 
 
-                    string[,] products_DESADV = new string[position_item / 1000, 72]; // create array with enough space
+                    string[,] products_DESADV = new string[position_item / 1000, 81]; // create array with enough space
 
                     //insert documentline into the database with articles having 20 as value @index 2
                     logFileWriter.WriteLine("");
@@ -3589,6 +4146,44 @@ namespace ConnecteurSage.Forms
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message, "Erreur !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                        return null;
+                    }
+
+                    //Delete the BC of the BL
+                    try
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Supprimer le Bon de Commande (BC) \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre), connection);
+                        IDataReader reader = command.ExecuteReader();
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Bon de Commande supprimé!");
+                    }
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                        return null;
+                    }
+
+                    //update document numbering
+                    try
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Mettre à jour la numérotation du document \"" + reference_DESADV_doc + "\".");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "BL", reference_DESADV_doc));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "BL", reference_DESADV_doc), connection);
+                        IDataReader reader = command.ExecuteReader();
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Nouvelle numérotation à jour!");
+                    }
+                    catch (Exception ex)
+                    {
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));

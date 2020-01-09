@@ -148,6 +148,7 @@
     <Compile Include="Classes\SDKException.cs" />
     <Compile Include="Classes\Societe.cs" />
     <Compile Include="Classes\Stock.cs" />
+    <Compile Include="Classes\TVA.cs" />
     <Compile Include="Classes\Veolog_DESADV_Colis.cs" />
     <Compile Include="Classes\Veolog_DESADV_Line.cs" />
     <Compile Include="Classes\Veolog_DESADV.cs" />

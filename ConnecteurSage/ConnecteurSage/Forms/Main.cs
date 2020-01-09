@@ -335,101 +335,151 @@ namespace ConnecteurSage
 
         private void button10_Click(object sender, EventArgs e)
         {
-            string checkTable = null;
+            if (initDOC_Numerotation())
+            {
+                MessageBox.Show("La table \"DOC_NumerotationTable\" est créé/existe avec des données!",
+                    "Information !",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+            }
+            else
+            {
+                MessageBox.Show("La table \"DOC_NumerotationTable\" n'est ps créé!",
+                    "Erreur !",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+        }
+
+        public static int checkDOC_Numerotation(OdbcConnection connexion)
+        {
+            int result = -1;
+            //writer.WriteLine("");
+            //writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : Vérifier si la table de numérotation existe");
+
             try
             {
-                //Verifie si la table 'Velog_Pending' avec id, cmd_id, cmd_ref, statut
-                OdbcConnection connection = Connexion.CreateOdbcConnexionSQL();
-                connection.Open();
-                OdbcCommand command;
-
-                try
+                OdbcCommand command = new OdbcCommand(QueryHelper.checkDOC_NumerotationTable(true), connexion);
+                using (IDataReader reader = command.ExecuteReader())
                 {
-                    command = new OdbcCommand(QueryHelper.checkVelog_PendingTable(true), connection);
-                    using (IDataReader reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        while (reader.Read())
+                        if (reader[0].ToString() == "1")
                         {
-                            if (reader[0].ToString().Equals("0"))
-                            {
-                                checkTable = reader[0].ToString();
-
-                            }
-                            else if (reader[0].ToString().Equals("1"))
-                            {
-                                checkTable = reader[0].ToString();
-                            }
+                            result = 1;
+                            //writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : La table de numérotation existe avec des données");
+                        }
+                        else
+                        {
+                            result = 0;
+                            //writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : La table de numérotation existe sans des données");
                         }
                     }
-                }
-                catch (OdbcException ex)
-                {
-                    MessageBox.Show(" ERROR[Init 1] : "+ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                //Si la table n'existe pas alors creer la
-                if (checkTable != null && checkTable.Equals("0"))
-                {
-                    try
+                    else
                     {
-                        command = new OdbcCommand(QueryHelper.createVelog_PendingTable(true), connection);
-                        using (IDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Console.WriteLine("Table \"Veolog_Pending\" est créé !", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-                        }
+                        result = 0;
                     }
-                    catch (OdbcException ex)
-                    {
-                        MessageBox.Show(" ERROR[Init 2] : " + ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    //ConfigurationDNS settings = new ConfigurationDNS();
-                    //settings.LoadSQL();
-
-                    //MessageBox.Show(" Information[Init 1] : Il faut creer la table 'Veolog_Pending' dans la base de donnee ("+ settings.Prefix+ ".dbo)", "Information !", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //return;
                 }
-                else if(checkTable != null && checkTable.Equals("1"))
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur[200]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""),
+                            "Erreur !",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error); 
+                result = -1;
+            }
+            //writer.WriteLine("");
+            return result;
+        }
+
+        public static bool initDOC_Numerotation()
+        {
+            //writer.WriteLine("");
+            //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Init");
+            bool result = false;
+            try
+            {
+                OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL();
+                connexion.Open();
+                int check = checkDOC_Numerotation(connexion);
+                OdbcCommand command = null;
+
+                if (check == 0 || check == 1)   //if the DOC_Numerotation do nothing
                 {
-                    DialogResult resultDialog5 = MessageBox.Show("La table \"Velog_Pending\" existe !\n\nVoulez-vous vider tous les données dans cette table ?",
-                                                "Information !",
-                                                MessageBoxButtons.YesNo,
-                                                MessageBoxIcon.Question,
-                                                MessageBoxDefaultButton.Button2);
+                    result = true;
+                    //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation existe!");
+                    DialogResult resultDialog5 = MessageBox.Show("La table \"DOC_NumerotationTable\" existe !\n\nVoulez-vous vider et réinitialiser tous les données dans cette table ?",
+                                                    "Information !",
+                                                    MessageBoxButtons.YesNo,
+                                                    MessageBoxIcon.Question,
+                                                    MessageBoxDefaultButton.Button2);
                     if (resultDialog5 == DialogResult.Yes)
                     {
                         try
                         {
-                            command = new OdbcCommand(QueryHelper.deleteVelog_PendingTableData(true), connection);
+                            command = new OdbcCommand(QueryHelper.deleteDOC_NumerotationTable(true), connexion);
+                            command.ExecuteReader();
+                            command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "ME200000", "MS200000"), connexion);
                             command.ExecuteReader();
                         }
                         // Récupération d'une possible SDKException
                         catch (SDKException ex)
                         {
                             MessageBox.Show(" ERROR[Init 3] : " + ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            result = false;
                         }
                     }
 
-                    var veolog_format = false;
-
                     if (resultDialog5 == DialogResult.No)
                     {
-                        connection.Close();
-                        return;
+                        result = true;
                     }
                 }
+                else if (check == -1)      //if the tDOC_Numerotation doesn't exist then create it 
+                {
+                    //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation does not existe, so create the table!");
+                    
+                    try
+                    {
+                        //Create DOC_Numerotation Table
+                        command = new OdbcCommand(QueryHelper.createDOC_NumerotationTable(true), connexion);
+                        using (IDataReader reader = command.ExecuteReader())
+                        {
+                            //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation created!");
+                        }
 
-                connection.Close();
+                        //Set up the first init Numérotation
+                        command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "ME200000", "MS200000"), connexion);
+                        using (IDataReader reader = command.ExecuteReader())
+                        {
+                            result = true;
+                            //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation created!");
+                        }
+                        
+                        connexion.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        result = false;
+                        MessageBox.Show("Erreur[200]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""),
+                            "Erreur !",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : ******************** Erreur ********************");
+                        //writer.WriteLine(DateTime.Now + " : Erreur[200]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    }
+                }
+                connexion.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("ERROR[Init 4] : " + ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = false;
             }
+            //writer.WriteLine("");
+            return result;
         }
     }
 }

@@ -97,47 +97,14 @@ namespace ConnecteurSage.Forms
         /// </summary>
         private void ExportFacture(StreamWriter logFileWriter)
         {
-            /*
-            bool check_cmd_VeologPendingTable = false;
-            string cmd_VeologPendingTable_ref = "";
-
-            //Check if the order exist in the Veolog_Pending table
-            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
-            {
-                connexion.Open();
-                try
-                {
-                    OdbcCommand command1 = new OdbcCommand(QueryHelper.getCommandeFromVeolog_Pending(true, CommandeAExporter.cbMarq), connexion);
-
-                    Console.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeFromVeolog_Pending(true, CommandeAExporter.cbMarq));
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeFromVeolog_Pending(true, CommandeAExporter.cbMarq));
-
-                    using (IDataReader reader = command1.ExecuteReader())
-                    {
-                        if (reader.Read()) // reads lines/rows from the query
-                        {
-                            cmd_VeologPendingTable_ref = reader[0].ToString();
-                            check_cmd_VeologPendingTable = true;
-                        }
-                    }
-                }
-                catch (OdbcException ex)
-                {
-                    logFileWriter.WriteLine("");
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : ********************** OdbcException *********************");
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Message :" + ex.Message);
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : StackTrace :" + ex.StackTrace);
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Import annulée");
-                    return;
-                }
-                connexion.Close();
-            }
-            */
+            Classes.Path path = new Classes.Path();
+            path.Load();
+            string exportTo = "";
 
             //if (check_cmd_VeologPendingTable && cmd_VeologPendingTable_ref != "")
             //{
 
-                if (!CommandeAExporter.NomClient.Equals("") && !CommandeAExporter.NomClient.Equals(" "))
+            if (!CommandeAExporter.NomClient.Equals("") && !CommandeAExporter.NomClient.Equals(" "))
                 {
                     //MessageBox.Show("Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
                     logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
@@ -270,12 +237,16 @@ namespace ConnecteurSage.Forms
 
                     if (resultDialog5 == DialogResult.No)
                     {
+                        exportTo = @"Export\Plat_Commande";
+
                         veolog_format = false;
                         fileName = fileName.Replace("..", ".");
                     }
 
                     if (resultDialog5 == DialogResult.Yes)
                     {
+                        exportTo = @"Export\Veolog_Commande";
+
                         ConfigurationDNS dns = new ConfigurationDNS();
                         dns.LoadSQL();
 
@@ -350,6 +321,20 @@ namespace ConnecteurSage.Forms
                                 declarerpourrien = CommandeAExporter.Lines[i].Quantite.Split(',');
                                 qteTotal = qteTotal + Convert.ToInt16(declarerpourrien[0]);
 
+                                //add zeros to the article reference only for ALDI 
+                                ConfigurationDNS dns = new ConfigurationDNS();
+                                dns.LoadSQL();
+                                if (dns.Prefix.Contains("CFCI") || dns.Prefix.Contains("TABLEWEAR") && CommandeAExporter.NomClient.Contains("ALDI"))
+                                {
+                                    int maxChar = 13;
+                                    int refChar = CommandeAExporter.Lines[i].codeArticle.Length;
+                                    int addZero = maxChar - refChar;
+                                    for (int index1 = 0; index1 < addZero; index1++)
+                                    {
+                                        CommandeAExporter.Lines[i].codeArticle = "0" + CommandeAExporter.Lines[i].codeArticle;
+                                    }
+                                }
+
                                 writer.WriteLine("L;;" + ((CommandeAExporter.Lines[i].codeArticle.Length > 30) ? CommandeAExporter.Lines[i].codeArticle.Substring(0, 30) : CommandeAExporter.Lines[i].codeArticle) + ";;" + declarerpourrien[0] + ";"); // L line
 
                             }
@@ -363,81 +348,93 @@ namespace ConnecteurSage.Forms
                                 if (new FileInfo(textBox1.Text + @"\" + fileName).Length > 0)
                                 {
                                     veolog_file_check = true;
+
+                                    //add to backup folder
+                                    addFileToBackUp(path.path + @"\BackUp\" + exportTo, textBox1.Text + @"\" + fileName, fileName, logFileWriter);
                                 }
                             }
+                            else
+                            {
+                                MessageBox.Show("La commande n'est pas exporté!\nLe fichier EDI n'est pas généré correctement!!!", "Erreur!!",
+                                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                logFileWriter.WriteLine(DateTime.Now + " : File: " + fileName + " does not exist!!!");
+                            }
 
+                            if (veolog_file_check)
+                            {
 
-                            //update veolog delivery date
-                            try
+                                //update veolog delivery date
+                                try
                                 {
-                                string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
+                                    string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
-                                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
-                                {
-                                    connection.Open();
-
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog));
-                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog), connection);
+                                    using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
                                     {
-                                        using (IDataReader reader = command1.ExecuteReader())
+                                        connection.Open();
+
+                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog));
+                                        OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog), connection);
                                         {
-                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison veolog à jour !");
+                                            using (IDataReader reader = command1.ExecuteReader())
+                                            {
+                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison veolog à jour !");
+                                            }
                                         }
+                                        connection.Close();
+                                        logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
                                     }
-                                    connection.Close();
-                                    logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                                MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
-                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
-                                logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                                logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
-                                return;
-                            }
-
-
-                            //update order statut
-                            try
-                            {
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
-
-                                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                catch (Exception ex)
                                 {
-                                    connection.Open();
+                                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                    MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
+                                             MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande));
-                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande), connection);
-                                    {
-                                        using (IDataReader reader = command1.ExecuteReader())
-                                        {
-                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Statut de la commande à jour !");
-                                    }
-                                    }
-                                    connection.Close();
-                                    logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                                    logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                                    logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                    return;
                                 }
 
-                            }
-                            catch (Exception ex)
-                            {
-                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                                MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur Commande Statut!!",
-                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
-                                logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                                logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
-                                return;
+                                //update order statut
+                                try
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
+
+                                    using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                    {
+                                        connection.Open();
+
+                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande));
+                                        OdbcCommand command1 = new OdbcCommand(QueryHelper.changeOrderStatut(true, CommandeAExporter.NumCommande), connection);
+                                        {
+                                            using (IDataReader reader = command1.ExecuteReader())
+                                            {
+                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Statut de la commande à jour !");
+                                            }
+                                        }
+                                        connection.Close();
+                                        logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
+                                    }
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                    MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur Commande Statut!!",
+                                             MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                                    logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                                    logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                                    return;
+                                }
                             }
 
                         }
@@ -518,56 +515,6 @@ namespace ConnecteurSage.Forms
                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                             return;
                         }
-
-
-                        //Put the order in Veolog_Pending table
-                        /*
-                        try
-                        {
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Insérer la commande dans la table 'Veolog_Pending' pour ne plus l'exporter.");
-
-                            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
-                            {
-                                connection.Open();
-
-                                //CommandeAExporter.cbMarq      ===> cbMarq
-                                //CommandeAExporter.Reference   ===> DO_Ref
-                                //CommandeAExporter.NumCommande ===> DO_Piece
-                                //CommandeAExporter.statut      ===> DO_Statut
-
-                                try
-                                {
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.insertOrderInVeolog_Pending(true, CommandeAExporter.cbMarq, CommandeAExporter.Reference, CommandeAExporter.NumCommande, CommandeAExporter.statut));
-                                    OdbcCommand command1 = new OdbcCommand(QueryHelper.insertOrderInVeolog_Pending(true, CommandeAExporter.cbMarq, CommandeAExporter.Reference, CommandeAExporter.NumCommande, CommandeAExporter.statut), connection);
-                                    command1.ExecuteReader();
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL Execute with success!");
-                                }
-                                catch (OdbcException ex)
-                                {
-                                    logFileWriter.WriteLine("");
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : ********************** OdbcException *********************");
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Message :" + ex.Message);
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : StackTrace :" + ex.StackTrace);
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Import annulée");
-                                    return;
-                                }
-
-                                connection.Close();
-                                logFileWriter.WriteLine(DateTime.Now + " SQL Connexion Close. ");
-                            }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
-                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
-                            return;
-                        }
-                        */
                     }
 
                     MessageBox.Show("Commande exportée avec succés", "Information !!",
@@ -608,6 +555,55 @@ namespace ConnecteurSage.Forms
         /// Chargement de la fenêtre
         /// </summary>
         /// <param name="e">paramètres de l'évènement</param>
+        /// 
+
+        public static void addFileToBackUp(string backUpFolderPath, string sourceFilePath, string filename, StreamWriter writer)
+        {
+            writer.WriteLine("");
+            //check if the backup folder exist
+            if (!Directory.Exists(backUpFolderPath))
+            {
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Create BackUp folder at \"" + backUpFolderPath + "\"");
+                Directory.CreateDirectory(backUpFolderPath);
+            }
+
+            //copy the file to the backup folder
+            if (File.Exists(backUpFolderPath + @"\" + filename))
+            {
+                int version = 0;
+                //Get all .csv files in the folder
+                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File \"" + backUpFolderPath + @"\" + filename + "\" exist so add version it");
+
+                for (int x = 0; x < fileListing.GetFiles("*.csv").Length; x++)
+                {
+                    string[] cutFileName = filename.Split('_');
+                    string withouExtension = cutFileName[3].Split('.')[0];
+                    string newFileName = cutFileName[0] + "_" + cutFileName[1] + "_" + cutFileName[2] + "_" + withouExtension;
+                    FileInfo Filename = fileListing.GetFiles("*.csv")[x];
+
+                    if ((Filename.Name).Contains(newFileName))
+                    {
+                        version++;
+                        writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Version: " + version + " || (" + Filename.Name + ").Contains(" + newFileName + ")");
+                    }
+                }
+                //File.Delete(destFilePath);
+                string[] cutFileName_1 = filename.Split('.');
+                string newFileName_1 = cutFileName_1[0] + "_v" + version + "." + cutFileName_1[1];
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + newFileName_1 + "\"");
+                File.Copy(sourceFilePath, backUpFolderPath + @"\" + newFileName_1);
+            }
+            else
+            {
+                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + filename + "\"");
+                File.Copy(sourceFilePath, backUpFolderPath + @"\" + filename);
+            }
+
+            writer.WriteLine("");
+            writer.Flush();
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
