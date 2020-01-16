@@ -142,7 +142,9 @@
     <Compile Include="Classes\SDKException.cs" />
     <Compile Include="Classes\Societe.cs" />
     <Compile Include="Classes\Stock.cs" />
+    <Compile Include="Classes\Veolog_BCF.cs" />
     <Compile Include="Classes\Veolog_DESADV.cs" />
+    <Compile Include="Classes\Veolog_BCF_Lines.cs" />
     <Compile Include="Classes\Veolog_DESADV_Colis.cs" />
     <Compile Include="Classes\Veolog_DESADV_Lines.cs" />
     <Compile Include="Helpers\CountryFormatISO.cs" />

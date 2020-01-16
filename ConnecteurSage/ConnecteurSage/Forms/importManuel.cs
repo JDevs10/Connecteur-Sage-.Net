@@ -1824,7 +1824,6 @@ namespace ConnecteurSage.Forms
 
         public static string lastNumberReference(string mask, StreamWriter logFileWriter)
         {
-
             string db_result = "";
             string result = "";
 
@@ -2209,6 +2208,184 @@ namespace ConnecteurSage.Forms
                     result += zeros + "" + newMaskID;
 
                     logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BC : " + result);
+                }
+                logFileWriter.WriteLine("");
+                return result;
+            }
+            else if (mask == "BCF") // Bon de Commande Fournisseur
+            {
+                logFileWriter.WriteLine("");
+                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask BCF");
+
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                {
+                    try
+                    {
+                        connexion.Open();
+
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BCF"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BCF"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "BCF200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BCF : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get the last doc reference in from the BCF list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    db_result = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BCF : " + db_result);
+                                }
+                                else
+                                {
+                                    db_result = "BCF000000";
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BCF : " + db_result);
+                                }
+                            }
+                        }
+
+                    }
+                    catch (OdbcException ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        return null;
+                    }
+
+                    int chiffreTotal = 7;
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                    int newMaskID = lastMaskID + 1;
+
+                    result = mask; // put ME before adding '0'
+                    string zeros = "";
+                    string result_ = result + "" + newMaskID;
+
+                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    {
+                        zeros += "0";
+                    }
+                    result += zeros + "" + newMaskID;
+
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BCF : " + result);
+                }
+                logFileWriter.WriteLine("");
+                return result;
+            }
+            else if (mask == "CF") // Bon de Commande Fournisseur
+            {
+                logFileWriter.WriteLine("");
+                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask CF");
+
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                {
+                    try
+                    {
+                        connexion.Open();
+
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "CF"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "CF"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "CF200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask CF : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get the last doc reference in from the BCF list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    db_result = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask CF : " + db_result);
+                                }
+                                else
+                                {
+                                    db_result = "CF000000";
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask CF : " + db_result);
+                                }
+                            }
+                        }
+
+                    }
+                    catch (OdbcException ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        return null;
+                    }
+
+                    int chiffreTotal = 7;
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                    int newMaskID = lastMaskID + 1;
+
+                    result = mask; // put ME before adding '0'
+                    string zeros = "";
+                    string result_ = result + "" + newMaskID;
+
+                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    {
+                        zeros += "0";
+                    }
+                    result += zeros + "" + newMaskID;
+
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask CF : " + result);
                 }
                 logFileWriter.WriteLine("");
                 return result;
@@ -3646,15 +3823,14 @@ namespace ConnecteurSage.Forms
             return endResults;
         }
 
-
         private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
         {
-            string[,] list_of_cmd_lines = new string[dl.Count, 81];    // new string [x,y]
+            string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
             string[] list_of_client_info = null;
 
             int position_item = 0;
             DateTime d = DateTime.Now;
-            string curr_date_time = d.ToString("yyyy-MM-dd hh:mm:ss");
+            //string curr_date_time = d.ToString("yyyy-MM-dd hh:mm:ss");
             string curr_date = d.ToString("yyyy-MM-dd");
             //string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
@@ -3949,7 +4125,7 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 2] = "3"; //DO_DocType
                                 list_of_cmd_lines[counter, 3] = list_of_client_info[0]; //CT_NUM
                                 list_of_cmd_lines[counter, 4] = reference_DESADV_doc; //DO_Piece
-                                list_of_cmd_lines[counter, 5] = curr_date_time; //DO_Date
+                                list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
                                 list_of_cmd_lines[counter, 6] = DL_DateBC; //DL_DateBC
                                 list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
                                 list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Client_Livre; // DO_Ref
@@ -3990,7 +4166,7 @@ namespace ConnecteurSage.Forms
 
                                 list_of_cmd_lines[counter, 29] = DL_PieceBC;   //DL_PieceBC
                                 list_of_cmd_lines[counter, 30] = reference_DESADV_doc;   //DL_PieceBL
-                                list_of_cmd_lines[counter, 31] = curr_date_time;   // DL_DateBL
+                                list_of_cmd_lines[counter, 31] = curr_date;   // DL_DateBL
                                 list_of_cmd_lines[counter, 32] = "0";   //DL_TNomencl
                                 list_of_cmd_lines[counter, 33] = "0";   //DL_TRemPied
                                 list_of_cmd_lines[counter, 34] = "0";   //DL_TRemExep
@@ -4041,6 +4217,7 @@ namespace ConnecteurSage.Forms
                                 list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
                                 list_of_cmd_lines[counter, 79] = "";
                                 list_of_cmd_lines[counter, 80] = veologDeliveryDateTime;    //DO_DateLivr
+                                list_of_cmd_lines[counter, 81] = "0";    //DL_NonLivre
 
                             }
                             catch (Exception ex)
@@ -4085,7 +4262,7 @@ namespace ConnecteurSage.Forms
                     }
 
 
-                    string[,] products_DESADV = new string[position_item / 1000, 81]; // create array with enough space
+                    string[,] products_DESADV = new string[position_item / 1000, 82]; // create array with enough space
 
                     //insert documentline into the database with articles having 20 as value @index 2
                     logFileWriter.WriteLine("");

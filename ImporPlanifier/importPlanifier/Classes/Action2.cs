@@ -185,6 +185,7 @@ namespace importPlanifier.Classes
                 {
                     FileInfo filename = fileListing.GetFiles("*.csv")[index];
                     Console.WriteLine(DateTime.Now + " : Fichier trouve ===> " + filename.Name);
+                    string file_doc_reference = "";
 
                     try
                     {
@@ -201,6 +202,7 @@ namespace importPlanifier.Classes
 
 
                         long pos = 1;
+
                         string[] lines = System.IO.File.ReadAllLines(fileListing + @"\" + filename, Encoding.Default);
 
                         if (lines[0].Split(';')[0] == "ORDERS" && lines[0].Split(';').Length == 11)
@@ -1464,7 +1466,7 @@ namespace importPlanifier.Classes
                                 goto goErrorLoop;
                             }
                         }
-                        else if (lines[0].Split(';')[0] == "E") //Import Veolog DESADV doc
+                        else if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP51") || filename.Name.Contains("TWP51")) //Import Veolog DESADV doc
                         {
                             logFileWriter_general.WriteLine("");
                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
@@ -1476,6 +1478,7 @@ namespace importPlanifier.Classes
 
                             if (lines[0].Split(';').Length == 6)
                             {
+                                file_doc_reference = lines[0].Split(';')[1];
                                 string reference_DESADV_doc = lastNumberReference("BL", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
 
                                 int i = 0;
@@ -1583,7 +1586,7 @@ namespace importPlanifier.Classes
 
                                         //deplacer les fichiers csv
                                         string theFileName = filename.FullName;
-                                        string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + System.IO.Path.GetFileName(theFileName);
+                                        string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + reference_DESADV_doc + "_" + System.IO.Path.GetFileName(theFileName);
                                         File.Move(theFileName, newFileLocation);
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
@@ -1609,6 +1612,165 @@ namespace importPlanifier.Classes
                                 goto goErrorLoop;
                             }
                         }
+                        else if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP41") || filename.Name.Contains("TWP41")) //Import Veolog BCF doc
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Bon de Commande Fournisseur BCF Trouvé");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                            logFileWriter_general.WriteLine("");
+
+                            logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog Bon de Commande Fournisseur BCF Inventaire.");
+
+                            file_doc_reference = lines[0].Split(';')[1];
+                            if (lines[0].Split(';').Length == 8)
+                            {
+                                ConfigurationDNS dns = new ConfigurationDNS();
+                                dns.LoadSQL();
+                                string mask = "";
+                                string prefix = dns.Prefix;
+                                if(prefix == "CFCI")
+                                {
+                                    mask = "BLF";
+                                }
+                                else if (prefix == "TABLEWEAR")
+                                {
+                                    mask = "LF";
+                                }
+                                else
+                                {
+                                    mask = "BLF";
+                                }
+
+                                string reference_BCF_doc = lastNumberReference(mask, logFileWriter_import);
+
+                                int i = 0;
+                                string totallines = "";
+                                Veolog_BCF dh = new Veolog_BCF();
+                                Veolog_BCF_Lines dll = new Veolog_BCF_Lines();
+
+                                List<String> doubleProductCheck = new List<String>();
+                                List<Veolog_BCF_Lines> dl = new List<Veolog_BCF_Lines>(); //creating new object type BCF line and store item values
+
+                                foreach (string ligneDuFichier in lines) //read lines by line
+                                {
+                                    string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                    if (tab[0] == "E") //checking if its header of file for control
+                                    {
+                                        Veolog_BCF bcf_info = new Veolog_BCF();
+                                        bcf_info.Ref_Commande_Donneur_Ordre = tab[1];
+                                        bcf_info.Ref_Commande_Fournisseur = tab[2];
+                                        bcf_info.Origine_Commande = tab[3];
+                                        bcf_info.Code_Fournisseur = tab[4];
+                                        bcf_info.Date_De_Reception = tab[5];
+                                        bcf_info.Heure_De_Reception = tab[6];
+                                        bcf_info.Etat = tab[7];
+
+                                        if (bcf_info.Etat == "S") // S : Stocké
+                                        {
+                                            bcf_info.Etat = "1";
+                                        }
+                                        else if (bcf_info.Etat == "C") // C : Cloturé
+                                        {
+                                            bcf_info.Etat = "0";
+                                        }
+                                        else if(bcf_info.Etat == "")
+                                        {
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Le BCF " + reference_BCF_doc + " n'a pas d'Etat ou Option. Les options depuis le cahier des charges sont : S => Stocké ou C => Cloturé");
+                                        }
+                                        else
+                                        {
+                                            //deplacer les fichiers csv
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le BCF");
+                                            tabCommandeError.Add(filename.ToString());
+
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit S : Stocké ou C : Cloturé.");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                            goto goErrorLoop;
+                                        }
+
+                                        dh = bcf_info;
+                                    }
+                                    if (tab[0] == "L") //checking if its line of document inside the file for control
+                                    {
+                                        //check if an article exist in my check list
+                                        if (!doubleProductCheck.Contains(tab[2]))
+                                        {
+                                            Veolog_BCF_Lines bcfLine_info = new Veolog_BCF_Lines();
+
+                                            bcfLine_info.Type_Ligne = tab[0];
+                                            bcfLine_info.Numero_Ligne_Donneur_Ordre = tab[1];
+                                            bcfLine_info.Code_Article = tab[2];
+                                            bcfLine_info.Libelle_Article = tab[3];
+                                            bcfLine_info.Quantite = tab[4];
+                                            bcfLine_info.Numero_Lot = tab[5];
+
+                                            dl.Add(bcfLine_info);
+                                            doubleProductCheck.Add(bcfLine_info.Code_Article);
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_general.WriteLine("");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
+                                            logFileWriter_general.WriteLine("");
+                                        }
+                                        i++;
+                                    }
+
+                                    if (tab[0] == "F") //checking if its end of file for control
+                                    {
+                                        totallines = tab[1];
+                                    }
+                                }
+
+
+                                if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
+                                {
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                                }
+                                else
+                                {
+                                    if (insertSupplierOrder(reference_BCF_doc, dh, dl, logFileWriter_import) != null) //insert the database with the values obtained from the document
+                                    {
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : importe du "+ mask + " avec succès");
+
+                                        //deplacer les fichiers csv
+                                        string theFileName = filename.FullName;
+                                        string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + file_doc_reference + "_" + System.IO.Path.GetFileName(theFileName);
+                                        File.Move(theFileName, newFileLocation);
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine("");
+                                        SaveSuccess++;
+                                    }
+                                    else
+                                    {
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le "+ mask);
+                                        tabCommandeError.Add(filename.ToString());
+                                        goto goErrorLoop;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_import.WriteLine(DateTime.Now + " : La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                tabCommandeError.Add(filename.ToString());
+                                goto goErrorLoop;
+                            }
+                        }
                         else
                         {
 
@@ -1618,6 +1780,8 @@ namespace importPlanifier.Classes
                             tabCommandeError.Add(filename.ToString());
                             goto goErrorLoop;
                         }
+
+
                     }
                     catch (Exception e)
                     {
@@ -1646,7 +1810,7 @@ namespace importPlanifier.Classes
 
                         //deplacer les fichiers csv
                         string theFileName = filename.FullName;
-                        string newFileLocation = directoryName_ErrorFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + System.IO.Path.GetFileName(theFileName);
+                        string newFileLocation = directoryName_ErrorFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "_" + System.IO.Path.GetFileName(theFileName);
                         File.Move(theFileName, newFileLocation);
                         logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
@@ -3036,13 +3200,13 @@ namespace importPlanifier.Classes
 
         private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, StreamWriter logFileWriter)
         {
-            string[,] list_of_cmd_lines = new string[dl.Count, 81];    // new string [x,y]
+            string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
             string[] list_of_client_info = null;
 
             int position_item = 0;
             DateTime d = DateTime.Now;
-            string curr_date_time = d.ToString("yyyy-MM-dd hh:mm:ss");
-            //string curr_date = d.ToString("yyyy-MM-dd");
+            //string curr_date_time = d.ToString("yyyy-MM-dd hh:mm:ss");
+            string curr_date = d.ToString("yyyy-MM-dd");
             //string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
@@ -3091,6 +3255,7 @@ namespace importPlanifier.Classes
                     //Get the list of all Taxes (TVA)
                     //So i can calculate the ttc later
                     List<TVA> tvaList = null;
+                    logFileWriter.WriteLine("");
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupére tous les tva");
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getAllTVA(true));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connection)) 
@@ -3146,6 +3311,7 @@ namespace importPlanifier.Classes
                         string DL_DateBC = "";
                         string DL_QteBC = "";
 
+                        logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Lire la ligne de l'article.");
 
                         //get Product Name By Reference
@@ -3336,7 +3502,7 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 2] = "3"; //DO_DocType
                                 list_of_cmd_lines[counter, 3] = list_of_client_info[0]; //CT_NUM
                                 list_of_cmd_lines[counter, 4] = reference_DESADV_doc; //DO_Piece
-                                list_of_cmd_lines[counter, 5] = curr_date_time; //DO_Date
+                                list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
                                 list_of_cmd_lines[counter, 6] = DL_DateBC; //DL_DateBC
                                 list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
                                 list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Client_Livre; // DO_Ref
@@ -3377,7 +3543,7 @@ namespace importPlanifier.Classes
 
                                 list_of_cmd_lines[counter, 29] = DL_PieceBC;   //DL_PieceBC
                                 list_of_cmd_lines[counter, 30] = reference_DESADV_doc;   //DL_PieceBL
-                                list_of_cmd_lines[counter, 31] = curr_date_time;   // DL_DateBL
+                                list_of_cmd_lines[counter, 31] = curr_date;   // DL_DateBL
                                 list_of_cmd_lines[counter, 32] = "0";   //DL_TNomencl
                                 list_of_cmd_lines[counter, 33] = "0";   //DL_TRemPied
                                 list_of_cmd_lines[counter, 34] = "0";   //DL_TRemExep
@@ -3428,6 +3594,7 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
                                 list_of_cmd_lines[counter, 79] = "";                                            // DL_Operation
                                 list_of_cmd_lines[counter, 80] = veologDeliveryDateTime;    //DO_DateLivr
+                                list_of_cmd_lines[counter, 81] = "0";    //DL_NonLivre
 
                             }
                             catch (Exception ex)
@@ -3450,12 +3617,12 @@ namespace importPlanifier.Classes
 
 
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date_time, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
 
                     //generate document BLF_____. in database.
                     try
                     {
-                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date_time, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
+                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
                         command.ExecuteReader(); // executing the query
                     }
                     catch (OdbcException ex)
@@ -3470,7 +3637,7 @@ namespace importPlanifier.Classes
                     }
 
 
-                    string[,] products_DESADV = new string[position_item / 1000, 81]; // create array with enough space
+                    string[,] products_DESADV = new string[position_item / 1000, 82]; // create array with enough space
 
                     //insert documentline into the database with articles having 20 as value @index 2
                     logFileWriter.WriteLine("");
@@ -3502,6 +3669,76 @@ namespace importPlanifier.Classes
                                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException *********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                //logFileWriter.Close();
+                                return null;
+                            }
+
+
+                            //Update docline artile stock
+                            try
+                            {
+                                bool found_stock = false;
+                                double AS_StockReel = 0.0;
+                                double AS_StockReserve = 0.0;
+                                double AS_StockMontant = 0.0;
+                                double productPrixUnite = Convert.ToDouble(products_DESADV[x, 16].Replace('.', ','));
+
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : get current stock in F_ARTSTOCK table in the database");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9]));
+                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9]), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                {
+                                    using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                                    {
+                                        if (reader.Read()) // If any rows returned
+                                        {
+                                            found_stock = true;
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Stock trouvé : AS_StockReel (" + reader[0].ToString() + "), AS_StockReserve (" + reader[1].ToString() + "), AS_StockMontant (" + reader[2].ToString() + ").");
+                                            AS_StockReel = Convert.ToDouble(reader[0].ToString().Replace(".", ","));
+                                            AS_StockReserve = Convert.ToDouble(reader[1].ToString().Replace(".", ","));
+                                            AS_StockMontant = Convert.ToDouble(reader[2].ToString().Replace(".", ","));
+                                        }
+                                        else// If no rows returned
+                                        {
+                                            //do nothing.
+                                            found_stock = false;
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse.");
+                                        }
+                                    }
+                                }
+
+
+                                if (found_stock)
+                                {
+                                    //Calculate stock info
+                                    //double AS_CMUP = AS_StockMontant / AS_StockReel;
+                                    double new_AS_StockReel = AS_StockReel - Convert.ToDouble(products_DESADV[x, 13].Replace('.', ','));
+                                    double new_AS_StockReserve = AS_StockReserve - Convert.ToDouble(products_DESADV[x, 13].Replace('.', ','));
+                                    double new_AS_StockMontant = new_AS_StockReel * productPrixUnite;
+                                    double new_AS_CMUP = new_AS_StockMontant / new_AS_StockReel;
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockReel: "+ new_AS_StockReel + " = AS_StockReel: "+ AS_StockReel + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_DESADV[x, 13].Replace('.', ',')));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockReserve: " + new_AS_StockReserve + " = AS_StockReserve: " + AS_StockReserve + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_DESADV[x, 13].Replace('.', ',')));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockMontant: " + new_AS_StockMontant + " = new_AS_StockReel: " + new_AS_StockReel + " * productPrixUnite: " + productPrixUnite);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_CMUP: " + new_AS_CMUP + " = new_AS_StockMontant: " + new_AS_StockMontant + " / new_AS_StockReel: " + new_AS_StockReel);
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : update article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") stock in F_ARTSTOCK table in the database");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
+
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connection);
+                                    command.ExecuteReader();
+                                }
+                            }
+                            catch (OdbcException ex)
+                            {
+                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException Update F_ARTSTOCK table *********************");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
@@ -3593,13 +3830,627 @@ namespace importPlanifier.Classes
             return list_of_cmd_lines;
         }
 
+        private static string[,] insertSupplierOrder(string reference_BCF_doc, Veolog_BCF dh, List<Veolog_BCF_Lines> dl, StreamWriter logFileWriter)
+        {
+            string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
+            string[] list_of_supplier_info = null;
+            int position_item = 0;
+            DateTime d = DateTime.Now;
+            string curr_date = d.ToString("yyyy-MM-dd");
+            string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
+
+            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
+            {
+                try
+                {
+                    connexion.Open();
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Connexion ouverte.");
+
+                    //Get ref client CMD, nature_OP_P && total ht
+                    string nature_op_p_ = "";
+                    string do_totalHT_ = "";
+                    string do_totalHTNet_ = "";
+                    string do_totalTTC_ = "";
+                    string do_NetAPayer_ = "";
+                    string do_MontantRegle_ = "";
+                    string ref_supplier = null;
+
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Récupérer la référence Commande fournisseur livré de la commande " + dh.Ref_Commande_Donneur_Ordre);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.getCMDSupplierByRef(true, dh.Ref_Commande_Donneur_Ordre));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getCMDSupplierByRef(true, dh.Ref_Commande_Donneur_Ordre), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                dh.Ref_Commande_Fournisseur = reader[0].ToString();
+                                nature_op_p_ = reader[1].ToString();
+                                do_totalHT_ = reader[2].ToString().Replace(",", ".");
+                                do_totalHTNet_ = reader[3].ToString().Replace(",", ".");
+                                do_totalTTC_ = reader[4].ToString().Replace(",", ".");
+                                do_NetAPayer_ = reader[5].ToString().Replace(",", ".");
+                                do_MontantRegle_ = reader[6].ToString().Replace(",", ".");
+                                ref_supplier = reader[7].ToString();
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. ");
+                            }
+                        }
+                    }
+
+                    //get Client Reference by Ref
+                    logFileWriter.WriteLine("");
+                    if (ref_supplier != null)
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_supplier));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_supplier), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    list_of_supplier_info = new string[16];
+                                    list_of_supplier_info[0] = reader[0].ToString();      // CT_Num
+                                    list_of_supplier_info[1] = reader[1].ToString();      // CA_Num 
+                                    list_of_supplier_info[2] = reader[2].ToString();      // CG_NumPrinc
+                                    list_of_supplier_info[3] = reader[3].ToString();      // CT_NumPayeur
+                                    list_of_supplier_info[4] = reader[4].ToString();      // N_Condition
+                                    list_of_supplier_info[5] = reader[5].ToString();      // N_Devise
+                                    list_of_supplier_info[6] = reader[6].ToString();      // CT_Langue
+                                    list_of_supplier_info[7] = reader[7].ToString();      // DO_NbFacture = CT_Facture
+                                    list_of_supplier_info[8] = reader[8].ToString().Replace(',', '.');      // DO_TxEscompte = CT_Taux02
+                                    list_of_supplier_info[9] = reader[9].ToString();      // N_CatCompta
+                                    list_of_supplier_info[10] = reader[10].ToString();    // CO_No
+                                    list_of_supplier_info[11] = reader[11].ToString();    //  DO_Tarif = N_CatTarif
+                                    list_of_supplier_info[12] = reader[12].ToString();    //  DO_Expedit = N_Expedition du tier
+                                    list_of_supplier_info[13] = reader[13].ToString();    //  CT_Intitule
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. list_of_fournisseur_info est null");
+                                }
+                            }
+                        }
+
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.getClientDeliveryAddress_DESADV(true, ref_supplier));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientDeliveryAddress_DESADV(true, ref_supplier), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    list_of_supplier_info[14] = reader[0].ToString();    // LI_No
+                                    list_of_supplier_info[15] = reader[0].ToString();    // cbLI_No
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Adresse de livraison (" + reader[0].ToString() + ") trouvé!");
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    list_of_supplier_info[14] = "0";    // LI_No
+                                    list_of_supplier_info[15] = "NULL";    // cbLI_No
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. ( list_of_supplier_info[14] = 0 && list_of_supplier_info[15] = NULL ) est null");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ********************** Exception Supplier *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Le fournisseur : " + ref_supplier+" n'existe pas dans la base!");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : import annulé!");
+                        logFileWriter.Flush();
+                        connexion.Close(); //disconnect from database
+                        return null;
+                    }
+
+                    //Get the list of all Taxes (TVA)
+                    //So i can calculate the ttc later
+                    List<TVA> tvaList = null;
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Récupére tous les tva");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.getAllTVA(true));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connexion))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                tvaList = new List<TVA>();
+                                tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                while (reader.Read())
+                                {
+                                    tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                }
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                tvaList = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. ");
+                            }
+                        }
+                    }
+
+
+                    if (list_of_supplier_info != null)
+                    {
+                        //get veolog delivery date and time
+                        string year = dh.Date_De_Reception.Substring(0, 4);
+                        string month = dh.Date_De_Reception.Substring(4, 2);
+                        string day = dh.Date_De_Reception.Substring(6, 2);
+                        string hour = dh.Heure_De_Reception.Substring(0, 2);
+                        string mins = dh.Heure_De_Reception.Substring(2, 2);
+                        string veologDeliveryDate = year + "-" + month + "-" + day;
+                        string veologDeliveryTime = hour + ":" + mins + ":00";
+                        string veologDeliveryDateTime = veologDeliveryDate + " " + veologDeliveryTime;
+
+                        int counter = 0;
+
+                        foreach (Veolog_BCF_Lines line in dl) //read item by item
+                        {
+                            string ref_article = "";
+                            string name_article = "";
+                            string DL_PoidsNet = "0";
+                            string DL_PoidsBrut = "0";
+                            string DL_PrixUnitaire_buyPrice = "0";
+                            string DL_PrixUnitaire_salePriceHT = "0";
+                            string DL_PUTTC = "0";
+                            string COLIS_article = "";
+                            string PCB_article = "";
+                            string COMPLEMENT_article = "";
+                            string DL_Taxe1 = "";
+                            string DL_CodeTaxe1 = "";
+                            string DL_PieceBCF = "";
+                            string DL_DateBCF = "";
+                            string DL_QteBCF = "";
+
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Lire la ligne de l'article.");
+
+                            //get Product Name By Reference
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.getProductNameByReference_BCF(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article));
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_BCF(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                            {
+                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                {
+                                    if (reader.Read()) // If any rows returned
+                                    {
+                                        ref_article = (reader[0].ToString());                   // get product ref
+                                        name_article = (reader[1].ToString());                  // sum up the total_negative variable. - check query
+                                        DL_PoidsNet = (reader[2].ToString());                   // get unit weight NET - check query
+                                        DL_PoidsBrut = (reader[3].ToString());                  // get unit weight BRUT - check query
+                                        DL_PrixUnitaire_salePriceHT = (reader[4].ToString());   // get (Prix de vente) unit price ht - check query
+                                        COLIS_article = reader[5].ToString();
+                                        PCB_article = reader[6].ToString();
+                                        COMPLEMENT_article = reader[7].ToString();
+                                        DL_Taxe1 = reader[8].ToString();
+                                        DL_CodeTaxe1 = reader[9].ToString();
+                                        DL_PieceBCF = reader[10].ToString();
+                                        DL_DateBCF = reader[11].ToString();
+                                        DL_QteBCF = reader[12].ToString().Replace(",", ".");
+                                    }
+                                    else// If no rows returned
+                                    {
+                                        //do nothing.
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. ");
+                                    }
+                                }
+                            }
+
+
+                            if (ref_article != "" && name_article != "" && list_of_supplier_info != null)
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Article trouvé.");
+                                logFileWriter.WriteLine("");
+
+                                try
+                                {
+                                    //DL_Ligne
+                                    position_item += 1000;
+
+                                    //calculate product ttc
+                                    double product_ttc = 0.0;
+                                    try
+                                    {
+                                        logFileWriter.WriteLine("");
+                                        if (tvaList != null)
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : List des TVA trouvé");
+                                            TVA tva = null;
+                                            foreach (TVA tva_ in tvaList)
+                                            {
+                                                if (tva_.TA_Code == DL_CodeTaxe1)
+                                                {
+                                                    tva = tva_;
+                                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                    break;
+                                                }
+                                            }
+
+                                            double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                            double product_20_P = (product_ht * Convert.ToDouble(tva.TA_Taux)) / 100;
+                                            product_ttc = product_ht + product_20_P;
+                                            DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Prix TTC créé");
+                                        }
+                                        else
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ******************** Warning TVA ********************");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BL seront 0");
+
+                                            double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                            double product_20_P = (product_ht * 0.0) / 100;
+                                            product_ttc = product_ht + product_20_P;
+                                            DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Prix TTC créé");
+                                        }
+                                        logFileWriter.Flush();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        logFileWriter.WriteLine("");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ******************** Exception TVA ********************");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
+                                        logFileWriter.Flush();
+                                        return null;
+                                    }
+
+                                    // input DL_DateBC: 03 - 01 - 2020 00:00:00;
+                                    string original_date = DL_DateBCF;
+                                    string date = original_date.Split(' ')[0];
+                                    string time = original_date.Split(' ')[1];
+                                    DL_DateBCF = date.Split('/')[2] + "-" + date.Split('/')[1] + "-" + date.Split('/')[0] + " " + time;
+                                    // ouput DL_DateBC: 2020-01-03 00:00:00;
+
+                                    // DESADV prefix will be used to create document
+                                    list_of_cmd_lines[counter, 0] = "1"; // DO_Domaine
+                                    list_of_cmd_lines[counter, 1] = "13"; //DO_Type
+                                    list_of_cmd_lines[counter, 2] = "13"; //DO_DocType
+                                    list_of_cmd_lines[counter, 3] = list_of_supplier_info[0]; //CT_NUM
+                                    list_of_cmd_lines[counter, 4] = reference_BCF_doc; //DO_Piece
+                                    list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
+                                    list_of_cmd_lines[counter, 6] = DL_DateBCF; //DL_DateBC
+                                    list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
+                                    list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Fournisseur; // DO_Ref
+                                    list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
+                                    list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
+                                    list_of_cmd_lines[counter, 11] = "1"; //DE_NO
+                                    list_of_cmd_lines[counter, 12] = name_article.Replace("'", "''"); // DL_Design
+                                    list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
+                                    list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
+                                    if (list_of_cmd_lines[counter, 14].Equals("0")) { list_of_cmd_lines[counter, 14] = "0.000000"; } else if (!list_of_cmd_lines[counter, 14].Contains(".")) { list_of_cmd_lines[counter, 14] = list_of_cmd_lines[counter, 14] + ".000000"; }
+
+                                    list_of_cmd_lines[counter, 15] = Convert.ToDouble(DL_PoidsBrut).ToString().Replace(",", "."); // DL_PoidsBrut
+                                    if (list_of_cmd_lines[counter, 15].Equals("0")) { list_of_cmd_lines[counter, 15] = "0.000000"; } else if (!list_of_cmd_lines[counter, 15].Contains(".")) { list_of_cmd_lines[counter, 15] = list_of_cmd_lines[counter, 15] + ".000000"; }
+
+                                    list_of_cmd_lines[counter, 16] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                    if (list_of_cmd_lines[counter, 16].Equals("0")) { list_of_cmd_lines[counter, 16] = "0.000000"; } else if (!list_of_cmd_lines[counter, 16].Contains(".")) { list_of_cmd_lines[counter, 16] = list_of_cmd_lines[counter, 16] + ".000000"; }
+
+                                    list_of_cmd_lines[counter, 17] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixRU
+                                    if (list_of_cmd_lines[counter, 17].Equals("0")) { list_of_cmd_lines[counter, 17] = "0.000000"; } else if (!list_of_cmd_lines[counter, 17].Contains(".")) { list_of_cmd_lines[counter, 17] = list_of_cmd_lines[counter, 17] + ".000000"; }
+
+                                    list_of_cmd_lines[counter, 18] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_CMUP
+                                    list_of_cmd_lines[counter, 19] = "Heure";    //DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                    list_of_cmd_lines[counter, 20] = Convert.ToInt16(line.Quantite).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
+                                    if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+
+                                    list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite) * Convert.ToDouble(DL_PrixUnitaire_salePriceHT)).ToString().Replace(",", "."); //DL_MontantHT
+                                    list_of_cmd_lines[counter, 22] = (Convert.ToDouble(line.Quantite) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
+                                    if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+                                    if (list_of_cmd_lines[counter, 21].Equals("0")) { list_of_cmd_lines[counter, 21] = "0.000000"; } else if (!list_of_cmd_lines[counter, 21].Contains(".")) { list_of_cmd_lines[counter, 21] = list_of_cmd_lines[counter, 21] + ".0"; }
+                                    if (list_of_cmd_lines[counter, 22].Equals("0")) { list_of_cmd_lines[counter, 22] = "0.000000"; } else if (!list_of_cmd_lines[counter, 22].Contains(".")) { list_of_cmd_lines[counter, 22] = list_of_cmd_lines[counter, 22] + ".000000"; }
+
+                                    list_of_cmd_lines[counter, 23] = ""; //PF_Num
+                                    list_of_cmd_lines[counter, 24] = "0"; //DL_No
+                                    list_of_cmd_lines[counter, 25] = "0"; //DL_FactPoids
+                                    list_of_cmd_lines[counter, 26] = "0"; //DL_Escompte
+                                    list_of_cmd_lines[counter, 27] = DL_PUTTC; //DL_PUTTC
+                                    list_of_cmd_lines[counter, 28] = "0";   //DL_TTC
+
+                                    list_of_cmd_lines[counter, 29] = DL_PieceBCF;   //DL_PieceBC
+                                    list_of_cmd_lines[counter, 30] = reference_BCF_doc;   //DL_PieceBL
+                                    list_of_cmd_lines[counter, 31] = curr_date;   // DL_DateBL
+                                    list_of_cmd_lines[counter, 32] = "0";   //DL_TNomencl
+                                    list_of_cmd_lines[counter, 33] = "0";   //DL_TRemPied
+                                    list_of_cmd_lines[counter, 34] = "0";   //DL_TRemExep
+                                    list_of_cmd_lines[counter, 35] = DL_QteBCF.Replace(",", ".");   //DL_QteBC
+                                    list_of_cmd_lines[counter, 36] = Convert.ToInt16(line.Quantite).ToString().Replace(",", ".");   //DL_QteBL
+                                    list_of_cmd_lines[counter, 37] = "0.000000";    //DL_Remise01REM_Valeur
+                                    list_of_cmd_lines[counter, 38] = "0";           //DL_Remise01REM_Type
+                                    list_of_cmd_lines[counter, 39] = "0.000000";    //DL_Remise02REM_Valeur
+                                    list_of_cmd_lines[counter, 40] = "0";           //DL_Remise02REM_Type
+                                    list_of_cmd_lines[counter, 41] = "0.000000";    //DL_Remise03REM_Valeur
+                                    list_of_cmd_lines[counter, 42] = "0";           //DL_Remise03REM_Type
+                                    list_of_cmd_lines[counter, 43] = "1";                   //DL_NoRef
+                                    list_of_cmd_lines[counter, 44] = "0";                   //DL_TypePL
+                                    list_of_cmd_lines[counter, 45] = "0.000000";            //DL_PUDevise
+                                    list_of_cmd_lines[counter, 46] = "";                    //CA_Num
+                                    list_of_cmd_lines[counter, 47] = "0.000000";            //DL_Frais
+                                    list_of_cmd_lines[counter, 48] = "";                    //AC_RefClient
+                                    list_of_cmd_lines[counter, 49] = "";                   //DL_PiecePL
+                                    list_of_cmd_lines[counter, 50] = "NULL"; //curr_date;                    //DL_DatePL
+                                    list_of_cmd_lines[counter, 51] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                   //DL_QtePL
+                                    list_of_cmd_lines[counter, 52] = "";                    //DL_NoColis
+                                    list_of_cmd_lines[counter, 53] = "0";                   //DL_NoLink
+                                    list_of_cmd_lines[counter, 54] = "0";                    //CO_No
+                                    list_of_cmd_lines[counter, 55] = "0";                //DT_No
+                                    list_of_cmd_lines[counter, 56] = "";                    //DL_PieceDE
+                                    list_of_cmd_lines[counter, 57] = "NULL";                   //DL_DateDe
+                                    list_of_cmd_lines[counter, 58] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                    //DL_QteDE
+                                    list_of_cmd_lines[counter, 59] = "0";                  //DL_NoSousTotal
+                                    list_of_cmd_lines[counter, 60] = "0";                //CA_No
+                                    list_of_cmd_lines[counter, 61] = "0.000000";            // DL_PUBC
+                                    list_of_cmd_lines[counter, 62] = DL_CodeTaxe1;                  // DL_CodeTaxe1
+                                    list_of_cmd_lines[counter, 63] = DL_Taxe1.ToString().Replace(",", ".");         // DL_Taxe1
+                                    list_of_cmd_lines[counter, 64] = "0.000000";            // DL_Taxe2
+                                    list_of_cmd_lines[counter, 65] = "0.000000";            // DL_Taxe3
+                                    list_of_cmd_lines[counter, 66] = "0";                   // DL_TypeTaux1
+                                    list_of_cmd_lines[counter, 67] = "0";                   // DL_TypeTaxe1
+                                    list_of_cmd_lines[counter, 68] = "0";                   // DL_TypeTaux2
+                                    list_of_cmd_lines[counter, 69] = "0";                   // DL_TypeTaxe2
+                                    list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
+                                    list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
+
+                                    list_of_cmd_lines[counter, 72] = "3";                                           // DL_MvtStock
+                                    list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
+                                    list_of_cmd_lines[counter, 74] = ((COLIS_article == null || COLIS_article == "") ? "0.0" : COLIS_article).ToString().Replace(",", ".");    // COLIS
+                                    list_of_cmd_lines[counter, 75] = ((PCB_article == null || PCB_article == "") ? "0.0" : PCB_article).ToString().Replace(",", ".");      // PCB
+                                    list_of_cmd_lines[counter, 76] = COMPLEMENT_article;                            // COMPLEMENT
+                                    list_of_cmd_lines[counter, 77] = "";                                            // PourVeolog
+                                    list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
+                                    list_of_cmd_lines[counter, 79] = "";                                            // DL_Operation
+                                    list_of_cmd_lines[counter, 80] = veologDeliveryDateTime;    //DO_DateLivr
+                                    list_of_cmd_lines[counter, 81] = "0";    //DL_NonLivre
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ******************** Exception Line ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Le tableau 'BLF' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
+                                    logFileWriter.Flush();
+                                    return null;
+                                }
+                            }
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Compter => " + counter);
+                            counter++;
+
+                        }
+                        // ===== End Foreach =====
+
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Vérifier si un produit pour 1 = BLF");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertBcfDocument_Veolog(true, "13", reference_BCF_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_supplier_info));
+
+                        //generate document BLF_____. in database.
+                        try
+                        {
+                            OdbcCommand command = new OdbcCommand(QueryHelper.insertBcfDocument_Veolog(true, "13", reference_BCF_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_supplier_info), connexion); //calling the query and parsing the parameters into it
+                            command.ExecuteReader(); // executing the query
+                        }
+                        catch (OdbcException ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ********************** OdbcException *********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Message :" + ex.Message);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
+                            //logFileWriter.Close();
+                            return null;
+                        }
+
+
+                        string[,] products_BCF = new string[position_item / 1000, 82]; // create array with enough space
+
+                        //insert documentline into the database with articles having 20 as value @index 2
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : insert documentline into the database with articles having 13 as value @index 2");
+
+                        for (int x = 0; x < list_of_cmd_lines.GetLength(0); x++)
+                        {
+                            if (list_of_cmd_lines[x, 1] == "13")
+                            {
+                                for (int y = 0; y < list_of_cmd_lines.GetLength(1); y++)
+                                {
+                                    products_BCF[x, y] = list_of_cmd_lines[x, y];
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : products_BLF_L[" + x + "," + y + "] = " + products_BCF[x, y]);
+                                }
+
+                                //insert the article to documentline in the database
+                                try
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : insert the article " + products_BCF[x, 12] + " (Ref:" + products_BCF[x, 9] + ") to documentline in the database");
+
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.insertBcfDocumentLine_Veolog(true, products_BCF, x));
+
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.insertBcfDocumentLine_Veolog(true, products_BCF, x), connexion);
+                                    command.ExecuteReader();
+                                }
+                                catch (OdbcException ex)
+                                {
+                                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ********************** OdbcException *********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
+                                    //logFileWriter.Close();
+                                    return null;
+                                }
+
+                                //Update docline artile stock
+                                try
+                                {
+                                    bool found_stock = false;
+                                    double AS_StockReel = 0.0;
+                                    double AS_StockReserve = 0.0;
+                                    double AS_StockMontant = 0.0;
+                                    double productPrixUnite = Convert.ToDouble(products_BCF[x, 16].Replace('.', ','));
+                                    double AS_StockCommande = 0.0;
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : get current stock in F_ARTSTOCK table in the database");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.getArticleStock(true, products_BCF[x, 9]));
+                                    using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_BCF[x, 9]), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                    {
+                                        using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                                        {
+                                            if (reader.Read()) // If any rows returned
+                                            {
+                                                found_stock = true;
+                                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Stock trouvé : AS_StockReel (" + reader[0].ToString() + "), AS_StockReserve (" + reader[1].ToString() + "), AS_StockMontant (" + reader[2].ToString() + "), AS_StockCommande (" + reader[3].ToString() + ").");
+                                                AS_StockReel = Convert.ToDouble(reader[0].ToString().Replace(".", ","));
+                                                AS_StockReserve = Convert.ToDouble(reader[1].ToString().Replace(".", ","));
+                                                AS_StockMontant = Convert.ToDouble(reader[2].ToString().Replace(".", ","));
+                                                AS_StockCommande = Convert.ToDouble(reader[3].ToString().Replace(".", ","));
+                                            }
+                                            else// If no rows returned
+                                            {
+                                                //do nothing.
+                                                found_stock = false;
+                                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse.");
+                                            }
+                                        }
+                                    }
+
+
+                                    if (found_stock)
+                                    {
+                                        //Calculate stock info
+                                        double AS_CMUP = AS_StockMontant / AS_StockReel;
+                                        double new_AS_StockReel = AS_StockReel + Convert.ToDouble(products_BCF[x, 13].Replace('.', ','));
+                                        //double new_AS_StockReserve = AS_StockReserve - Convert.ToDouble(products_BCF[x, 13].Replace('.', ','));
+                                        double new_AS_StockCommande = AS_StockCommande - Convert.ToDouble(products_BCF[x, 13].Replace('.', ','));
+                                        double new_AS_StockMontant = new_AS_StockReel * productPrixUnite;
+                                        double new_AS_CMUP = new_AS_StockMontant / new_AS_StockReel;
+
+                                        logFileWriter.WriteLine("");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Calculation...");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : new_AS_StockReel: " + new_AS_StockReel + " = AS_StockReel: " + AS_StockReel + " + products_DESADV[x, 13]: " + Convert.ToDouble(products_BCF[x, 13].Replace('.', ',')));
+                                        //logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : new_AS_StockReserve: " + new_AS_StockReserve + " = AS_StockReserve: " + AS_StockReserve + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_BCF[x, 13].Replace('.', ',')));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : new_AS_StockCommande: " + new_AS_StockCommande + " = AS_StockCommande: " + AS_StockCommande + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_BCF[x, 13].Replace('.', ',')));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : new_AS_StockMontant: " + new_AS_StockMontant + " = new_AS_StockReel: " + new_AS_StockReel + " X productPrixUnite: " + productPrixUnite);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : new_AS_CMUP: " + new_AS_CMUP + " = new_AS_StockMontant: " + new_AS_StockMontant + " / new_AS_StockReel: " + new_AS_StockReel);
+
+                                        logFileWriter.WriteLine("");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : update article " + products_BCF[x, 12] + " (Ref:" + products_BCF[x, 9] + ") stock in F_ARTSTOCK table in the database");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.updateArticleStockBCF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant));
+
+                                        OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStockBCF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant), connexion);
+                                        command.ExecuteReader();
+                                    }
+                                }
+                                catch (OdbcException ex)
+                                {
+                                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ********************** OdbcException Update F_ARTSTOCK table *********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Message :" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
+                                    //logFileWriter.Close();
+                                    return null;
+                                }
+                            }
+                        }
+
+                        //set Veolog date time import
+                        try
+                        {
+                            string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog au BCF \"" + reference_BCF_doc + "\".");
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_BCF_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_BCF_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre), connexion);
+                            {
+                                using (IDataReader reader = command.ExecuteReader())
+                                {
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Date de livraison veolog à jour !");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur Veolog Date BCF ********** ");
+                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                            return null;
+                        }
+
+                        //Delete the BC of the BL
+                        try
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Supprimer le Bon de Commande (BCF) \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre), connexion);
+                            IDataReader reader = command.ExecuteReader();
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Bon de Commande Fournisseur supprimé!");
+                        }
+                        catch (Exception ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                            return null;
+                        }
+
+                        //update document numbering
+                        try
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Mettre à jour la numérotation du document \"" + reference_BCF_doc + "\".");
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BCF_doc));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BCF_doc), connexion);
+                            IDataReader reader = command.ExecuteReader();
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Nouvelle numérotation à jour!");
+                        }
+                        catch (Exception ex)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                            logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                            logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                            return null;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** Exception 1 *********************");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :: " + ex.Message);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :: " + ex.StackTrace);
+                    connexion.Close(); //disconnect from database
+                    return null;
+                }
+            }
+
+            return list_of_cmd_lines;
+        }
         public static string lastNumberReference(string mask, StreamWriter logFileWriter)
         {
 
             string db_result = "";
             string result = "";
 
-            if (mask == "ME")
+            if (mask == "ME") // Mouvement Entree
             {
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask ME");
@@ -3702,7 +4553,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 return result;
             }
-            else if (mask == "MS")
+            else if (mask == "MS") // Mouvement Sortie
             {
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask MS");
@@ -3804,7 +4655,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 return result;
             }
-            else if (mask == "BL")
+            else if (mask == "BL") // Bonn de Livraison
             {
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BL");
@@ -3894,7 +4745,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 return result;
             }
-            else if (mask == "BC")
+            else if (mask == "BC") // Bon de Commande
             {
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BC");
@@ -3984,6 +4835,184 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 return result;
             }
+            else if (mask == "BLF") // Bon de Commande Fournisseur
+            {
+                logFileWriter.WriteLine("");
+                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask BLF");
+
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                {
+                    try
+                    {
+                        connexion.Open();
+
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BLF"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BLF"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "BLF200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BLF : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get the last doc reference in from the BCF list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    db_result = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BLF : " + db_result);
+                                }
+                                else
+                                {
+                                    db_result = "BLF000000";
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BLF : " + db_result);
+                                }
+                            }
+                        }
+
+                    }
+                    catch (OdbcException ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        return null;
+                    }
+
+                    int chiffreTotal = 7;
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                    int newMaskID = lastMaskID + 1;
+
+                    result = mask; // put ME before adding '0'
+                    string zeros = "";
+                    string result_ = result + "" + newMaskID;
+
+                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    {
+                        zeros += "0";
+                    }
+                    result += zeros + "" + newMaskID;
+
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BLF : " + result);
+                }
+                logFileWriter.WriteLine("");
+                return result;
+            }
+            else if (mask == "LF") // Bon de Commande Fournisseur
+            {
+                logFileWriter.WriteLine("");
+                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask LF");
+
+                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                {
+                    try
+                    {
+                        connexion.Open();
+
+                        //check if DOC_Numerotation existe
+                        //And get the last saved doc reference if differente from factory init mask
+                        bool DOC_Numerotation_exist = false;
+                        if (checkDOC_Numerotation(logFileWriter) == 1)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BLF"));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BLF"), connexion);
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    if (reader[0].ToString() != "LF200000")
+                                    {
+                                        DOC_Numerotation_exist = true;
+                                        db_result = reader[0].ToString();
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask LF : " + db_result);
+                                    }
+                                    else
+                                    {
+                                        DOC_Numerotation_exist = false;
+                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
+                                    }
+                                }
+                            }
+                        }
+
+                        //Get the last doc reference in from the BCF list 
+                        if (!DOC_Numerotation_exist)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // reads lines/rows from the query
+                                {
+                                    db_result = reader[0].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask LF : " + db_result);
+                                }
+                                else
+                                {
+                                    db_result = "LF000000";
+                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask LF : " + db_result);
+                                }
+                            }
+                        }
+
+                    }
+                    catch (OdbcException ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
+                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
+                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
+                        return null;
+                    }
+
+                    int chiffreTotal = 7;
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                    int newMaskID = lastMaskID + 1;
+
+                    result = mask; // put ME before adding '0'
+                    string zeros = "";
+                    string result_ = result + "" + newMaskID;
+
+                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    {
+                        zeros += "0";
+                    }
+                    result += zeros + "" + newMaskID;
+
+                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask LF : " + result);
+                }
+                logFileWriter.WriteLine("");
+                return result;
+            }
             return null;
         }
 
@@ -4066,9 +5095,26 @@ namespace importPlanifier.Classes
                             }
                         }
 
+                        ConfigurationDNS dns = new ConfigurationDNS();
+                        dns.LoadSQL();
+
+                        string initMask = "";
+                        if(dns.Prefix == "CFCI")
+                        {
+                            initMask = "BLF200000";
+                        }
+                        else if (dns.Prefix == "TABLEWEAR")
+                        {
+                            initMask = "LF200000";
+                        }
+                        else
+                        {
+                            initMask = "BLF200000";
+                        }
+
                         //Set up the first init Numérotation
-                        writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : SQL => " + QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "ME200000", "MS200000"));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "ME200000", "MS200000"), connexion))
+                        writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : SQL => " + QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "BLF200000", "ME200000", "MS200000"));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", initMask, "ME200000", "MS200000"), connexion))
                         {
                             using (IDataReader reader = command.ExecuteReader())
                             {

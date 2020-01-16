@@ -421,7 +421,7 @@ namespace ConnecteurSage
                         {
                             command = new OdbcCommand(QueryHelper.deleteDOC_NumerotationTable(true), connexion);
                             command.ExecuteReader();
-                            command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "ME200000", "MS200000"), connexion);
+                            command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BCF200000", "CF200000", "BL200000", "ME200000", "MS200000"), connexion);
                             command.ExecuteReader();
                         }
                         // Récupération d'une possible SDKException
@@ -451,7 +451,7 @@ namespace ConnecteurSage
                         }
 
                         //Set up the first init Numérotation
-                        command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "ME200000", "MS200000"), connexion);
+                        command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BCF200000", "CF200000", "BL200000", "ME200000", "MS200000"), connexion);
                         using (IDataReader reader = command.ExecuteReader())
                         {
                             result = true;
