@@ -599,7 +599,8 @@ namespace importPlanifier.Helpers
             if (sqlConnexion)
             {
                 //return "SELECT AR_Ref, AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch, AR_PrixVen FROM " + getPrefix() + "F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
-                return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT, DL_Taxe1, DL_CodeTaxe1, DO_Piece, DO_Date, DL_Qte FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '"+DO_Piece+"' AND AR_Ref = '" + reference_article + "' ";
+                //return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT, DL_Taxe1, DL_CodeTaxe1, DO_Piece, DO_Date, DL_Qte FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '"+DO_Piece+"' AND AR_Ref = '" + reference_article + "' ";
+                return "SELECT ar.AR_Ref, li.DL_Design, li.DL_PoidsNet, li.DL_PoidsBrut, li.DL_PrixUnitaire, li.COLIS, li.PCB, li.COMPLEMENT, li.DL_Taxe1, li.DL_CodeTaxe1, li.DO_Piece, li.DO_Date, li.DL_Qte FROM " + getPrefix() + "F_DOCLIGNE as li, " + getPrefix() + "F_ARTICLE as ar WHERE li.AR_Ref = ar.AR_Ref and li.DO_Piece = '" + DO_Piece + "' AND ar.AR_CodeBarre = '" + reference_article + "'";
             }
             else
             {
