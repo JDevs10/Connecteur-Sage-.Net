@@ -33,8 +33,11 @@ namespace importPlanifier.Classes
         public string DL_PrixUnitaire { set; get; } // Prix unitaire HT
 
         public string DL_Taxe1 { set; get; }
+        public string DL_CodeTaxe1 { set; get; }
         public string DL_Taxe2 { set; get; }
+        public string DL_CodeTaxe2 { set; get; }
         public string DL_Taxe3 { set; get; }
+        public string DL_CodeTaxe3 { set; get; }
         public string DL_TypeTaxe1 { set; get; }
         public string DL_TypeTaxe2 { set; get; }
         public string DL_TypeTaxe3 { set; get; }
@@ -83,8 +86,11 @@ namespace importPlanifier.Classes
         string DL_Remise03REM_Valeur,
         string DL_Remise03REM_Type,
         string DL_PrixUnitaire,
+        string DL_CodeTaxe1,
         string DL_Taxe1,
+        string DL_CodeTaxe2,
         string DL_Taxe2,
+        string DL_CodeTaxe3,
         string DL_Taxe3,
         string DL_TypeTaxe1,
         string DL_TypeTaxe2,
@@ -116,8 +122,11 @@ namespace importPlanifier.Classes
             this.DL_Remise03REM_Valeur = DL_Remise03REM_Valeur;
             this.DL_Remise03REM_Type = DL_Remise03REM_Type;
             this.DL_PrixUnitaire = DL_PrixUnitaire;
+            this.DL_CodeTaxe1 = DL_CodeTaxe1;
             this.DL_Taxe1 = DL_Taxe1;
+            this.DL_CodeTaxe2 = DL_CodeTaxe2;
             this.DL_Taxe2 = DL_Taxe2;
+            this.DL_CodeTaxe3 = DL_CodeTaxe3;
             this.DL_Taxe3 = DL_Taxe3;
             this.DL_TypeTaxe1 = DL_TypeTaxe1;
             this.DL_TypeTaxe2 = DL_TypeTaxe2;

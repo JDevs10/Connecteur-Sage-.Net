@@ -280,6 +280,18 @@ namespace importPlanifier.Helpers
             }
         }
 
+        public static string MaxNumPiece_v2(bool sqlConnexion, string mask)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT Max(DO_Piece) as DO_Piece_Max FROM " + getPrefix() + "F_DOCENTETE F_DOCENTETE WHERE DO_Piece LIKE '%" + mask + "%' AND DO_DOMAINE = 0 AND DO_TYPE = 1";
+            }
+            else
+            {
+                return "SELECT Max(DO_Piece) as DO_Piece_Max FROM F_DOCENTETE WHERE DO_Piece LIKE '%" + mask + "%' AND DO_DOMAINE = 0 AND DO_TYPE = 1";
+            }
+        }
+
         public static string get_Next_NumPiece_BonCommande(bool sqlConnexion)
         {
             if (sqlConnexion)
@@ -289,6 +301,18 @@ namespace importPlanifier.Helpers
             else
             {
                 return "SELECT DC_PIECE FROM F_DOCCURRENTPIECE WHERE DC_IDCOL=1 and DC_SOUCHE=0";
+            }
+        }
+
+        public static string get_Next_NumPiece_BonCommande_v2(bool sqlConnexion, string mask)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT DC_PIECE FROM " + getPrefix() + "F_DOCCURRENTPIECE WHERE DC_Piece LIKE '%"+mask+"%'";
+            }
+            else
+            {
+                return "SELECT DC_PIECE FROM F_DOCCURRENTPIECE WHERE DC_Piece LIKE '%" + mask + "%'";
             }
         }
 
@@ -329,6 +353,18 @@ namespace importPlanifier.Helpers
         }
 
         public static string get_NumPiece_Motif(bool sqlConnexion, string num)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT DO_PIECE FROM " + getPrefix() + "F_DOCENTETE WHERE DO_COORD01='" + num + "'";
+            }
+            else
+            {
+                return "SELECT DO_PIECE FROM F_DOCENTETE WHERE DO_COORD01='" + num + "'";
+            }
+        }
+
+        public static string get_Doc_NumPiece(bool sqlConnexion, string num)
         {
             if (sqlConnexion)
             {
@@ -435,7 +471,7 @@ namespace importPlanifier.Helpers
 
         // ******************************************************************************************
 
-        public static string getListDocumentVente(bool sqlConnexion, int type)
+        public static string getListDocumentVente(bool sqlConnexion, int type, string statut)
         {
             if (sqlConnexion)
             {
@@ -443,25 +479,13 @@ namespace importPlanifier.Helpers
                 {
                     return "SELECT doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,doc.FNT_MontantEcheance,doc.FNT_MontantTotalTaxes,doc.FNT_NetAPayer,doc.FNT_PoidsBrut,doc.FNT_PoidsNet,doc.FNT_Escompte,doc.FNT_TotalHT,doc.FNT_TotalHTNet,doc.FNT_TotalTTC,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  " +
                          "FROM " + getPrefix() + "F_comptet cli, " + getPrefix() + "P_condlivr cond, " + getPrefix() + "F_docentete doc, " + getPrefix() + "F_LIVRAISON liv " +
-                         "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=5 or doc.DO_TYPE=6 or doc.DO_TYPE=7)  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
+                         "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=5 or doc.DO_TYPE=6 or doc.DO_TYPE=7)  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1' and doc.DO_Statut = " + statut;
                 }
                 // J'ai modifier DO_COORD01 par DO_REF pour le client TRACE SPORT
                 return "SELECT doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,doc.FNT_MontantEcheance,doc.FNT_MontantTotalTaxes,doc.FNT_NetAPayer,doc.FNT_PoidsBrut,doc.FNT_PoidsNet,doc.FNT_Escompte,doc.FNT_TotalHT,doc.FNT_TotalHTNet,doc.FNT_TotalTTC,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  " +
                     "FROM " + getPrefix() + "F_comptet cli, " + getPrefix() + "P_condlivr cond, " + getPrefix() + "F_docentete doc, " + getPrefix() + "F_LIVRAISON liv " +
-                    "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=" + type + ")  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
+                    "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=" + type + ")  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1' and doc.DO_Statut = " + statut;
 
-                /*
-                if (type == 67)
-                {
-                    return "SELECT doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,doc.FNT_MontantEcheance,doc.FNT_MontantTotalTaxes,doc.FNT_NetAPayer,doc.FNT_PoidsBrut,doc.FNT_PoidsNet,doc.FNT_Escompte,doc.FNT_TotalHT,doc.FNT_TotalHTNet,doc.FNT_TotalTTC,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  " +
-                         "FROM " + getPrefix() + "F_comptet cli, " + getPrefix() + "P_condlivr cond, " + getPrefix() + "F_docentete doc, " + getPrefix() + "F_LIVRAISON liv " +
-                         "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=5 or doc.DO_TYPE=6 or doc.DO_TYPE=7)  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
-                }
-                // J'ai modifier DO_COORD01 par DO_REF pour le client TRACE SPORT
-                return "SELECT doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,doc.FNT_MontantEcheance,doc.FNT_MontantTotalTaxes,doc.FNT_NetAPayer,doc.FNT_PoidsBrut,doc.FNT_PoidsNet,doc.FNT_Escompte,doc.FNT_TotalHT,doc.FNT_TotalHTNet,doc.FNT_TotalTTC,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  " +
-                    "FROM " + getPrefix() + "F_comptet cli, " + getPrefix() + "P_condlivr cond, " + getPrefix() + "F_docentete doc, " + getPrefix() + "F_LIVRAISON liv " +
-                    "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=" + type + ")  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
-                    */
             }
             else
             {
@@ -469,12 +493,12 @@ namespace importPlanifier.Helpers
                 {
                     return "SELECT doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,doc.FNT_MontantEcheance,doc.FNT_MontantTotalTaxes,doc.FNT_NetAPayer,doc.FNT_PoidsBrut,doc.FNT_PoidsNet,doc.FNT_Escompte,doc.FNT_TotalHT,doc.FNT_TotalHTNet,doc.FNT_TotalTTC,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  " +
                      "FROM F_comptet cli, P_condlivr cond, F_docentete doc, F_LIVRAISON liv " +
-                     "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=5 or doc.DO_TYPE=6 or doc.DO_TYPE=7)  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
+                     "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=5 or doc.DO_TYPE=6 or doc.DO_TYPE=7)  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1' and doc.DO_Statut = " + statut;
                 }
                 // J'ai modifier DO_COORD01 par DO_REF pour le client TRACE SPORT
                 return "SELECT doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,doc.FNT_MontantEcheance,doc.FNT_MontantTotalTaxes,doc.FNT_NetAPayer,doc.FNT_PoidsBrut,doc.FNT_PoidsNet,doc.FNT_Escompte,doc.FNT_TotalHT,doc.FNT_TotalHTNet,doc.FNT_TotalTTC,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  " +
                     "FROM F_comptet cli, P_condlivr cond, F_docentete doc, F_LIVRAISON liv " +
-                    "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=" + type + ")  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1'";
+                    "WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=" + type + ")  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) and doc.DO_COORD02='1' and doc.DO_Statut = " + statut;
             }
         }
 
@@ -482,13 +506,13 @@ namespace importPlanifier.Helpers
         {
             if (sqlConnexion)
             {
-                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_Taxe1,doc.DL_Taxe2,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE " +
+                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_CodeTaxe1,doc.DL_Taxe1,doc.DL_CodeTaxe2,doc.DL_Taxe2,doc.DL_CodeTaxe3,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE " +
                     "FROM " + getPrefix() + "F_ARTICLE art, " + getPrefix() + "F_DOCLIGNE doc " +
                     "WHERE doc.AR_REF = art.AR_REF and doc.do_piece='" + codeDocument + "'";
             }
             else
             {
-                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_Taxe1,doc.DL_Taxe2,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE " +
+                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_CodeTaxe1,doc.DL_Taxe1,doc.DL_CodeTaxe2,doc.DL_Taxe2,doc.DL_CodeTaxe3,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE " +
                      "FROM F_ARTICLE art, F_DOCLIGNE doc " +
                      "WHERE doc.AR_REF = art.AR_REF and doc.do_piece='" + codeDocument + "'";
             }
@@ -609,7 +633,7 @@ namespace importPlanifier.Helpers
             }
         }
 
-        public static string getProductNameByReference_BCF(bool sqlConnexion, string DO_Piece, string reference_article)
+        public static string getProductNameByReference_BLF(bool sqlConnexion, string DO_Piece, string reference_article)
         {
             if (sqlConnexion)
             {
@@ -671,7 +695,7 @@ namespace importPlanifier.Helpers
             }
         }
 
-        public static string getSupplierDeliveryAddress_BFC(bool sqlConnexion, string CT_Num)
+        public static string getSupplierDeliveryAddress_BLF(bool sqlConnexion, string CT_Num)
         {
             if (sqlConnexion)
             {
@@ -963,7 +987,7 @@ namespace importPlanifier.Helpers
             }
         }
 
-        public static string updateArticleStockBCF(bool sqlConnexion, string reference, double AS_StockReel, double AS_StockCommande, double AS_StockMontant)
+        public static string updateArticleStockBLF(bool sqlConnexion, string reference, double AS_StockReel, double AS_StockCommande, double AS_StockMontant)
         {
             if (sqlConnexion)
             {

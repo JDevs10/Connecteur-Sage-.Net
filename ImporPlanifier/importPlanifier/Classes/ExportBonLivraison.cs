@@ -24,18 +24,26 @@ namespace importPlanifier.Classes
             this.pathExport = path;
         }
 
-        private List<DocumentVente> GetBonLivraisonFromDataBase()
+        private List<DocumentVente> GetBonLivraisonFromDataBase(StreamWriter writer)
         {
+            writer.WriteLine("");
+            writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Called!");
             try
             {
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVente> listDocumentVente = new List<DocumentVente>();
+
+                ConfigurationExport export = new ConfigurationExport();
+                writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Répurère le statut dans la config export.");
+                export.Load();
+
                 using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
                 {
                     DocumentVente documentVente;
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3), connection);
+                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : SQL ===> " + QueryHelper.getListDocumentVente(false, 3, export.exportBonsLivraisons_Statut));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3, export.exportBonsLivraisons_Statut), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -68,6 +76,7 @@ namespace importPlanifier.Classes
                             }
                         }
                     }
+                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Numéro de facture trouvé : " + listDocumentVente.Count());
                     return listDocumentVente;
 
                 }
@@ -77,7 +86,7 @@ namespace importPlanifier.Classes
             catch (Exception e)
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 return null;
             }
         }
@@ -106,8 +115,9 @@ namespace importPlanifier.Classes
                                     reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString(),
                                     reader[16].ToString(), reader[17].ToString(), reader[18].ToString(), reader[19].ToString(),
                                     reader[20].ToString(), reader[21].ToString(), reader[22].ToString(), reader[23].ToString(),
-                                     reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString(),
-                                        reader[28].ToString(), reader[29].ToString(), reader[30].ToString(), reader[31].ToString()
+                                    reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString(),
+                                    reader[28].ToString(), reader[29].ToString(), reader[30].ToString(), reader[31].ToString(),
+                                    reader[32].ToString(), reader[33].ToString(), reader[34].ToString()
                                     );
                                 lignesDocumentVente.Add(ligne);
                             }
@@ -210,7 +220,7 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine("#####################################################################################");
                 logFileWriter_export.WriteLine("");
 
-                List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase();
+                List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase(logFileWriter_export);
 
                  if (BonLivrasonAExporter != null)
                  {
@@ -221,71 +231,86 @@ namespace importPlanifier.Classes
                          System.IO.Directory.CreateDirectory(outputFile);
                      }
 
-                     for (int i = 0; i < BonLivrasonAExporter.Count; i++)
-                     {
-                        exportTo = @"Export\Plat_BonLivraison";
-                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Nombre de DESADV à exporter ===> " + i + "/" + BonLivrasonAExporter.Count);
+                    ConfigurationExport export = new ConfigurationExport();
+                    logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le format du fichier dans la config export.");
+                    export.Load();
 
-                        Customer customer = GetClient(BonLivrasonAExporter[i].DO_TIERS);
+                    for (int i = 0; i < BonLivrasonAExporter.Count; i++)
+                    {
+                        if (export.exportFactures_Format == "Plat")
+                        {
+                            exportTo = @"Export\Plat_BonLivraison";
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Nombre de DESADV à exporter ===> " + i + "/" + BonLivrasonAExporter.Count);
 
-                         var fileName = string.Format("BonLivraison{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
+                            Customer customer = GetClient(BonLivrasonAExporter[i].DO_TIERS);
 
-                         using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName, false, Encoding.UTF8))
-                         {
-                             //writer.WriteLine("DEMAT-AAA;v01.0;;;" + DateTime.Today.Year + addZero(DateTime.Today.Month.ToString()) + addZero(DateTime.Today.Day.ToString()) + ";;");
-                             //writer.WriteLine("");
-                             //writer.WriteLine("");
+                            var fileName = string.Format("BonLivraison{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
 
-                             writer.WriteLine("DESHDR;v01.0;;" + BonLivrasonAExporter[i].DO_Piece.Replace("BL", "") + ";" + customer.CT_EDI1 + ";9;;9;" + customer.CT_EDI1 + ";9;" + customer.CT_EDI1 + ";9;;9;;9;;9;;" + ConvertDate(BonLivrasonAExporter[i].DO_dateLivr) + ";;;;;" + BonLivrasonAExporter[i].LI_ADRESSE + ";;;;;;;;;;;;;;9;");
-                             writer.WriteLine("");
+                            using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName, false, Encoding.UTF8))
+                            {
+                                //writer.WriteLine("DEMAT-AAA;v01.0;;;" + DateTime.Today.Year + addZero(DateTime.Today.Month.ToString()) + addZero(DateTime.Today.Day.ToString()) + ";;");
+                                //writer.WriteLine("");
+                                //writer.WriteLine("");
 
-                             writer.WriteLine("DESHD2;;;;" + customer.CT_Adresse + ";;" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + customer.CT_Pays + ";" + customer.CT_Intitule + ";" + customer.CT_Telephone + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
-                             writer.WriteLine("");
+                                writer.WriteLine("DESHDR;v01.0;;" + BonLivrasonAExporter[i].DO_Piece.Replace("BL", "") + ";" + customer.CT_EDI1 + ";9;;9;" + customer.CT_EDI1 + ";9;" + customer.CT_EDI1 + ";9;;9;;9;;9;;" + ConvertDate(BonLivrasonAExporter[i].DO_dateLivr) + ";;;;;" + BonLivrasonAExporter[i].LI_ADRESSE + ";;;;;;;;;;;;;;9;");
+                                writer.WriteLine("");
 
-                             //if (BonLivrasonAExporter[i].IntrastatTransportMode != "")
-                             //{ // Return mode de transport                           
-                             //    BonLivrasonAExporter[i].IntrastatTransportMode = GetModeTransport(BonLivrasonAExporter[i].IntrastatTransportMode);
-                             //}
+                                writer.WriteLine("DESHD2;;;;" + customer.CT_Adresse + ";;" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + customer.CT_Pays + ";" + customer.CT_Intitule + ";" + customer.CT_Telephone + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+                                writer.WriteLine("");
 
-                             writer.WriteLine("DESTRP;;;;;;;;;;");
-                             writer.WriteLine("");
+                                //if (BonLivrasonAExporter[i].IntrastatTransportMode != "")
+                                //{ // Return mode de transport                           
+                                //    BonLivrasonAExporter[i].IntrastatTransportMode = GetModeTransport(BonLivrasonAExporter[i].IntrastatTransportMode);
+                                //}
 
-                             writer.WriteLine("DESLOG;;;;" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
-                             writer.WriteLine("");
+                                writer.WriteLine("DESTRP;;;;;;;;;;");
+                                writer.WriteLine("");
 
-
-                             BonLivrasonAExporter[i].lines = getDocumentLine(BonLivrasonAExporter[i].DO_Piece);
-
-                             for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
-                             {
-
-                                 writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].FNT_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
-                                 writer.WriteLine("");
+                                writer.WriteLine("DESLOG;;;;" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+                                writer.WriteLine("");
 
 
-                             }
+                                BonLivrasonAExporter[i].lines = getDocumentLine(BonLivrasonAExporter[i].DO_Piece);
+
+                                for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
+                                {
+
+                                    writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].FNT_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
+                                    writer.WriteLine("");
 
 
-                             writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
-                             writer.WriteLine("");
-                             writer.WriteLine("");
+                                }
 
-                         }
-                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Fichier d'export DESADV généré dans : " + outputFile + @"\" + fileName.Replace("..", "."));
 
-                        //add to backup folder
-                        addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName, logFileWriter_export);
+                                writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
+                                writer.WriteLine("");
+                                writer.WriteLine("");
 
-                        UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece);
+                            }
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Fichier d'export DESADV généré dans : " + outputFile + @"\" + fileName.Replace("..", "."));
 
-                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Mettre à jour le Document de Vente");
+                            //add to backup folder
+                            addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName, logFileWriter_export);
 
-                     }
+                            UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece);
+
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Mettre à jour le Document de Vente");
+
+                        }
+                        else
+                        {
+                            logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Format Fichier ********************");
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!");
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
+                            logFileWriter_export.Flush();
+                        }
+
+
+                    }  //END FOR export Bon de livraison
 
                      Console.WriteLine(DateTime.Now + " : Nombre bon de livraison : " + BonLivrasonAExporter.Count);
                      logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Nombre bon de livraison : " + BonLivrasonAExporter.Count);
                  }
-
 
 
             }
