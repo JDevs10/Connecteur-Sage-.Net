@@ -19,7 +19,8 @@ namespace importPlanifier.Classes
         //private Order CommandeAExporter;
 
         private string pathExport;
-
+        private string docRefMail = "";
+        private string logFileName_export;
         public string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE";
         private StreamWriter logFileWriter = null;
 
@@ -84,7 +85,7 @@ namespace importPlanifier.Classes
         /// <summary>
         /// Génération du fichier d'import, lancement de l'application et import des commandes
         /// </summary>
-        public void ExportCommande()
+        public List<string[]> ExportCommande(List<string[]> mImportErrorList)
         {
             Classes.Path path = new Path();
             path.Load();
@@ -98,7 +99,7 @@ namespace importPlanifier.Classes
                 Directory.CreateDirectory(logDirectoryName_export);
             }
 
-            var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Commande_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_Commande_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
             var logFile_export = File.Create(logFileName_export);
 
             //Write in the log file 
@@ -152,8 +153,9 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Message : " + ex.Message + ".");
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                     logFileWriter.Flush();
-                    //Console.ReadLine();
-                    return;
+                    logFileWriter.Close();
+                    mImportErrorList.Add(new string[3] { docRefMail, ex.Message, logFileName_export });
+                    return mImportErrorList;
                 }
             }
 
@@ -195,6 +197,7 @@ namespace importPlanifier.Classes
                         }
                         if (CommandeAExporter != null)
                         {
+                            docRefMail = CommandeAExporter.NumCommande;
                             if (!CommandeAExporter.NomClient.Equals("") && !CommandeAExporter.NomClient.Equals(" "))
                             {
                                 logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Export Commande du client \"" + CommandeAExporter.NomClient + "\"");
@@ -355,7 +358,7 @@ namespace importPlanifier.Classes
 
                                     orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";"+CommandeAExporter.codeClient+";;"+ CommandeAExporter.NomClient + ";"+ CommandeAExporter.adresse + ";"+CommandeAExporter.adresse_2+";;"+ CommandeAExporter.codepostale + ";"+ CommandeAExporter.ville + ";"+ CommandeAExporter.pays + ";"+ CommandeAExporter.telephone + ";"+ CommandeAExporter.email + ";"+ CommandeAExporter.DateLivraison + ";"+ CommandeAExporter.HeureLivraison + ";"+ CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.commentaires); // E line
 
-                                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande); // Maybe thisssss
+                                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, mImportErrorList); // Maybe thisssss
 
                                         int qteTotal = 0;
                                         string[] declarerpourrien = new string[2];
@@ -411,7 +414,7 @@ namespace importPlanifier.Classes
 
                                         orderFileWriter.WriteLine("ORDHD1;" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.conditionLivraison + ";;");
 
-                                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande);
+                                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, mImportErrorList);
 
                                         for (int i = 0; i < CommandeAExporter.Lines.Count; i++)
                                         {
@@ -476,7 +479,9 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                         logFileWriter.Flush();
-                                        return;
+                                        logFileWriter.Close();
+                                        mImportErrorList.Add(new string[3] { docRefMail, ex.Message, logFileName_export });
+                                        return mImportErrorList;
                                     }
 
 
@@ -507,7 +512,9 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                         logFileWriter.Flush();
-                                        return;
+                                        logFileWriter.Close();
+                                        mImportErrorList.Add(new string[3] { docRefMail, ex.Message, logFileName_export });
+                                        return mImportErrorList;
                                     }
                                 }
                                 logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Commande exportée avec succés.");
@@ -522,11 +529,10 @@ namespace importPlanifier.Classes
                                 //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
                                 logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : ERREUR :: " + ex.Message);
                                 logFileWriter.Flush();
+                                logFileWriter.Close();
                                 Console.WriteLine(DateTime.Now + " | ExportCommande() : ERREUR :: " + ex.Message);
-                                //Console.ReadLine();
-                            //logFileWriter.Close();
-                            //Close();
-                        }
+                                mImportErrorList.Add(new string[3] { docRefMail, ex.Message, logFileName_export });
+                            }
                         }
                         else
                         {
@@ -542,13 +548,17 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  ********************** OdbcException *********************");
                         logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Message : " + ex.Message + ".");
                         logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
-                        return;
+                        logFileWriter.Flush();
+                        logFileWriter.Close();
+                        mImportErrorList.Add(new string[3] { docRefMail, ex.Message, logFileName_export });
+                        return mImportErrorList;
                     }
                 }
 
                 logFileWriter.Flush();
             }
             logFileWriter.Close();
+            return mImportErrorList;
         }
         #endregion
 
@@ -653,7 +663,7 @@ namespace importPlanifier.Classes
             }
         }
 
-        private List<OrderLine> getLigneCommande(string code)
+        private List<OrderLine> getLigneCommande(string code, List<string[]> mImportErrorList)
         {
             try
             {
@@ -672,7 +682,6 @@ namespace importPlanifier.Classes
                             {
                                 lines.Add(new OrderLine(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString()));
                             }
-
                             return lines;
                         }
                     }
@@ -683,6 +692,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                mImportErrorList.Add(new string[3] { docRefMail, ex.Message, logFileName_export });
                 return null;
             }
         }

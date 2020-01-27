@@ -1,0 +1,96 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml.Serialization;
+
+namespace ConnecteurSage.Classes
+{
+    public class ConfigurationBackup
+    {
+        [XmlElement]
+        public bool activate { get; set; }
+        [XmlElement]
+        public int general_Log { get; set; }
+        [XmlElement]
+        public int import_Log { get; set; }
+        [XmlElement]
+        public int export_Log { get; set; }
+        [XmlElement]
+        public int import_files_success { get; set; }
+        [XmlElement]
+        public int import_files_error { get; set; }
+        [XmlElement]
+        public int export_files_BC { get; set; }
+        [XmlElement]
+        public int export_files_BL { get; set; }
+        [XmlElement]
+        public int export_files_FA { get; set; }
+        [XmlElement]
+        public int export_files_ME_MS { get; set; }
+        [XmlElement]
+        public int export_files_BLF { get; set; }
+
+        private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+
+        public ConfigurationBackup()
+        {
+        }
+
+        public ConfigurationBackup(bool activate, int general_Log, int import_Log, int export_Log, int import_files_success, int import_files_error, int export_files_BC, int export_files_BL, int export_files_FA, int export_files_ME_MS, int export_files_BLF)
+        {
+            this.activate = activate;
+            this.general_Log = general_Log;
+            this.import_Log = import_Log;
+            this.export_Log = export_Log;
+            this.export_Log = export_Log;
+            this.import_files_success = import_files_success;
+            this.import_files_error = import_files_error;
+            this.export_files_BC = export_files_BC;
+            this.export_files_BL = export_files_BL;
+            this.export_files_FA = export_files_FA;
+            this.export_files_ME_MS = export_files_ME_MS;
+            this.export_files_BLF = export_files_BLF;
+        }
+
+        public void saveInfo(ConfigurationBackup backupSettings)
+        {
+            try
+            {
+                var myfile = File.Create(pathModule + @"\SettingBackup.xml");
+                XmlSerializer xml = new XmlSerializer(typeof(ConfigurationBackup));
+                xml.Serialize(myfile, backupSettings);
+                myfile.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("" + ex.Message);
+            }
+        }
+        public void Load()
+        {
+            if (File.Exists("SettingBackup.xml"))
+            {
+                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationBackup));
+                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingBackup.xml");
+                ConfigurationBackup mail = new ConfigurationBackup();
+                mail = (ConfigurationBackup)reader.Deserialize(file);
+
+                this.activate = mail.activate;
+                this.general_Log = mail.general_Log;
+                this.import_Log = mail.import_Log;
+                this.export_Log = mail.export_Log;
+                this.export_Log = mail.export_Log;
+                this.import_files_success = mail.import_files_success;
+                this.import_files_error = mail.import_files_error;
+                this.export_files_BC = mail.export_files_BC;
+                this.export_files_BL = mail.export_files_BL;
+                this.export_files_FA = mail.export_files_FA;
+                this.export_files_ME_MS = mail.export_files_ME_MS;
+                this.export_files_BLF = mail.export_files_BLF;
+                file.Close();
+            }
+        }
+    }
+}

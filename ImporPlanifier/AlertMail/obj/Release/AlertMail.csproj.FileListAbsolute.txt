@@ -1,0 +1,6 @@
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\AlertMail\bin\Release\AlertMail.exe.config
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\AlertMail\bin\Release\AlertMail.exe
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\AlertMail\bin\Release\AlertMail.pdb
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\AlertMail\obj\Release\AlertMail.exe
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\AlertMail\obj\Release\AlertMail.pdb
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ImporPlanifier\AlertMail\obj\Release\AlertMail.csprojAssemblyReference.cache

@@ -10,6 +10,8 @@ using ConnecteurSage.Helpers;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using ConnecteurSage.Classes;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace ConnecteurSage.Forms
 {
@@ -19,40 +21,41 @@ namespace ConnecteurSage.Forms
 
         public ConfMail()
         {
-             try
+            try
             {
-            InitializeComponent();
-            key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("Software\\Sage\\Connecteur sage");
-            if (key != null)
-            {
-                checkBox1.Checked = key.GetValue("active").ToString() == "" ? false : (key.GetValue("active").ToString() == "True" ? true : false);
-                textBox1.Text = key.GetValue("smtp").ToString();
-                textBox2.Text = key.GetValue("port").ToString();
-                textBox4.Text = Utils.Decrypt(key.GetValue("password").ToString());
-                textBox3.Text = key.GetValue("login").ToString();
-                textBox5.Text = key.GetValue("dest1").ToString();
-                textBox6.Text = key.GetValue("dest2").ToString();
-                textBox7.Text = key.GetValue("dest3").ToString();
-
-                if (!checkBox1.Checked)
+                InitializeComponent();
+                if (File.Exists(Directory.GetCurrentDirectory() + @"\SettingMail.xml"))
                 {
+                    ConfSendMail mailSettings = new ConfSendMail();
+                    mailSettings.Load();
+                    checkBox1.Checked = mailSettings.active;
+                    textBox1.Text = mailSettings.smtp;
+                    textBox2.Text = mailSettings.port+"";
+                    textBox4.Text = Utils.Decrypt(mailSettings.password);
+                    textBox3.Text = mailSettings.login;
+                    textBox5.Text = mailSettings.dest1;
+                    textBox6.Text = mailSettings.dest2;
+                    textBox7.Text = mailSettings.dest3;
+
+                    if (!checkBox1.Checked)
+                    {
+                        groupBox1.Enabled = false;
+                        groupBox2.Enabled = false;
+                        enregistrer_config.Enabled = false;
+                    }
+                }
+                else
+                {
+                    checkBox1.Checked = false;
                     groupBox1.Enabled = false;
                     groupBox2.Enabled = false;
                     enregistrer_config.Enabled = false;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                checkBox1.Checked = false;
-                groupBox1.Enabled = false;
-                groupBox2.Enabled = false;
-                enregistrer_config.Enabled = false;
+                MessageBox.Show(ex.Message);
             }
-            }
-             catch (Exception ex)
-             {
-                 MessageBox.Show(ex.Message);
-             }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -92,8 +95,23 @@ namespace ConnecteurSage.Forms
                     return;
                 }
 
-                CreerCleRegistre(new ConfSendMail(textBox1.Text, textBox2.Text == "" ? 587:int.Parse(textBox2.Text), textBox3.Text, Utils.Encrypt(textBox4.Text),
-                    textBox5.Text,textBox6.Text,textBox7.Text,checkBox1.Checked));
+                //CreerCleRegistre(new ConfSendMail(textBox1.Text, textBox2.Text == "" ? 587:int.Parse(textBox2.Text), textBox3.Text, Utils.Encrypt(textBox4.Text),textBox5.Text,textBox6.Text,textBox7.Text,checkBox1.Checked));
+
+                ConfSendMail mailSettings = new ConfSendMail()
+                {
+                    smtp = textBox1.Text,
+                    port = textBox2.Text == "" ? 587 : int.Parse(textBox2.Text),
+                    login = textBox3.Text,
+                    password = Utils.Encrypt(textBox4.Text),
+                    dest1 = textBox5.Text,
+                    dest2 = textBox6.Text,
+                    dest3 = textBox7.Text,
+                    active = checkBox1.Checked,
+                    totalTicks = (210 / 5),   //3.5h x 60mins = 210mins; 210mins/5mins = 42 ticks
+                    remaningTicks = (210 / 5)
+                };
+                mailSettings.saveInfo(mailSettings);
+                Close();
             }
             catch (Exception ex)
             {

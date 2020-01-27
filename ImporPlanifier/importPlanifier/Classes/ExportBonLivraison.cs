@@ -15,7 +15,8 @@ namespace importPlanifier.Classes
         //private List<DocumentVente> BonLivrasonAExporter;
         //private Customer customer = new Customer();
         private string pathExport;
-
+        private string docRefMail = "";
+        private string logFileName_export;
         public string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON";
         private StreamWriter logFileWriter_export = null;
 
@@ -24,7 +25,7 @@ namespace importPlanifier.Classes
             this.pathExport = path;
         }
 
-        private List<DocumentVente> GetBonLivraisonFromDataBase(StreamWriter writer)
+        private List<DocumentVente> GetBonLivraisonFromDataBase(StreamWriter writer, List<string[]> mImportErrorList)
         {
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Called!");
@@ -87,11 +88,12 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                mImportErrorList.Add(new string[3] { docRefMail, e.Message, logFileName_export });
                 return null;
             }
         }
 
-        private List<DocumentVenteLine> getDocumentLine(string codeDocument)
+        private List<DocumentVenteLine> getDocumentLine(string codeDocument, List<string[]> mImportErrorList)
         {
             try
             {
@@ -133,6 +135,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                mImportErrorList.Add(new string[3] { docRefMail, e.Message, logFileName_export });
                 return null;
             }
         }
@@ -200,7 +203,7 @@ namespace importPlanifier.Classes
         /// <summary>
         /// Génération du fichier d'export, lancement de l'application et exporter les factures
         /// </summary>
-        public void ExportBonLivraisonAction()
+        public List<string[]> ExportBonLivraisonAction(List<string[]> mImportErrorList)
         {
             try
             {
@@ -211,7 +214,7 @@ namespace importPlanifier.Classes
                     Directory.CreateDirectory(logDirectoryName_export);
                 }
 
-                var logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_BonLivraison_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+                logFileName_export = logDirectoryName_export + @"\" + string.Format("LOG_Export_BonLivraison_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
                 var logFile_export = File.Create(logFileName_export);
                 logFileWriter_export = new StreamWriter(logFile_export);
 
@@ -220,7 +223,7 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine("#####################################################################################");
                 logFileWriter_export.WriteLine("");
 
-                List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase(logFileWriter_export);
+                List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase(logFileWriter_export, mImportErrorList);
 
                  if (BonLivrasonAExporter != null)
                  {
@@ -270,17 +273,13 @@ namespace importPlanifier.Classes
                                 writer.WriteLine("");
 
 
-                                BonLivrasonAExporter[i].lines = getDocumentLine(BonLivrasonAExporter[i].DO_Piece);
+                                BonLivrasonAExporter[i].lines = getDocumentLine(BonLivrasonAExporter[i].DO_Piece, mImportErrorList);
 
                                 for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
                                 {
-
                                     writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].FNT_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
                                     writer.WriteLine("");
-
-
                                 }
-
 
                                 writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
                                 writer.WriteLine("");
@@ -292,7 +291,7 @@ namespace importPlanifier.Classes
                             //add to backup folder
                             addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName, logFileWriter_export);
 
-                            UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece);
+                            UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece, mImportErrorList);
 
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Mettre à jour le Document de Vente");
 
@@ -303,6 +302,8 @@ namespace importPlanifier.Classes
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!");
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                             logFileWriter_export.Flush();
+                            mImportErrorList.Add(new string[3] { docRefMail, "Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!", logFileName_export });
+                            return mImportErrorList;
                         }
 
 
@@ -323,9 +324,11 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Export annullé");
                 logFileWriter_export.Close();
+                mImportErrorList.Add(new string[3] { docRefMail, ex.Message, logFileName_export });
             }
 
             logFileWriter_export.Close();
+            return mImportErrorList;
         }
 
         public static void addFileToBackUp(string backUpFolderPath, string sourceFilePath, string filename, StreamWriter writer)
@@ -375,7 +378,7 @@ namespace importPlanifier.Classes
             writer.Flush();
         }
 
-        private void UpdateDocumentVente(string do_piece)
+        private void UpdateDocumentVente(string do_piece, List<string[]> mImportErrorList)
         {
             try
             {
@@ -395,6 +398,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                mImportErrorList.Add(new string[3] { docRefMail, e.Message, logFileName_export });
             }
         }
     }

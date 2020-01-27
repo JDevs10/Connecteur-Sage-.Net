@@ -12,6 +12,7 @@ using System.IO;
 using Microsoft.Win32.TaskScheduler;
 using System.Data.Odbc;
 using ConnecteurSage.Helpers;
+using System.Threading;
 
 namespace ConnecteurSage
 {
@@ -40,76 +41,164 @@ namespace ConnecteurSage
 
         }
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
- 
+
         public Main()
         {
             InitializeComponent();
 
-            if (File.Exists(pathModule + @"\Setting.xml") && File.Exists(pathModule + @"\SettingSQL.xml"))
-            {
-                //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
-                //StreamReader file = new System.IO.StreamReader("Setting.xml");
-                //ConfigurationDNS setting = new ConfigurationDNS();
-                //setting = (ConfigurationDNS)reader.Deserialize(file);
+            Forms.ProgressDialog progressDialog = new Forms.ProgressDialog();
 
-                ConfigurationDNS setting1 = new ConfigurationDNS();
-                setting1.Load();
-                ConfigurationDNS setting2 = new ConfigurationDNS();
-                setting2.LoadSQL();
-
-                label1.Text = "DSN ODBC : " + setting1.DNS_1;
-                label2.Text = "DSN ODBC Nom : " + setting1.Nom_1;
-                label5.Text = "DSN SQL : " + setting2.DNS_2;
-                label9.Text = "DSN SQL Nom : " + setting1.Nom_2;
-                //file.Close();
-
-            }
-            else
-            {
-                try
+            // Initialize the thread that will handle the background process
+            Thread backgroundThread = new Thread(
+            new ThreadStart(() =>
                 {
-                    using (Forms.Configuration form = new Forms.Configuration())
+                //Loading Connexion Settings
+                progressDialog.Text = "Loading Connexion Settings....";
+                for (int n = 0; n < 20; n++)
+                {
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
+                }
+
+                if (File.Exists(pathModule + @"\Setting.xml") && File.Exists(pathModule + @"\SettingSQL.xml"))
+                {
+                    //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
+                    //StreamReader file = new System.IO.StreamReader("Setting.xml");
+                    //ConfigurationDNS setting = new ConfigurationDNS();
+                    //setting = (ConfigurationDNS)reader.Deserialize(file);
+
+                    ConfigurationDNS setting1 = new ConfigurationDNS();
+                    setting1.Load();
+                    ConfigurationDNS setting2 = new ConfigurationDNS();
+                    setting2.LoadSQL();
+
+                    label1.Text = "DSN ODBC : " + setting1.DNS_1;
+                    label2.Text = "DSN ODBC Nom : " + setting1.Nom_1;
+                    label5.Text = "DSN SQL : " + setting2.DNS_2;
+                    label9.Text = "DSN SQL Nom : " + setting1.Nom_2;
+                    //file.Close();
+
+                }
+                else
+                {
+                    try
                     {
-                        form.ShowDialog();
+                        using (Forms.Configuration form = new Forms.Configuration())
+                        {
+                            form.ShowDialog();
+                        }
+                    }
+                    // Récupération d'une possible SDKException
+                    catch (SDKException ex)
+                    {
+                        MessageBox.Show(ex.Message);
                     }
                 }
-                // Récupération d'une possible SDKException
-                catch (SDKException ex)
+
+                //Loading Export Settings
+                progressDialog.Text = "Loading Export Settings....";
+                for (int n = 20; n < 40; n++)
                 {
-                    MessageBox.Show(ex.Message);
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
                 }
-            }
 
-            if (File.Exists(pathModule + @"\SettingExport.xml"))
-            {
-                //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
-                //StreamReader file = new System.IO.StreamReader("Setting.xml");
-                //ConfigurationDNS setting = new ConfigurationDNS();
-                //setting = (ConfigurationDNS)reader.Deserialize(file);
-
-                ConfigurationExport setting = new ConfigurationExport();
-                setting.Load();
-
-                label6.Text = "Statut d'Export Commande : " + ((setting.exportBonsCommandes == "True") ? "Activer":"Désactiver");
-                label7.Text = "Statut d'Export Livraision : " + ((setting.exportBonsLivraisons == "True") ? "Activer":"Désactiver");
-                label8.Text = "Statut d'Export Facture : " + ((setting.exportFactures == "True") ? "Activer":"Désactiver");
-                label10.Text = "Statut Export Stock : "+((setting.exportStock == "True") ? "Activer":"Désactiver");
-            }
-            else
-            {
-                try
+                if (File.Exists(pathModule + @"\SettingExport.xml"))
                 {
-                    using (Forms.ConfExport form = new Forms.ConfExport())
+                    //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
+                    //StreamReader file = new System.IO.StreamReader("Setting.xml");
+                    //ConfigurationDNS setting = new ConfigurationDNS();
+                    //setting = (ConfigurationDNS)reader.Deserialize(file);
+
+                    ConfigurationExport setting = new ConfigurationExport();
+                    setting.Load();
+
+                    label6.Text = "Statut d'Export Commande : " + ((setting.exportBonsCommandes == "True") ? "Activer" : "Désactiver");
+                    label7.Text = "Statut d'Export Livraision : " + ((setting.exportBonsLivraisons == "True") ? "Activer" : "Désactiver");
+                    label8.Text = "Statut d'Export Facture : " + ((setting.exportFactures == "True") ? "Activer" : "Désactiver");
+                    label10.Text = "Statut Export Stock : " + ((setting.exportStock == "True") ? "Activer" : "Désactiver");
+                }
+                else
+                {
+                    try
                     {
-                        form.ShowDialog();
+                        using (Forms.ConfExport form = new Forms.ConfExport())
+                        {
+                            form.ShowDialog();
+                        }
+                    }
+                    // Récupération d'une possible SDKException
+                    catch (SDKException ex)
+                    {
+                        MessageBox.Show(ex.Message);
                     }
                 }
-                // Récupération d'une possible SDKException
-                catch (SDKException ex)
+
+                for (int n = 40; n < 60; n++)
                 {
-                    MessageBox.Show(ex.Message);
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
                 }
-            }
+
+                //Loading Backup Settings
+                progressDialog.Text = "Loading Backup Settings....";
+                for (int n = 60; n < 80; n++)
+                {
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
+                }
+
+                if (File.Exists(pathModule + @"\SettingBackup.xml"))
+                {
+                    ConfigurationBackup backup = new ConfigurationBackup();
+                    backup.Load();
+                    label_backup_activation.Text = ((backup.activate) ? "Activation : Oui" : "Activation : Non");
+                    label_backup_generalLog.Text = ((backup.general_Log != -1) ? "Log général : " + backup.general_Log + " jours" : "Log général : désactiver");
+                    label_backup_importLog.Text = ((backup.import_Log != -1) ? "Log d'import : " + backup.import_Log + " jours" : "Log d'import : désactiver");
+                    label_backup_exportLog.Text = ((backup.export_Log != -1) ? "Log d'export : " + backup.export_Log + " jours" : "Log d'export : désactiver");
+                    label_backup_import_success.Text = ((backup.import_files_success != -1) ? "Fichier EDI import (Success) : " + backup.import_files_success + " jours" : "Fichier EDI import (Success) : désactiver");
+                    label_backup_import_error.Text = ((backup.import_files_error != -1) ? "Fichier EDI import (Erreur) : " + backup.import_files_error + " jours" : "Fichier EDI import (Erreur) : désactiver");
+                    label_backup_export_BC.Text = ((backup.export_files_BC != -1) ? "Fichier EDI Export (BC) : " + backup.export_files_BC + " jours" : "Fichier EDI Export (BC) : désactiver");
+                    label_backup_export_BL.Text = ((backup.export_files_BL != -1) ? "Fichier EDI Export (BL) : " + backup.export_files_BL + " jours" : "Fichier EDI Export (BL) : désactiver");
+                    label_backup_export_FA.Text = ((backup.export_files_FA != -1) ? "Fichier EDI Export (FA) : " + backup.export_files_FA + " jours" : "Fichier EDI Export (FA) : désactiver");
+                    label_backup_export_ME_MS.Text = ((backup.export_files_ME_MS != -1) ? "Fichier EDI Export (ME/MS) : " + backup.export_files_ME_MS + " jours" : "Fichier EDI Export (ME/MS) : désactiver");
+                    label_backup_export_BLF.Text = ((backup.export_files_BLF != -1) ? "Fichier EDI Export (BLF) : " + backup.export_files_BLF + " jours" : "Fichier EDI Export (BLF) : désactiver");
+                }
+                else
+                {
+                    try
+                    {
+                        using (Forms.ConfigBackup form = new Forms.ConfigBackup())
+                        {
+                            form.ShowDialog();
+                        }
+                    }
+                    // Récupération d'une possible SDKException
+                    catch (SDKException ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+
+                bool ok = false;
+                for (int n = 80; n < 100; n++)
+                {
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
+                    if (n == 99) { ok = true; };
+                }
+
+                // Close the dialog if it hasn't been already
+                if (ok && progressDialog.InvokeRequired)
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Close()));
+                }
+            ));
+
+            // Start the background process thread
+            backgroundThread.Start();
+
+            // Open the dialog
+            progressDialog.ShowDialog();
         }
 
         public static void ModifierButtonDNS(string text1, string text2, string text3, string text4)
@@ -480,6 +569,22 @@ namespace ConnecteurSage
             }
             //writer.WriteLine("");
             return result;
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Forms.ConfigBackup form = new Forms.ConfigBackup())
+                {
+                    form.ShowDialog();
+                }
+            }
+            // Récupération d'une possible SDKException
+            catch (SDKException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

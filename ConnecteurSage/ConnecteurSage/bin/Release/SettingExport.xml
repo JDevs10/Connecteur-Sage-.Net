@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ConfigurationExport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <exportFactures>False</exportFactures>
+  <exportFactures_Format />
+  <exportFactures_Statut />
+  <exportBonsLivraisons>False</exportBonsLivraisons>
+  <exportBonsLivraisons_Format />
+  <exportBonsLivraisons_Statut />
+  <exportBonsCommandes>True</exportBonsCommandes>
+  <exportBonsCommandes_Format>Plat</exportBonsCommandes_Format>
+  <exportBonsCommandes_Statut>1</exportBonsCommandes_Statut>
+  <exportStock>True</exportStock>
+  <exportStock_Format>Plat</exportStock_Format>
+  <exportStock_Statut>1</exportStock_Statut>
+</ConfigurationExport>
