@@ -37,8 +37,6 @@ namespace importPlanifier.Classes
         public int export_files_ME_MS { get; set; }
         [XmlElement]
         public string export_files_ME_MS_type { get; set; }
-        [XmlElement]
-        public int export_files_BLF { get; set; }
 
 
 
@@ -48,7 +46,7 @@ namespace importPlanifier.Classes
         {
         }
 
-        public ConfigurationBackup(bool activate, int general_Log, int import_Log, int export_Log, int import_files_success, int import_files_error, int export_files_BC, string export_files_BC_type, int export_files_BL, string export_files_BL_type, int export_files_FA, string export_files_FA_type, int export_files_ME_MS, string export_files_ME_MS_type, int export_files_BLF)
+        public ConfigurationBackup(bool activate, int general_Log, int import_Log, int export_Log, int import_files_success, int import_files_error, int export_files_BC, string export_files_BC_type, int export_files_BL, string export_files_BL_type, int export_files_FA, string export_files_FA_type, int export_files_ME_MS, string export_files_ME_MS_type)
         {
             this.activate = activate;
             this.general_Log = general_Log;
@@ -65,7 +63,6 @@ namespace importPlanifier.Classes
             this.export_files_FA_type = export_files_FA_type;
             this.export_files_ME_MS = export_files_ME_MS;
             this.export_files_ME_MS_type = export_files_ME_MS_type;
-            this.export_files_BLF = export_files_BLF;
         }
 
         public void saveInfo(ConfigurationBackup backupSettings)
@@ -106,7 +103,6 @@ namespace importPlanifier.Classes
                 this.export_files_FA_type = mail.export_files_FA_type;
                 this.export_files_ME_MS = mail.export_files_ME_MS;
                 this.export_files_ME_MS_type = mail.export_files_ME_MS_type;
-                this.export_files_BLF = mail.export_files_BLF;
                 file.Close();
             }
         }

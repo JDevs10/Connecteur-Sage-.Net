@@ -7160,23 +7160,19 @@ namespace importPlanifier.Classes
             }
             //Console.ReadLine();
 
-            //cleanBackUpFiles("orders", "Véolog", path.path);
-            //cleanBackUpFiles("orders", "Plat", path.path);
-            cleanFiles(new string[14, 2] {
-                { "general_logs", logDirectoryName_general},
-                { "import_logs", logDirectoryName_import },
-                { "export_Logs", new ExportFactures(null).logDirectoryName_export },
-                { "export_Logs", new ExportBonLivraison(null).logDirectoryName_export },
-                { "export_Logs", new ExportCommandes(null).logDirectoryName_export },
-                { "export_Logs", new ExportStocks(null).logDirectoryName_export },
-                { "import_files_success", Directory.GetCurrentDirectory() + @"\Success File" },
-                { "import_files_error", Directory.GetCurrentDirectory() + @"\Error File" },
+            cleanFiles(new string[12, 2] {
+                { "general_logs", logDirectoryName_general}, //log files
+                { "import_logs", logDirectoryName_import }, //log files
+                { "export_Logs", new ExportFactures(null).logDirectoryName_export }, //log files
+                { "export_Logs", new ExportBonLivraison(null).logDirectoryName_export }, //log files
+                { "export_Logs", new ExportCommandes(null).logDirectoryName_export }, //log files
+                { "export_Logs", new ExportStocks(null).logDirectoryName_export }, //log files
+                { "import_files_success", Directory.GetCurrentDirectory() + @"\Success File" }, //fichier import success
+                { "import_files_error", Directory.GetCurrentDirectory() + @"\Error File" }, //fichier import erreur
                 { "export_files_BC", path.path }, //backup export files
-                { "export_files_BL", path.path },
-                { "", "" },
-                { "", "" },
-                { "", directoryName_SuccessFile },
-                { "", directoryName_ErrorFile }
+                { "export_files_BL", path.path }, //backup export files
+                { "export_files_FA", path.path }, //backup export files
+                { "export_files_ME_MS", path.path } //backup export files
             });
         }
 
@@ -7440,11 +7436,15 @@ namespace importPlanifier.Classes
                             string backUpFolderPath = null;
                             if (configBackup.export_files_BC_type == "Export_Veolog")
                             {
-                                backUpFolderPath = directoriesList[x, 1] + @"\Export_Veolog";
+                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Veolog_Commande";
                             }
-                            if (configBackup.export_files_BC_type == "Export_Plat")
+                            else if (configBackup.export_files_BC_type == "Export_Plat")
                             {
-                                backUpFolderPath = directoriesList[x, 1] + @"\Export_Plat";
+                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_Commande";
+                            }
+                            else
+                            {
+                                break;
                             }
                             if (Directory.Exists(backUpFolderPath))
                             {
@@ -7492,23 +7492,31 @@ namespace importPlanifier.Classes
                                 //writer.Flush();
                             }
                         }
-                        if (directoriesList[x, 0] == "import_files_success")
+                        if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL")
                         {
-                            string backUpFolderPath = directoriesList[x, 1];
+                            string backUpFolderPath = null;
+                            if (configBackup.export_files_BL_type == "Export_Plat")
+                            {
+                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_BonLivraison";
+                            }
+                            else
+                            {
+                                break;
+                            }
                             if (Directory.Exists(backUpFolderPath))
                             {
                                 //delete all files the backup folder after x days
                                 DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
+                                DateTime ago = today.AddDays(-configBackup.export_files_BL);  //DateTime of x days ago
 
                                 //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
 
                                 DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
                                 int filesDeleted = 0;
-                                int allFiles = fileListing.GetFiles("*.txt").Length;
+                                int allFiles = fileListing.GetFiles("*.csv").Length;
                                 for (int y = 0; y < allFiles; y++)
                                 {
-                                    FileInfo filename = fileListing.GetFiles("*.txt")[y];
+                                    FileInfo filename = fileListing.GetFiles("*.csv")[y];
                                     DateTime fileDateTime = File.GetCreationTime(filename.FullName);
                                     DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
 
@@ -7541,23 +7549,31 @@ namespace importPlanifier.Classes
                                 //writer.Flush();
                             }
                         }
-                        if (directoriesList[x, 0] == "import_files_error")
+                        if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA")
                         {
-                            string backUpFolderPath = directoriesList[x, 1];
+                            string backUpFolderPath = null;
+                            if (configBackup.export_files_FA_type == "Export_Plat")
+                            {
+                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_Facture";
+                            }
+                            else
+                            {
+                                break;
+                            }
                             if (Directory.Exists(backUpFolderPath))
                             {
                                 //delete all files the backup folder after x days
                                 DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_error);  //DateTime of x days ago
+                                DateTime ago = today.AddDays(-configBackup.export_files_FA);  //DateTime of x days ago
 
                                 //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
 
                                 DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
                                 int filesDeleted = 0;
-                                int allFiles = fileListing.GetFiles("*.txt").Length;
+                                int allFiles = fileListing.GetFiles("*.csv").Length;
                                 for (int y = 0; y < allFiles; y++)
                                 {
-                                    FileInfo filename = fileListing.GetFiles("*.txt")[y];
+                                    FileInfo filename = fileListing.GetFiles("*.csv")[y];
                                     DateTime fileDateTime = File.GetCreationTime(filename.FullName);
                                     DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
 
@@ -7590,23 +7606,31 @@ namespace importPlanifier.Classes
                                 //writer.Flush();
                             }
                         }
-                        if (directoriesList[x, 0] == "export_files_BC")
+                        if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS")
                         {
-                            string backUpFolderPath = directoriesList[x, 1];
+                            string backUpFolderPath = null;
+                            if (configBackup.export_files_ME_MS_type == "Veolog_Stock")
+                            {
+                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Veolog_Stock";
+                            }
+                            else
+                            {
+                                break;
+                            }
                             if (Directory.Exists(backUpFolderPath))
                             {
                                 //delete all files the backup folder after x days
                                 DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
+                                DateTime ago = today.AddDays(-configBackup.export_files_ME_MS);  //DateTime of x days ago
 
                                 //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
 
                                 DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
                                 int filesDeleted = 0;
-                                int allFiles = fileListing.GetFiles("*.txt").Length;
+                                int allFiles = fileListing.GetFiles("*.csv").Length;
                                 for (int y = 0; y < allFiles; y++)
                                 {
-                                    FileInfo filename = fileListing.GetFiles("*.txt")[y];
+                                    FileInfo filename = fileListing.GetFiles("*.csv")[y];
                                     DateTime fileDateTime = File.GetCreationTime(filename.FullName);
                                     DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
 
@@ -7639,309 +7663,7 @@ namespace importPlanifier.Classes
                                 //writer.Flush();
                             }
                         }
-                        if (directoriesList[x, 0] == "import_files_success")
-                        {
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
-
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                int allFiles = fileListing.GetFiles("*.txt").Length;
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = fileListing.GetFiles("*.txt")[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                //writer.Flush();
-                            }
-                        }
-                        if (directoriesList[x, 0] == "import_files_success")
-                        {
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
-
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                int allFiles = fileListing.GetFiles("*.txt").Length;
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = fileListing.GetFiles("*.txt")[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                //writer.Flush();
-                            }
-                        }
-                        if (directoriesList[x, 0] == "import_files_success")
-                        {
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
-
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                int allFiles = fileListing.GetFiles("*.txt").Length;
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = fileListing.GetFiles("*.txt")[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                //writer.Flush();
-                            }
-                        }
-                        if (directoriesList[x, 0] == "import_files_success")
-                        {
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
-
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                int allFiles = fileListing.GetFiles("*.txt").Length;
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = fileListing.GetFiles("*.txt")[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                //writer.Flush();
-                            }
-                        }
-
-
-                        if (exportFileType == "orders")
-                        {
-                            if (exportFormatType == "Véolog")
-                            {
-                                string backUpFolderPath = path + @"\Export_Veolog\BackUp";
-
-                                if (Directory.Exists(backUpFolderPath))
-                                {
-                                    //delete all files the backup folder after 2 weeks
-                                    DateTime today = DateTime.Now;
-                                    DateTime twoWeeksAgo = today.AddDays(-saveFilePeriodDate);  //DateTime of 14 days ago
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
-
-                                    DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                    int filesDeleted = 0;
-                                    int allFiles = fileListing.GetFiles("*.csv").Length;
-                                    for (int index = 0; index < allFiles; index++)
-                                    {
-                                        FileInfo filename = fileListing.GetFiles("*.csv")[index];
-                                        DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                        DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                        //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                        if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                        {
-                                            //file was never modified
-                                            if (fileDateTime < twoWeeksAgo)
-                                            {
-                                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                                                //writer.WriteLine("");
-                                                File.Delete(filename.FullName);
-                                                filesDeleted++;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //file was modified
-                                            if (fileDateTimeModif < twoWeeksAgo)
-                                            {
-                                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                                                //writer.WriteLine("");
-                                                File.Delete(filename.FullName);
-                                                filesDeleted++;
-                                            }
-                                        }
-                                        //writer.Flush();
-                                    }
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                    //writer.Flush();
-                                }
-                            }
-                            if (exportFormatType == "Plat")
-                            {
-                                string backUpFolderPath = path + @"\Export_Plat\BackUp";
-
-                                if (Directory.Exists(backUpFolderPath))
-                                {
-                                    //delete all files the backup folder after 2 weeks
-                                    DateTime today = DateTime.Now;
-                                    DateTime twoWeeksAgo = today.AddDays(-saveFilePeriodDate);  //DateTime of 14 days ago
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
-
-                                    DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                    int filesDeleted = 0;
-                                    int allFiles = fileListing.GetFiles("*.csv").Length;
-                                    for (int index = 0; index < allFiles; index++)
-                                    {
-                                        FileInfo filename = fileListing.GetFiles("*.csv")[index];
-                                        DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                        DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                        //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                        if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                        {
-                                            //file was never modified
-                                            if (fileDateTime < twoWeeksAgo)
-                                            {
-                                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                                                //writer.WriteLine("");
-                                                File.Delete(filename.FullName);
-                                                filesDeleted++;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //file was modified
-                                            if (fileDateTimeModif < twoWeeksAgo)
-                                            {
-                                                //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                                                //writer.WriteLine("");
-                                                File.Delete(filename.FullName);
-                                                filesDeleted++;
-                                            }
-                                        }
-                                        //writer.Flush();
-                                    }
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                    //writer.Flush();
-                                }
-                            }
-
-                        }
-
+                        
                     }
                 }
                 else
@@ -7953,62 +7675,6 @@ namespace importPlanifier.Classes
             {
                 Console.WriteLine("Cleanning settings are missing!!!");
             }
-
-            if (exportFileType == "logs")
-            {
-                for (int index = 0; index < directoriesLogList.Length; index++)
-                {
-                    string backUpFolderPath = directoriesLogList[index];
-
-                    if (Directory.Exists(backUpFolderPath))
-                    {
-                        //delete all files the backup folder after 2 weeks
-                        DateTime today = DateTime.Now;
-                        DateTime twoWeeksAgo = today.AddDays(-saveFilePeriodDate);  //DateTime of 14 days ago
-
-                        //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Delete all old file after " + twoWeeksAgo + "\n");
-
-                        DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                        int filesDeleted = 0;
-                        int allFiles = fileListing.GetFiles("*.txt").Length;
-                        for (int y = 0; y < allFiles; y++)
-                        {
-                            FileInfo filename = fileListing.GetFiles("*.txt")[y];
-                            DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                            DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                            //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                            if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                            {
-                                //file was never modified
-                                if (fileDateTime < twoWeeksAgo)
-                                {
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File creation date: " + fileDateTime + " < 2 weeks ago: " + twoWeeksAgo);
-                                    //writer.WriteLine("");
-                                    File.Delete(filename.FullName);
-                                    filesDeleted++;
-                                }
-                            }
-                            else
-                            {
-                                //file was modified
-                                if (fileDateTimeModif < twoWeeksAgo)
-                                {
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File modify date: " + fileDateTimeModif + " < 2 weeks ago: " + twoWeeksAgo);
-                                    //writer.WriteLine("");
-                                    File.Delete(filename.FullName);
-                                    filesDeleted++;
-                                }
-                            }
-                            //writer.Flush();
-                        }
-                        //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                        //writer.Flush();
-                    }
-                }
-            }
-
-            
         }
 
 

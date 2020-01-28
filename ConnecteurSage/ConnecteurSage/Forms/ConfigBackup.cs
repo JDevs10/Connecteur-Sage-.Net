@@ -44,7 +44,6 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportBL.Value = backup.export_files_BL;
                 numericUpDown_exportFA.Value = backup.export_files_FA;
                 numericUpDown_exportME_MS.Value = backup.export_files_ME_MS;
-                numericUpDown_exportBLF.Value = backup.export_files_BLF;
 
                 if (!checkBox_activateBackup.Checked)
                 {
@@ -57,7 +56,6 @@ namespace ConnecteurSage.Forms
                     numericUpDown_exportBL.Enabled = false;
                     numericUpDown_exportFA.Enabled = false;
                     numericUpDown_exportME_MS.Enabled = false;
-                    numericUpDown_exportBLF.Enabled = false;
                     comboBox1.Enabled = false;
                     comboBox2.Enabled = false;
                     comboBox3.Enabled = false;
@@ -75,7 +73,6 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportBL.Enabled = false;
                 numericUpDown_exportFA.Enabled = false;
                 numericUpDown_exportME_MS.Enabled = false;
-                numericUpDown_exportBLF.Enabled = false;
                 comboBox1.Enabled = false;
                 comboBox2.Enabled = false;
                 comboBox3.Enabled = false;
@@ -155,8 +152,7 @@ namespace ConnecteurSage.Forms
                     Convert.ToInt32(numericUpDown_exportFA.Value),
                     FA_Type,
                     Convert.ToInt32(numericUpDown_exportME_MS.Value),
-                    ME_MS_Type,
-                    Convert.ToInt32(numericUpDown_exportBLF.Value)
+                    ME_MS_Type
                 );
                 backup.saveInfo(backup);
                 Close();
@@ -172,7 +168,6 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportBL.Enabled = false;
                 numericUpDown_exportFA.Enabled = false;
                 numericUpDown_exportME_MS.Enabled = false;
-                numericUpDown_exportBLF.Enabled = false;
             }
 
         }
@@ -195,7 +190,6 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportBL.Enabled = true;
                 numericUpDown_exportFA.Enabled = true;
                 numericUpDown_exportME_MS.Enabled = true;
-                numericUpDown_exportBLF.Enabled = true;
                 if (numericUpDown_exportBC.Value > 0)
                 {
                     comboBox1.Enabled = true;
@@ -240,7 +234,6 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportBL.Enabled = false;
                 numericUpDown_exportFA.Enabled = false;
                 numericUpDown_exportME_MS.Enabled = false;
-                numericUpDown_exportBLF.Enabled = false;
                 comboBox1.Enabled = false;
                 comboBox2.Enabled = false;
                 comboBox3.Enabled = false;

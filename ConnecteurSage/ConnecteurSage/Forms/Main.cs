@@ -162,7 +162,6 @@ namespace ConnecteurSage
                     label_backup_export_BL.Text = ((backup.export_files_BL != 0) ? "Fichier EDI Export (BL) : " + backup.export_files_BL + " jours" : "Fichier EDI Export (BL) : désactiver");
                     label_backup_export_FA.Text = ((backup.export_files_FA != 0) ? "Fichier EDI Export (FA) : " + backup.export_files_FA + " jours" : "Fichier EDI Export (FA) : désactiver");
                     label_backup_export_ME_MS.Text = ((backup.export_files_ME_MS != 0) ? "Fichier EDI Export (ME/MS) : " + backup.export_files_ME_MS + " jours" : "Fichier EDI Export (ME/MS) : désactiver");
-                    label_backup_export_BLF.Text = ((backup.export_files_BLF != 0) ? "Fichier EDI Export (BLF) : " + backup.export_files_BLF + " jours" : "Fichier EDI Export (BLF) : désactiver");
                 }
                 else
                 {
