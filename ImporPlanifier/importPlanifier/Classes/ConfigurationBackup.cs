@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace ConnecteurSage.Classes
+namespace importPlanifier.Classes
 {
     public class ConfigurationBackup
     {
@@ -40,7 +40,7 @@ namespace ConnecteurSage.Classes
         [XmlElement]
         public int export_files_BLF { get; set; }
 
-        
+
 
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 

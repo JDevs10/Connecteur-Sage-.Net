@@ -121,6 +121,7 @@
     <Compile Include="Classes\Action2.cs" />
     <Compile Include="Classes\AdresseLivraison.cs" />
     <Compile Include="Classes\Article.cs" />
+    <Compile Include="Classes\ConfigurationBackup.cs" />
     <Compile Include="Classes\TVA.cs" />
     <Compile Include="Classes\ConfigurationExport.cs" />
     <Compile Include="Classes\Client.cs" />

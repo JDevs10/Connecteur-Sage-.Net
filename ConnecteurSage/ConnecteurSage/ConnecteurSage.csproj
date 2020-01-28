@@ -278,6 +278,9 @@
       <DependentUpon>Planifier.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProgressDialog.resx">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Validation.resx">
       <DependentUpon>Validation.cs</DependentUpon>
       <SubType>Designer</SubType>

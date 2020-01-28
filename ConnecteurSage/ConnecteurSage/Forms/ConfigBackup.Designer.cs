@@ -66,6 +66,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.checkBox_activateBackup = new System.Windows.Forms.CheckBox();
             this.label22 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_exportLog)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_exportBLF)).BeginInit();
@@ -83,7 +87,7 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(443, 305);
+            this.button2.Location = new System.Drawing.Point(583, 305);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 7;
@@ -94,7 +98,7 @@
             // enregistrer_config
             // 
             this.enregistrer_config.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.enregistrer_config.Location = new System.Drawing.Point(362, 305);
+            this.enregistrer_config.Location = new System.Drawing.Point(502, 305);
             this.enregistrer_config.Name = "enregistrer_config";
             this.enregistrer_config.Size = new System.Drawing.Size(75, 23);
             this.enregistrer_config.TabIndex = 6;
@@ -104,6 +108,10 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.comboBox4);
+            this.groupBox1.Controls.Add(this.comboBox3);
+            this.groupBox1.Controls.Add(this.comboBox2);
+            this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.numericUpDown_exportLog);
             this.groupBox1.Controls.Add(this.label17);
@@ -137,7 +145,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 114);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(506, 185);
+            this.groupBox1.Size = new System.Drawing.Size(646, 185);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Paramètre de nettoyage";
@@ -159,11 +167,6 @@
             0,
             0,
             0});
-            this.numericUpDown_exportLog.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_exportLog.Name = "numericUpDown_exportLog";
             this.numericUpDown_exportLog.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_exportLog.TabIndex = 40;
@@ -194,11 +197,6 @@
             0,
             0,
             0});
-            this.numericUpDown_exportBLF.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_exportBLF.Name = "numericUpDown_exportBLF";
             this.numericUpDown_exportBLF.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_exportBLF.TabIndex = 37;
@@ -220,14 +218,10 @@
             0,
             0,
             0});
-            this.numericUpDown_exportME_MS.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_exportME_MS.Name = "numericUpDown_exportME_MS";
             this.numericUpDown_exportME_MS.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_exportME_MS.TabIndex = 35;
+            this.numericUpDown_exportME_MS.ValueChanged += new System.EventHandler(this.numericUpDown_exportME_MS_ValueChanged);
             // 
             // label8
             // 
@@ -246,14 +240,10 @@
             0,
             0,
             0});
-            this.numericUpDown_exportFA.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_exportFA.Name = "numericUpDown_exportFA";
             this.numericUpDown_exportFA.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_exportFA.TabIndex = 33;
+            this.numericUpDown_exportFA.ValueChanged += new System.EventHandler(this.numericUpDown_exportFA_ValueChanged);
             // 
             // label7
             // 
@@ -272,14 +262,10 @@
             0,
             0,
             0});
-            this.numericUpDown_exportBL.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_exportBL.Name = "numericUpDown_exportBL";
             this.numericUpDown_exportBL.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_exportBL.TabIndex = 31;
+            this.numericUpDown_exportBL.ValueChanged += new System.EventHandler(this.numericUpDown_exportBL_ValueChanged);
             // 
             // label6
             // 
@@ -298,14 +284,10 @@
             0,
             0,
             0});
-            this.numericUpDown_exportBC.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_exportBC.Name = "numericUpDown_exportBC";
             this.numericUpDown_exportBC.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_exportBC.TabIndex = 29;
+            this.numericUpDown_exportBC.ValueChanged += new System.EventHandler(this.numericUpDown_exportBC_ValueChanged);
             // 
             // label5
             // 
@@ -324,11 +306,6 @@
             0,
             0,
             0});
-            this.numericUpDown_importErreur.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_importErreur.Name = "numericUpDown_importErreur";
             this.numericUpDown_importErreur.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_importErreur.TabIndex = 27;
@@ -350,11 +327,6 @@
             0,
             0,
             0});
-            this.numericUpDown_importSuccess.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_importSuccess.Name = "numericUpDown_importSuccess";
             this.numericUpDown_importSuccess.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_importSuccess.TabIndex = 25;
@@ -376,11 +348,6 @@
             0,
             0,
             0});
-            this.numericUpDown_importLog.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_importLog.Name = "numericUpDown_importLog";
             this.numericUpDown_importLog.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_importLog.TabIndex = 23;
@@ -402,11 +369,6 @@
             0,
             0,
             0});
-            this.numericUpDown_generalLog.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
             this.numericUpDown_generalLog.Name = "numericUpDown_generalLog";
             this.numericUpDown_generalLog.Size = new System.Drawing.Size(38, 22);
             this.numericUpDown_generalLog.TabIndex = 21;
@@ -528,17 +490,47 @@
             // 
             this.label22.Location = new System.Drawing.Point(99, 62);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(419, 30);
+            this.label22.Size = new System.Drawing.Size(419, 14);
             this.label22.TabIndex = 42;
-            this.label22.Text = "Le paramètre \"-1 jours\" signifie que la fonctionnalité est désactivé. \r\nLe paramè" +
-    "tre \"0 jours\" signifie que la fonctionnalité est activé après l\'import et l\'expo" +
-    "rt.\r\n";
+            this.label22.Text = "Le paramètre \"0 jours\" signifie que la fonctionnalité est déactivé.";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(516, 28);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 22);
+            this.comboBox1.TabIndex = 42;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(516, 56);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(121, 22);
+            this.comboBox2.TabIndex = 43;
+            // 
+            // comboBox3
+            // 
+            this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.Location = new System.Drawing.Point(516, 84);
+            this.comboBox3.Name = "comboBox3";
+            this.comboBox3.Size = new System.Drawing.Size(121, 22);
+            this.comboBox3.TabIndex = 44;
+            // 
+            // comboBox4
+            // 
+            this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.Location = new System.Drawing.Point(516, 116);
+            this.comboBox4.Name = "comboBox4";
+            this.comboBox4.Size = new System.Drawing.Size(121, 22);
+            this.comboBox4.TabIndex = 45;
             // 
             // ConfigBackup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(530, 337);
+            this.ClientSize = new System.Drawing.Size(664, 337);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.checkBox_activateBackup);
             this.Controls.Add(this.label4);
@@ -607,5 +599,9 @@
         private System.Windows.Forms.NumericUpDown numericUpDown_exportLog;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.ComboBox comboBox4;
+        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }

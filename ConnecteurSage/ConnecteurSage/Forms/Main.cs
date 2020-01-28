@@ -85,7 +85,7 @@ namespace ConnecteurSage
                     {
                         using (Forms.Configuration form = new Forms.Configuration())
                         {
-                            form.ShowDialog();
+                            form.ShowDialog(progressDialog);
                         }
                     }
                     // Récupération d'une possible SDKException
@@ -124,7 +124,7 @@ namespace ConnecteurSage
                     {
                         using (Forms.ConfExport form = new Forms.ConfExport())
                         {
-                            form.ShowDialog();
+                            form.ShowDialog(progressDialog);
                         }
                     }
                     // Récupération d'une possible SDKException
@@ -153,16 +153,16 @@ namespace ConnecteurSage
                     ConfigurationBackup backup = new ConfigurationBackup();
                     backup.Load();
                     label_backup_activation.Text = ((backup.activate) ? "Activation : Oui" : "Activation : Non");
-                    label_backup_generalLog.Text = ((backup.general_Log != -1) ? "Log général : " + backup.general_Log + " jours" : "Log général : désactiver");
-                    label_backup_importLog.Text = ((backup.import_Log != -1) ? "Log d'import : " + backup.import_Log + " jours" : "Log d'import : désactiver");
-                    label_backup_exportLog.Text = ((backup.export_Log != -1) ? "Log d'export : " + backup.export_Log + " jours" : "Log d'export : désactiver");
-                    label_backup_import_success.Text = ((backup.import_files_success != -1) ? "Fichier EDI import (Success) : " + backup.import_files_success + " jours" : "Fichier EDI import (Success) : désactiver");
-                    label_backup_import_error.Text = ((backup.import_files_error != -1) ? "Fichier EDI import (Erreur) : " + backup.import_files_error + " jours" : "Fichier EDI import (Erreur) : désactiver");
-                    label_backup_export_BC.Text = ((backup.export_files_BC != -1) ? "Fichier EDI Export (BC) : " + backup.export_files_BC + " jours" : "Fichier EDI Export (BC) : désactiver");
-                    label_backup_export_BL.Text = ((backup.export_files_BL != -1) ? "Fichier EDI Export (BL) : " + backup.export_files_BL + " jours" : "Fichier EDI Export (BL) : désactiver");
-                    label_backup_export_FA.Text = ((backup.export_files_FA != -1) ? "Fichier EDI Export (FA) : " + backup.export_files_FA + " jours" : "Fichier EDI Export (FA) : désactiver");
-                    label_backup_export_ME_MS.Text = ((backup.export_files_ME_MS != -1) ? "Fichier EDI Export (ME/MS) : " + backup.export_files_ME_MS + " jours" : "Fichier EDI Export (ME/MS) : désactiver");
-                    label_backup_export_BLF.Text = ((backup.export_files_BLF != -1) ? "Fichier EDI Export (BLF) : " + backup.export_files_BLF + " jours" : "Fichier EDI Export (BLF) : désactiver");
+                    label_backup_generalLog.Text = ((backup.general_Log != 0) ? "Log général : " + backup.general_Log + " jours" : "Log général : désactiver");
+                    label_backup_importLog.Text = ((backup.import_Log != 0) ? "Log d'import : " + backup.import_Log + " jours" : "Log d'import : désactiver");
+                    label_backup_exportLog.Text = ((backup.export_Log != 0) ? "Log d'export : " + backup.export_Log + " jours" : "Log d'export : désactiver");
+                    label_backup_import_success.Text = ((backup.import_files_success != 0) ? "Fichier EDI import (Success) : " + backup.import_files_success + " jours" : "Fichier EDI import (Success) : désactiver");
+                    label_backup_import_error.Text = ((backup.import_files_error != 0) ? "Fichier EDI import (Erreur) : " + backup.import_files_error + " jours" : "Fichier EDI import (Erreur) : désactiver");
+                    label_backup_export_BC.Text = ((backup.export_files_BC != 0) ? "Fichier EDI Export (BC) : " + backup.export_files_BC + " jours" : "Fichier EDI Export (BC) : désactiver");
+                    label_backup_export_BL.Text = ((backup.export_files_BL != 0) ? "Fichier EDI Export (BL) : " + backup.export_files_BL + " jours" : "Fichier EDI Export (BL) : désactiver");
+                    label_backup_export_FA.Text = ((backup.export_files_FA != 0) ? "Fichier EDI Export (FA) : " + backup.export_files_FA + " jours" : "Fichier EDI Export (FA) : désactiver");
+                    label_backup_export_ME_MS.Text = ((backup.export_files_ME_MS != 0) ? "Fichier EDI Export (ME/MS) : " + backup.export_files_ME_MS + " jours" : "Fichier EDI Export (ME/MS) : désactiver");
+                    label_backup_export_BLF.Text = ((backup.export_files_BLF != 0) ? "Fichier EDI Export (BLF) : " + backup.export_files_BLF + " jours" : "Fichier EDI Export (BLF) : désactiver");
                 }
                 else
                 {
@@ -170,7 +170,7 @@ namespace ConnecteurSage
                     {
                         using (Forms.ConfigBackup form = new Forms.ConfigBackup())
                         {
-                            form.ShowDialog();
+                            form.ShowDialog(progressDialog);
                         }
                     }
                     // Récupération d'une possible SDKException

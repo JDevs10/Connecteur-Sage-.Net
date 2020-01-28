@@ -233,4 +233,5 @@ C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.exe
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.pdb
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfigBackup.resources
+C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ProgressDialog.resources
 C:\Android_Studio_Projet\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csprojAssemblyReference.cache
