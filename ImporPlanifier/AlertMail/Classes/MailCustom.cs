@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlertMail.Classes
 {
-    public class MailCustom
+    class MailCustom
     {
         public string subject { set; get; }
         public string body { set; get; }
