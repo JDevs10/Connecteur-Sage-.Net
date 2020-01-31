@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportStocks));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cols_rows = new System.Windows.Forms.DataGridView();
             this.export_stockliste = new System.Windows.Forms.Button();
@@ -127,6 +128,7 @@
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.export_stockliste);
             this.Controls.Add(this.groupBox2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExportStocks";
             this.Text = "ExportStocks";
             this.Load += new System.EventHandler(this.ExportStocks_Load);

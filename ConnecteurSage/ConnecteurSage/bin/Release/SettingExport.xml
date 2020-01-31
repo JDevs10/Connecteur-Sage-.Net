@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <ConfigurationExport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <exportFactures>True</exportFactures>
-  <exportFactures_Format>Véolog</exportFactures_Format>
-  <exportFactures_Statut>1</exportFactures_Statut>
+  <exportFactures>False</exportFactures>
+  <exportFactures_Format />
+  <exportFactures_Statut />
   <exportBonsLivraisons>False</exportBonsLivraisons>
   <exportBonsLivraisons_Format />
   <exportBonsLivraisons_Statut />

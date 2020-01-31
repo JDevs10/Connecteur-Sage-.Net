@@ -1,0 +1,5 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\AlertMail.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\AlertMail.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.csprojAssemblyReference.cache

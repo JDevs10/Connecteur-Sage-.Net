@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ConfigurationDNS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Prefix>MS Access Database</Prefix>
-  <DNS_2>MS Access Database</DNS_2>
+  <Prefix>dBASE Files</Prefix>
+  <DNS_2>dBASE Files</DNS_2>
   <Nom_2 />
   <Password_2>wbVpi9zQjCU=</Password_2>
 </ConfigurationDNS>

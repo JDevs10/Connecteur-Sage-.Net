@@ -1,0 +1,7 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\ImportPlanifier.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\ImportPlanifier.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Microsoft.Win32.TaskScheduler.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\ImportPlanifier.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\ImportPlanifier.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\ImportPlanifier.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\ImportPlanifier.csprojAssemblyReference.cache

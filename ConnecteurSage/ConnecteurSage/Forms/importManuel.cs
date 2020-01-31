@@ -5032,6 +5032,7 @@ namespace ConnecteurSage.Forms
 
         public static int Calcule_conditionnement(decimal quantite, string quantite_conditionnement)
         {
+            MessageBox.Show("Calcule_conditionnement ("+quantite+", "+quantite_conditionnement+")");
            try
             {   int qc = int.Parse(quantite_conditionnement);
                 int q = (int)quantite;

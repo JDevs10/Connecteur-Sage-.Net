@@ -11,8 +11,9 @@ using System.Xml.Serialization;
 using System.IO;
 using Microsoft.Win32.TaskScheduler;
 using System.Data.Odbc;
-using ConnecteurSage.Helpers;
 using System.Threading;
+using ConnecteurSage.Helpers;
+using ConnecteurSage.Forms;
 
 namespace ConnecteurSage
 {
@@ -51,7 +52,7 @@ namespace ConnecteurSage
             // Initialize the thread that will handle the background process
             Thread backgroundThread = new Thread(
             new ThreadStart(() =>
-                {
+            {
                 //Loading Connexion Settings
                 progressDialog.Text = "Loading Connexion Settings....";
                 for (int n = 0; n < 20; n++)
@@ -122,7 +123,7 @@ namespace ConnecteurSage
                 {
                     try
                     {
-                        using (Forms.ConfExport form = new Forms.ConfExport())
+                        using (ConfExport form = new ConfExport())
                         {
                             form.ShowDialog(progressDialog);
                         }
@@ -190,7 +191,7 @@ namespace ConnecteurSage
                 // Close the dialog if it hasn't been already
                 if (ok && progressDialog.InvokeRequired)
                     progressDialog.BeginInvoke(new System.Action(() => progressDialog.Close()));
-                }
+            }
             ));
 
             // Start the background process thread
@@ -475,7 +476,7 @@ namespace ConnecteurSage
                 MessageBox.Show("Erreur[200]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""),
                             "Erreur !",
                             MessageBoxButtons.OK,
-                            MessageBoxIcon.Error); 
+                            MessageBoxIcon.Error);
                 result = -1;
             }
             //writer.WriteLine("");
@@ -528,7 +529,7 @@ namespace ConnecteurSage
                 else if (check == -1)      //if the tDOC_Numerotation doesn't exist then create it 
                 {
                     //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation does not existe, so create the table!");
-                    
+
                     try
                     {
                         //Create DOC_Numerotation Table
@@ -545,7 +546,7 @@ namespace ConnecteurSage
                             result = true;
                             //writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation created!");
                         }
-                        
+
                         connexion.Close();
                     }
                     catch (Exception ex)

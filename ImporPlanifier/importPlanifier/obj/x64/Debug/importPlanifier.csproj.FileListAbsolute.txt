@@ -1,9 +1,0 @@
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\bin\x64\Debug\importPlanifier.exe
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\bin\x64\Debug\importPlanifier.pdb
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\bin\x64\Debug\Microsoft.Win32.TaskScheduler.dll
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\bin\x64\Debug\Microsoft.Win32.TaskScheduler.xml
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\bin\x64\Debug\it\Microsoft.Win32.TaskScheduler.resources.dll
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\bin\x64\Debug\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\obj\x64\Debug\ResolveAssemblyReference.cache
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\obj\x64\Debug\importPlanifier.exe
-E:\Documents and Settings\OTHMAN\Mes documents\Visual Studio 2008\Projects\importPlanifier\importPlanifier\obj\x64\Debug\importPlanifier.pdb

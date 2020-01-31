@@ -1,1 +1,0 @@
-Ne supprime jamais Microsoft.Win32.TaskScheduler.dll de la racine

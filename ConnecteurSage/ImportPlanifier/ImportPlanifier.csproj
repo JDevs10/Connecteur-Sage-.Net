@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{ED9E83B8-9758-457E-B84F-5E0566D06C19}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ImportPlanifier</RootNamespace>
+    <AssemblyName>ImportPlanifier</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>scheduled-tasks-icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Interop.TaskScheduler">
+      <HintPath>..\ConnecteurSage\Interop.TaskScheduler.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.Win32.TaskScheduler">
+      <HintPath>..\ConnecteurSage\Microsoft.Win32.TaskScheduler.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\Action.cs" />
+    <Compile Include="Classes\Action2.cs" />
+    <Compile Include="Classes\AdresseLivraison.cs" />
+    <Compile Include="Classes\Article.cs" />
+    <Compile Include="Classes\Client.cs" />
+    <Compile Include="Classes\ConfigurationBackup.cs" />
+    <Compile Include="Classes\ConfigurationDNS.cs" />
+    <Compile Include="Classes\ConfigurationExport.cs" />
+    <Compile Include="Classes\ConfSendMail.cs" />
+    <Compile Include="Classes\Connexion.cs" />
+    <Compile Include="Classes\CorrectionLivraison.cs" />
+    <Compile Include="Classes\Customer.cs" />
+    <Compile Include="Classes\CustomMailRecap.cs" />
+    <Compile Include="Classes\Desadv.cs" />
+    <Compile Include="Classes\DesadvLine.cs" />
+    <Compile Include="Classes\DocumentVente.cs" />
+    <Compile Include="Classes\DocumentVenteLine.cs" />
+    <Compile Include="Classes\ExportBonLivraison.cs" />
+    <Compile Include="Classes\ExportCommandes.cs" />
+    <Compile Include="Classes\ExportFactures.cs" />
+    <Compile Include="Classes\ExportStocks.cs" />
+    <Compile Include="Classes\Order.cs" />
+    <Compile Include="Classes\Path.cs" />
+    <Compile Include="Classes\SDKException.cs" />
+    <Compile Include="Classes\Societe.cs" />
+    <Compile Include="Classes\Stock.cs" />
+    <Compile Include="Classes\TVA.cs" />
+    <Compile Include="Classes\Veolog_BCF.cs" />
+    <Compile Include="Classes\Veolog_BCF_Lines.cs" />
+    <Compile Include="Classes\Veolog_DESADV.cs" />
+    <Compile Include="Classes\Veolog_DESADV_Colis.cs" />
+    <Compile Include="Classes\Veolog_DESADV_Lines.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\CountryFormatISO.cs" />
+    <Compile Include="Utilities\QueryHelper.cs" />
+    <Compile Include="Utilities\Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="scheduled-tasks-icon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
