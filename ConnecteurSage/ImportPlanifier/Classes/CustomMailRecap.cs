@@ -53,7 +53,9 @@ namespace ImportPlanifier.Classes
             }
             catch (Exception ex)
             {
+                Console.WriteLine("********** Erreur SaveInfo(CustomMailRecap)  **********");
                 Console.WriteLine("" + ex.Message);
+                Console.WriteLine("" + ex.StackTrace);
             }
         }
         public void Load(string fileName)
@@ -88,6 +90,8 @@ namespace ImportPlanifier.Classes
         [XmlElement]
         public string DocumentErrorStackTrace { set; get; }
         [XmlElement]
+        public string FileName { set; get; }
+        [XmlElement]
         public string FilePath { set; get; }
         [XmlElement]
         public int Increment { set; get; }
@@ -96,11 +100,12 @@ namespace ImportPlanifier.Classes
         {
         }
 
-        public CustomMailRecapLines(string DocumentReference, string DocumentErrorMessage, string DocumentErrorStackTrace, string FilePath)
+        public CustomMailRecapLines(string DocumentReference, string DocumentErrorMessage, string DocumentErrorStackTrace, string FileName, string FilePath)
         {
             this.DocumentReference = DocumentReference;
             this.DocumentErrorMessage = DocumentErrorMessage;
             this.DocumentErrorStackTrace = DocumentErrorStackTrace;
+            this.FileName = FileName;
             this.FilePath = FilePath;
         }
     }

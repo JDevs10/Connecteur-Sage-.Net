@@ -49,17 +49,17 @@ namespace ConnecteurSage.Helpers
             catch (CryptographicException e)
             {
                 //Survient lorsque le fournisseur de cryptographie n'est pas disponible
-                //MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
                 return string.Empty;
             }
             catch (EncoderFallbackException e)
             {
-                //MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
                 return string.Empty;
             }
             catch (InvalidOperationException e)
             {
-                //MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
                 return string.Empty;
             }
         }
@@ -87,17 +87,17 @@ namespace ConnecteurSage.Helpers
             catch (CryptographicException e)
             {
                 //Survient lorsque le fournisseur de cryptographie n'est pas disponible
-                //MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
                 return string.Empty;
             }
             catch (DecoderFallbackException e)
             {
-                //MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
                 return string.Empty;
             }
             catch (InvalidOperationException e)
             {
-                //MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
                 return string.Empty;
             }
         }

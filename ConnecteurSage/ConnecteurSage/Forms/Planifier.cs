@@ -210,7 +210,7 @@ namespace ConnecteurSage.Forms
                 }
                 catch(Exception ex) 
                 {
-                    MessageBox.Show(""+ex);
+                    MessageBox.Show("Message: " + ex.Message + "\nStackTrace: " + ex.StackTrace);
                 }
             }
             else

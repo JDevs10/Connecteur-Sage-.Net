@@ -67,8 +67,8 @@ namespace ConnecteurSage.Classes
                 this.dest2 = mail.dest2;
                 this.dest3 = mail.dest3;
                 this.active = mail.active;
-                this.totalTicks = totalTicks;
-                this.remaningTicks = remaningTicks;
+                this.totalTicks = mail.totalTicks;
+                this.remaningTicks = mail.remaningTicks;
                 file.Close();
             }
         }

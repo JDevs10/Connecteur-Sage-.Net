@@ -37,7 +37,7 @@ namespace importPlanifier.Classes
 
                 //tester s'il existe des fichies .csv
                 Boolean FileExiste = false;
-                Boolean insertAdressLivr = false;
+                //Boolean insertAdressLivr = false;
                 int count = 0;
                 string[] tabCommande = new string[200];
                 List<Order> ordersList = new List<Order>();

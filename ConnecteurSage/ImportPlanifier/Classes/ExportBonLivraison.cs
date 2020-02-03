@@ -88,7 +88,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
@@ -135,7 +135,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
@@ -302,7 +302,7 @@ namespace importPlanifier.Classes
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!");
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                             logFileWriter_export.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!", "", logFileName_export));
+                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
                             return recapLinesList_new;
                         }
 
@@ -324,7 +324,7 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Export annullé");
                 logFileWriter_export.Close();
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
             }
 
             logFileWriter_export.Close();
@@ -398,7 +398,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, "", logFileName_export));
             }
         }
     }

@@ -3094,7 +3094,7 @@ namespace ConnecteurSage.Forms
             double DO_TotalTTC_ME = 0.0;
             double DO_TotalHT_MS = 0.0;
             double DO_TotalTTC_MS = 0.0;
-            double DO_TotalPoid = 0.0;
+            //double DO_TotalPoid = 0.0;
 
             string reference_ME_doc = lastNumberReference("ME", logFileWriter);   //Doc ME
             if (reference_ME_doc == null)
@@ -3160,7 +3160,7 @@ namespace ConnecteurSage.Forms
                         string name_article = "";
                         string DL_PoidsNet = "0";
                         string DL_PoidsBrut = "0";
-                        string DL_PrixUnitaire_buyPrice = "0";
+                        //string DL_PrixUnitaire_buyPrice = "0";
                         string DL_PrixUnitaire_salePriceHT = "0";
                         string DL_PUTTC = "0";
                         string DL_Taxe1 = "";
@@ -3923,7 +3923,7 @@ namespace ConnecteurSage.Forms
                         string name_article = "";
                         string DL_PoidsNet = "0";
                         string DL_PoidsBrut = "0";
-                        string DL_PrixUnitaire_buyPrice = "0";
+                        //string DL_PrixUnitaire_buyPrice = "0";
                         string DL_PrixUnitaire_salePriceHT = "0";
                         string DL_PUTTC = "0";
                         string COLIS_article = "";

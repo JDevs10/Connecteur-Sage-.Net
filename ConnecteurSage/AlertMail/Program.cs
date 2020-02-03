@@ -9,6 +9,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.IO;
+using AlertMail.Helpers;
 
 namespace AlertMail
 {
@@ -33,11 +34,36 @@ namespace AlertMail
                                 Console.WriteLine("Send Mail..Erreur Adresse de distinataire");
                             }
 
-                            MailCustom mMailCustom = generateMailBody();
+                            MailCustom mMailCustom = null;
+                            try
+                            {
+                                mMailCustom = generateMailBody();
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception generateMailBody() ***********");
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                Console.WriteLine("");
+                                mMailCustom = null;
+                            }
 
                             //Envoi
-                            Console.WriteLine("Envoi de mail en cours....");
-                            EnvoiMail(cMail, mMailCustom.subject, mMailCustom.body, mMailCustom.attachements);   //cheminLogFile
+                            if(mMailCustom != null)
+                            {
+                                Console.WriteLine("Envoi de mail en cours....");
+                                EnvoiMail(cMail, mMailCustom.subject, mMailCustom.body, mMailCustom.attachements);   //cheminLogFile
+
+                                if (File.Exists("Mail_IMP.ml"))
+                                {
+                                    File.Delete("Mail_IMP.ml");
+                                }
+                                if (File.Exists("Mail_EXP.ml"))
+                                {
+                                    File.Delete("Mail_EXP.ml");
+                                }
+                            }
                         }
                         else
                         {
@@ -53,21 +79,32 @@ namespace AlertMail
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Main ***********");
+                    Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Main EndSoftwareExe ***********");
                     Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
                 }
             }
             else if (args[0] == "CheckErrorFiles")
             {
                 Console.WriteLine("CheckErrorFiles...");
                 //Get all .csv files in the folder
+                Classes.Path path = new Classes.Path();
+                path.Load();
                 string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
+                if (!Directory.Exists(path.path))
+                {
+                    Directory.CreateDirectory(path.path);
+                }
                 if (!Directory.Exists(directoryName_ErrorFile))
                 {
                     Directory.CreateDirectory(directoryName_ErrorFile);
                 }
-                DirectoryInfo fileListing = new DirectoryInfo(directoryName_ErrorFile);
-                FileInfo[] allFiles = fileListing.GetFiles("*.csv");
+
+                DirectoryInfo fileListing = new DirectoryInfo(path.path);
+                FileInfo[] allFiles_path = fileListing.GetFiles("*.csv");
+
+                DirectoryInfo fileListing1 = new DirectoryInfo(directoryName_ErrorFile);
+                FileInfo[] allFiles_error = fileListing1.GetFiles("*.csv");
 
                 try
                 {
@@ -78,28 +115,6 @@ namespace AlertMail
                         {
                             if (cMail.remaningTicks == 0)
                             {
-                                /*
-                                if (cMail.dest1 == "" && cMail.dest2 == "" && cMail.dest3 == "")
-                                {
-                                    Console.WriteLine("Send Mail..Erreur Adresse de distinataire");
-                                }
-
-                                string filenames = "";
-                                for (int index = 0; index < allFiles.Length; index++)
-                                {
-                                    filenames += allFiles[index].Name + "\n";
-                                }
-                                //Envoi
-                                Console.WriteLine("Envoi de mail en cours....");
-                                EnvoiMail(cMail, "Document(s) d'import en Erreur!!!",
-                                    "Bonjour Team BDC, \n\n" +
-                                    "Il y a " + allFiles.Length + " fichier(s) qui n'ont pas été traités.Voici les noms de fichiers du répertoire '" + directoryName_ErrorFile + "' non traités:\n" +
-                                    filenames +
-                                    "\nCordialement,\nConnecteur SAGE.", null);
-                                cMail.remaningTicks = cMail.totalTicks;
-                                cMail.saveInfo(cMail);
-                                */
-
                                 Console.WriteLine("Envoi de mail en cours V2....");
                                 if (File.Exists("Mail_Recap.ml"))
                                 {
@@ -110,46 +125,96 @@ namespace AlertMail
 
                                     CustomMailRecap recap = new CustomMailRecap();
                                     recap.Load("Mail_Recap.ml");
-                                    string infoBody = "";
-
-                                    /*
-                                    for (int x = 0; x < recap.Lines.Count; x++)
+                                    string infoBody_end = "";
+                                    string infoBody1 = "";
+                                    string infoBody2 = "";
+                                    string infoBodyHeader1 = "";
+                                    string infoBodyHeader2 = "";
+                                    
+                                    //import csv folder
+                                    if (allFiles_path.Length > 0)
                                     {
-                                        infoBody += recap.Lines[x].LineNumber + "*\tLe document \"" + recap.Lines[x].DocumentReference + "\" est tombé en erreur " + recap.Lines[x].Increment + " fois. Avec une erreur \"" + recap.Lines[x].DocumentErrorMessage + "\".\n" +
-                                                    "\tStackTrace : " + recap.Lines[x].DocumentErrorStackTrace + "\n\n";
-                                    }
-                                    */
+                                        infoBodyHeader1 += "Il y a " + allFiles_path.Length + " fichier(s) qui n'ont pas été traités et sont dans le répertoire '" + path.path + "' :\n";
 
-                                    for (int x = 0; x < allFiles.Length; x++)
-                                    {
-                                        for(int y = 0; y < allFiles.Length; y++)
+                                        for (int x = 0; x < allFiles_path.Length; x++)
                                         {
-                                            if (allFiles[x].Name.Contains(recap.Lines[y].FilePath))
-                                            {
-                                                infoBody += recap.Lines[y].LineNumber + "*\tLe document \"" + recap.Lines[y].DocumentReference + "\" est tombé en erreur " + recap.Lines[y].Increment + " fois. Avec une erreur \"" + recap.Lines[y].DocumentErrorMessage + "\".\n" +
-                                                    "\tStackTrace : " + recap.Lines[y].DocumentErrorStackTrace + "\n\n";
-                                                break;
-                                            }
+                                            infoBody1 += "\tNom du fichier : " + allFiles_path[x].Name + "\n";
                                         }
                                     }
 
-                                    EnvoiMail(cMail, recap.Subject,
-                                    "Bonjour Team BDC, \n\n" +
-                                    "Voici un récapitulatif des documents toujours en erreur. \nIl y a " + recap.Lines.Count + " fichier(s) qui n'ont pas été traités et sont dans le répertoire 'Error File' :\n" +
-                                    infoBody +
-                                    "\nCordialement,\nConnecteur SAGE.", recap.Attachments);
+                                    //import file error
+                                    if (allFiles_error.Length > 0)
+                                    {
+                                        infoBodyHeader2 += "Il y a " + allFiles_error.Length + " fichier(s) qui sont tombé en erreur lors de l'import, qui sont dans le le répertoire '" + directoryName_ErrorFile + "' :\n";
+
+                                        for (int y = 0; y < recap.Lines.Count; y++)
+                                        {
+                                            infoBody2 += recap.Lines[y].LineNumber + " -\t Le fichier EDI : " + recap.Lines[y].FileName + "\nLe numéro du document \"" + recap.Lines[y].DocumentReference + "\"\nMessage erreur : " + recap.Lines[y].DocumentErrorMessage + "\nStackTrace: " + recap.Lines[y].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap.Lines[y].FilePath + "\n\n";
+                                        }
+
+                                        for (int x = 0; x < allFiles_error.Length; x++)
+                                        {
+                                            infoBody2 += "\t - " + allFiles_error[x].Name + "\n";
+                                        }
+                                    }
+
+                                    if (allFiles_path.Length > 0 & allFiles_error.Length == 0)
+                                    {
+                                        infoBody_end += "Bonjour Team BDC, \n\nVoici un récapitulatif des documents. \n" + infoBodyHeader1 + infoBody1;
+                                    }
+                                    else if (allFiles_error.Length > 0 & allFiles_path.Length == 0)
+                                    {
+                                        infoBody_end += "Bonjour Team BDC, \n\nVoici un récapitulatif des documents. \n" + infoBodyHeader2 + infoBody2;
+                                    }
+                                    else if (allFiles_path.Length > 0 && allFiles_error.Length > 0)
+                                    {
+                                        infoBody_end += "Bonjour Team BDC, \n\nVoici un récapitulatif des documents. \n" + infoBodyHeader1 + infoBody1 + "\n" + infoBodyHeader2 + infoBody2;
+                                    }
+                                    else
+                                    {
+                                        infoBody_end += "Bonjour Team BDC,\n\nIl n'y a pas de fichier EDI en attente ou en erreur.\n";
+                                    }
+
+                                    EnvoiMail(cMail, recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE.", recap.Attachments);
 
                                     cMail.remaningTicks = cMail.totalTicks;
+                                    cMail.password = Utils.Encrypt(cMail.password);
                                     cMail.saveInfo(cMail);
+
+                                    //delete recap file
+                                    if (File.Exists("Mail_Recap.ml"))
+                                    {
+                                        File.Delete("Mail_Recap.ml");
+                                    }
                                 }
                                 else
                                 {
+                                    //import file error
+                                    if (allFiles_error.Length > 0)
+                                    {
+                                        ConfigurationDNS dns = new ConfigurationDNS();
+                                        dns.LoadSQL();
+                                        string infoBody = "Bonjour Team BDC,\n\nIl y a " + allFiles_error.Length + " fichier(s) qui sont dans le le répertoire erreur '" + directoryName_ErrorFile + "' :\n";
+
+                                        for (int x = 0; x < allFiles_error.Length; x++)
+                                        {
+                                            infoBody += "\t - " + allFiles_error[x].Name + "\n";
+                                        }
+
+                                        EnvoiMail(cMail, "Erreur ["+dns.Prefix+"]", infoBody + "\n\nCordialement,\nConnecteur SAGE.", null);
+
+                                        cMail.remaningTicks = cMail.totalTicks;
+                                        cMail.password = Utils.Encrypt(cMail.password);
+                                        cMail.saveInfo(cMail);
+                                    }
+
                                     Console.WriteLine("No Mail_Recap.ml File!");
                                 }
                             }
                             else
                             {
                                 cMail.remaningTicks = cMail.remaningTicks - 1;
+                                cMail.password = Utils.Encrypt(cMail.password);
                                 cMail.saveInfo(cMail);
                             }
                         }
@@ -169,19 +234,23 @@ namespace AlertMail
                 {
                     Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Main CheckErrorFiles ***********");
                     Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
                 }
             }
             else
             {
                 Console.WriteLine("Argument inconnue!!!");
             }
+            //Console.ReadLine();
         }
 
         public static MailCustom generateMailBody()
         {
+            ConfigurationDNS dns = new ConfigurationDNS();
+            dns.LoadSQL();
             CustomMailRecap recap_imp = null;
             CustomMailRecap recap_exp = null;
-            MailCustom mailResult = null;
+            //MailCustom mailResult = null;
             bool sendMailImp = false;
             string textImp = "";
             bool sendMailExp = false;
@@ -189,7 +258,7 @@ namespace AlertMail
             List<string> attachements = new List<string>();
 
             //check if the file exist
-            if (File.Exists(localPath + @"\Mail_IMP.ml"))
+            if (File.Exists("Mail_IMP.ml"))
             {
                 recap_imp = new CustomMailRecap();
                 recap_imp.Load("Mail_IMP.ml");
@@ -211,13 +280,20 @@ namespace AlertMail
                 }
                 for (int i = 0; i < recap_imp.Lines.Count; i++)
                 {
-                    textImp += recap_imp.Lines[i].LineNumber + "-\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\"\nMessage erreur : " + recap_imp.Lines[i].DocumentErrorMessage + "\nStackTrace: "+ recap_imp.Lines[i] .DocumentErrorStackTrace+ "\nL'erreur peut etre trouvé dans " + recap_imp.Lines[i].FilePath + "\n\n";
+                    textImp += recap_imp.Lines[i].LineNumber + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\"\nMessage erreur : " + recap_imp.Lines[i].DocumentErrorMessage + "\nStackTrace: "+ recap_imp.Lines[i] .DocumentErrorStackTrace+ "\nL'erreur peut etre trouvé dans " + recap_imp.Lines[i].FilePath + "\n\n";
+                    if (!attachements.Contains(recap_imp.Lines[i].FilePath))
+                    {
+                        attachements.Add(recap_imp.Lines[i].FilePath);
+                    }
                 }
+                recap_imp.Attachments = attachements;
+                attachements.Clear();
             }
 
             //check if the file exist
-            if (File.Exists(localPath + @"\Mail_EXP.ml"))
+            if (File.Exists("Mail_EXP.ml"))
             {
+                attachements.Clear();
                 recap_exp = new CustomMailRecap();
                 recap_exp.Load("Mail_EXP.ml");
 
@@ -238,22 +314,31 @@ namespace AlertMail
                 }
                 for (int i = 0; i < recap_exp.Lines.Count; i++)
                 {
-                    textImp += recap_exp.Lines[i].Increment + "-\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\"\nMessage erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\nStackTrace: " + recap_exp.Lines[i].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap_exp.Lines[i].FilePath + "\n\n";
+                    textImp += recap_exp.Lines[i].Increment + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\"\nMessage erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\nStackTrace: " + recap_exp.Lines[i].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap_exp.Lines[i].FilePath + "\n\n";
+                    if (!attachements.Contains(recap_exp.Lines[i].FilePath))
+                    {
+                        attachements.Add(recap_exp.Lines[i].FilePath);
+                    }
                 }
+                recap_exp.Attachments = attachements;
+                attachements.Clear();
             }
 
             //send the recap mail
             if (sendMailImp & !sendMailExp)
             {
-                return new MailCustom(recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE.", recap_imp.Attachments);
+                return new MailCustom("["+dns.Prefix+"] " + recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE.", recap_imp.Attachments);
             }
             else if (sendMailExp & !sendMailImp)
             {
-                return new MailCustom(recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", recap_exp.Attachments);
+                return new MailCustom("[" + dns.Prefix + "] " + recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", recap_exp.Attachments);
             }
             else if (sendMailImp && sendMailExp)
             {
-                return new MailCustom(recap_imp.Subject + " et "+ recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", recap_exp.Attachments);
+                attachements.Clear();
+                attachements.AddRange(recap_imp.Attachments);
+                attachements.AddRange(recap_exp.Attachments);
+                return new MailCustom("[" + dns.Prefix + "] " + recap_imp.Subject + " et "+ recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", attachements);
             }
             else
             {

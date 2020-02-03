@@ -46,9 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\ConfigurationDNS.cs" />
     <Compile Include="Classes\CustomMailRecap.cs" />
     <Compile Include="Classes\ConfSendMail.cs" />
+    <Compile Include="Classes\CustomMailRecapLines.cs" />
     <Compile Include="Classes\MailCustom.cs" />
+    <Compile Include="Classes\Path.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Utils.cs" />

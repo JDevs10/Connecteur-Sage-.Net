@@ -82,7 +82,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D5031AFA1477EFAF4E3730FBF0F5FBE0"
+        "OwnerKey" = "8:_5AAF74C8B2754DE7A1B1B7A6F6B91658"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -106,7 +106,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5AAF74C8B2754DE7A1B1B7A6F6B91658"
+        "OwnerKey" = "8:_D5031AFA1477EFAF4E3730FBF0F5FBE0"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -127,6 +127,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -389,7 +397,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Connecteur Sage Batimex"
         "ProductCode" = "8:{F8F27AA5-FF34-4B8F-B93E-FECEE079BA2D}"
-        "PackageCode" = "8:{B1724C93-4427-470E-9187-272ED2C645C6}"
+        "PackageCode" = "8:{A0ADC196-E8D9-4E0B-8825-EB0C80D902F1}"
         "UpgradeCode" = "8:{1991DDBB-12B7-4F0D-A521-ADED641216A9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -534,7 +542,7 @@
             "Target" = "8:_8DB8F7FB8E4F4B72BF7B39B93601D34A"
             "Folder" = "8:_4AE027C560D84E3186D2B05D5126FB96"
             "WorkingFolder" = "8:_7D3B9713144D44A39F7FECF83E54A928"
-            "Icon" = "8:"
+            "Icon" = "8:_CEAAA7570B67452ABA8830A4EDD66C1B"
             "Feature" = "8:"
             }
         }

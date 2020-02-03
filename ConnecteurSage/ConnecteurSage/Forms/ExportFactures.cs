@@ -472,8 +472,6 @@ namespace ConnecteurSage.Forms
                             return lines;
                         }
                     }
-                    return null;
-
                 }
 
             }

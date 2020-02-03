@@ -124,7 +124,7 @@ namespace importPlanifier.Classes
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le chemin pour l'export du fichier stock liste doit être renseigné !");
                     logFileWriter_export.Flush();
                     logFileWriter_export.Close();
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "Le chemin pour l'export du fichier stock liste doit être renseigné !", "", logFileName_export));
+                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "Le chemin pour l'export du fichier stock liste doit être renseigné !", "", "", logFileName_export));
                     return recapLinesList_new;
                 }
 
@@ -199,7 +199,7 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 logFileWriter_export.Flush();
                 logFileWriter_export.Close();
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
             }
 
             logFileWriter_export.Flush();
@@ -284,7 +284,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 logFileWriter.WriteLine(DateTime.Now + " : GetStockArticle | " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
@@ -365,10 +365,7 @@ namespace importPlanifier.Classes
                             return lines;
                         }
                     }
-                    return null;
-
                 }
-
             }
 
             catch (Exception ex)
