@@ -106,6 +106,9 @@ namespace AlertMail
                 DirectoryInfo fileListing1 = new DirectoryInfo(directoryName_ErrorFile);
                 FileInfo[] allFiles_error = fileListing1.GetFiles("*.csv");
 
+                List<string> mailRecapFileNameList = new List<string>();
+                List<string> errorFilesFileNameList = new List<string>();
+
                 try
                 {
                     ConfSendMail cMail = getInfoMail();
@@ -156,6 +159,42 @@ namespace AlertMail
                                         {
                                             infoBody2 += "\t - " + allFiles_error[x].Name + "\n";
                                         }
+
+                                        /*
+                                        CustomMailRecap mailRecap = new CustomMailRecap();
+                                        mailRecap.Load("Mail_Recap.ml");
+
+                                        for (int x = 0; x < allFiles_error.Length; x++)
+                                        {
+                                            errorFilesFileNameList.Add(allFiles_error[x].Name);
+                                        }
+
+                                        int a = 0;
+                                        List<string> unknownFile = new List<string>();
+                                        for (int y = 0; y < mailRecap.Lines.Count; y++)
+                                        {
+                                            Console.WriteLine(y + " - FileInfo : " + errorFilesFileNameList[y]);
+                                            if (errorFilesFileNameList.Contains(mailRecap.Lines[y].FileName))
+                                            {
+                                                Console.WriteLine("y: " + y + " || FileInfo : " + allFiles_error[y].Name + " == Mail Recap : " + allFiles_error[y].Name);
+                                                infoBody2 += (y + 1) + " -\t Le numéro du document \"" + mailRecap.Lines[y].DocumentReference + "\"\nNom du fichier : " + mailRecap.Lines[y].FileName + "\nMessage erreur : " + mailRecap.Lines[y].DocumentErrorMessage + "\nStackTrace: " + mailRecap.Lines[y].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + mailRecap.Lines[y].FilePath + "\n\n";
+                                                a++;
+                                            }
+                                            else
+                                            {
+                                                unknownFile.Add(errorFilesFileNameList[y]);
+                                            }
+                                        }
+
+                                        if (errorFilesFileNameList.Count > a)
+                                        {
+                                            infoBody2 += "Voici d'autre fichier en erreur, ils n'ont pas de log générés à partir du connecteur :\n";
+                                            for (int x = 0; x < allFiles_path.Length; x++)
+                                            {
+                                                infoBody1 += "\tNom du fichier : " + allFiles_path[x].Name + "\n";
+                                            }
+                                        }
+                                        */
                                     }
 
                                     if (allFiles_path.Length > 0 & allFiles_error.Length == 0)
@@ -280,7 +319,7 @@ namespace AlertMail
                 }
                 for (int i = 0; i < recap_imp.Lines.Count; i++)
                 {
-                    textImp += recap_imp.Lines[i].LineNumber + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\"\nMessage erreur : " + recap_imp.Lines[i].DocumentErrorMessage + "\nStackTrace: "+ recap_imp.Lines[i] .DocumentErrorStackTrace+ "\nL'erreur peut etre trouvé dans " + recap_imp.Lines[i].FilePath + "\n\n";
+                    textImp += (i+1) + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\"\nNom du fichier : "+recap_imp.Lines[i].FileName+"\nMessage erreur : " + recap_imp.Lines[i].DocumentErrorMessage + "\nStackTrace: "+ recap_imp.Lines[i] .DocumentErrorStackTrace+ "\nL'erreur peut etre trouvé dans " + recap_imp.Lines[i].FilePath + "\n\n";
                     if (!attachements.Contains(recap_imp.Lines[i].FilePath))
                     {
                         attachements.Add(recap_imp.Lines[i].FilePath);
@@ -314,7 +353,7 @@ namespace AlertMail
                 }
                 for (int i = 0; i < recap_exp.Lines.Count; i++)
                 {
-                    textImp += recap_exp.Lines[i].Increment + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\"\nMessage erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\nStackTrace: " + recap_exp.Lines[i].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap_exp.Lines[i].FilePath + "\n\n";
+                    textImp += (i + 1) + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\"\nNom du fichier : " + recap_exp.Lines[i].FileName + "\nMessage erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\nStackTrace: " + recap_exp.Lines[i].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap_exp.Lines[i].FilePath + "\n\n";
                     if (!attachements.Contains(recap_exp.Lines[i].FilePath))
                     {
                         attachements.Add(recap_exp.Lines[i].FilePath);

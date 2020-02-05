@@ -199,7 +199,7 @@ namespace importPlanifier.Classes
 
                         string[] lines = System.IO.File.ReadAllLines(fileListing + @"\" + filename, Encoding.Default);
 
-                        if (lines[0].Split(';')[0] == "ORDERS" && filename.Name.Contains("EDI_ORDERS_TEST") && lines[0].Split(';').Length == 11)
+                        if (lines[0].Split(';')[0] == "ORDERS" && filename.Name.Contains("EDI_ORDERS") && lines[0].Split(';').Length == 11)
                         {
                             logFileWriter_general.WriteLine("");
                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
@@ -1065,7 +1065,7 @@ namespace importPlanifier.Classes
 
                                                     if (nbr_ == 0)
                                                     {
-                                                        deleteCommande(order.NumCommande);
+                                                        deleteCommande(false, order.NumCommande);
 
                                                         Console.WriteLine("" + nbr_ + "/" + order.Lines.Count + " ligne(s) Non enregistrée(s).\n" + mot);
 
@@ -1172,721 +1172,6 @@ namespace importPlanifier.Classes
                                 goto goErrorLoop;
                             }
 
-                        }
-                        else if (lines[0].Split(';')[0] == "ORDERS" )
-                        {
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Orders Trouvé");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                            logFileWriter_general.WriteLine("");
-
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
-
-                            if(lines[0].Split(';').Length == 11)
-                            {
-                                string reference_order_doc = lastNumberReference("O", logFileWriter_import);
-
-                                Boolean prixDef = false;
-                                //Boolean insertAdressLivr = false;
-                                Order order = new Order();
-
-                                order.Id = get_next_num_piece_commande_v2("BC", logFileWriter_import);
-                                logFileWriter_import.Flush();
-
-                                if (order.Id == null)
-                                {
-                                    Console.WriteLine("Erreur [10] : numéro de piece non valide");
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : orderId est null.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                order.Lines = new List<OrderLine>();
-
-                                order.NumCommande = lines[0].Split(';')[1];
-
-                                if (order.NumCommande.Length > 10)
-                                {
-                                    Console.WriteLine("Numéro de commande doit être < 10");
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                if (order.NumCommande == "")
-                                {
-                                    Console.WriteLine("Le champ numéro de commande est vide.");
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                if (!IsNumeric(order.NumCommande))
-                                {
-                                    Console.WriteLine("Le champ numéro de commande est invalide.");
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                string existe_order = existeCommande_v2(order.NumCommande, logFileWriter_import);
-
-                                if (existe_order != null && existe_order != "erreur")
-                                {
-                                    Console.WriteLine("La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe_order + "");
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe_order + ".");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                if (existe_order == "erreur")
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-
-                                order.codeClient = lines[0].Split(';')[2];
-                                order.codeAcheteur = lines[0].Split(';')[3];
-                                order.codeFournisseur = lines[0].Split(';')[4];
-                                //order.adresseLivraison = lines[0].Split(';')[7];
-
-                                if (order.codeClient == "")
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code client dans le fichier est vide, verifier le code client.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                if (order.codeAcheteur == "")
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code acheteur dans le fichier est vide, verifier le code client.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                if (order.codeFournisseur == "")
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code fournisseur dans le fichier est vide, verifier le code client.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                Client client = getClient_v2(order.codeClient, 1, logFileWriter_import);
-                                if (client == null)
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Client n'est pas trouvé, verifier le code client.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-
-                                Client client2 = getClient_v2(order.codeAcheteur, 2, logFileWriter_import);
-                                if (client2 == null)
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur n'est pas trouvé, verifier le code Acheteur.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-
-                                if (existeFourniseur(order.codeFournisseur, logFileWriter_import) == null)
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur n'est pas trouvé, verifier le code Fournisseur.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-
-                                order.adresseLivraison = lines[0].Split(';')[7];
-                                string[] tab_adress = order.adresseLivraison.Split('.');
-
-                                if (tab_adress.Length != 5)
-                                {
-                                    Console.WriteLine("La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays");
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-                                order.nom_contact = tab_adress[0];
-                                order.adresse = tab_adress[1].Replace("'", "''");
-                                order.codepostale = tab_adress[2];
-                                order.ville = tab_adress[3].Replace("'", "''");
-                                order.pays = tab_adress[4];
-
-
-                                List<AdresseLivraison> listAdress = get_adresse_livraison(new AdresseLivraison(1, client.CT_Num, order.nom_contact, order.adresse, order.codepostale, order.ville, order.pays), logFileWriter_import);
-
-                                order.Reference = order.ville;
-                                order.deviseCommande = lines[0].Split(';')[8];
-                                if (order.deviseCommande != "")
-                                {
-                                    order.deviseCommande = getDevise(order.deviseCommande, logFileWriter_import);
-                                }
-
-
-                                if (order.deviseCommande == "erreur")
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : deviseCommande == erreur");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                                if (lines[1].Split(';')[0] == "ORDHD1" && lines[1].Split(';').Length == 5)
-                                {
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : L'entete de la commande (ORDHD1) est trouvé.");
-                                    logFileWriter_import.WriteLine("");
-
-                                    if (lines[1].Split(';')[1].Length == 8)
-                                    {
-                                        order.DateCommande = ConvertDate(lines[1].Split(';')[1]);
-                                        order.conditionLivraison = lines[1].Split(';')[2];
-
-                                        if (order.conditionLivraison != "")
-                                        {
-                                            order.conditionLivraison = get_condition_livraison(order.conditionLivraison, logFileWriter_import);
-                                        }
-
-                                        if (string.IsNullOrEmpty(order.conditionLivraison))
-                                        {
-                                            order.conditionLivraison = "1";
-                                        }
-
-                                        logFileWriter_import.Flush();
-
-                                        if (lines[2].Split(';')[0] == "ORDLIN" && lines[2].Split(';').Length == 23)
-                                        {
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne de la commande (ORDLIN) trouvé.");
-                                            var totalLines = lines.Count();
-                                            var currentIndexLine = 1;
-
-                                            decimal total = 0m;
-                                            foreach (string ligneDuFichier in lines)
-                                            {
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : ORDLIN line " + currentIndexLine + " / " + totalLines + ".");
-
-                                                string[] tab = ligneDuFichier.Split(';');
-
-                                                switch (tab[0])
-                                                {
-                                                    case "ORDLIN":
-                                                        if (tab.Length == 23)
-                                                        {
-                                                            OrderLine line = new OrderLine();
-                                                            line.NumLigne = tab[1];
-                                                            line.article = getArticle(tab[2], logFileWriter_import);
-
-                                                            if (line.article == null)
-                                                            {
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                                logFileWriter_import.Flush();
-                                                                tabCommandeError.Add(filename.Name);
-                                                                goto goErrorLoop;
-                                                            }
-
-
-                                                            line.article.Conditionnement = getConditionnementArticle(line.article.AR_REF, logFileWriter_import);
-
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : tab ===> line.article.Conditionnement");
-                                                            if (line.article.AR_Nomencl == "2" || line.article.AR_Nomencl == "3")
-                                                            {
-                                                                line.article.AR_REFCompose = line.article.AR_REF;
-                                                            }
-
-                                                            if (line.article.gamme1 != "0")
-                                                            {
-                                                                line.article.gamme1 = testGamme(0, line.article.AR_REF, line.article.gamme1, logFileWriter_import);
-                                                            }
-
-                                                            if (line.article.gamme2 != "0")
-                                                            {
-                                                                line.article.gamme2 = testGamme(1, line.article.AR_REF, line.article.gamme2, logFileWriter_import);
-                                                            }
-
-                                                            line.Quantite = tab[9].Replace(",", ".");
-                                                            decimal d = Decimal.Parse(line.Quantite, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
-                                                            if (d == 0)
-                                                            {
-                                                                line.Quantite = "1";
-                                                            }
-
-                                                            if (line.article.Conditionnement != null)
-                                                            {
-                                                                int quantite_Conditionnement = Calcule_conditionnement(d, line.article.Conditionnement.EC_QUANTITE, logFileWriter_import);
-                                                                line.Calcule_conditionnement = quantite_Conditionnement.ToString();
-                                                            }
-
-
-                                                            line.PrixNetHT = tab[14].Replace(",", ".");
-                                                            line.MontantLigne = tab[11];
-                                                            line.DateLivraison = "'{d " + ConvertDate(tab[21]) + "}'";
-                                                            if (line.DateLivraison.Length == 6)
-                                                            {
-                                                                line.DateLivraison = "Null";
-                                                            }
-
-
-                                                            try
-                                                            {
-                                                                if (!string.IsNullOrEmpty(line.article.AR_POIDSBRUT))
-                                                                {
-                                                                    line.article.AR_POIDSBRUT = Convert.ToString(d * Decimal.Parse(line.article.AR_POIDSBRUT, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture)).Replace(",", ".");
-                                                                }
-                                                                if (!string.IsNullOrEmpty(line.article.AR_POIDSNET))
-                                                                {
-                                                                    line.article.AR_POIDSNET = Convert.ToString(d * Decimal.Parse(line.article.AR_POIDSNET, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture)).Replace(",", ".");
-                                                                }
-                                                            }
-                                                            catch
-                                                            {
-                                                                Console.WriteLine("Erreur de conversion de poids.");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                                logFileWriter_general.Flush();
-
-                                                                logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                                logFileWriter_import.Flush();
-                                                                tabCommandeError.Add(filename.Name);
-                                                                goto goErrorLoop;
-                                                            }
-                                                            
-                                                            line.codeAcheteur = tab[4].Replace(" ", "");
-                                                            line.codeFournis = tab[5].Replace(" ", "");
-                                                            line.descriptionArticle = tab[8].Replace("'", "''");
-                                                            if (string.IsNullOrEmpty(line.descriptionArticle))
-                                                            {
-                                                                line.descriptionArticle = line.article.AR_DESIGN;
-                                                            }
-                                                            total = total + Decimal.Parse(tab[11].Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
-
-
-                                                            decimal prix = Decimal.Parse(line.PrixNetHT, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
-                                                            decimal prixSage = Decimal.Parse(line.article.AR_PRIXVEN.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
-
-
-                                                            if (prix != prixSage)
-                                                            {
-                                                                Console.WriteLine("Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                                logFileWriter_general.Flush();
-
-                                                                logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                                logFileWriter_import.Flush();
-                                                                tabCommandeError.Add(filename.Name);
-                                                                goto goErrorLoop;
-                                                            }
-
-                                                            order.Lines.Add(line);
-                                                            logFileWriter_general.Flush();
-                                                            logFileWriter_import.Flush();
-                                                        }
-                                                        else
-                                                        {
-                                                            Console.WriteLine("Erreur dans la ligne " + pos + " du fichier.", "Erreur de lecture !!");
-
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                            logFileWriter_general.Flush();
-
-                                                            logFileWriter_import.WriteLine("");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier " + filename + ".", "Erreur de lecture.");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_import.Flush();
-                                                            tabCommandeError.Add(filename.Name);
-                                                            goto goErrorLoop;
-                                                        }
-                                                        break;
-
-                                                }
-
-                                                pos++;
-                                                logFileWriter_general.Flush();
-                                                logFileWriter_import.Flush();
-                                            }
-
-                                            
-                                            order.DateLivraison = "Null";
-
-                                            for (int i = 0; i < order.Lines.Count; i++)
-                                            {
-                                                if (order.Lines[i].DateLivraison.Length == 16)
-                                                {
-                                                    order.DateLivraison = order.Lines[i].DateLivraison;
-                                                    goto jamp;
-                                                }
-                                            }
-
-                                        jamp:
-
-                                            if (order.codeClient != "")
-                                            {
-                                                if (string.IsNullOrEmpty(order.deviseCommande))
-                                                {
-                                                    order.deviseCommande = client.N_Devise;
-                                                }
-
-                                                order.StockId = getStockId(logFileWriter_import);
-                                                if (string.IsNullOrEmpty(order.StockId))
-                                                {
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                    logFileWriter_general.Flush();
-
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_import.Flush();
-                                                    tabCommandeError.Add(filename.Name);
-                                                    goto goErrorLoop;
-                                                }
-
-                                                if (!prixDef)
-                                                {
-                                                    string Ref = order.Reference + "/" + order.NumCommande;
-
-                                                    if (Ref.Length <= 17)
-                                                    {
-                                                        order.Reference = Ref;
-                                                    }
-                                                    else
-                                                    {
-                                                        int reste = 16 - order.NumCommande.Length;
-
-                                                        if (order.Reference.Length > reste)
-                                                        {
-                                                            order.Reference = order.Reference.Substring(0, reste) + "/" + order.NumCommande;
-                                                        }
-                                                    }
-                                                }
-
-
-                                                if (prixDef)
-                                                {
-                                                    string pr = "/AP";
-                                                    string Ref = order.Reference + "/" + order.NumCommande + pr;
-
-                                                    if (Ref.Length <= 17)
-                                                    {
-                                                        order.Reference = Ref;
-                                                    }
-                                                    else
-                                                    {
-                                                        int reste = 16 - order.NumCommande.Length - pr.Length;
-
-                                                        if (order.Reference.Length > reste)
-                                                        {
-                                                            order.Reference = order.Reference.Substring(0, reste) + "/" + order.NumCommande + pr;
-                                                        }
-                                                    }
-                                                }
-
-                                                if (order.Lines.Count == 0)
-                                                {
-                                                    Console.WriteLine("Aucun ligne de commande enregistré.");
-
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                    logFileWriter_general.WriteLine("");
-                                                    logFileWriter_general.Flush();
-
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = " + order.Lines.Count());
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_import.Flush();
-                                                    tabCommandeError.Add(filename.Name);
-                                                    goto goErrorLoop;
-                                                }
-                                                MessageErreur = new List<string>();
-
-                                                order.adresseLivraison = getNumLivraison(client.CT_Num, logFileWriter_import);
-                                                if (string.IsNullOrEmpty(order.adresseLivraison))
-                                                {
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                    logFileWriter_general.Flush();
-
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_import.Flush();
-                                                    tabCommandeError.Add(filename.Name);
-                                                    goto goErrorLoop;
-                                                }
-
-                                                if (insertCommande(client, order, logFileWriter_import))
-                                                {
-                                                    int nbr_ = 0;
-
-                                                    for (int i = 0; i < order.Lines.Count; i++)
-                                                    {
-                                                        if (order.Lines[i].article.AR_SuiviStock == "0")
-                                                        {
-                                                            order.Lines[i].article.AR_StockId = "0";
-                                                        }
-                                                        else
-                                                        {
-                                                            order.Lines[i].article.AR_StockId = order.StockId;
-                                                        }
-
-                                                        if (insertCommandeLine(client, order, order.Lines[i], logFileWriter_import))
-                                                        {
-                                                            nbr_++;
-                                                        }
-                                                    }
-                                                    string mot = "";
-                                                    for (int i = 0; i < MessageErreur.Count; i++)
-                                                    {
-                                                        mot = mot + MessageErreur[i] + "\n";
-                                                    }
-
-                                                    if (nbr_ == 0)
-                                                    {
-                                                        deleteCommande(order.NumCommande);
-                                                    }
-
-                                                    //deplacer les fichiers csv
-                                                    string theFileName = filename.FullName;
-                                                    string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + order.NumCommande + "_" + System.IO.Path.GetFileName(theFileName);
-                                                    File.Move(theFileName, newFileLocation);
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
-
-                                                    Console.WriteLine("" + nbr_ + "/" + order.Lines.Count + " ligne(s) enregistrée(s).\n" + mot);
-
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : " + nbr_ + "/" + order.Lines.Count + " ligne(s) enregistrée(s).\n" + mot);
-                                                    logFileWriter_import.WriteLine("");
-                                                    SaveSuccess++;
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine("Il faut mentionner le code client.");
-
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                                logFileWriter_import.WriteLine("");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                tabCommandeError.Add(filename.Name);
-                                                goto goErrorLoop;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Erreur dans la troisième ligne du fichier.");
-
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                            logFileWriter_import.WriteLine("");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                            tabCommandeError.Add(filename.Name);
-                                            goto goErrorLoop;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Date de la commande est incorrecte");
-
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                        logFileWriter_general.Flush();
-
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Il y'a " + lines[1].Split(';').Length + " chiffre.");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter_import.Flush();
-                                        tabCommandeError.Add(filename.Name);
-                                        goto goErrorLoop;
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Erreur dans la deuxième ligne du fichier.");
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                    logFileWriter_general.Flush();
-
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la deuxième ligne du fichier.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Il y'a "+ lines[1].Split(';').Length + " colone.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    goto goErrorLoop;
-                                }
-
-                            }
-                            else
-                            {
-                                Console.WriteLine("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
-
-                                logFileWriter_general.WriteLine("");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-
-                                logFileWriter_import.WriteLine("");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                goto goErrorLoop;
-                            }
                         }
                         else if (lines[0].Split(';')[0] == "INVPRT") //check if the document is an inventory stock document to handle further
                         {
@@ -2440,7 +1725,7 @@ namespace importPlanifier.Classes
                             }
                         }
                         else if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP41") || filename.Name.Contains("TWP41")) //Import Veolog BLF doc
-                        {
+                        {/*
                             logFileWriter_general.WriteLine("");
                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                             logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Bon de Livraison Fournisseur BLF Trouvé");
@@ -2602,6 +1887,7 @@ namespace importPlanifier.Classes
                                 recapLinesList_new.Add(new CustomMailRecapLines("Null", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
+                            */
                         }
                         else
                         {
@@ -2614,8 +1900,6 @@ namespace importPlanifier.Classes
                             recapLinesList_new.Add(new CustomMailRecapLines("Null", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                             goto goErrorLoop;
                         }
-
-
                     }
                     catch (Exception e)
                     {
@@ -4302,6 +3586,7 @@ namespace importPlanifier.Classes
 
                         //get Client Reference From CMD Ref
                         logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Obtenir la référence client depuis le BC.");
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre));
                         using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
@@ -4323,6 +3608,7 @@ namespace importPlanifier.Classes
 
                         //get Client Reference by Ref
                         logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Obtenir la référence client par référence.");
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_client));
                         using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
@@ -4598,14 +3884,23 @@ namespace importPlanifier.Classes
                                 recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                 return null;
                             }
+                            counter++;
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Compter => " + counter);
+                        }
+                        else
+                        {
+                            counter--;
+                            logFileWriter.WriteLine("Aucun article trouvé ou Aucun information client trouvé !");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Compter => " + counter);
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Aucun article trouvé ou Aucun information client trouvé !", "", fileName, logFileName_import));
+                            return null;
                         }
 
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Compter => " + counter);
-                        counter++;
+                        
                     }
                     // ===== End Foreach =====
 
-
+                    logFileWriter.WriteLine("");
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
 
@@ -4638,6 +3933,7 @@ namespace importPlanifier.Classes
                     {
                         if (list_of_cmd_lines[x, 1] == "3")
                         {
+                            logFileWriter.WriteLine("");
                             for (int y = 0; y < list_of_cmd_lines.GetLength(1); y++)
                             {
                                 products_DESADV[x, y] = list_of_cmd_lines[x, y];
@@ -4736,6 +4032,11 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                 logFileWriter.Flush();
                                 recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+
+                                if(!deleteCommande(true, reference_DESADV_doc))
+                                {
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document "+ reference_DESADV_doc, "", fileName, logFileName_import));
+                                }
                                 return null;
                             }
                         }
@@ -4765,6 +4066,11 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         logFileWriter.Flush();
                         recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+
+                        if (!deleteCommande(true, reference_DESADV_doc))
+                        {
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                        }
                         return null;
                     }
 
@@ -4786,6 +4092,11 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         logFileWriter.Flush();
                         recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+
+                        if (!deleteCommande(true, reference_DESADV_doc))
+                        {
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                        }
                         return null;
                     }
 
@@ -4808,6 +4119,11 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         logFileWriter.Flush();
                         recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+
+                        if (!deleteCommande(true, reference_DESADV_doc))
+                        {
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                        }
                         return null;
                     }
 
@@ -6440,22 +5756,42 @@ namespace importPlanifier.Classes
             }
         }
 
-        public static Boolean deleteCommande(string NumCommande)
+        public static Boolean deleteCommande(bool typeSQL, string NumCommande)
         {
-            // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            if (typeSQL)
             {
-                try
+                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
                 {
-                    connection.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(false, NumCommande), connection);
-                    command.ExecuteReader();
-                    connection.Close();
-                    return true;
+                    try
+                    {
+                        connection.Open();
+                        OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(true, NumCommande), connection);
+                        command.ExecuteReader();
+                        connection.Close();
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
                 }
-                catch
+            }
+            else
+            {
+                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
                 {
-                    return false;
+                    try
+                    {
+                        connection.Open();
+                        OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(false, NumCommande), connection);
+                        command.ExecuteReader();
+                        connection.Close();
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
                 }
             }
         }

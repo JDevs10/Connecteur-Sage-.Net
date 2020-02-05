@@ -134,6 +134,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
         "Release"
@@ -396,15 +404,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Connecteur Sage Batimex"
-        "ProductCode" = "8:{F8F27AA5-FF34-4B8F-B93E-FECEE079BA2D}"
-        "PackageCode" = "8:{A0ADC196-E8D9-4E0B-8825-EB0C80D902F1}"
+        "ProductCode" = "8:{DAC0E351-AC72-4779-A924-B59C1D8D4AC2}"
+        "PackageCode" = "8:{4D34FBED-76C6-4442-8504-876DAB9C2897}"
         "UpgradeCode" = "8:{1991DDBB-12B7-4F0D-A521-ADED641216A9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.0.0"
+        "ProductVersion" = "8:1.2.0"
         "Manufacturer" = "8:Big Data Consulting"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
