@@ -141,15 +141,16 @@ namespace AlertMail
 
                                         for (int x = 0; x < allFiles_path.Length; x++)
                                         {
-                                            infoBody1 += "\tNom du fichier : " + allFiles_path[x].Name + "\n";
+                                            infoBody1 += "\tNom du fichier : \"" + allFiles_path[x].Name + "\", à " + getFileSize(allFiles_path[x].Length) + "\n";
                                         }
                                     }
 
                                     //import file error
                                     if (allFiles_error.Length > 0)
                                     {
-                                        infoBodyHeader2 += "Il y a " + allFiles_error.Length + " fichier(s) qui sont tombé en erreur lors de l'import, qui sont dans le le répertoire '" + directoryName_ErrorFile + "' :\n";
+                                        //infoBodyHeader2 += "Il y a " + allFiles_error.Length + " fichier(s) qui sont tombé en erreur lors de l'import, qui sont dans le le répertoire '" + directoryName_ErrorFile + "' :\n";
 
+                                        /*
                                         for (int y = 0; y < recap.Lines.Count; y++)
                                         {
                                             infoBody2 += recap.Lines[y].LineNumber + " -\t Le fichier EDI : " + recap.Lines[y].FileName + "\nLe numéro du document \"" + recap.Lines[y].DocumentReference + "\"\nMessage erreur : " + recap.Lines[y].DocumentErrorMessage + "\nStackTrace: " + recap.Lines[y].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap.Lines[y].FilePath + "\n\n";
@@ -159,10 +160,12 @@ namespace AlertMail
                                         {
                                             infoBody2 += "\t - " + allFiles_error[x].Name + "\n";
                                         }
+                                        */
 
-                                        /*
                                         CustomMailRecap mailRecap = new CustomMailRecap();
                                         mailRecap.Load("Mail_Recap.ml");
+
+                                        infoBodyHeader2 += "Il y a " + allFiles_error.Length + " fichier(s) qui sont tombé en erreur lors de l'import, qui sont dans le le répertoire '" + directoryName_ErrorFile + "' :\n";
 
                                         for (int x = 0; x < allFiles_error.Length; x++)
                                         {
@@ -186,6 +189,23 @@ namespace AlertMail
                                             }
                                         }
 
+                                        if (errorFilesFileNameList.Count > a)
+                                        {
+                                            infoBody2 += "Voici d'autre fichier en erreur, ils n'ont pas de log générés à partir du connecteur :\n";
+                                            for (int x = 0; x < unknownFile.Count; x++)
+                                            {
+                                                for (int i = 0; i < allFiles_error.Length; i++)
+                                                {
+                                                    Console.WriteLine("x: " + x + " | i: "+i+ " || unknownFile : " + unknownFile[x] + " == allFiles_error : " + allFiles_error[i].Name);
+                                                    if (unknownFile[x] == allFiles_error[i].Name)
+                                                    {
+                                                        infoBody2 += "\tNom du fichier : \"" + allFiles_error[i].Name + "\", à "+ getFileSize(allFiles_error[i].Length) +"\n";
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        /*
                                         if (errorFilesFileNameList.Count > a)
                                         {
                                             infoBody2 += "Voici d'autre fichier en erreur, ils n'ont pas de log générés à partir du connecteur :\n";
@@ -237,7 +257,7 @@ namespace AlertMail
 
                                         for (int x = 0; x < allFiles_error.Length; x++)
                                         {
-                                            infoBody += "\t - " + allFiles_error[x].Name + "\n";
+                                            infoBody += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + getFileSize(allFiles_error[x].Length) + "\n";
                                         }
 
                                         EnvoiMail(cMail, "Erreur ["+dns.Prefix+"]", infoBody + "\n\nCordialement,\nConnecteur SAGE.", null);
@@ -280,7 +300,7 @@ namespace AlertMail
             {
                 Console.WriteLine("Argument inconnue!!!");
             }
-            //Console.ReadLine();
+            Console.ReadLine();
         }
 
         public static MailCustom generateMailBody()
@@ -385,6 +405,25 @@ namespace AlertMail
             }
         }
 
+        public static string getFileSize(long size)
+        {
+            string[] suffixes = { "Bytes", "KB", "MB", "GB", "TB", "PB"};
+            int cpt = 0;
+
+            if (size == 0)
+            {
+                return string.Format("{0:n1}{1}", size, suffixes[0]);
+            }
+
+            while ((size / 1024) >= 1)
+            {
+                size = size / 1024;
+                cpt++;
+            }
+
+            return string.Format("{0:n1}{1}", size, suffixes[cpt]);
+        }
+
         public static ConfSendMail getInfoMail()
         {
             try
@@ -404,8 +443,9 @@ namespace AlertMail
             }
             catch (Exception ex)
             {
-                Console.WriteLine(DateTime.Now + " : Erreur[43] - " + ex.Message);
-
+                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception getInfoMail ***********");
+                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
                 return null;
             }
         }
@@ -487,7 +527,9 @@ namespace AlertMail
             }
             catch (Exception e)
             {
-                Console.WriteLine(DateTime.Now + " : " + e.Message);
+                Console.WriteLine(DateTime.Now + " | *********** Exception EnvoiMail ***********");
+                Console.WriteLine(DateTime.Now + " | Message : " + e.Message);
+                Console.WriteLine(DateTime.Now + " | StackTrace : " + e.StackTrace);
                 //Console.ReadLine();
             }
         }
