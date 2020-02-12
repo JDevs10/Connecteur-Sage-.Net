@@ -52,16 +52,27 @@ namespace AlertMail
                             //Envoi
                             if(mMailCustom != null)
                             {
-                                Console.WriteLine("Envoi de mail en cours....");
-                                EnvoiMail(cMail, mMailCustom.subject, mMailCustom.body, mMailCustom.attachements);   //cheminLogFile
+                                try
+                                {
+                                    Console.WriteLine("Envoi de mail en cours....");
+                                    EnvoiMail(cMail, mMailCustom.subject, mMailCustom.body, mMailCustom.attachements);   //cheminLogFile
 
-                                if (File.Exists("Mail_IMP.ml"))
-                                {
-                                    File.Delete("Mail_IMP.ml");
+                                    if (File.Exists("Mail_IMP.ml"))
+                                    {
+                                        File.Delete("Mail_IMP.ml");
+                                    }
+                                    if (File.Exists("Mail_EXP.ml"))
+                                    {
+                                        File.Delete("Mail_EXP.ml");
+                                    }
                                 }
-                                if (File.Exists("Mail_EXP.ml"))
+                                catch (Exception ex)
                                 {
-                                    File.Delete("Mail_EXP.ml");
+                                    Console.WriteLine("");
+                                    Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail) ***********");
+                                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                    Console.WriteLine("");
                                 }
                             }
                         }
@@ -163,6 +174,7 @@ namespace AlertMail
                                         */
 
                                         CustomMailRecap mailRecap = new CustomMailRecap();
+                                        mailRecap.Lines = new List<CustomMailRecapLines>();
                                         mailRecap.Load("Mail_Recap.ml");
 
                                         infoBodyHeader2 += "Il y a " + allFiles_error.Length + " fichier(s) qui sont tombé en erreur lors de l'import, qui sont dans le le répertoire '" + directoryName_ErrorFile + "' :\n";
@@ -300,7 +312,7 @@ namespace AlertMail
             {
                 Console.WriteLine("Argument inconnue!!!");
             }
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         public static MailCustom generateMailBody()
@@ -320,6 +332,7 @@ namespace AlertMail
             if (File.Exists("Mail_IMP.ml"))
             {
                 recap_imp = new CustomMailRecap();
+                recap_imp.Lines = new List<CustomMailRecapLines>();
                 recap_imp.Load("Mail_IMP.ml");
 
                 //make the following body message
@@ -354,31 +367,33 @@ namespace AlertMail
             {
                 attachements.Clear();
                 recap_exp = new CustomMailRecap();
+                recap_exp.Lines = new List<CustomMailRecapLines>();
                 recap_exp.Load("Mail_EXP.ml");
 
                 //make the following body message
                 if (recap_exp.Lines.Count == 0)
                 {
-                    sendMailImp = false;
+                    sendMailExp = false;
                 }
                 else if (recap_exp.Lines.Count == 1)
                 {
-                    sendMailImp = true;
-                    textImp += "L'import d'un document commercial durant l'import a échoué. Voici un résumer du document échoué :\n";
+                    sendMailExp = true;
+                    textExp += "L'import d'un document commercial durant l'import a échoué. Voici un résumer du document échoué :\n";
                 }
                 else if (recap_exp.Lines.Count > 1)
                 {
-                    sendMailImp = true;
-                    textImp += "L'import de plusieurs documents commerciaux durant l'import ont échoué. Voici le résumer de chaque document échoué :\n";
+                    sendMailExp = true;
+                    textExp += "L'import de plusieurs documents commerciaux durant l'import ont échoué. Voici le résumer de chaque document échoué :\n";
                 }
                 for (int i = 0; i < recap_exp.Lines.Count; i++)
                 {
-                    textImp += (i + 1) + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\"\nNom du fichier : " + recap_exp.Lines[i].FileName + "\nMessage erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\nStackTrace: " + recap_exp.Lines[i].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap_exp.Lines[i].FilePath + "\n\n";
+                    textExp += (i + 1) + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\"\nNom du fichier : " + recap_exp.Lines[i].FileName + "\nMessage erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\nStackTrace: " + recap_exp.Lines[i].DocumentErrorStackTrace + "\nL'erreur peut etre trouvé dans " + recap_exp.Lines[i].FilePath + "\n\n";
                     if (!attachements.Contains(recap_exp.Lines[i].FilePath))
                     {
                         attachements.Add(recap_exp.Lines[i].FilePath);
                     }
                 }
+
                 recap_exp.Attachments = attachements;
                 attachements.Clear();
             }
@@ -397,6 +412,7 @@ namespace AlertMail
                 attachements.Clear();
                 attachements.AddRange(recap_imp.Attachments);
                 attachements.AddRange(recap_exp.Attachments);
+
                 return new MailCustom("[" + dns.Prefix + "] " + recap_imp.Subject + " et "+ recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", attachements);
             }
             else
@@ -488,6 +504,7 @@ namespace AlertMail
                 {
                     msg.To.Add(new MailAddress(confMail.dest3, confMail.dest3));
                 }
+
                 msg.Subject = subject;
 
                 // Texte du mail (facultatif)
@@ -519,6 +536,7 @@ namespace AlertMail
                 client.EnableSsl = true;
                 //NetworkInformation s = new NetworkCredential();
                 ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+
                 // Envoi du mail
                 client.Send(msg);
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ConfSendMail xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <smtp>smtp.gmail.com</smtp>
+  <smtp>smtp.google.com</smtp>
   <port>587</port>
   <login>jl@anexys.fr</login>
   <password>S7RnitFKQIbBtWmL3NCMJQ==</password>
@@ -9,5 +9,5 @@
   <dest3 />
   <active>true</active>
   <totalTicks>42</totalTicks>
-  <remaningTicks>42</remaningTicks>
+  <remaningTicks>0</remaningTicks>
 </ConfSendMail>

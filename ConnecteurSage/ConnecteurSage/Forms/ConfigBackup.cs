@@ -168,6 +168,25 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportBL.Enabled = false;
                 numericUpDown_exportFA.Enabled = false;
                 numericUpDown_exportME_MS.Enabled = false;
+
+                ConfigurationBackup backup = new ConfigurationBackup(
+                    false,
+                    Convert.ToInt32(0),
+                    Convert.ToInt32(0),
+                    Convert.ToInt32(0),
+                    Convert.ToInt32(0),
+                    Convert.ToInt32(0),
+                    Convert.ToInt32(0),
+                    "",
+                    Convert.ToInt32(0),
+                    "",
+                    Convert.ToInt32(0),
+                    "",
+                    Convert.ToInt32(0),
+                    ""
+                );
+                backup.saveInfo(backup);
+                Close();
             }
 
         }
