@@ -1725,7 +1725,12 @@ namespace importPlanifier.Classes
                             }
                         }
                         else if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP41") || filename.Name.Contains("TWP41")) //Import Veolog BLF doc
-                        {/*
+                        {
+                            tabCommandeError.Add(filename.Name);
+                            recapLinesList_new.Add(new CustomMailRecapLines("", "L'import du BLF est désactivé !", "", filename.Name, logFileName_import));
+                            goto goErrorLoop;
+
+                            /*
                             logFileWriter_general.WriteLine("");
                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                             logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Bon de Livraison Fournisseur BLF Trouvé");
@@ -4259,7 +4264,7 @@ namespace importPlanifier.Classes
                     {
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ********************** Exception Supplier *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Le fournisseur : " + ref_supplier+" n'existe pas dans la base!");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Le fournisseur : " + ref_supplier + " n'existe pas dans la base!");
                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : import annulé!");
                         logFileWriter.Flush();
                         connexion.Close(); //disconnect from database
@@ -4629,7 +4634,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.getArticleStock(true, products_BCF[x, 9]));
                                     using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_BCF[x, 9]), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
                                     {
-                                        using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                                        using (IDataReader reader = command_.ExecuteReader()) //read rows of the executed query
                                         {
                                             if (reader.Read()) // If any rows returned
                                             {
@@ -4765,9 +4770,9 @@ namespace importPlanifier.Classes
                 catch (Exception ex)
                 {
                     logFileWriter.WriteLine("");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** Exception 1 *********************");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :: " + ex.Message);
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :: " + ex.StackTrace);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ********************** Exception 1 *********************");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Message :: " + ex.Message);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :: " + ex.StackTrace);
                     connexion.Close(); //disconnect from database
                     logFileWriter.Flush();
                     recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
