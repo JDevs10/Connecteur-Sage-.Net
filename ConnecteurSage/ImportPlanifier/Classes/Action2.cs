@@ -932,11 +932,11 @@ namespace importPlanifier.Classes
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Liste des tva non trouvée pour BATIMEX, tous les tva et prix ttc de chaque produit dans ce BC seront 20%");
 
                                                                 double product_ht = Convert.ToDouble(order.Lines[i].article.DL_PrixUnitaire_salePriceHT);
-                                                                double product_20_P = (product_ht * 0.0) / 100;
+                                                                double product_20_P = (product_ht * 20.0) / 100;
                                                                 product_ttc = product_ht + product_20_P;
                                                                 order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
-                                                                order.Lines[i].article.DL_Taxe1 = "0.000000";
-                                                                order.Lines[i].article.DL_CodeTaxe1 = "C00";
+                                                                order.Lines[i].article.DL_Taxe1 = "20.000000";
+                                                                order.Lines[i].article.DL_CodeTaxe1 = "V20";
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
                                                             }
                                                             else
@@ -966,6 +966,9 @@ namespace importPlanifier.Classes
                                                             nbr_ = 0;
                                                             break;
                                                         }
+
+                                                        //add more info to BC
+                                                        
 
                                                         //add BC history in the cmd lines
                                                         order.Lines[i].DO_Ref = order.NumCommande;
@@ -1893,6 +1896,7 @@ namespace importPlanifier.Classes
                                 goto goErrorLoop;
                             }
                             */
+                            //END   BLF/LF
                         }
                         else
                         {
