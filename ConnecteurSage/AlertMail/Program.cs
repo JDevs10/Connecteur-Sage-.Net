@@ -246,7 +246,7 @@ namespace AlertMail
                                         infoBody_end += "Bonjour Team BDC,\n\nIl n'y a pas de fichier EDI en attente ou en erreur.\n";
                                     }
 
-                                    EnvoiMail(cMail, recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE.", recap.Attachments);
+                                    EnvoiMail(cMail, "Erreur ["+recap.Client+"] " + recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE.", recap.Attachments);
 
                                     cMail.remaningTicks = cMail.totalTicks;
                                     cMail.password = Utils.Encrypt(cMail.password);
@@ -401,11 +401,11 @@ namespace AlertMail
             //send the recap mail
             if (sendMailImp & !sendMailExp)
             {
-                return new MailCustom("["+dns.Prefix+"] " + recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE.", recap_imp.Attachments);
+                return new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE.", recap_imp.Attachments);
             }
             else if (sendMailExp & !sendMailImp)
             {
-                return new MailCustom("[" + dns.Prefix + "] " + recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", recap_exp.Attachments);
+                return new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", recap_exp.Attachments);
             }
             else if (sendMailImp && sendMailExp)
             {

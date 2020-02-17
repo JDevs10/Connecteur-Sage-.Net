@@ -237,6 +237,18 @@ namespace importPlanifier.Helpers
             }
         }
 
+        public static string updateOrderValues(bool sqlConnexion, string taxCode, string valueTax, string totalHT, string totalTTC, string do_piece)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET DO_CodeTaxe1 = '"+ taxCode + "', DO_Taxe1 = "+ valueTax + ", DO_TotalHT = "+ totalHT + " WHERE DO_PIECE = '" + do_piece + "' ";
+            }
+            else
+            {
+                return "UPDATE F_DOCENTETE SET DO_CodeTaxe1 = '" + taxCode + "', DO_Taxe1 = " + valueTax + ", DO_TotalHT = " + totalHT + " WHERE DO_PIECE = '" + do_piece + "' ";
+            }
+        }
+
         public static string getInfoSociete(bool sqlConnexion)
         {
             if (sqlConnexion)
