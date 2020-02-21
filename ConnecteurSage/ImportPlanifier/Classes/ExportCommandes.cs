@@ -155,7 +155,7 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                     logFileWriter.Flush();
                     logFileWriter.Close();
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
+                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                     return recapLinesList_new;
                 }
             }
@@ -481,7 +481,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                         logFileWriter.Flush();
                                         logFileWriter.Close();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                                         return recapLinesList_new;
                                     }
 
@@ -514,7 +514,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                         logFileWriter.Flush();
                                         logFileWriter.Close();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                                         return recapLinesList_new;
                                     }
                                 }
@@ -532,7 +532,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.Flush();
                                 logFileWriter.Close();
                                 Console.WriteLine(DateTime.Now + " | ExportCommande() : ERREUR :: " + ex.Message);
-                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
+                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                             }
                         }
                         else
@@ -551,7 +551,7 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                         logFileWriter.Flush();
                         logFileWriter.Close();
-                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
+                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                         return recapLinesList_new;
                     }
                 }
@@ -693,7 +693,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, ex.Message, ex.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                 return null;
             }
         }

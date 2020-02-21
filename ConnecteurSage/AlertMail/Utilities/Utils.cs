@@ -9,14 +9,11 @@ namespace AlertMail.Helpers
 {
     public static class Utils
     {
-        #region Champs privés
         /// <summary>
         /// Mot-clé de chiffrement utilisé pour le cryptage
         /// </summary>
         private static string CryptKey = "@SDK$";
-        #endregion
 
-        #region Méthodes de cryptage
         /// <summary>
         /// Crypte une chaine de caractère en utilisant une clé de cryptage
         /// </summary>
@@ -90,7 +87,17 @@ namespace AlertMail.Helpers
                 return string.Empty;
             }
         }
-        #endregion
 
+        public static String[,] getAllPrioritiesTable()
+        {
+            String[,] table = new String[6, 3];
+            table[0,0] = "P0"; table[0,1] = "#000000"; table[0,2] = "Votre ticket sera traité dans 24 heurs ouvrables";
+            table[1,0] = "P1"; table[1,1] = "#FF0000"; table[1,2] = "Votre ticket sera traité dans 24 heurs ouvrables";
+            table[2,0] = "P2"; table[2,1] = "#FF4400"; table[2,2] = "Votre ticket sera traité dans 1-2 jours ouvrables";
+            table[3,0] = "P3"; table[3,1] = "##E8700C"; table[3,2] = "Votre ticket sera traité dans 2-3 jours ouvrables";
+            table[4,0] = "P4"; table[4,1] = "#FFFF00"; table[4,2] = "Votre ticket sera traité dans 2-3 jours ouvrables";
+            table[5,0] = "P0-P4"; table[5,1] = "#0C83E8"; table[5,2] = "Votre ticket sera traité au plus vite";
+            return table;
+        }
     }
 }

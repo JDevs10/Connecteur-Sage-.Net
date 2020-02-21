@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Xml.Serialization;
 using System.Windows.Forms;
+using ConnecteurSage.Helpers;
 
 namespace ConnecteurSage.Classes
 {
@@ -19,11 +20,13 @@ namespace ConnecteurSage.Classes
         [XmlElement]
         public string password { get; set; }
         [XmlElement]
+        public Boolean dest1_enable { get; set; }
+        [XmlElement]
         public string dest1 { get; set; }
         [XmlElement]
-        public string dest2 { get; set; }
+        public Boolean dest2_enable { get; set; }
         [XmlElement]
-        public string dest3 { get; set; }
+        public string dest2 { get; set; }
         [XmlElement]
         public Boolean active { get; set; }
         public int totalTicks { get; set; }
@@ -36,15 +39,16 @@ namespace ConnecteurSage.Classes
 
         }
 
-        public ConfSendMail(string smtp, int port, string login, string password, string dest1, string dest2, string dest3, Boolean active, int totalTicks, int remaningTicks)
+        public ConfSendMail(string smtp, int port, string login, string password, Boolean dest1_enable, string dest1, Boolean dest2_enable, string dest2, Boolean active, int totalTicks, int remaningTicks)
         {
             this.smtp = smtp;
             this.port = port;
             this.login = login;
             this.password = password;
+            this.dest1_enable = dest1_enable;
             this.dest1 = dest1;
+            this.dest2_enable = dest2_enable;
             this.dest2 = dest2;
-            this.dest3 = dest3;
             this.active = active;
             this.totalTicks = totalTicks;
             this.remaningTicks = remaningTicks;
@@ -62,10 +66,11 @@ namespace ConnecteurSage.Classes
                 this.smtp = mail.smtp;
                 this.port = mail.port;
                 this.login = mail.login;
-                this.password = mail.password;
+                this.password = Utils.Decrypt(mail.password);
+                this.dest1_enable = mail.dest1_enable;
                 this.dest1 = mail.dest1;
+                this.dest2_enable = mail.dest2_enable;
                 this.dest2 = mail.dest2;
-                this.dest3 = mail.dest3;
                 this.active = mail.active;
                 this.totalTicks = mail.totalTicks;
                 this.remaningTicks = mail.remaningTicks;

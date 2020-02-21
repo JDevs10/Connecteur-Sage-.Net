@@ -1,0 +1,436 @@
+IE: 11.0.9600.17416
+SetupMode: 32 Bit
+Sys: Version9x=0, VersionNT=603, VersionNT64=603, NTProductType=11, SevicePack=0, CPU=x64, VM=0
+CMDString: 
+Info: 29.01.20-12:36:36, Produkt:Z-Cron V5.6.0.4/0, Installer (Setup) V4.5.750, CurrentUser: Administrator, InstallType: Computer
+>GetSysDir: Folder CSIDL_WINDOWS (1) C:\Windows\
+>GetSysDir: Folder CSIDL_PROGRAM_FILES (1) C:\Program Files (x86)\
+>GetSysDir: Folder CSIDL_COMMON_DESKTOPDIRECTORY (1) C:\Users\Public\Desktop\
+>GetSysDir: Folder CSIDL_COMMON_FAVORITES (1) C:\Users\administrateur.CFCI\Favorites\
+>GetSysDir: Folder CSIDL_COMMON_STARTUP (1) C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\
+>GetSysDir: Folder CSIDL_COMMON_APPDATA (1) C:\ProgramData\
+>GetSysDir: Folder CSIDL_APPDATA (1) C:\Users\administrateur.CFCI\AppData\Roaming\
+>GetSysDir: Folder CSIDL_PERSONAL (1) C:\Users\administrateur.CFCI\Documents\
+>GetSysDir: Folder CSIDL_FONTS (1) C:\Windows\Fonts\
+>GetSysDir: Folder CSIDL_PROGRAM_FILES_COMMON (1) C:\Program Files (x86)\Common Files\
+>GetSysDir: Folder CSIDL_COMMON_DOCUMENTS (1) C:\Users\Public\Documents\
+>GetSysDir: Folder CSIDL_LOCAL_APPDATA (1) C:\Users\administrateur.CFCI\AppData\Local\
+>GetSysDir: Folder CSIDL_PROFILE (1) C:\Users\administrateur.CFCI\
+>GetSysDir: Folder CSIDL_SENDTO (1) C:\Users\administrateur.CFCI\AppData\Roaming\Microsoft\Windows\SendTo\
+>GetSysDir: Folder CSIDL_COMMON_PROGRAMS (1) C:\ProgramData\Microsoft\Windows\Start Menu\Programs\
+Extension: Init Extension-Dlls
+* ERROR * : Update = true but uninstall-file not found : , NoUinstFileErr: 0
+: 
+Launch-Condition: True
+Launch-Condition: True
+Extension: IAppSearchExecute has nothing to do, Steps = 0.
+Extension: Call EXT_Firewall, Function: ILaunch.
+ExtensionCondition: UserPrivileged=2
+ExtensionCondition: True
+: 
+Prgstart(PRG): <TEMPDIR>\vbrun60sp6.exe
+>Startpage: target:8 current:8
+PrgstartCondition: False, Condition: IsInstalled=1
+: 
+Prgstart(PRG): <TEMPDIR>\vcredist_x86_2013.exe
+>Startpage: target:8 current:8
+PrgstartCondition: False, Condition: IsInstalled=1
+Rollback: Determine rollback-backup size...
+Rollback: Determine size completed.
+Extension: Call EXT_Firewall, Function: IProcess.
+ExtensionCondition: UserPrivileged=2
+ExtensionCondition: True
+ExtensionCondition: VersionNT >= 501
+ExtensionCondition: True
+INSTALL: Start
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Point2Click.url
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\z-cron.exe
+File: Dir exists: C:\Program Files (x86)\Z-Cron\
+File: Add to SharedDLL-SchedulList, File: C:\Program Files (x86)\Z-Cron\z-cron.exe.
+Install: C:\Program Files (x86)\Z-Cron\z-cron.exe
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\zcron.chm
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\zcron.wav
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\z-wecker.exe
+File: Dir exists: C:\Program Files (x86)\Z-Cron\
+Install: C:\Program Files (x86)\Z-Cron\z-wecker.exe
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\z-manager.exe
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\zcron_en.chm
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\german.lng
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\english.lng
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevOutBar4.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevDataGrid3.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\zdaemon.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\zdbackzip.dll
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\sevZip30.dll
+File: Installed: 3.0.0.16,  Setup: 3.0.0.16   C:\Windows\system32\sevZip30.dll *Skip(1)*
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\sevZip30.dll.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\ZKrypt.dll
+File: Installed: 1.0.0.0,  Setup: 1.0.0.0   C:\Windows\system32\ZKrypt.dll *Skip(1)*
+RegDLL2: C:\Windows\system32\ZKrypt.dll
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\ZKrypt.dll.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\MSCMCDE.DLL
+File: Current-File ist newer: C:\Windows\system32\MSCMCDE.DLL
+: 
+File: Language OK: 0 - , File: <SYSTEM>\MSCOMCTL.OCX
+File: Current-File ist newer: C:\Windows\system32\MSCOMCTL.OCX
+: 
+File: Language OK: 0 - , File: <SYSTEM>\CMDLGDE.DLL
+File: Current-File ist newer: C:\Windows\system32\CMDLGDE.DLL
+: 
+File: Language OK: 0 - , File: <SYSTEM>\MSWINSCK.OCX
+File: *Skip* File exists: C:\Windows\system32\MSWINSCK.OCX
+: 
+File: Language OK: 0 - , File: <SYSTEM>\ZCronTimer.dll
+File: Installed: 3.0.0.1,  Setup: 3.0.0.1   C:\Windows\system32\ZCronTimer.dll *Skip(1)*
+RegDLL2: C:\Windows\system32\ZCronTimer.dll
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\ZCronTimer.dll.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\COMDLG32.OCX
+File: Installed: 6.1.97.82,  Setup: 6.1.97.82   C:\Windows\system32\COMDLG32.OCX *Skip(1)*
+RegDLL2: C:\Windows\system32\COMDLG32.OCX
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\COMDLG32.OCX.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\PSAPI.DLL
+File: *Skip* File exists: C:\Windows\system32\PSAPI.DLL
+: 
+File: Language OK: 0 - , File: <SYSTEM>\MSINET.OCX
+File: Installed: 6.1.97.82,  Setup: 6.1.97.82   C:\Windows\system32\MSINET.OCX *Skip(1)*
+RegDLL2: C:\Windows\system32\MSINET.OCX
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\MSINET.OCX.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevTab.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevXPCtl.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevCmd4.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevEin20.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Zcrab Alpha Matrix.ocx
+File: Installed: 1.0.0.2,  Setup: 1.0.0.2   C:\Program Files (x86)\Z-Cron\Zcrab Alpha Matrix.ocx *Skip(1)*
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevLock.dll
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\portugues.lng
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\NMan.dll
+File: Installed: 1.3.0.0,  Setup: 1.3.0.0   C:\Windows\system32\NMan.dll *Skip(1)*
+RegDLL2: C:\Windows\system32\NMan.dll
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\NMan.dll.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\dutch.lng
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\spanish.lng
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\USBaccess.dll
+File: Installed: 4.5.0.0,  Setup: 4.5.0.0   C:\Windows\system32\USBaccess.dll *Skip(1)*
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\USBaccess.dll.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\ChilkatMail2.dll
+File: Installed: 9.5.0.0,  Setup: 9.5.0.0   C:\Program Files (x86)\Z-Cron\ChilkatMail2.dll *Skip(1)*
+: 
+File: Language OK: 0 - , File: <SYSTEM>\ImgCnvAX.ocx
+File: Installed: 2.0.0.3,  Setup: 2.0.0.3   C:\Windows\system32\ImgCnvAX.ocx *Skip(1)*
+RegDLL2: C:\Windows\system32\ImgCnvAX.ocx
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\ImgCnvAX.ocx.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\MySSH.dll
+File: Installed: 1.3.2.0,  Setup: 1.3.2.0   C:\Windows\system32\MySSH.dll *Skip(1)*
+RegDLL2: C:\Windows\system32\MySSH.dll
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\MySSH.dll.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\MP3_Player_ActiveX.ocx
+File: Installed: 2.0.0.1,  Setup: 2.0.0.1   C:\Windows\system32\MP3_Player_ActiveX.ocx *Skip(1)*
+RegDLL2: C:\Windows\system32\MP3_Player_ActiveX.ocx
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\MP3_Player_ActiveX.ocx.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\msscript.ocx
+File: Installed: 1.0.9600.17415,  Setup: 1.0.0.3715   C:\Windows\system32\msscript.ocx *Skip(2)*
+RegDLL2: C:\Windows\system32\msscript.ocx
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\msscript.ocx.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\msmapi32.Ocx
+File: Installed: 6.1.98.16,  Setup: 6.1.98.16   C:\Windows\system32\msmapi32.Ocx *Skip(1)*
+RegDLL2: C:\Windows\system32\msmapi32.Ocx
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\msmapi32.Ocx.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevTrayIcon.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\sevClb30.ocx
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\cVidPlayerAX.ocx
+File: Installed: 1.0.0.1,  Setup: 1.0.0.1   C:\Windows\system32\cVidPlayerAX.ocx *Skip(1)*
+RegDLL2: C:\Windows\system32\cVidPlayerAX.ocx
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\cVidPlayerAX.ocx.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\UsbHidApi.dll
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\wodPop3.dll
+File: Installed: 1.4.2.116,  Setup: 1.4.2.116   C:\Windows\system32\wodPop3.dll *Skip(1)*
+RegDLL2: C:\Windows\system32\wodPop3.dll
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\wodPop3.dll.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\wodWebD.dll
+File: Installed: 1.6.2.331,  Setup: 1.6.2.331   C:\Windows\system32\wodWebD.dll *Skip(1)*
+RegDLL2: C:\Windows\system32\wodWebD.dll
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\wodWebD.dll.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\Instcreate.dir
+File: *Skip* File exists: C:\Program Files (x86)\Z-Cron\Web\Instcreate.dir
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\index.html
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\layout.css
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\images\Instcreate.dir
+File: *Skip* File exists: C:\Program Files (x86)\Z-Cron\Web\images\Instcreate.dir
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\images\apple-touch-icon.png
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\images\cronIcon.png
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\images\favicon.ico
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\jscript\Instcreate.dir
+File: *Skip* File exists: C:\Program Files (x86)\Z-Cron\Web\jscript\Instcreate.dir
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\jscript\app.js
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\jscript\classlist.js
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\jscript\fastclick.js
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\jscript\fastclick.min.js
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\jscript\snap.css
+File: Dir exists: C:\Program Files (x86)\Z-Cron\Web\jscript\
+Install: C:\Program Files (x86)\Z-Cron\Web\jscript\snap.css
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\Web\jscript\snap.min.js
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <SYSTEM>\FastCRC.dll
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <COMMONAPPDATA>\Z-Manufaktur\Z-Cron\Instcreate.dir
+File: Dir exists: C:\ProgramData\Z-Manufaktur\Z-Cron\
+Install: C:\ProgramData\Z-Manufaktur\Z-Cron\Instcreate.dir
+: 
+File: Language OK: 0 - , File: <SYSTEM>\dzstactx.dll
+File: Installed: 6.0.0.5,  Setup: 6.0.0.5   C:\Windows\system32\dzstactx.dll *Skip(1)*
+RegDLL2: C:\Windows\system32\dzstactx.dll
+File: Add to SharedDLL-SchedulList, File: C:\Windows\system32\dzstactx.dll.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\zTools.dll
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\italian.lng
+File: *Skip*, same checksum, same size.
+: 
+File: Language OK: 0 - , File: <INSTALLDIR>\<PRODUCTCODE>\AKDeInstall.exe
+File: New C:\Program Files (x86)\Z-Cron\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\AKDeInstall.exe *OK(1)*
+Dir not exists: C:\Program Files (x86)\Z-Cron\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\
+CreateDir: C:\Program Files (x86)\Z-Cron\{C870A5F5-CC9B-45B6-8542-44C7615406AD}
+Install: C:\Program Files (x86)\Z-Cron\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\AKDeInstall.exe
+: 
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\DeInstallThisKey
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\UninstallString
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Z-CronHelpTelephone
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\DisplayVersion
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Z-CronDisplayIcon
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\DisplayName
+Registry: HKEY_CURRENT_USER\Software\IMU Andreas Baumann\Z-Cron\Application_SetupUserPrefs
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Z-CronHelpLink
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Z-CronContact
+Registry: HKEY_CURRENT_USER\Software\IMU Andreas Baumann\Z-Cron\DeInstallThisKey
+Registry: HKEY_LOCAL_MACHINE\Software\IMU Andreas Baumann\Z-Cron\DeInstallThisKey
+Registry: HKEY_LOCAL_MACHINE\Software\IMU Andreas Baumann\Z-Cron\Application_LanguageID
+Registry: HKEY_CURRENT_USER\Software\IMU Andreas Baumann\RemoveKeyIfEmpty
+Registry: HKEY_CURRENT_USER\Software\IMU Andreas Baumann\RemoveKeyIfEmpty
+Registry: HKEY_LOCAL_MACHINE\Software\IMU Andreas Baumann\RemoveKeyIfEmpty
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\UninstallString
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\DisplayIcon
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\Publisher
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\Contact
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\HelpLink
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\URLInfoAbout
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\URLUpdateInfo
+Registry: HKEY_LOCAL_MACHINE\SOFTWARE\IMU Andreas Baumann\Z-Cron\Application_Path
+Registry: HKEY_LOCAL_MACHINE\SOFTWARE\IMU Andreas Baumann\Z-Cron\Application_Path
+Registry: HKEY_LOCAL_MACHINE\SOFTWARE\IMU Andreas Baumann\Z-Cron\Application_Version
+Registry: HKEY_LOCAL_MACHINE\SOFTWARE\IMU Andreas Baumann\Z-Cron\Application_StartMenu
+Registry: HKEY_LOCAL_MACHINE\SOFTWARE\IMU Andreas Baumann\Z-Cron\Application_StartMenuName
+Registry: HKEY_LOCAL_MACHINE\SOFTWARE\IMU Andreas Baumann\Z-Cron\Application_PathName
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\EstimatedSize
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers\C:\Program Files (x86)\Z-Cron\z-cron.exe
+RegistryCondition: True, Condition: VersionNT >= 501
+Registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers\C:\Program Files (x86)\Z-Cron\z-wecker.exe
+RegistryCondition: True, Condition: VersionNT >= 501
+: 
+Ini: Flags: KSZ-ProgrammeZ-CronC:\Windows\WIN.ini
+Permission: U: Tout le monde, P: 1610809855, C:\Program Files (x86)\Z-Cron\dutch.lng
+Permission: U: BUILTIN\Administrateurs, P: 268435456, C:\Program Files (x86)\Z-Cron\dutch.lng
+Permission: U: AUTORITE NT\Système, P: 268435456, C:\Program Files (x86)\Z-Cron\dutch.lng
+Permission: U: AUTORITE NT\Système, P: 268435456, C:\Program Files (x86)\Z-Cron\english.lng
+Permission: U: BUILTIN\Administrateurs, P: 268435456, C:\Program Files (x86)\Z-Cron\english.lng
+Permission: U: Tout le monde, P: 1610809855, C:\Program Files (x86)\Z-Cron\english.lng
+Permission: U: AUTORITE NT\Système, P: 268435456, C:\Program Files (x86)\Z-Cron\german.lng
+Permission: U: BUILTIN\Administrateurs, P: 268435456, C:\Program Files (x86)\Z-Cron\german.lng
+Permission: U: Tout le monde, P: 1610809855, C:\Program Files (x86)\Z-Cron\german.lng
+Permission: U: Tout le monde, P: 1610809855, C:\Program Files (x86)\Z-Cron\portugues.lng
+Permission: U: BUILTIN\Administrateurs, P: 268435456, C:\Program Files (x86)\Z-Cron\portugues.lng
+Permission: U: AUTORITE NT\Système, P: 268435456, C:\Program Files (x86)\Z-Cron\portugues.lng
+Permission: U: Tout le monde, P: 1610809855, C:\Program Files (x86)\Z-Cron\spanish.lng
+Permission: U: BUILTIN\Administrateurs, P: 268435456, C:\Program Files (x86)\Z-Cron\spanish.lng
+Permission: U: AUTORITE NT\Système, P: 268435456, C:\Program Files (x86)\Z-Cron\spanish.lng
+SharedDLL: SetCounter, New: 1, File: C:\Program Files (x86)\Z-Cron\z-cron.exe
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\sevZip30.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\ZKrypt.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\ZCronTimer.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\COMDLG32.OCX
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\MSINET.OCX
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\NMan.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\USBaccess.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\ImgCnvAX.ocx
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\MySSH.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\MP3_Player_ActiveX.ocx
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\msscript.ocx
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\msmapi32.Ocx
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\cVidPlayerAX.ocx
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\wodPop3.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\wodWebD.dll
+SharedDLL: SetCounter, Old: 1, New: 2, File: C:\Windows\system32\dzstactx.dll
+Shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Z-Cron\Z-Cron deinstallieren.lnk
+Shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Z-Cron\Point2Click.lnk
+Shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Z-Cron\Z-Cron.lnk
+Shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Z-Cron\Manual Z-Cron (german).lnk
+Shortcut: C:\Users\administrateur.CFCI\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\Z-Cron.lnk
+Shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Z-Cron\Manual (english).lnk
+::  
+RegSvr: RegisterServer: C:\Windows\system32\ZKrypt.dll
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\ZKrypt.dll L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\ZKrypt.dll
+::  
+RegSvr: RegisterServer: C:\Windows\system32\ZCronTimer.dll
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\ZCronTimer.dll L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\ZCronTimer.dll
+::  
+RegSvr: RegisterServer: C:\Windows\system32\COMDLG32.OCX
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\COMDLG32.OCX L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\COMDLG32.OCX
+::  
+RegSvr: RegisterServer: C:\Windows\system32\MSINET.OCX
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\MSINET.OCX L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\MSINET.OCX
+::  
+RegSvr: RegisterServer: C:\Windows\system32\NMan.dll
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\NMan.dll L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\NMan.dll
+::  
+RegSvr: RegisterServer: C:\Windows\system32\ImgCnvAX.ocx
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\ImgCnvAX.ocx L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\ImgCnvAX.ocx
+::  
+RegSvr: RegisterServer: C:\Windows\system32\MySSH.dll
+RegSvr: GetLastError() != ERROR_IO_INCOMPLETE, Code is: 0x3e5
+RegSvr: Restart worker. Loop 1/5
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\MySSH.dll L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\MySSH.dll
+::  
+RegSvr: RegisterServer: C:\Windows\system32\MP3_Player_ActiveX.ocx
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\MP3_Player_ActiveX.ocx L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\MP3_Player_ActiveX.ocx
+::  
+RegSvr: RegisterServer: C:\Windows\system32\msscript.ocx
+RegSvr: ERROR: RegSvr-ReturnCode: 3e4
+RegSvr: C:\Windows\system32\msscript.ocx L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr: C:\Windows\system32\regsvr32.exe /s "C:\Windows\system32\msscript.ocx"
+RegSvr-OK: C:\Windows\system32\msscript.ocx
+::  
+RegSvr: RegisterServer: C:\Windows\system32\msmapi32.Ocx
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\msmapi32.Ocx L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\msmapi32.Ocx
+::  
+RegSvr: RegisterServer: C:\Windows\system32\cVidPlayerAX.ocx
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\cVidPlayerAX.ocx L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\cVidPlayerAX.ocx
+::  
+RegSvr: RegisterServer: C:\Windows\system32\wodPop3.dll
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\wodPop3.dll L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\wodPop3.dll
+::  
+RegSvr: RegisterServer: C:\Windows\system32\wodWebD.dll
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\wodWebD.dll L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\wodWebD.dll
+::  
+RegSvr: RegisterServer: C:\Windows\system32\dzstactx.dll
+RegSvr: RegSvrOK: ReturnCode: 996
+RegSvr: C:\Windows\system32\dzstactx.dll L’événement d’entrée/sortie avec chevauchement n’est pas dans un état signalé. 
+RegSvr-OK: C:\Windows\system32\dzstactx.dll
+::  
+Extension: Call EXT_Firewall, Function: IExecute.
+INSTALL: End
+Task: End
+CreateDir: C:\Program Files (x86)\Z-Cron\{C870A5F5-CC9B-45B6-8542-44C7615406AD}\EXT_Firewall
+Setup: Ready
+Extension: Exit Extension-Dlls
+HPStart: C:\Program Files (x86)\Z-Cron\z-cron.exe - 

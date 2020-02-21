@@ -1,0 +1,5 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Extract\bin\Release\Extract.exe.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Extract\bin\Release\Extract.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Extract\bin\Release\Extract.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Extract\obj\Release\Extract.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Extract\obj\Release\Extract.pdb

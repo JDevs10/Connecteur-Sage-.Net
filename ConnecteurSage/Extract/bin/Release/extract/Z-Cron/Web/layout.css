@@ -1,0 +1,235 @@
+﻿/*
+-* Z-Cron Web App
+-* Version 0.9.1
+-*
+-* IMU Hard- und Softwareservice
+-* Copyright 2014
+-*
+-* Author: Frido Dombek
+-* Date: 07.09.2014
+*/
+
+body { 
+	margin: 0; 
+	height: 100%; 
+}
+
+.row { 
+	overflow: hidden; 
+    position: absolute;
+	left: 0; 
+	right: 0; 
+}
+
+.buttonPane {
+	top: 60px; 
+	bottom: 0; 
+	background-color: #786767;
+	border-top: 1px solid #111b32;
+}
+
+.coverPane { /* element that covers the buttons when the sidebar is open */
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	background-color: #333333;
+	opacity: 0.5;
+}
+
+/* header */
+header.row { 
+	height: 60px; 
+	top: 0; 
+	background-color: #336699; 
+}
+
+header img {
+	float: left;
+}
+
+#titel {
+	color: #26252E;
+	margin-left: 110px;
+}
+/* header END*/
+
+/* Info pane content*/
+#content-left-title {
+	padding-left: 15px;
+	margin: 0px;
+	line-height: 60px;
+	border-bottom: #111b32 1px solid;
+}
+
+ul.infolist {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+} 
+
+.infolist-title {
+	padding: 5px;
+	background-color: dimgray;
+}
+
+.infolist-content {
+	padding: 5px;
+	border-bottom: 3px rgb(51, 45, 45) solid;
+}
+
+#info-button-table {
+	position: absolute;
+	bottom: 0;
+	width:	100%;
+}
+
+.info-button {
+	margin: 0px auto 10px auto; 
+	padding: 15px;
+	display: block;
+	
+	width: 70%;
+	height: 70%;
+	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	text-decoration: none;
+	text-align: center;
+	color: #eee;
+	background-color: darkslategray;
+
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	
+	border: 0px solid #000000;
+}
+
+.info-button:active {
+	position: relative;
+	top: 1px;
+	width: 65%;
+	
+	background-color: darkseagreen;
+	
+	
+}
+
+/* Info pane content END*/
+
+/* snap library */
+.snap-content {
+  background: #BFC7D8;
+}
+
+.snap-drawers {
+  background: #323949;
+}
+
+.snap-drawer {
+	background: #323949;
+	color: #eee;
+}
+/* snap library END*/
+
+/* button table */
+
+#maintable {
+	width: 100%;
+	height: 100%;
+	
+}
+
+#maintable tr {
+	padding: 0px;
+}
+
+#maintable td {
+	padding: 0px; 
+	overflow: hidden;
+	height: 25%;
+	width: 50%;
+}
+/* button table END*/
+
+/* Buttons */
+.button {
+	margin: auto; 
+	display: block;
+	
+	width: 90%;
+	height: 90%;
+	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	text-decoration: none;
+	text-align: center;
+	color: #050505;
+	
+	/* button color gradient start */
+	background: -moz-linear-gradient(
+		top,
+		#FFF8DC 0%,
+		#FAEBD7 100%);
+	background: -webkit-linear-gradient(
+		top,
+		#FFF8DC 0%,
+		#FAEBD7 100%);
+	background: -ms-linear-gradient(
+		top,
+		#FFF8DC 0%,
+		#FAEBD7 100%);
+	background: -o-linear-gradient(
+		top,
+		#FFF8DC 0%,
+		#FAEBD7 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF8DC', endColorstr='#FAEBD7');
+	/* button color gradient end */
+		
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	
+	border: 0px solid #000000;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,1),
+		inset 0px 0px 1px rgba(255,255,255,0.7);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,1),
+		inset 0px 0px 1px rgba(255,255,255,0.7);
+	box-shadow:
+		0px 1px 3px rgba(000,000,000,1),
+		inset 0px 0px 1px rgba(255,255,255,0.7);
+	/* text-shadow:
+		0px 1px 1px rgba(000,000,000,0.4),
+		0px 1px 0px rgba(255,255,255,0.3); */
+}
+
+.button:active:enabled {
+	position:relative;
+	top:3px;
+	
+	color: #FFF5E8;
+	
+	/* button color gradient start */
+	background: -moz-linear-gradient(
+		top,
+		#807D71 0%,
+		#B3AA9F 100%);
+	background: -webkit-linear-gradient(
+		top,
+		#807D71 0%,
+		#B3AA9F 100%);
+	background: -ms-linear-gradient(
+		top,
+		#807D71 0%,
+		#B3AA9F 100%);
+	background: -o-linear-gradient(
+		top,
+		#807D71 0%,
+		#B3AA9F 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF8DC', endColorstr='#FAEBD7');
+	/* button color gradient end */
+}
+/* Buttons END*/

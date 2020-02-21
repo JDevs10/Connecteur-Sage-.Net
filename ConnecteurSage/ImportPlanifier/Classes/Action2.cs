@@ -225,7 +225,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : orderId erreur");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "orderId erreur", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Echec de l'import d'une commande", "orderId erreur", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
                             
@@ -241,7 +241,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : orderId est null");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "orderId est null", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "Impossible de générer un nouveau numéro de piece", "Numéro de piece non valide - orderId est null", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -261,7 +261,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Numéro de commande doit être < 10 => " + order.NumCommande, "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée", "Numéro de commande doit être < 10 => " + order.NumCommande, "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -277,7 +277,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Le champ numéro de commande est vide.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée", "Le champ numéro de commande est vide.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -293,7 +293,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Le champ numéro de commande est invalide => " + order.NumCommande, "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée", "Le champ numéro de commande est invalide => " + order.NumCommande, "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -311,7 +311,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + ".");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + ".", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. La commande N° " + order.NumCommande + " existe deja dans la base. N° de pièce : " + existe + ".", "La commande N° " + order.NumCommande + " existe deja dans la base. N° de pièce : " + existe + ".", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -325,7 +325,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : N° de pièce : '" + existe + "' trouvée dans la Base de Données");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "N° de pièce : '" + existe + "' trouvée dans la Base de Données.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. N° de pièce '" + existe + "' est trouvée dans la Base de Données.", "N° de pièce : '" + existe + "' trouvée dans la Base de Données.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -346,7 +346,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code client dans le fichier est vide, verifier le code client.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Le champ du code client dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Le champ du code client dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -360,7 +360,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code acheteur dans le fichier est vide, verifier le code client.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Le champ du code acheteur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Le champ du code acheteur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -374,7 +374,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code fournisseur dans le fichier est vide, verifier le code client.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Le champ du code fournisseur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Le champ du code fournisseur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -389,7 +389,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Client trouvé est null, verifier le code client.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. le cLient n'est pas trouvé dans Sage !", "Client trouvé est null, verifier le code client.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -405,7 +405,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Acheteur trouvé est null, verifier le code Acheteur.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. L'acheteur n'est pas trouvé dans Sage !", "Acheteur trouvé est null, verifier le code Acheteur.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -420,7 +420,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Fournisseur trouvé est null, verifier le code Fournisseur.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. Le fournisseur n'est pas trouvé dans Sage !", "Fournisseur trouvé est null, verifier le code Fournisseur.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -440,7 +440,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
                             order.nom_contact = tab_adress[0];
@@ -477,7 +477,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : deviseCommande == erreur");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "deviseCommande == erreur.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "deviseCommande == erreur.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -530,7 +530,7 @@ namespace importPlanifier.Classes
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
                                                             tabCommandeError.Add(filename.Name);
-                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Cette article (" + tab[2] + ") n'existe pas dans la base.", "", filename.Name, logFileName_import));
+                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. Cette article (" + tab[2] + ") n'existe pas dans la base.", "Cette article (" + tab[2] + ") n'existe pas dans la base.", "", filename.Name, logFileName_import));
                                                             goto goErrorLoop;
                                                         }
 
@@ -608,7 +608,7 @@ namespace importPlanifier.Classes
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                             tabCommandeError.Add(filename.Name);
-                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Erreur de conversion de poids.", "", filename.Name, logFileName_import));
+                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Erreur de conversion de poids.", "", filename.Name, logFileName_import));
                                                             goto goErrorLoop;
                                                         }
 
@@ -686,7 +686,7 @@ namespace importPlanifier.Classes
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier " + filename + ".", "Erreur de lecture.");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                         tabCommandeError.Add(filename.Name);
-                                                        recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Erreur dans la ligne " + pos + " du fichier " + filename + ".", "", filename.Name, logFileName_import));
+                                                        recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Erreur dans la ligne " + pos + " du fichier " + filename + ".", "", filename.Name, logFileName_import));
                                                         goto goErrorLoop;
                                                     }
                                                     break;
@@ -735,7 +735,7 @@ namespace importPlanifier.Classes
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
                                                 tabCommandeError.Add(filename.Name);
-                                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Stock ID est null ou vide.", "", filename.Name, logFileName_import));
+                                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Stock ID est null ou vide.", "", filename.Name, logFileName_import));
                                                 goto goErrorLoop;
                                             }
 
@@ -792,7 +792,7 @@ namespace importPlanifier.Classes
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
                                                 tabCommandeError.Add(filename.Name);
-                                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Aucun ligne de commande enregistré. ligne = " + order.Lines.Count(), "", filename.Name, logFileName_import));
+                                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Aucun ligne de commande enregistré. ligne = " + order.Lines.Count(), "", filename.Name, logFileName_import));
                                                 goto goErrorLoop;
                                             }
                                             MessageErreur = new List<string>();
@@ -809,7 +809,7 @@ namespace importPlanifier.Classes
                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                 logFileWriter_import.WriteLine("");
                                                 tabCommandeError.Add(filename.Name);
-                                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Adresse de livraison est null ou vide.", "", filename.Name, logFileName_import));
+                                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Adresse de livraison est null ou vide.", "", filename.Name, logFileName_import));
                                                 goto goErrorLoop;
                                             }
 
@@ -971,7 +971,7 @@ namespace importPlanifier.Classes
                                                             logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : StackTrace :" + ex.StackTrace);
                                                             logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Import annulée");
                                                             logFileWriter_import.Flush();
-                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, "Erreur lors du calcule du prix d'article TTC, message : " + ex.Message, ex.StackTrace, filename.Name, logFileName_import));
+                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, "L'import de la commande est annulée.", "Erreur lors du calcule du prix d'article TTC, message : " + ex.Message, ex.StackTrace, filename.Name, logFileName_import));
                                                             nbr_ = 0;
                                                             break;
                                                         }
@@ -1070,7 +1070,7 @@ namespace importPlanifier.Classes
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : StackTrace :" + ex.StackTrace);
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Import annulée");
                                                                 logFileWriter_import.Flush();
-                                                                recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, ex.Message, ex.StackTrace, filename.Name, logFileName_import));
+                                                                recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, "L'import de la commande est annulée.", ex.Message, ex.StackTrace, filename.Name, logFileName_import));
                                                                 deleteCommandeLigne(order.NumCommande);
                                                                 nbr_ = 0;
                                                                 break;
@@ -1093,7 +1093,7 @@ namespace importPlanifier.Classes
 
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : " + nbr_ + "/" + order.Lines.Count + " ligne(s) Non enregistrée(s), Document.\n" + mot);
                                                         tabCommande.Add(filename.Name);
-                                                        recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, nbr_ + " / " + order.Lines.Count + " ligne(s) Non enregistrée(s).", mot, filename.Name, logFileName_import));
+                                                        recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, "L'import de la commande est annulée.", nbr_ + " / " + order.Lines.Count + " ligne(s) Non enregistrée(s).", mot, filename.Name, logFileName_import));
                                                         logFileWriter_import.WriteLine("");
                                                         connexion.Close();
                                                         //force to go at the end
@@ -1118,7 +1118,7 @@ namespace importPlanifier.Classes
                                                             logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() | Message : " + e.Message);
                                                             logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() | StackTrace : " + e.StackTrace);
                                                             tabCommande.Add(filename.Name);
-                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, "Exception updateOrderValues()\n"+e.Message, e.StackTrace, filename.Name, logFileName_import));
+                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.NumCommande, "L'import de la commande est annulée.", "Exception updateOrderValues()\n" +e.Message, e.StackTrace, filename.Name, logFileName_import));
                                                             logFileWriter_import.WriteLine("");
                                                             connexion.Close();
                                                             //force to go at the end
@@ -1164,7 +1164,7 @@ namespace importPlanifier.Classes
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                             tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Il faut mentionner le code client.", "", filename.Name, logFileName_import));
+                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Il faut mentionner le code client.", "", filename.Name, logFileName_import));
                                             goto goErrorLoop;
                                         }
                                     }
@@ -1182,7 +1182,7 @@ namespace importPlanifier.Classes
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Parametre: " + lines[2].Split(';')[0] + " || Size: " + lines[2].Split(';').Length);
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                         tabCommandeError.Add(filename.Name);
-                                        recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Erreur dans la troisième ligne du fichier.", "", filename.Name, logFileName_import));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Erreur dans la troisième ligne du fichier.", "", filename.Name, logFileName_import));
                                         goto goErrorLoop;
                                     }
                                 }
@@ -1199,7 +1199,7 @@ namespace importPlanifier.Classes
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                     tabCommandeError.Add(filename.Name);
-                                    recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Date de la commande est incorrecte.", "", filename.Name, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Date de la commande est incorrecte.", "", filename.Name, logFileName_import));
                                     goto goErrorLoop;
                                 }
                             }
@@ -1216,7 +1216,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la deuxième ligne du fichier.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Erreur dans la deuxième ligne du fichier.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", "Erreur dans la deuxième ligne du fichier.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -1276,7 +1276,7 @@ namespace importPlanifier.Classes
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_me_doc + " | " + reference_ms_doc, "Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_me_doc + " | " + reference_ms_doc, "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
                                     goto goErrorLoop;
                                 }
                                 else
@@ -1335,7 +1335,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
 
                             }
@@ -1602,7 +1602,7 @@ namespace importPlanifier.Classes
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
                                     logFileWriter_import.Flush(); 
                                     tabCommandeError.Add(filename.Name);
-                                    recapLinesList_new.Add(new CustomMailRecapLines("Null", "Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
                                     goto goErrorLoop;
                                 }
                                 else
@@ -1619,7 +1619,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
                         }
@@ -1681,7 +1681,7 @@ namespace importPlanifier.Classes
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                             logFileWriter_import.Flush();
                                             tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.", "", filename.Name, logFileName_import));
+                                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.", "", filename.Name, logFileName_import));
                                             goto goErrorLoop;
                                         }
 
@@ -1767,7 +1767,7 @@ namespace importPlanifier.Classes
                             {
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 tabCommandeError.Add(filename.Name);
                                 goto goErrorLoop;
                             }
@@ -1776,7 +1776,7 @@ namespace importPlanifier.Classes
                         {
                             /*
                             tabCommandeError.Add(filename.Name);
-                            recapLinesList_new.Add(new CustomMailRecapLines("", "L'import du BLF est désactivé !", "", filename.Name, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines("", "L'import de la commande est annulée. Erreur dans le fichier EDI", "L'import du BLF est désactivé !", "", filename.Name, logFileName_import));
                             goto goErrorLoop;
                             */
                             logFileWriter_general.WriteLine("");
@@ -1859,7 +1859,7 @@ namespace importPlanifier.Classes
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                             logFileWriter_import.Flush();
                                             tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit S : Stocké ou C : Cloturé.", "", filename.Name, logFileName_import));
+                                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit S : Stocké ou C : Cloturé.", "", filename.Name, logFileName_import));
                                             goto goErrorLoop;
                                         }
 
@@ -1937,7 +1937,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.");
                                 logFileWriter_import.Flush();
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import de la commande est annulée. Erreur dans le fichier EDI", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
                             
@@ -1951,7 +1951,7 @@ namespace importPlanifier.Classes
                             logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
                             logFileWriter_import.Flush();
                             tabCommandeError.Add(filename.Name);
-                            recapLinesList_new.Add(new CustomMailRecapLines("Null", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import de la commande est annulée. Erreur dans le fichier EDI", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                             goto goErrorLoop;
                         }
                     }
@@ -1967,7 +1967,7 @@ namespace importPlanifier.Classes
                         logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[16]" + e.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                         logFileWriter_import.Flush();
                         tabCommandeError.Add(filename.Name);
-                        recapLinesList_new.Add(new CustomMailRecapLines("Null", "Erreur[16] : "+e.Message, e.StackTrace, filename.Name, logFileName_import));
+                        recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import de la commande est annulée.", "Erreur[16] : " +e.Message, e.StackTrace, filename.Name, logFileName_import));
                     }
 
                 goErrorLoop:;
@@ -2036,7 +2036,7 @@ namespace importPlanifier.Classes
                     recap_new.Lines = new List<CustomMailRecapLines>();
                     for (int i = 0; i < recapLinesList_new.Count; i++)
                     {
-                        if (attchmentsList.Contains(recapLinesList_new[i].FilePath))
+                        if (!attchmentsList.Contains(recapLinesList_new[i].FilePath))
                         {
                             attchmentsList.Add(recapLinesList_new[i].FilePath);
                         }
@@ -2393,7 +2393,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
                                     logFileWriter.Flush();
                                     logFileWriter.Close();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", "Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return null;
                                 }
 
@@ -2460,7 +2460,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
                                     logFileWriter.Flush();
                                     logFileWriter.Close();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "Le tableau 'ME' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", "Le tableau 'ME' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return null;
                                 }
 
@@ -2485,11 +2485,11 @@ namespace importPlanifier.Classes
                         {
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ******************** Erreur Référence ********************");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : La Référence du produit dans le fichier n'existe pas dans la BDD.");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertStock() : L'article \"" + line.reference + "\" n'existe pas dans la BDD.");
                             logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
                             logFileWriter.Flush();
                             logFileWriter.Close();
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc + " - " + reference_MS_doc, "La Référence du produit dans le fichier n'existe pas dans la BDD.", "", fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc + " - " + reference_MS_doc, "L'import du stock est annulée. L'article \"" + line.reference + "\" n'est pas trouvé dans le champ CodeBare ou dans la base Sage", "L'article \"" + line.reference + "\" n'existe pas dans la BDD.", "", fileName, logFileName_import));
                             return null;
                         }
 
@@ -2510,7 +2510,7 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " | insertStock() : StackTrace :: " + ex.StackTrace);
                     logFileWriter.Flush();
                     connection.Close(); //disconnect from database
-                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc + " - " + reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc + " - " + reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                     return null;
                 }
 
@@ -2546,7 +2546,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
                                 logFileWriter.Flush();
                                 logFileWriter.Close();
-                                recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                 return null;
                             }
                             string[,] products_ME = new string[positive_item / 1000, 27]; // create array with enough space
@@ -2580,6 +2580,8 @@ namespace importPlanifier.Classes
                                     catch (OdbcException ex)
                                     {
                                         Console.WriteLine(" ERREUR[1]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", ""));
+
+                                        deleteLineAndHeaderOfDocument(true, reference_ME_doc, connectionSQL, logFileWriter);
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ******************** OdbcException ********************");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Message :" + ex.Message);
@@ -2587,7 +2589,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
                                         logFileWriter.Flush();
                                         logFileWriter.Close();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                         return null;
                                     }
                                 }
@@ -2619,7 +2621,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
                                 logFileWriter.Flush();
                                 logFileWriter.Close();
-                                recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                 return null;
                             }
 
@@ -2654,6 +2656,7 @@ namespace importPlanifier.Classes
                                     {
                                         //Exceptions pouvant survenir durant l'exécution de la requête SQL
                                         Console.WriteLine(" ERREUR[1]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", ""));
+                                        deleteLineAndHeaderOfDocument(true, reference_MS_doc, connectionSQL, logFileWriter);
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ********************** OdbcException *********************");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Message :" + ex.Message);
@@ -2661,7 +2664,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : Import annulée");
                                         logFileWriter.Flush();
                                         logFileWriter.Close();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                         return null;
                                     }
                                 }
@@ -2683,7 +2686,7 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " | insertStock() : ConnexionSQL fermée.");
                         logFileWriter.Flush();
                         logFileWriter.Close();
-                        recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                        recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                         return null;
                     }
 
@@ -2720,7 +2723,7 @@ namespace importPlanifier.Classes
             if (reference_ME_doc == null)
             {
                 logFileWriter.Flush();
-                recapLinesList_new.Add(new CustomMailRecapLines("Null", "reference_ME_doc est null", "", fileName, logFileName_import));
+                recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import du stock est annulée.", "reference_ME_doc est null", "", fileName, logFileName_import));
                 return false;
             }
 
@@ -2728,7 +2731,7 @@ namespace importPlanifier.Classes
             if (reference_MS_doc == null)
             {
                 logFileWriter.Flush();
-                recapLinesList_new.Add(new CustomMailRecapLines("Null", "reference_MS_doc est null", "", fileName, logFileName_import));
+                recapLinesList_new.Add(new CustomMailRecapLines("Null", "L'import du stock est annulée.", "reference_MS_doc est null", "", fileName, logFileName_import));
                 return false;
             }
 
@@ -2939,7 +2942,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                         logFileWriter.Flush();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "L'import de la commande est annulée.", "Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                         return false;
                                     }
 
@@ -3048,7 +3051,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "Le tableau 'ME' à 2 dimensions ne fonctionne pas correctement, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "L'import du stock est annulée.", "Le tableau 'ME' à 2 dimensions ne fonctionne pas correctement, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return false;
                                 }
 
@@ -3114,7 +3117,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                         logFileWriter.Flush();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", "Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                         return false;
                                     }
 
@@ -3211,7 +3214,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", "Le tableau 'MS' à 2 dimensions ne fonctionne pas correctement, message :\n" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return false;
                                 }
 
@@ -3320,7 +3323,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return false;
                                 }
                             }
@@ -3348,7 +3351,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
                             logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return false;
                         }
                     }
@@ -3374,7 +3377,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                             logFileWriter.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return false;
                         }
 
@@ -3413,7 +3416,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return false;
                                 }
                             }
@@ -3441,7 +3444,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
                             logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return false;
                         }
                     }
@@ -3462,7 +3465,7 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :: " + ex.StackTrace);
                     logFileWriter.Flush();
                     connexion.Close();  //disconnect from database
-                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc + " | " + reference_MS_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                    recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc + " | " + reference_MS_doc, "L'import du stock est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                     return false;
                 }
             }
@@ -3521,7 +3524,11 @@ namespace importPlanifier.Classes
                             else// If no rows returned
                             {
                                 //do nothing.
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune commande trouvé!. ");
+                                logFileWriter.Flush();
+                                logFileWriter.Close();
+                                recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée. La commande "+dh.Ref_Commande_Donneur_Ordre+" n'exist pas dans la base Sage", "La commande " + dh.Ref_Commande_Donneur_Ordre + " n'exist pas dans la BDD", "", fileName, logFileName_import));
+                                return null;
                             }
                         }
                     }
@@ -3579,7 +3586,7 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message: "+e.Message);
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace: "+e.StackTrace);
                         logFileWriter.Flush();
-                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, e.Message, e.StackTrace, fileName, logFileName_import));
+                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", e.Message, e.StackTrace, fileName, logFileName_import));
                         return null;
                     }
 
@@ -3633,7 +3640,10 @@ namespace importPlanifier.Classes
                                 else// If no rows returned
                                 {
                                     //do nothing.
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. ");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la BDD.");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée. L'article \"" + line.Code_Article + "\" n'est pas trouvé dans le champ CodeBare ou dans la base Sage", "L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la BDD.", "", fileName, logFileName_import));
+                                    return null;
                                 }
                             }
                         }
@@ -3654,8 +3664,10 @@ namespace importPlanifier.Classes
                                 else// If no rows returned
                                 {
                                     //do nothing.
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. Ref Client ===> " + ref_client);
-
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée. Le client n'est pas trouvé dans la commande " + dh.Ref_Commande_Donneur_Ordre, "Le client n'est pas trouvé dans la commande " + dh.Ref_Commande_Donneur_Ordre, "", fileName, logFileName_import));
+                                    return null;
                                 }
                             }
                         }
@@ -3712,6 +3724,9 @@ namespace importPlanifier.Classes
                                     {
                                         //do nothing.
                                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse. list_of_client_info est null");
+                                        logFileWriter.Flush();
+                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée. L'adresse de livraison du client " + ref_client + " n'est pas trouvé dans Sage", "L'adresse de livraison du client " + ref_client + " n'est pas trouvé dans Sage", "Aucune reponse. list_of_client_info est null", fileName, logFileName_import));
+                                        return null;
                                     }
                                 }
                             }
@@ -3722,7 +3737,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucun client trouver.");
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                             logFileWriter.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Aucun client trouver dans la BDD.", "", fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée. Le client " + ref_client + " n'existe pas dans Sage", "Le client " + ref_client + " n'existe pas dans la BDD", "Aucune reponse. list_of_client_info est null", fileName, logFileName_import));
                             return null;
                         }
 
@@ -3814,7 +3829,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors du calcule du prix d'article TTC, message : " + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", "Erreur lors du calcule du prix d'article TTC, message : " + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return null;
                                 }
 
@@ -3935,7 +3950,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                 logFileWriter.Flush();
-                                recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", "Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                 return null;
                             }
                             counter++;
@@ -3946,7 +3961,7 @@ namespace importPlanifier.Classes
                             counter--;
                             logFileWriter.WriteLine("Aucun article trouvé ou Aucun information client trouvé !");
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Compter => " + counter);
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Aucun article trouvé ou Aucun information client trouvé !", "", fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", "Aucun article trouvé ou Aucun information client trouvé !", "", fileName, logFileName_import));
                             return null;
                         }
 
@@ -3972,7 +3987,7 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                         logFileWriter.Flush();
-                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                         return null;
                     }
 
@@ -4008,13 +4023,14 @@ namespace importPlanifier.Classes
                             catch (OdbcException ex)
                             {
                                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                deleteLineAndHeaderOfDocument(true, reference_DESADV_doc, connection, logFileWriter);
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException *********************");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                 logFileWriter.Flush();
-                                recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                 return null;
                             }
 
@@ -4048,6 +4064,12 @@ namespace importPlanifier.Classes
                                             //do nothing.
                                             found_stock = false;
                                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune reponse.");
+                                            logFileWriter.WriteLine("");
+                                            deleteLineAndHeaderOfDocument(true, reference_DESADV_doc, connection, logFileWriter);
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.Flush();
+                                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", "Echec à la récupértion du stock de l'article " + products_DESADV[x,9], "", fileName, logFileName_import));
+                                            return null;
                                         }
                                     }
                                 }
@@ -4085,12 +4107,15 @@ namespace importPlanifier.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
                                 logFileWriter.Flush();
-                                recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
 
-                                if(!deleteCommande(true, reference_DESADV_doc))
+                                logFileWriter.WriteLine("");
+                                if(!deleteLineAndHeaderOfDocument(true, reference_DESADV_doc, connection, logFileWriter))
                                 {
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document "+ reference_DESADV_doc, "", fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
                                 }
+                                logFileWriter.WriteLine("");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                 return null;
                             }
                         }
@@ -4119,12 +4144,15 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         logFileWriter.Flush();
-                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
-
-                        if (!deleteCommande(true, reference_DESADV_doc))
+                        
+                        logFileWriter.WriteLine("");
+                        if (!deleteLineAndHeaderOfDocument(true, reference_DESADV_doc, connection, logFileWriter))
                         {
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
                         }
+                        logFileWriter.WriteLine("");
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                         return null;
                     }
 
@@ -4145,12 +4173,15 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         logFileWriter.Flush();
-                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
-
-                        if (!deleteCommande(true, reference_DESADV_doc))
+                        
+                        logFileWriter.WriteLine("");
+                        if (!deleteLineAndHeaderOfDocument(true, reference_DESADV_doc, connection, logFileWriter))
                         {
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
                         }
+                        logFileWriter.WriteLine("");
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                         return null;
                     }
 
@@ -4172,12 +4203,15 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                         logFileWriter.Flush();
-                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
 
-                        if (!deleteCommande(true, reference_DESADV_doc))
+                        logFileWriter.WriteLine("");
+                        if (!deleteLineAndHeaderOfDocument(true, reference_DESADV_doc, connection, logFileWriter))
                         {
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
                         }
+                        logFileWriter.WriteLine("");
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                         return null;
                     }
 
@@ -4193,8 +4227,7 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :: " + ex.StackTrace);
                     connection.Close(); //disconnect from database
                     logFileWriter.Flush();
-                    logFileWriter.Flush();
-                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                    recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                     return null;
                 }
             }
@@ -4248,6 +4281,9 @@ namespace importPlanifier.Classes
                             {
                                 //do nothing.
                                 logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. ");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", "Aucun BCF trouvé dans la BDD", "insertSupplierOrder() : Aucune reponse", fileName, logFileName_import));
+                                return null;
                             }
                         }
                     }
@@ -4283,6 +4319,9 @@ namespace importPlanifier.Classes
                                 {
                                     //do nothing.
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. list_of_fournisseur_info est null");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée. Le fournisseur \""+ref_supplier+"\" n'existe pas dans Sage", "Le fournisseur \"" + ref_supplier + "\" n'existe pas dans Sage", "insertSupplierOrder() : Aucune reponse", fileName, logFileName_import));
+                                    return null;
                                 }
                             }
                         }
@@ -4318,7 +4357,7 @@ namespace importPlanifier.Classes
                         logFileWriter.Flush();
                         connexion.Close(); //disconnect from database
                         logFileWriter.Flush();
-                        recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "Le fournisseur : " + ref_supplier + " n'existe pas dans la base!", "", fileName, logFileName_import));
+                        recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée. Le fournisseur : " + ref_supplier + " n'existe pas dans Sage!", "Le fournisseur : " + ref_supplier + " n'existe pas dans la BDD", "insertSupplierOrder() : ref_supplier == null", fileName, logFileName_import));
                         return null;
                     }
 
@@ -4412,6 +4451,9 @@ namespace importPlanifier.Classes
                                     {
                                         //do nothing.
                                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. ");
+                                        logFileWriter.Flush();
+                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée. L'article \""+line.Code_Article+"\" n'existe pas dans le BCF " + dh.Ref_Commande_Donneur_Ordre, "L'article \"" + line.Code_Article + "\" n'existe pas dans la commande " + dh.Ref_Commande_Donneur_Ordre, "", fileName, logFileName_import));
+                                        return null;
                                     }
                                 }
                             }
@@ -4473,7 +4515,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
                                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
                                         logFileWriter.Flush();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                        recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                         return null;
                                     }
 
@@ -4594,7 +4636,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "Le tableau 'BLF' à 2 dimensions ne fonctionne pas correctement, message: " + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", "Le tableau 'BLF' à 2 dimensions ne fonctionne pas correctement, message: " + ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return null;
                                 }
                             }
@@ -4623,7 +4665,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
                             logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
                             logFileWriter.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return null;
                         }
 
@@ -4664,7 +4706,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return null;
                                 }
 
@@ -4699,6 +4741,9 @@ namespace importPlanifier.Classes
                                                 //do nothing.
                                                 found_stock = false;
                                                 logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse.");
+                                                logFileWriter.Flush();
+                                                recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", "Echec à la récupération du stock de l'article " + products_BCF[x,9], "insertSupplierOrder() : Aucune reponse.", fileName, logFileName_import));
+                                                return null;
                                             }
                                         }
                                     }
@@ -4739,7 +4784,7 @@ namespace importPlanifier.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                                     return null;
                                 }
                             }
@@ -4768,7 +4813,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                             logFileWriter.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return null;
                         }
 
@@ -4789,7 +4834,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                             logFileWriter.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return null;
                         }
 
@@ -4811,7 +4856,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                             logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                             logFileWriter.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return null;
                         }
                     }
@@ -4824,7 +4869,7 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :: " + ex.StackTrace);
                     connexion.Close(); //disconnect from database
                     logFileWriter.Flush();
-                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, ex.Message, ex.StackTrace, fileName, logFileName_import));
+                    recapLinesList_new.Add(new CustomMailRecapLines(reference_BLF_doc, "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                     return null;
                 }
             }
@@ -7436,6 +7481,26 @@ namespace importPlanifier.Classes
         public static String GetTimestamp(DateTime value)
         {
             return value.ToString("yyyyMMddHHmmssffff");
+        }
+
+        public static bool deleteLineAndHeaderOfDocument(bool SqlConnexion, string reference, OdbcConnection connexion, StreamWriter writer)
+        {
+            try
+            {
+                writer.WriteLine(DateTime.Now + " | deleteLineAndHeaderOfDocument() : SQL ===> " + QueryHelper.deleteCommande(SqlConnexion, reference));
+                OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(SqlConnexion, reference), connexion);
+                command.ExecuteReader();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                writer.WriteLine("");
+                writer.WriteLine(DateTime.Now + " | deleteLineAndHeaderOfDocument() : ******************** OdbcException Delete Document ********************");
+                writer.WriteLine(DateTime.Now + " | deleteLineAndHeaderOfDocument() : Message :" + ex.Message);
+                writer.WriteLine(DateTime.Now + " | deleteLineAndHeaderOfDocument() : StackTrace :" + ex.StackTrace);
+                writer.WriteLine("");
+                return false;
+            }
         }
     }
 }

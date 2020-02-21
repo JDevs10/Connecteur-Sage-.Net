@@ -30,12 +30,13 @@ namespace ConnecteurSage.Forms
                     mailSettings.Load();
                     checkBox1.Checked = mailSettings.active;
                     textBox1.Text = mailSettings.smtp;
-                    textBox2.Text = mailSettings.port+"";
-                    textBox4.Text = Utils.Decrypt(mailSettings.password);
+                    textBox2.Text = mailSettings.port + "";
                     textBox3.Text = mailSettings.login;
+                    textBox4.Text = mailSettings.password;
+                    checkBox2.Checked = mailSettings.dest1_enable;
                     textBox5.Text = mailSettings.dest1;
+                    checkBox3.Checked = mailSettings.dest2_enable;
                     textBox6.Text = mailSettings.dest2;
-                    textBox7.Text = mailSettings.dest3;
 
                     if (!checkBox1.Checked)
                     {
@@ -54,7 +55,7 @@ namespace ConnecteurSage.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Error loading Mail info");
             }
         }
 
@@ -67,7 +68,7 @@ namespace ConnecteurSage.Forms
         {
             try
             {
-                if (textBox5.Text == "" && textBox6.Text == "" && textBox7.Text == "" && checkBox1.Checked)
+                if (textBox5.Text == "" && textBox6.Text == "" && checkBox1.Checked)
                 {
                     MessageBox.Show("Adresse Destinataire est obligatoire (il en faut au moins un).", "Erreur!!",
                                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -76,21 +77,14 @@ namespace ConnecteurSage.Forms
 
                 if (textBox5.Text != "" && !IsValidEmail(textBox5.Text) && checkBox1.Checked)
                 {
-                    MessageBox.Show("Adresse destinataire 1 n'est pas valide.", "Erreur!!",
+                    MessageBox.Show("Adresse destinataire 1 (Client) n'est pas valide.", "Erreur!!",
                                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
 
                 if (textBox6.Text != "" && !IsValidEmail(textBox6.Text) && checkBox1.Checked)
                 {
-                    MessageBox.Show("Adresse destinataire 2 n'est pas valide.", "Erreur!!",
-                                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
-                }
-
-                if (textBox7.Text != "" && !IsValidEmail(textBox7.Text) && checkBox1.Checked)
-                {
-                    MessageBox.Show("Adresse destinataire 3 n'est pas valide.", "Erreur!!",
+                    MessageBox.Show("Adresse destinataire 2 (Equipe EDI) n'est pas valide.", "Erreur!!",
                                          MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
@@ -103,9 +97,10 @@ namespace ConnecteurSage.Forms
                     port = textBox2.Text == "" ? 587 : int.Parse(textBox2.Text),
                     login = textBox3.Text,
                     password = Utils.Encrypt(textBox4.Text),
+                    dest1_enable = checkBox2.Checked,
                     dest1 = textBox5.Text,
+                    dest2_enable = checkBox3.Checked,
                     dest2 = textBox6.Text,
-                    dest3 = textBox7.Text,
                     active = checkBox1.Checked,
                     totalTicks = (210 / 5),   //3.5h x 60mins = 210mins; 210mins/5mins = 42 ticks
                     remaningTicks = (210 / 5)
@@ -140,30 +135,6 @@ namespace ConnecteurSage.Forms
                 groupBox1.Enabled = true;
                 groupBox2.Enabled = true;
                 enregistrer_config.Enabled = true;
-            }
-        }
-
-        public void CreerCleRegistre(ConfSendMail cMail)
-        {
-            try
-            {
-                key = Microsoft.Win32.Registry.LocalMachine.CreateSubKey("Software\\Sage\\Connecteur sage");
-                key.SetValue("Version", "0.1");
-                key.SetValue("Name", "Connecteur sage");
-                key.SetValue("smtp", cMail.smtp);
-                key.SetValue("port", cMail.port);
-                key.SetValue("login", cMail.login);
-                key.SetValue("password", cMail.password);
-                key.SetValue("dest1", cMail.dest1);
-                key.SetValue("dest2", cMail.dest2);
-                key.SetValue("dest3", cMail.dest3);
-                key.SetValue("active", cMail.active);
-                key.Close();
-                Close();
-            } 
-            catch ( Exception e)
-            {
-                MessageBox.Show(e.Message);
             }
         }
     }
