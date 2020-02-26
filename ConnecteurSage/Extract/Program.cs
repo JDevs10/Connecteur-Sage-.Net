@@ -14,10 +14,12 @@ namespace Extract
         {
             string localPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             string zipFile = localPath + @"\Z-Cron.zip";
-            string extractPath = localPath + @"\extract";
+            string extractPath = localPath;
 
             //System.IO.Compression.ZipFile.CreateFromDirectory(localPath, zipFile);
             System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, extractPath);
+            File.Copy(zipFile, localPath + @"\Z-Cron\Z-Cron.zip");
+            File.Delete(zipFile);
         }
     }
 }

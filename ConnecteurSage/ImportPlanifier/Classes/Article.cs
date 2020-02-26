@@ -24,6 +24,10 @@ namespace importPlanifier.Classes
         public Conditionnement Conditionnement = null;
         public string DL_CodeTaxe1 { get; set; }
         public string DL_Taxe1 { get; set; }
+        public string DL_CodeTaxe2 { get; set; }
+        public string DL_Taxe2 { get; set; }
+        public string DL_CodeTaxe3 { get; set; }
+        public string DL_Taxe3 { get; set; }
         public string DL_PrixUnitaire_salePriceHT { get; set; } // Prix HT
         public string DL_PUTTC { get; set; }    // Prix TTC
 
@@ -31,7 +35,7 @@ namespace importPlanifier.Classes
         {
         }
 
-        public Article(string AR_REF, string AR_CodeBarre, string AR_SuiviStock, string gamme1, string gamme2, string AR_Nomencl, string RP_CODEDEFAUT, string AR_PRIXVEN, string AR_POIDSBRUT, string AR_POIDSNET, string AR_UnitePoids, string AR_DESIGN, string DL_CodeTaxe1, string DL_Taxe1, string DL_PrixUnitaire_salePriceHT, string DL_PUTTC)
+        public Article(string AR_REF, string AR_CodeBarre, string AR_SuiviStock, string gamme1, string gamme2, string AR_Nomencl, string RP_CODEDEFAUT, string AR_PRIXVEN, string AR_POIDSBRUT, string AR_POIDSNET, string AR_UnitePoids, string AR_DESIGN, string DL_PrixUnitaire_salePriceHT)
         {
             this.AR_REF = AR_REF;
             this.AR_CodeBarre = AR_CodeBarre;
@@ -46,10 +50,7 @@ namespace importPlanifier.Classes
             this.AR_UnitePoids = AR_UnitePoids;
             this.AR_POIDSNET = AR_POIDSNET;
             this.AR_DESIGN = AR_DESIGN;
-            this.DL_CodeTaxe1 = DL_CodeTaxe1;
-            this.DL_Taxe1 = DL_Taxe1;
             this.DL_PrixUnitaire_salePriceHT = DL_PrixUnitaire_salePriceHT;
-            this.DL_PUTTC = DL_PUTTC;
         }
     }
 

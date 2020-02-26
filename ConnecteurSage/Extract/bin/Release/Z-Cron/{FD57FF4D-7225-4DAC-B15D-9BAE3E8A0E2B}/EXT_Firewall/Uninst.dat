@@ -1,0 +1,11 @@
+[FWException1]
+Name=IDC_FwDisplayname
+Condition=
+File=C:\Program Files (x86)\Z-Cron\z-cron.exe
+Port=
+Scope=All
+Protocol=-
+Group=[ProductName]
+Flags=109
+[Text]
+FWErrorText=FirewallConfigErrorText

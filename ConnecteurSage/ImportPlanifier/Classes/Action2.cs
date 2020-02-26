@@ -653,22 +653,6 @@ namespace importPlanifier.Classes
                                                                 line.PrixNetHT = prix.ToString().Replace(',', '.');
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix envoyer par le client : " + prix + ".");
                                                             }
-
-                                                            /*
-                                                            Console.WriteLine("Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                                            logFileWriter_import.WriteLine("");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning Prix *********************");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_import.WriteLine("");
-                                                            tabCommandeError.Add(filename.Name);
-                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".", "", logFileName_import));
-                                                            goto goErrorLoop;
-                                                            */
                                                         }
 
                                                         order.Lines.Add(line);
@@ -690,7 +674,6 @@ namespace importPlanifier.Classes
                                                         goto goErrorLoop;
                                                     }
                                                     break;
-
                                             }
 
                                             pos++;
@@ -703,7 +686,7 @@ namespace importPlanifier.Classes
 
                                         for (int i = 0; i < order.Lines.Count; i++)
                                         {
-                                            if (order.Lines[i].DateLivraison.Length == 16)
+                                            if (order.Lines[i].DateLivraison.Length == 10)
                                             {
                                                 order.DateLivraison = order.Lines[i].DateLivraison;
                                                 goto jamp;
@@ -711,7 +694,6 @@ namespace importPlanifier.Classes
                                         }
 
                                     jamp:
-
 
 
                                         if (order.codeClient != "")
@@ -849,7 +831,7 @@ namespace importPlanifier.Classes
                                                 double totalHT = 0.0;
                                                 double totalTTC = 0.0;
 
-                                                if (insertCommande(client, order, logFileWriter_import))
+                                                if (insertCommande(client, order, logFileWriter_import, filename.Name))
                                                 {
                                                     int nbr_ = 0;
 
@@ -864,6 +846,35 @@ namespace importPlanifier.Classes
                                                             order.Lines[i].article.AR_StockId = order.StockId;
                                                         }
 
+                                                        //Get article taxes
+                                                        logFileWriter_import.WriteLine("");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF));
+                                                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF), connexion))
+                                                        {
+                                                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                            {
+                                                                if (reader.Read()) // If any rows returned
+                                                                {
+                                                                    order.Lines[i].article.DL_CodeTaxe1 = reader[0].ToString();
+                                                                    order.Lines[i].article.DL_CodeTaxe2 = reader[1].ToString();
+                                                                    order.Lines[i].article.DL_CodeTaxe3 = reader[2].ToString();
+                                                                    logFileWriter_import.WriteLine("DL_CodeTaxe1 : "+ order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
+                                                                    logFileWriter_import.WriteLine("");
+                                                                }
+                                                                else// If no rows returned
+                                                                {
+                                                                    //do nothing.
+                                                                    order.Lines[i].article.DL_CodeTaxe1 = "C00";
+                                                                    order.Lines[i].article.DL_CodeTaxe2 = "C00";
+                                                                    order.Lines[i].article.DL_CodeTaxe3 = "C00";
+                                                                    logFileWriter_import.WriteLine("Aucune reponse.");
+                                                                    logFileWriter_import.WriteLine("DL_CodeTaxe1 : " + order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
+                                                                    logFileWriter_import.WriteLine("");
+                                                                }
+                                                            }
+                                                        }
+
+
                                                         //Add TVA && Calculate product ttc
                                                         double product_ttc = 0.0;
                                                         try
@@ -874,15 +885,21 @@ namespace importPlanifier.Classes
                                                             if (tvaList != null)
                                                             {
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : List des TVA trouvé");
-                                                                TVA tva = null;
-                                                                bool tva_error = false;
+                                                                TVA tva__1 = null;
+                                                                TVA tva__2 = null;
+                                                                TVA tva__3 = null;
+                                                                bool tva_1 = false;
+                                                                bool tva_2 = false;
+                                                                bool tva_3 = false;
+
+                                                                //find and add CodeTaxe1
                                                                 foreach (TVA tva_ in tvaList)
                                                                 {
                                                                     if (order.Lines[i].article.DL_CodeTaxe1 != null && order.Lines[i].article.DL_CodeTaxe1 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe1)
                                                                     {
-                                                                        tva = tva_;
-                                                                        tva_error = true;
-                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA " + tva.TA_Code + " trouvé \"" + tva.TA_Taux + "\"");
+                                                                        tva__1 = tva_;
+                                                                        tva_1 = true;
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 " + tva__1.TA_Code + " trouvé \"" + tva__1.TA_Taux + "\"");
                                                                         break;
                                                                     }
                                                                     else
@@ -890,74 +907,155 @@ namespace importPlanifier.Classes
                                                                         if (order.Lines[i].article.DL_CodeTaxe1 == null)
                                                                         {
                                                                             //tva = tva_;
-                                                                            tva_error = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA NULL trouvé, alors TVA mis à 0");
+                                                                            tva_1 = false;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 NULL trouvé, alors TVA mis à 0");
                                                                             break;
                                                                         }
                                                                         else if (order.Lines[i].article.DL_CodeTaxe1 == "")
                                                                         {
                                                                             //tva = tva_;
-                                                                            tva_error = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA VIDE trouvé, alors TVA mis à 0");
+                                                                            tva_1 = false;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 VIDE trouvé, alors TVA mis à 0");
                                                                             break;
                                                                         }
                                                                     }
                                                                 }
 
-
-                                                                string endTVA = null;
-                                                                if (tva_error)
+                                                                //find and add CodeTaxe2
+                                                                foreach (TVA tva_ in tvaList)
                                                                 {
-                                                                    endTVA = tva.TA_Taux;
+                                                                    if (order.Lines[i].article.DL_CodeTaxe2 != null && order.Lines[i].article.DL_CodeTaxe2 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe2)
+                                                                    {
+                                                                        tva__2 = tva_;
+                                                                        tva_2 = true;
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 " + tva__2.TA_Code + " trouvé \"" + tva__2.TA_Taux + "\"");
+                                                                        break;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (order.Lines[i].article.DL_CodeTaxe2 == null)
+                                                                        {
+                                                                            //tva = tva_;
+                                                                            tva_2 = false;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 NULL trouvé, alors TVA mis à 0");
+                                                                            break;
+                                                                        }
+                                                                        else if (order.Lines[i].article.DL_CodeTaxe2 == "")
+                                                                        {
+                                                                            //tva = tva_;
+                                                                            tva_2 = false;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 VIDE trouvé, alors TVA mis à 0");
+                                                                            break;
+                                                                        }
+                                                                    }
                                                                 }
-                                                                else if (dns.Prefix.Contains("BATIMEX"))
+
+                                                                //find and add CodeTaxe3
+                                                                foreach (TVA tva_ in tvaList)
                                                                 {
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Warning TVA ********************");
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Liste des tva trouvée, tous les tva et prix ttc de chaque produit dans ce BC seront 20% en dure pour les commandes de BATIMEX en France.");
-                                                                    order.Lines[i].article.DL_CodeTaxe1 = "V20";
-                                                                    endTVA = "20,000000";
+                                                                    if (order.Lines[i].article.DL_CodeTaxe3 != null && order.Lines[i].article.DL_CodeTaxe3 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe3)
+                                                                    {
+                                                                        tva__3 = tva_;
+                                                                        tva_3 = true;
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 " + tva__3.TA_Code + " trouvé \"" + tva__3.TA_Taux + "\"");
+                                                                        break;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (order.Lines[i].article.DL_CodeTaxe3 == null)
+                                                                        {
+                                                                            //tva = tva_;
+                                                                            tva_3 = false;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 NULL trouvé, alors TVA mis à 0");
+                                                                            break;
+                                                                        }
+                                                                        else if (order.Lines[i].article.DL_CodeTaxe3 == "")
+                                                                        {
+                                                                            //tva = tva_;
+                                                                            tva_3 = false;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 VIDE trouvé, alors TVA mis à 0");
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Calcule TVA ******************** ");
+                                                                double endTVA = 0.0;
+
+                                                                if (tva_1)
+                                                                {
+                                                                    endTVA += Convert.ToDouble(tva__1.TA_Taux);
+                                                                    order.Lines[i].article.DL_Taxe1 = tva__1.TA_Taux.Replace(",", ".");
                                                                 }
                                                                 else
                                                                 {
                                                                     order.Lines[i].article.DL_CodeTaxe1 = "C00";
-                                                                    endTVA = "0,000000";
+                                                                    order.Lines[i].article.DL_Taxe1 = "0.000000";
+                                                                    endTVA += 0.0;
                                                                 }
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : endTVA = " + endTVA);
+
+                                                                if (tva_2)
+                                                                {
+                                                                    endTVA += Convert.ToDouble(tva__2.TA_Taux);
+                                                                    order.Lines[i].article.DL_Taxe2 = tva__2.TA_Taux.Replace(",", ".");
+                                                                }
+                                                                else
+                                                                {
+                                                                    order.Lines[i].article.DL_CodeTaxe2 = "C00";
+                                                                    order.Lines[i].article.DL_Taxe2 = "0.000000";
+                                                                    endTVA += 0.0;
+                                                                }
+
+                                                                if (tva_3)
+                                                                {
+                                                                    endTVA += Convert.ToDouble(tva__3.TA_Taux);
+                                                                    order.Lines[i].article.DL_Taxe3 = tva__3.TA_Taux.Replace(",", ".");
+                                                                }
+                                                                else
+                                                                {
+                                                                    order.Lines[i].article.DL_CodeTaxe3 = "C00";
+                                                                    order.Lines[i].article.DL_Taxe3 = "0.000000";
+                                                                    endTVA += 0.0;
+                                                                }
 
                                                                 double product_ht = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
-                                                                double product_20_P = (product_ht * Convert.ToDouble(endTVA)) / 100;
-                                                                product_ttc = product_ht + product_20_P;
+                                                                double product_tva_P = (product_ht * Convert.ToDouble(endTVA)) / 100;
+                                                                product_ttc = product_ht + product_tva_P;
                                                                 order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
-                                                                order.Lines[i].article.DL_Taxe1 = endTVA.Replace(",", ".");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
-                                                            }
-                                                            if (dns.Prefix.Contains("BATIMEX"))
-                                                            {
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Warning TVA BATIMEX ********************");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Liste des tva non trouvée pour BATIMEX, tous les tva et prix ttc de chaque produit dans ce BC seront 20%");
 
-                                                                double product_ht = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
-                                                                double product_20_P = (product_ht * 20.0) / 100;
-                                                                product_ttc = product_ht + product_20_P;
-                                                                order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
-                                                                order.Lines[i].article.DL_Taxe1 = "20.000000";
-                                                                order.Lines[i].article.DL_CodeTaxe1 = "V20";
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix HT : \""+ order.Lines[i].PrixNetHT + "\", Code TVA : \""+ order.Lines[i].article.DL_CodeTaxe1 + "\", TVA Valeur : \"" + order.Lines[i].article.DL_Taxe1 + "\", Prix TTC : \"" + order.Lines[i].article.DL_PUTTC + "\" ");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 => " + order.Lines[i].article.DL_Taxe1);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 => " + order.Lines[i].article.DL_Taxe2);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 => " + order.Lines[i].article.DL_Taxe3);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix HT => " + product_ht + " | TVA => " + endTVA + " % | Prix TTC => " + product_ttc);
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
+                                                                logFileWriter_import.WriteLine("");
                                                             }
                                                             else
                                                             {
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Warning TVA ********************");
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BC seront 0");
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Calcule TVA ******************** ");
 
                                                                 double product_ht = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
-                                                                double product_20_P = (product_ht * 0.0) / 100;
-                                                                product_ttc = product_ht + product_20_P;
+                                                                double product_tva_P = (product_ht * 0.0) / 100;
+                                                                product_ttc = product_ht + product_tva_P;
                                                                 order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
                                                                 order.Lines[i].article.DL_Taxe1 = "0.000000";
                                                                 order.Lines[i].article.DL_CodeTaxe1 = "C00";
+                                                                order.Lines[i].article.DL_Taxe2 = "0.000000";
+                                                                order.Lines[i].article.DL_CodeTaxe2 = "C00";
+                                                                order.Lines[i].article.DL_Taxe3 = "0.000000";
+                                                                order.Lines[i].article.DL_CodeTaxe3 = "C00";
+
+
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 => " + order.Lines[i].article.DL_Taxe1);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 => " + order.Lines[i].article.DL_Taxe2);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 => " + order.Lines[i].article.DL_Taxe3);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix HT => " + product_ht + " | TVA => 0.0 % | Prix TTC => " + product_ttc);
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
+                                                                logFileWriter_import.WriteLine("");
                                                             }
                                                             order.Lines[i].PrixNetHT.Replace(",", ".");
                                                             logFileWriter_import.Flush();
@@ -989,7 +1087,10 @@ namespace importPlanifier.Classes
                                                         order.Lines[i].DL_DateDE = order.DateCommande;
                                                         order.Lines[i].DL_DatePL = "1753-01-01";
 
-                                                        
+                                                        order.Lines[i].DL_MontantHT = (Convert.ToDouble(order.Lines[i].article.DL_PrixUnitaire_salePriceHT.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",",".");
+                                                        order.Lines[i].DL_MontantTTC = (Convert.ToDouble(order.Lines[i].article.DL_PUTTC.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",", ".");
+
+
                                                         if (insertCommandeLine(client, order, order.Lines[i], logFileWriter_import))
                                                         {
                                                             //Update docline artile stock
@@ -1147,6 +1248,11 @@ namespace importPlanifier.Classes
                                                         //force to go at the end
                                                         goto goErrorLoop;
                                                     }
+                                                }
+                                                else
+                                                {
+                                                    tabCommandeError.Add(filename.Name);
+                                                    goto goErrorLoop;
                                                 }
                                                 
                                             }
@@ -2177,7 +2283,7 @@ namespace importPlanifier.Classes
             logFileWriter_general.Close();
         }
 
-        public static Boolean insertCommande(Client client, Order order, StreamWriter writer)
+        public static Boolean insertCommande(Client client, Order order, StreamWriter writer, string filename)
         {
             writer.WriteLine(DateTime.Now + " | insertCommande() : Called!");
             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
@@ -2199,6 +2305,7 @@ namespace importPlanifier.Classes
                 catch (Exception ex)
                 {
                     writer.WriteLine(DateTime.Now + " | insertCommande() : ERREUR[4]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", ex.Message, ex.StackTrace, filename, logFileName_import));
                     return false;
                 }
             }
@@ -2223,7 +2330,7 @@ namespace importPlanifier.Classes
                 }
                 catch (Exception ex)
                 {
-                    MessageErreur.Add(DateTime.Now + " | insertCommandeLine() : Echec d'insertion de la ligne " + orderLine.NumLigne + " de la commande " + order.NumCommande + "." + "\n" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    MessageErreur.Add(DateTime.Now + " | insertCommandeLine() : Echec d'insertion de la ligne " + orderLine.NumLigne + " de la commande " + order.NumCommande + "." + "\n" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", "")+"\n");
                     return false;
                 }
             }
@@ -4817,15 +4924,16 @@ namespace importPlanifier.Classes
                             return null;
                         }
 
-                        //Delete the BC of the BL
+                        //update document numbering
                         try
                         {
                             logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Supprimer le Bon de Commande (BCF) \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre), connexion);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Mettre à jour la numérotation du document \"" + reference_BLF_doc + "\".");
+
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BLF_doc));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BLF_doc), connexion);
                             IDataReader reader = command.ExecuteReader();
-                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Bon de Commande Fournisseur supprimé!");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Nouvelle numérotation à jour!");
                         }
                         catch (Exception ex)
                         {
@@ -4838,16 +4946,15 @@ namespace importPlanifier.Classes
                             return null;
                         }
 
-                        //update document numbering
+                        //Delete the BC of the BL
                         try
                         {
                             logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Mettre à jour la numérotation du document \"" + reference_BLF_doc + "\".");
-
-                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BLF_doc));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BLF_doc), connexion);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Supprimer le Bon de Commande (BCF) \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.deleteCommande(true, dh.Ref_Commande_Donneur_Ordre), connexion);
                             IDataReader reader = command.ExecuteReader();
-                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Nouvelle numérotation à jour!");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Bon de Commande Fournisseur supprimé!");
                         }
                         catch (Exception ex)
                         {
@@ -5765,7 +5872,7 @@ namespace importPlanifier.Classes
                         {
                             if (reader.Read())
                             {
-                                Article article = new Article(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), "", "", reader[12].ToString(), "");
+                                Article article = new Article(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString());
                                 writer.WriteLine(DateTime.Now + " | getArticle() : Article trouvé!");
                                 connection.Close();
                                 return article;
@@ -6489,6 +6596,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
+                    writer.WriteLine(DateTime.Now + " : Erreur[41] - SQL :: " + QueryHelper.getClient(false, id));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
@@ -6906,11 +7014,6 @@ namespace importPlanifier.Classes
                 ConfSendMail cMail = getInfoMail(logFileWriter_general);
                 if (cMail != null && cMail.active)
                 {
-                    /*
-                    Process emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Test");
-                    emailExe.WaitForExit();
-                    */
-
                     Process emailExe = Process.Start(locationPath + @"\AlertMail.exe", "EndSoftwareExe");
                     emailExe.WaitForExit();
 

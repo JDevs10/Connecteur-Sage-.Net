@@ -129,7 +129,7 @@ namespace AlertMail
                                 try
                                 {
                                     Console.WriteLine("Envoi de mail client en cours....");
-                                    EnvoiMail(cMail, "client", mMailCustom_client.subject + " || test client", mMailCustom_client.body, mMailCustom_client.attachements);   //cheminLogFile
+                                    EnvoiMail(cMail, "client", mMailCustom_client.subject, mMailCustom_client.body, mMailCustom_client.attachements);   //cheminLogFile
                                 }
                                 catch (Exception ex)
                                 {
@@ -150,7 +150,7 @@ namespace AlertMail
                                 try
                                 {
                                     Console.WriteLine("Envoi de mail log en cours....");
-                                    EnvoiMail(cMail, "log", mMailCustom_log.subject + " || test log", mMailCustom_log.body, mMailCustom_log.attachements);   //cheminLogFile
+                                    EnvoiMail(cMail, "log", mMailCustom_log.subject, mMailCustom_log.body, mMailCustom_log.attachements);   //cheminLogFile
                                 }
                                 catch (Exception ex)
                                 {

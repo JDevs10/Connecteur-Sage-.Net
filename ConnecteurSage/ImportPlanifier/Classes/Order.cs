@@ -205,6 +205,8 @@ string codeAcheteur)
     public string DL_DateBC { get; set; }
     public string DL_DateDE { get; set; }
     public string DL_DatePL { get; set; }
+    public string DL_MontantHT { get; set; }
+    public string DL_MontantTTC { get; set; }
         #endregion
     }
 }

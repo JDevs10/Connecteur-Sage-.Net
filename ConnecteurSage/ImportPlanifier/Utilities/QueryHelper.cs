@@ -82,6 +82,17 @@ namespace importPlanifier.Helpers
                 return "SELECT AR_REF, AR_CodeBarre, AR_SuiviStock, AR_Gamme1, AR_Gamme2, AR_Nomencl, RP_CODEDEFAUT, AR_PRIXVEN, AR_POIDSBRUT, AR_POIDSNET, AR_UnitePoids, AR_DESIGN, AR_PrixAch from F_ARTICLE where AR_CODEBARRE='" + id + "'";
             }
         }
+        public static string getArticleTaxe(bool sqlConnexion, string id)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from " + getPrefix() + "F_ARTCOMPTA where AR_Ref='" + id + "'";
+            }
+            else
+            {
+                return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from F_ARTCOMPTA where AR_Ref='" + id + "'";
+            }
+        }
 
         public static string getConditionnementArticle(bool sqlConnexion, string refArt)
         {
@@ -180,9 +191,9 @@ namespace importPlanifier.Helpers
                     "LI_NO,N_CATCOMPTA,DO_MOTIF,DO_COORD01,DO_TAXE1,DO_TypeTaux1,DO_TypeTaxe1) " +
                     "values" +
                     "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
-                    "" + order.conditionLivraison + ",'{d " + order.DateCommande + "}'," + order.DateLivraison + "," + client.N_Devise + ",0," +
+                    "" + order.conditionLivraison + ",{d '" + order.DateCommande + "'},{d '" + order.DateLivraison + "}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,2," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
@@ -197,9 +208,9 @@ namespace importPlanifier.Helpers
                     "LI_NO,N_CATCOMPTA,DO_MOTIF,DO_COORD01,DO_TAXE1,DO_TypeTaux1,DO_TypeTaxe1) " +
                     "values" +
                     "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
-                    "" + order.conditionLivraison + ",'{d " + order.DateCommande + "}'," + order.DateLivraison + "," + client.N_Devise + ",0," +
+                    "" + order.conditionLivraison + ", {d '" + order.DateCommande + "'}, {d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,2," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
@@ -210,19 +221,22 @@ namespace importPlanifier.Helpers
             if (sqlConnexion)
             {
                 return "Insert Into " +
-             "" + getPrefix() + "F_DOCLIGNE(PF_Num, AC_REFCLIENT, AF_REFFOURNISS, AR_REF, CT_NUM, DE_NO," +
+             "" + getPrefix() + "F_DOCLIGNE(PF_Num, AC_REFCLIENT,AF_REFFOURNISS,AR_REF,CT_NUM,DE_NO," +
              "DL_DESIGN,DL_LIGNE,DL_PRIXUNITAIRE,DL_QTE,EU_Enumere,EU_QTE," +
              "DL_VALORISE,DO_DATE,DO_DATELIVR,DO_DOMAINE," +
-             "DO_PIECE,DO_TYPE,AG_No1,AG_No2,AR_RefCompose, RP_Code, do_ref,DL_PoidsNet,DL_PoidsBrut,DL_CodeTaxe1,DL_Taxe1,DL_TypeTaux1,DL_TypeTaxe1,DL_PUTTC," +
-             "DL_PieceBC, DL_QteDE, DL_QtePL, DL_DateBC, DL_DateDE, DL_DatePL) " +
+             "DO_PIECE,DO_TYPE,AG_No1,AG_No2,AR_RefCompose,RP_Code,do_ref,DL_PoidsNet,DL_PoidsBrut,DL_CodeTaxe1,DL_Taxe1,DL_TypeTaux1,DL_TypeTaxe1,DL_PUTTC," +
+             "DL_PieceBC, DL_PieceBL, DL_QteBL, DL_QteDE, DL_QtePL, DL_DateBC, DL_DateDE, DL_DatePL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_Remise01REM_Type, DL_Remise01REM_Valeur, DL_Remise02REM_Type, DL_Remise02REM_Valeur, DL_Remise03REM_Type, DL_Remise03REM_Valeur, DL_PUBC, DL_PrixRU, DL_MvtStock, DL_TTC, DL_NoRef, DL_PUDevise, DL_TypePL, CA_Num, DL_Frais, DL_NonLivre, DL_FactPoids, DL_Escompte, DL_PiecePL, DL_NoColis, DL_NoLink, LOGO, TRANSLATION, Complement, CO_No, DT_No, DL_QteRessource, DL_PieceOFProd, DL_PieceDE, DL_Operation, DL_NoSousTotal, CA_No, DO_DocType, " +
+             "DL_MontantHT, DL_MontantTTC) " +
              "values " +
              "('', '" + line.codeAcheteur + "','" + line.codeFournis + "','" + line.article.AR_REF + "','" + client.CT_Num + "'," + line.article.AR_StockId + ", " +
              "'" + line.descriptionArticle + "'," + line.NumLigne + "," + line.PrixNetHT + "," + line.Quantite + ",'" + (line.article.Conditionnement != null ? line.article.Conditionnement.EC_ENUMERE : "") + "'," + (line.Calcule_conditionnement != "0" ? line.Calcule_conditionnement : line.Quantite) + "," +
-             "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "', " + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'" + line.article.RP_CODEDEFAUT + "'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'"+line.article.DL_CodeTaxe1+"', "+line.article.DL_Taxe1+",0,0,"+ line.article.DL_PUTTC + "," +
-             " '"+line.DL_PieceBC+ "', " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'})";
+             "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "', " + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'" + line.article.RP_CODEDEFAUT + "'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'" + line.article.DL_CodeTaxe1 + "', " + line.article.DL_Taxe1 + ",0,0," + line.article.DL_PUTTC + "," +
+             " '" + line.DL_PieceBC + "', '', 0.000000, " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'}, 0, 0, 0, 0, 0.000000, 0, 0.000000, 0, 0.000000, 0.000000, 0.000000, 0, 0, 1, 0.000000, 0, '', 0.000000, 0, 0, 0, '', '', 0, '', '', '', 0, 0, 0, 0, '', '', 0, 0, 1, " +
+             "" + line.DL_MontantHT + ", " + line.DL_MontantTTC + ")";
             }
             else
             {
+                /*
                 return "Insert Into " +
              "F_DOCLIGNE(PF_Num, AC_REFCLIENT,AF_REFFOURNISS,AR_REF,CT_NUM,DE_NO," +
              "DL_DESIGN,DL_LIGNE,DL_PRIXUNITAIRE,DL_QTE,EU_Enumere,EU_QTE," +
@@ -234,6 +248,21 @@ namespace importPlanifier.Helpers
              "'" + line.descriptionArticle + "'," + line.NumLigne + "," + line.PrixNetHT + "," + line.Quantite + ",'" + (line.article.Conditionnement != null ? line.article.Conditionnement.EC_ENUMERE : "") + "'," + (line.Calcule_conditionnement != "0" ? line.Calcule_conditionnement : line.Quantite) + "," +
              "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "'," + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'"+line.article.RP_CODEDEFAUT+"'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'" + line.article.DL_CodeTaxe1 + "', " + line.article.DL_Taxe1 + ",0,0," + line.article.DL_PUTTC + "," +
              " '" + line.DL_PieceBC + "', " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'})";
+                */
+
+                return "Insert Into " +
+             "F_DOCLIGNE(PF_Num, AC_REFCLIENT,AF_REFFOURNISS,AR_REF,CT_NUM,DE_NO," +
+             "DL_DESIGN,DL_LIGNE,DL_PRIXUNITAIRE,DL_QTE,EU_Enumere,EU_QTE," +
+             "DL_VALORISE,DO_DATE,DO_DATELIVR,DO_DOMAINE," +
+             "DO_PIECE,DO_TYPE,AG_No1,AG_No2,AR_RefCompose,RP_Code,do_ref,DL_PoidsNet,DL_PoidsBrut,DL_CodeTaxe1,DL_Taxe1,DL_TypeTaux1,DL_TypeTaxe1,DL_PUTTC," +
+             "DL_PieceBC, DL_PieceBL, DL_QteBL, DL_QteDE, DL_QtePL, DL_DateBC, DL_DateDE, DL_DatePL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_Remise01REM_Type, DL_Remise01REM_Valeur, DL_Remise02REM_Type, DL_Remise02REM_Valeur, DL_Remise03REM_Type, DL_Remise03REM_Valeur, DL_PUBC, DL_PrixRU, DL_MvtStock, DL_TTC, DL_NoRef, DL_PUDevise, DL_TypePL, CA_Num, DL_Frais, DL_NonLivre, DL_FactPoids, DL_Escompte, DL_PiecePL, DL_NoColis, DL_NoLink, LOGO, TRANSLATION, Complement, CO_No, DT_No, DL_QteRessource, DL_PieceOFProd, DL_PieceDE, DL_Operation, DL_NoSousTotal, CA_No, DO_DocType, " +
+             "DL_MontantHT, DL_MontantTTC) " +
+             "values " +
+             "('', '" + line.codeAcheteur + "','" + line.codeFournis + "','" + line.article.AR_REF + "','" + client.CT_Num + "'," + line.article.AR_StockId + ", " +
+             "'" + line.descriptionArticle + "'," + line.NumLigne + "," + line.PrixNetHT + "," + line.Quantite + ",'" + (line.article.Conditionnement != null ? line.article.Conditionnement.EC_ENUMERE : "") + "'," + (line.Calcule_conditionnement != "0" ? line.Calcule_conditionnement : line.Quantite) + "," +
+             "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "', " + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'" + line.article.RP_CODEDEFAUT + "'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'" + line.article.DL_CodeTaxe1 + "', " + line.article.DL_Taxe1 + ",0,0," + line.article.DL_PUTTC + "," +
+             " '" + line.DL_PieceBC + "', '', 0.000000, " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'}, 0, 0, 0, 0, 0.000000, 0, 0.000000, 0, 0.000000, 0.000000, 0.000000, 0, 0, 1, 0.000000, 0, '', 0.000000, 0, 0, 0, '', '', 0, '', '', '', 0, 0, 0, 0, '', '', 0, 0, 1, " +
+             "" + line.DL_MontantHT + ", " + line.DL_MontantTTC + ")";
             }
         }
 
@@ -942,7 +971,7 @@ namespace importPlanifier.Helpers
             {
                 string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, " +
                     "LI_No, cbLI_No, DO_Imprim, DO_Reliquat, CA_Num, DO_Souche, DO_Ecart, AB_No, CA_No, DO_Transfere, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_ValFrais, DO_TypeLigneFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, DO_FactureElec, DO_FactureFrs, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_EStatut, DO_StatutBAP, DO_Escompte, DO_DocType, DO_TypeCalcul, DO_AdressePaiement, DO_PaiementLigne, DO_MotifDevis, DO_Conversion) " +
-                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Donneur_Ordre + " | " + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
+                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
                                 "" + list_of_supplier_info[14] + ", " + list_of_supplier_info[15] + ", 0, 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)";
                 return sql;
             }
@@ -950,7 +979,7 @@ namespace importPlanifier.Helpers
             {
                 string sql = "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, " +
                     "LI_No, cbLI_No, DO_Imprim, DO_Reliquat, CA_Num, DO_Souche, DO_Ecart, AB_No, CA_No, DO_Transfere, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_ValFrais, DO_TypeLigneFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, DO_FactureElec, DO_FactureFrs, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_EStatut, DO_StatutBAP, DO_Escompte, DO_DocType, DO_TypeCalcul, DO_AdressePaiement, DO_PaiementLigne, DO_MotifDevis, DO_Conversion) " +
-                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Donneur_Ordre + " | " + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
+                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
                                 "" + list_of_supplier_info[14] + ", " + list_of_supplier_info[15] + ", 0, 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)";
                 return sql;
             }
