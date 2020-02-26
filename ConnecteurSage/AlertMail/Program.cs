@@ -578,110 +578,6 @@ namespace AlertMail
             {
                 return null;
             }
-            /*
-            ConfigurationDNS dns = new ConfigurationDNS();
-            dns.LoadSQL();
-            CustomMailRecap recap_imp = null;
-            CustomMailRecap recap_exp = null;
-            //MailCustom mailResult = null;
-            bool sendMailImp = false;
-            string textImp = "";
-            bool sendMailExp = false;
-            string textExp = "";
-            List<string> attachements = new List<string>();
-
-            //check if the file exist
-            if (File.Exists("Mail_IMP.ml"))
-            {
-                recap_imp = new CustomMailRecap();
-                recap_imp.Lines = new List<CustomMailRecapLines>();
-                recap_imp.Load("Mail_IMP.ml");
-
-                //make the following body message
-                if (recap_imp.Lines.Count == 0)
-                {
-                    sendMailImp = false;
-                }
-                else if (recap_imp.Lines.Count == 1)
-                {
-                    sendMailImp = true;
-                    textImp += "L'import d'un document commercial a échoué. Voici un résumé du document en erreur :\n";
-                }
-                else if (recap_imp.Lines.Count > 1)
-                {
-                    sendMailImp = true;
-                    textImp += "L'import de plusieurs documents commerciaux ont échoué. Voici le résumé de chaque document en erreur :\n";
-                }
-                for (int i = 0; i < recap_imp.Lines.Count; i++)
-                {
-                    textImp += (i+1) + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\"\nNom du fichier : "+recap_imp.Lines[i].FileName+"\nMessage erreur : " + recap_imp.Lines[i].DocumentErrorMessageDebug + "\nStackTrace: "+ recap_imp.Lines[i].DocumentErrorStackTraceDebug+ "\nL'erreur peut etre trouvé dans " + recap_imp.Lines[i].FilePath + "\n\n";
-                    if (!attachements.Contains(recap_imp.Lines[i].FilePath))
-                    {
-                        attachements.Add(recap_imp.Lines[i].FilePath);
-                    }
-                }
-                recap_imp.Attachments = attachements;
-                attachements.Clear();
-            }
-
-            //check if the file exist
-            if (File.Exists("Mail_EXP.ml"))
-            {
-                attachements.Clear();
-                recap_exp = new CustomMailRecap();
-                recap_exp.Lines = new List<CustomMailRecapLines>();
-                recap_exp.Load("Mail_EXP.ml");
-
-                //make the following body message
-                if (recap_exp.Lines.Count == 0)
-                {
-                    sendMailExp = false;
-                }
-                else if (recap_exp.Lines.Count == 1)
-                {
-                    sendMailExp = true;
-                    textExp += "L'import d'un document commercial durant l'import a échoué. Voici un résumer du document échoué :\n";
-                }
-                else if (recap_exp.Lines.Count > 1)
-                {
-                    sendMailExp = true;
-                    textExp += "L'import de plusieurs documents commerciaux durant l'import ont échoué. Voici le résumer de chaque document échoué :\n";
-                }
-                for (int i = 0; i < recap_exp.Lines.Count; i++)
-                {
-                    textExp += (i + 1) + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\"\nNom du fichier : " + recap_exp.Lines[i].FileName + "\nMessage erreur : " + recap_exp.Lines[i].DocumentErrorMessageDebug + "\nStackTrace: " + recap_exp.Lines[i].DocumentErrorStackTraceDebug + "\nL'erreur peut etre trouvé dans " + recap_exp.Lines[i].FilePath + "\n\n";
-                    if (!attachements.Contains(recap_exp.Lines[i].FilePath))
-                    {
-                        attachements.Add(recap_exp.Lines[i].FilePath);
-                    }
-                }
-
-                recap_exp.Attachments = attachements;
-                attachements.Clear();
-            }
-
-            //send the recap mail
-            if (sendMailImp & !sendMailExp)
-            {
-                return new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE.", recap_imp.Attachments);
-            }
-            else if (sendMailExp & !sendMailImp)
-            {
-                return new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", recap_exp.Attachments);
-            }
-            else if (sendMailImp && sendMailExp)
-            {
-                attachements.Clear();
-                attachements.AddRange(recap_imp.Attachments);
-                attachements.AddRange(recap_exp.Attachments);
-
-                return new MailCustom("[" + dns.Prefix + "] " + recap_imp.Subject + " et "+ recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE.", attachements);
-            }
-            else
-            {
-                return null;
-            }
-            */
         }
 
         public static string getFileSize(long size)
@@ -744,7 +640,10 @@ namespace AlertMail
                 {
                     if (confMail.dest1_enable && !string.IsNullOrEmpty(confMail.dest1))
                     {
+                        Console.WriteLine("");
+                        Console.WriteLine("client dest1 : " + confMail.dest1 + " | CC : edi@anexys.fr");
                         msg.To.Add(new MailAddress(confMail.dest1, confMail.dest1));
+                        msg.CC.Add(new MailAddress("edi@anexys.fr", "edi@anexys.fr"));
                     }
                     else
                     {
@@ -756,7 +655,10 @@ namespace AlertMail
                 {
                     if (confMail.dest2_enable && !string.IsNullOrEmpty(confMail.dest2))
                     {
+                        Console.WriteLine("");
+                        Console.WriteLine("log dest2 : " + confMail.dest2 + " | CC : jl@anexys.fr");
                         msg.To.Add(new MailAddress(confMail.dest2, confMail.dest2));
+                        msg.CC.Add(new MailAddress("jl@anexys.fr", "jl@anexys.fr"));
                     }
                     else
                     {
@@ -769,8 +671,7 @@ namespace AlertMail
                     Console.WriteLine("Sending mail type is not client nor log");
                     return;
                 }
-                Console.WriteLine("");
-                Console.WriteLine("dest1 : " + confMail.dest1 + " | dest2 : "+ confMail.dest2);
+                
 
                 msg.Subject = subject;
 
