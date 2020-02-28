@@ -138,7 +138,7 @@ namespace importPlanifier.Helpers
             }
             else
             {
-                return "delete from F_DOCLIGNE where do_piece = '" + numCommande + "' delete from CFCI.dbo.F_DOCREGL where do_piece = '" + numCommande + "' delete from F_DOCENTETE where do_piece = '" + numCommande + "'";
+                return "delete from F_DOCLIGNE where do_piece = '" + numCommande + "' delete from F_DOCREGL where do_piece = '" + numCommande + "' delete from F_DOCENTETE where do_piece = '" + numCommande + "'";
             }
         }
 
@@ -191,9 +191,9 @@ namespace importPlanifier.Helpers
                     "LI_NO,N_CATCOMPTA,DO_MOTIF,DO_COORD01,DO_TAXE1,DO_TypeTaux1,DO_TypeTaxe1) " +
                     "values" +
                     "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
-                    "" + order.conditionLivraison + ",{d '" + order.DateCommande + "'},{d '" + order.DateLivraison + "}," + client.N_Devise + ",0," +
+                    "" + order.conditionLivraison + ",{d '" + order.DateCommande + "'},{d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21,2," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
@@ -210,7 +210,7 @@ namespace importPlanifier.Helpers
                     "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
                     "" + order.conditionLivraison + ", {d '" + order.DateCommande + "'}, {d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21,2," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
@@ -224,14 +224,14 @@ namespace importPlanifier.Helpers
              "" + getPrefix() + "F_DOCLIGNE(PF_Num, AC_REFCLIENT,AF_REFFOURNISS,AR_REF,CT_NUM,DE_NO," +
              "DL_DESIGN,DL_LIGNE,DL_PRIXUNITAIRE,DL_QTE,EU_Enumere,EU_QTE," +
              "DL_VALORISE,DO_DATE,DO_DATELIVR,DO_DOMAINE," +
-             "DO_PIECE,DO_TYPE,AG_No1,AG_No2,AR_RefCompose,RP_Code,do_ref,DL_PoidsNet,DL_PoidsBrut,DL_CodeTaxe1,DL_Taxe1,DL_TypeTaux1,DL_TypeTaxe1,DL_PUTTC," +
-             "DL_PieceBC, DL_PieceBL, DL_QteBL, DL_QteDE, DL_QtePL, DL_DateBC, DL_DateDE, DL_DatePL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_Remise01REM_Type, DL_Remise01REM_Valeur, DL_Remise02REM_Type, DL_Remise02REM_Valeur, DL_Remise03REM_Type, DL_Remise03REM_Valeur, DL_PUBC, DL_PrixRU, DL_MvtStock, DL_TTC, DL_NoRef, DL_PUDevise, DL_TypePL, CA_Num, DL_Frais, DL_NonLivre, DL_FactPoids, DL_Escompte, DL_PiecePL, DL_NoColis, DL_NoLink, LOGO, TRANSLATION, Complement, CO_No, DT_No, DL_QteRessource, DL_PieceOFProd, DL_PieceDE, DL_Operation, DL_NoSousTotal, CA_No, DO_DocType, " +
+             "DO_PIECE,DO_TYPE,AG_No1,AG_No2,AR_RefCompose,RP_Code,do_ref,DL_PoidsNet,DL_PoidsBrut,DL_CodeTaxe1,DL_Taxe1,DL_TypeTaux1,DL_TypeTaxe1, DL_CodeTaxe2,DL_Taxe2,DL_TypeTaux2,DL_TypeTaxe2, DL_PUTTC," +
+             "DL_PieceBC, DL_PieceBL, DL_QteBL, DL_QteDE, DL_QtePL, DL_DateBC, DL_DateDE, DL_DatePL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_Remise01REM_Type, DL_Remise01REM_Valeur, DL_Remise02REM_Type, DL_Remise02REM_Valeur, DL_Remise03REM_Type, DL_Remise03REM_Valeur, DL_PUBC, DL_PrixRU, DL_MvtStock, DL_TTC, DL_NoRef, DL_PUDevise, DL_TypePL, DL_Frais, DL_NonLivre, DL_FactPoids, DL_Escompte, DL_PiecePL, DL_NoColis, DL_NoLink, CO_No, DT_No, DL_QteRessource, DL_PieceOFProd, DL_PieceDE, DL_Operation, DL_NoSousTotal, CA_No, DO_DocType, " +
              "DL_MontantHT, DL_MontantTTC) " +
              "values " +
              "('', '" + line.codeAcheteur + "','" + line.codeFournis + "','" + line.article.AR_REF + "','" + client.CT_Num + "'," + line.article.AR_StockId + ", " +
              "'" + line.descriptionArticle + "'," + line.NumLigne + "," + line.PrixNetHT + "," + line.Quantite + ",'" + (line.article.Conditionnement != null ? line.article.Conditionnement.EC_ENUMERE : "") + "'," + (line.Calcule_conditionnement != "0" ? line.Calcule_conditionnement : line.Quantite) + "," +
-             "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "', " + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'" + line.article.RP_CODEDEFAUT + "'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'" + line.article.DL_CodeTaxe1 + "', " + line.article.DL_Taxe1 + ",0,0," + line.article.DL_PUTTC + "," +
-             " '" + line.DL_PieceBC + "', '', 0.000000, " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'}, 0, 0, 0, 0, 0.000000, 0, 0.000000, 0, 0.000000, 0.000000, 0.000000, 0, 0, 1, 0.000000, 0, '', 0.000000, 0, 0, 0, '', '', 0, '', '', '', 0, 0, 0, 0, '', '', 0, 0, 1, " +
+             "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "', " + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'" + line.article.RP_CODEDEFAUT + "'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'" + line.article.DL_CodeTaxe1 + "', " + line.article.DL_Taxe1 + ",0,0, '" + line.article.DL_CodeTaxe2 + "'," + line.article.DL_Taxe2 + ",2,2," + line.article.DL_PUTTC + "," +
+             " '" + line.DL_PieceBC + "', '', 0.000000, " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'}, 0, 0, 0, 0.000000, 0, 0.000000, 0.000000, 0.000000, 0, 0, 1, 0.000000, 0, 0.000000, 0, 0, 0, '', '', 0, '', '', '', 0, 0, 0, 0, '', '', 0, 0, 1, " +
              "" + line.DL_MontantHT + ", " + line.DL_MontantTTC + ")";
             }
             else
@@ -254,14 +254,14 @@ namespace importPlanifier.Helpers
              "F_DOCLIGNE(PF_Num, AC_REFCLIENT,AF_REFFOURNISS,AR_REF,CT_NUM,DE_NO," +
              "DL_DESIGN,DL_LIGNE,DL_PRIXUNITAIRE,DL_QTE,EU_Enumere,EU_QTE," +
              "DL_VALORISE,DO_DATE,DO_DATELIVR,DO_DOMAINE," +
-             "DO_PIECE,DO_TYPE,AG_No1,AG_No2,AR_RefCompose,RP_Code,do_ref,DL_PoidsNet,DL_PoidsBrut,DL_CodeTaxe1,DL_Taxe1,DL_TypeTaux1,DL_TypeTaxe1,DL_PUTTC," +
-             "DL_PieceBC, DL_PieceBL, DL_QteBL, DL_QteDE, DL_QtePL, DL_DateBC, DL_DateDE, DL_DatePL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_Remise01REM_Type, DL_Remise01REM_Valeur, DL_Remise02REM_Type, DL_Remise02REM_Valeur, DL_Remise03REM_Type, DL_Remise03REM_Valeur, DL_PUBC, DL_PrixRU, DL_MvtStock, DL_TTC, DL_NoRef, DL_PUDevise, DL_TypePL, CA_Num, DL_Frais, DL_NonLivre, DL_FactPoids, DL_Escompte, DL_PiecePL, DL_NoColis, DL_NoLink, LOGO, TRANSLATION, Complement, CO_No, DT_No, DL_QteRessource, DL_PieceOFProd, DL_PieceDE, DL_Operation, DL_NoSousTotal, CA_No, DO_DocType, " +
+             "DO_PIECE,DO_TYPE,AG_No1,AG_No2,AR_RefCompose,RP_Code,do_ref,DL_PoidsNet,DL_PoidsBrut,DL_CodeTaxe1,DL_Taxe1,DL_TypeTaux1,DL_TypeTaxe1, DL_CodeTaxe2,DL_Taxe2,DL_TypeTaux2,DL_TypeTaxe2, DL_PUTTC," +
+             "DL_PieceBC, DL_PieceBL, DL_QteBL, DL_QteDE, DL_QtePL, DL_DateBC, DL_DateDE, DL_DatePL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_Remise01REM_Type, DL_Remise01REM_Valeur, DL_Remise02REM_Type, DL_Remise02REM_Valeur, DL_Remise03REM_Type, DL_Remise03REM_Valeur, DL_PUBC, DL_PrixRU, DL_MvtStock, DL_TTC, DL_NoRef, DL_PUDevise, DL_TypePL, DL_Frais, DL_NonLivre, DL_FactPoids, DL_Escompte, DL_PiecePL, DL_NoColis, DL_NoLink, CO_No, DT_No, DL_QteRessource, DL_PieceOFProd, DL_PieceDE, DL_Operation, DL_NoSousTotal, CA_No, DO_DocType, " +
              "DL_MontantHT, DL_MontantTTC) " +
              "values " +
              "('', '" + line.codeAcheteur + "','" + line.codeFournis + "','" + line.article.AR_REF + "','" + client.CT_Num + "'," + line.article.AR_StockId + ", " +
              "'" + line.descriptionArticle + "'," + line.NumLigne + "," + line.PrixNetHT + "," + line.Quantite + ",'" + (line.article.Conditionnement != null ? line.article.Conditionnement.EC_ENUMERE : "") + "'," + (line.Calcule_conditionnement != "0" ? line.Calcule_conditionnement : line.Quantite) + "," +
-             "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "', " + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'" + line.article.RP_CODEDEFAUT + "'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'" + line.article.DL_CodeTaxe1 + "', " + line.article.DL_Taxe1 + ",0,0," + line.article.DL_PUTTC + "," +
-             " '" + line.DL_PieceBC + "', '', 0.000000, " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'}, 0, 0, 0, 0, 0.000000, 0, 0.000000, 0, 0.000000, 0.000000, 0.000000, 0, 0, 1, 0.000000, 0, '', 0.000000, 0, 0, 0, '', '', 0, '', '', '', 0, 0, 0, 0, '', '', 0, 0, 1, " +
+             "1, {d '" + order.DateCommande + "'}, {d '" + line.DateLivraison + "'},0,'" + order.Id + "',1," + line.article.gamme1 + "," + line.article.gamme2 + ",'" + line.article.AR_REFCompose + "', " + ((line.article.RP_CODEDEFAUT == "NULL") ? "NULL" : "'" + line.article.RP_CODEDEFAUT + "'") + ",'" + line.DO_Ref + "'," + line.article.AR_POIDSNET.Replace(",", ".") + "," + line.article.AR_POIDSBRUT.Replace(",", ".") + ",'" + line.article.DL_CodeTaxe1 + "', " + line.article.DL_Taxe1 + ",0,0, '"+line.article.DL_CodeTaxe2+"',"+ line.article.DL_Taxe2 + ",2,2," + line.article.DL_PUTTC + "," +
+             " '" + line.DL_PieceBC + "', '', 0.000000, " + line.DL_QteDE + ", " + line.DL_QtePL + ", {d '" + line.DL_DateBC + "'}, {d '" + line.DL_DateDE + "'}, {d '" + line.DL_DatePL + "'}, 0, 0, 0, 0.000000, 0, 0.000000, 0.000000, 0.000000, 0, 0, 1, 0.000000, 0, 0.000000, 0, 0, 0, '', '', 0, '', '', '', 0, 0, 0, 0, '', '', 0, 0, 1, " +
              "" + line.DL_MontantHT + ", " + line.DL_MontantTTC + ")";
             }
         }

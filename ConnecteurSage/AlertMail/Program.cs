@@ -411,6 +411,8 @@ namespace AlertMail
                     recap_imp.Lines = new List<CustomMailRecapLines>();
                     recap_imp.Load("Mail_IMP.ml");
 
+
+
                     //make the following body message
                     if (recap_imp.Lines.Count == 0)
                     {

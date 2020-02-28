@@ -997,7 +997,7 @@ namespace importPlanifier.Classes
 
                                                                 if (tva_2)
                                                                 {
-                                                                    endTVA += Convert.ToDouble(tva__2.TA_Taux);
+                                                                    //endTVA += Convert.ToDouble(tva__2.TA_Taux);
                                                                     order.Lines[i].article.DL_Taxe2 = tva__2.TA_Taux.Replace(",", ".");
                                                                 }
                                                                 else
@@ -1009,7 +1009,7 @@ namespace importPlanifier.Classes
 
                                                                 if (tva_3)
                                                                 {
-                                                                    endTVA += Convert.ToDouble(tva__3.TA_Taux);
+                                                                    //endTVA += Convert.ToDouble(tva__3.TA_Taux);
                                                                     order.Lines[i].article.DL_Taxe3 = tva__3.TA_Taux.Replace(",", ".");
                                                                 }
                                                                 else
@@ -1087,8 +1087,14 @@ namespace importPlanifier.Classes
                                                         order.Lines[i].DL_DateDE = order.DateCommande;
                                                         order.Lines[i].DL_DatePL = "1753-01-01";
 
+                                                        order.Lines[i].article.DL_PrixUnitaire_salePriceHT = order.Lines[i].PrixNetHT;
+
                                                         order.Lines[i].DL_MontantHT = (Convert.ToDouble(order.Lines[i].article.DL_PrixUnitaire_salePriceHT.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",",".");
                                                         order.Lines[i].DL_MontantTTC = (Convert.ToDouble(order.Lines[i].article.DL_PUTTC.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",", ".");
+
+                                                        logFileWriter_import.WriteLine("");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : DL_MontantHT : " + order.Lines[i].DL_MontantHT + " = DL_PrixUnitaire : " + order.Lines[i].article.DL_PrixUnitaire_salePriceHT + " X DL_QteBC : " + order.Lines[i].DL_QteBC);
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : DL_MontantTTC : " + order.Lines[i].DL_MontantTTC + " = DL_PUTTC : " + order.Lines[i].article.DL_PUTTC + " X DL_QteBC : " + order.Lines[i].DL_QteBC);
 
 
                                                         if (insertCommandeLine(client, order, order.Lines[i], logFileWriter_import))
@@ -2121,18 +2127,19 @@ namespace importPlanifier.Classes
                 {
                     string[] dateTime = string.Format("{0:yyyyMMdd_HHmm}", DateTime.Now).Split('_');
                     ConfigurationDNS dns = new ConfigurationDNS();
-                    dns.Load();
+                    //dns.Load();
                     dns.LoadSQL();
                     CustomMailRecap recap_new = new CustomMailRecap();
                     List<string> attchmentsList = new List<string>();
 
                     recap_new.MailType = "Mail_IMP";
                     recap_new.Client = dns.Prefix;
-                    if (recapLinesList_new.Count > 1)
+
+                    if (recapLinesList_new.Count == 1)
                     {
                         recap_new.Subject = "Erreur d'import d'un document";
                     }
-                    else
+                    else if (recapLinesList_new.Count > 2)
                     {
                         recap_new.Subject = "Erreur d'import des documents";
                     }
@@ -2199,6 +2206,7 @@ namespace importPlanifier.Classes
                         newRecap.Attachments = attchmentsList_1;
                         newRecap.saveInfo(newRecap, "Mail_Recap.ml");
                         logFileWriter_general.WriteLine(DateTime.Now + " | Create Mail_Recap.ml file!");
+                        Console.WriteLine("newRecap.Client: " + newRecap.Client);
                     }
                     else
                     {
@@ -2212,6 +2220,8 @@ namespace importPlanifier.Classes
                         recap.Subject = "Récapitulatif des erreurs de document éventuelles / restantes";
                         recap.DateTimeCreated = string.Format("{0:dd-MM-yyyy HH:mm}", DateTime.Now);
                         recap.DateTimeModified = "";
+
+                        Console.WriteLine("recap.Client: " + recap.Client);
 
                         recap.Lines = new List<CustomMailRecapLines>();
                         for (int i=0; i<recapLinesList_new.Count; i++)
@@ -2229,7 +2239,8 @@ namespace importPlanifier.Classes
                     }
 
                     recapLinesList_new.Clear();
-                }else if(cMail != null)
+                }
+                else if(cMail != null)
                 {
                     logFileWriter_general.WriteLine("");
                     logFileWriter_general.WriteLine(DateTime.Now + " | Mail configurations are null !");
@@ -2306,6 +2317,9 @@ namespace importPlanifier.Classes
                 {
                     writer.WriteLine(DateTime.Now + " | insertCommande() : ERREUR[4]" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée.", ex.Message, ex.StackTrace, filename, logFileName_import));
+
+                    deleteCommande(true, order.Id);
+
                     return false;
                 }
             }
@@ -6080,6 +6094,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
+                    writer.WriteLine(DateTime.Now + " | existeCommande() : SQL ===> "+ QueryHelper.get_NumPiece_Motif(false, num));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.get_NumPiece_Motif(false, num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
@@ -6596,7 +6611,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    writer.WriteLine(DateTime.Now + " : Erreur[41] - SQL :: " + QueryHelper.getClient(false, id));
+                    writer.WriteLine(DateTime.Now + " | getClient() : Erreur[41] - SQL :: " + QueryHelper.getClient(false, id));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
@@ -6612,12 +6627,12 @@ namespace importPlanifier.Classes
                                 if (flag == 1)
                                 {
                                     // Console.WriteLine(DateTime.Now + " : Erreur[41] - GLN émetteur  " + id + " n'existe pas dans la base sage.");
-                                    writer.WriteLine(DateTime.Now + " : Erreur[41] - GLN émetteur  " + id + " n'existe pas dans la base sage.");
+                                    writer.WriteLine(DateTime.Now + " | getClient() : Erreur[41] - GLN émetteur  " + id + " n'existe pas dans la base sage.");
                                 }
                                 if (flag == 2)
                                 {
                                     // Console.WriteLine(DateTime.Now + " : Erreur[40] - GLN destinataire  " + id + " n'existe pas dans la base sage.");
-                                    writer.WriteLine(DateTime.Now + " : Erreur[40] - GLN destinataire  " + id + " n'existe pas dans la base sage.");
+                                    writer.WriteLine(DateTime.Now + " | getClient() : Erreur[40] - GLN destinataire  " + id + " n'existe pas dans la base sage.");
                                 }
                                 return null;
                             }
@@ -6628,8 +6643,8 @@ namespace importPlanifier.Classes
                 {
                     // Exceptions pouvant survenir durant l'exécution de la requête SQL
                     // Console.WriteLine(DateTime.Now + " : Erreur[38] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                    writer.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getClient(false, id));
-                    writer.WriteLine(DateTime.Now + " : Erreur[38] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    //writer.WriteLine(DateTime.Now + " | getClient() : SQL ===> " + QueryHelper.getClient(false, id));
+                    writer.WriteLine(DateTime.Now + " | getClient() : Erreur[38] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                     return null;
                 }
@@ -6644,8 +6659,8 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    writer.WriteLine(DateTime.Now + " | getClient_v2() : SQL ===> " + QueryHelper.getClient(false, id));
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
+                    writer.WriteLine(DateTime.Now + " | getClient_v2() : SQL ===> " + QueryHelper.getClient(true, id));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(true, id), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
