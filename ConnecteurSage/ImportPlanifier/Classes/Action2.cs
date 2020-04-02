@@ -389,7 +389,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. le cLient n'est pas trouvé dans Sage !", "Client trouvé est null, verifier le code client.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. le cLient ("+ order.codeClient + ") n'est pas trouvé dans Sage !", "Client trouvé est null, verifier le code client (" + order.codeClient + ").", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -405,7 +405,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. L'acheteur n'est pas trouvé dans Sage !", "Acheteur trouvé est null, verifier le code Acheteur.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. L'acheteur (" + order.codeAcheteur + ") n'est pas trouvé dans Sage !", "Acheteur trouvé est null, verifier le code Acheteur (" + order.codeAcheteur + ").", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -420,7 +420,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. Le fournisseur n'est pas trouvé dans Sage !", "Fournisseur trouvé est null, verifier le code Fournisseur.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. Le fournisseur (" + order.codeFournisseur + ") n'est pas trouvé dans Sage !", "Fournisseur trouvé est null, verifier le code Fournisseur (" + order.codeFournisseur + ").", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -522,7 +522,7 @@ namespace importPlanifier.Classes
                                                     {
                                                         OrderLine line = new OrderLine();
                                                         line.NumLigne = tab[1];
-                                                        line.article = getArticle(tab[2], logFileWriter_import);
+                                                        line.article = getArticle(tab[2], client.CT_NumCentrale, logFileWriter_import);
 
                                                         if (line.article == null)
                                                         {
@@ -530,7 +530,7 @@ namespace importPlanifier.Classes
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
                                                             tabCommandeError.Add(filename.Name);
-                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. Cette article (" + tab[2] + ") n'existe pas dans la base.", "Cette article (" + tab[2] + ") n'existe pas dans la base.", "", filename.Name, logFileName_import));
+                                                            recapLinesList_new.Add(new CustomMailRecapLines(order.Id, "L'import de la commande est annulée. Cette article (" + tab[2] + ") n'existe pas dans la base pour le client ("+ client.CT_Num + ").", "Cette article (" + tab[2] + ") n'existe pas dans la base.", "", filename.Name, logFileName_import));
                                                             goto goErrorLoop;
                                                         }
 
@@ -629,8 +629,12 @@ namespace importPlanifier.Classes
 
                                                         decimal prixSage = Decimal.Parse(line.article.AR_PRIXVEN.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
 
-                                                        
-                                                        if (prix != 0.0m) //if the article prix in the file is 0.0 then use sage article prix
+                                                        logFileWriter_import.WriteLine("");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Prix *********************");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Prix trouvé dans le fichier EDI => " + prix + " && Prix trouvé dans Sage => " + prixSage);
+                                                        logFileWriter_import.WriteLine("");
+
+                                                        if (prixSage == 0.0m) //if sage article prie is 0.0 then use the EDI file price
                                                         {
                                                             line.PrixNetHT = prix.ToString().Replace(',', '.');
                                                         }
@@ -653,6 +657,7 @@ namespace importPlanifier.Classes
                                                                 line.PrixNetHT = prix.ToString().Replace(',', '.');
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix envoyer par le client : " + prix + ".");
                                                             }
+                                                            logFileWriter_import.WriteLine("");
                                                         }
 
                                                         order.Lines.Add(line);
@@ -1246,7 +1251,7 @@ namespace importPlanifier.Classes
                                                         string theFileName = filename.FullName;
                                                         string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "_" + file_doc_reference + "_" + System.IO.Path.GetFileName(theFileName);
                                                         File.Move(theFileName, newFileLocation);
-                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
                                                         logFileWriter_import.WriteLine("");
                                                         logFileWriter_import.WriteLine("");
@@ -1345,8 +1350,8 @@ namespace importPlanifier.Classes
 
                             if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
                             {
-                                string reference_me_doc = lastNumberReference("ME", logFileWriter_import);    //"ME00004";//get last reference number for entry STOCK document MEXXXXX and increment it
-                                string reference_ms_doc = lastNumberReference("MS", logFileWriter_import);    //"MS00007";//get last reference number for removal STOCK document MSXXXXX and increment it
+                                string reference_me_doc = get_next_num_piece_commande_v2("ME", logFileWriter_import); //lastNumberReference("ME", logFileWriter_import);    //"ME00004";//get last reference number for entry STOCK document MEXXXXX and increment it
+                                string reference_ms_doc = get_next_num_piece_commande_v2("MS", logFileWriter_import); //lastNumberReference("MS", logFileWriter_import);    //"MS00007";//get last reference number for removal STOCK document MSXXXXX and increment it
 
                                 int i = 0;
                                 string totallines = "";
@@ -1748,7 +1753,7 @@ namespace importPlanifier.Classes
                             if (lines[0].Split(';').Length == 6)
                             {
                                 file_doc_reference = lines[0].Split(';')[1];
-                                string reference_DESADV_doc = lastNumberReference("BL", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
+                                string reference_DESADV_doc = get_next_num_piece_commande_v2("BL", logFileWriter_import); //lastNumberReference("BL", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
 
                                 int i = 0;
                                 string totallines = "";
@@ -1920,7 +1925,7 @@ namespace importPlanifier.Classes
                                     mask = "BLF";
                                 }
 
-                                string reference_BLF_doc = lastNumberReference(mask, logFileWriter_import);
+                                string reference_BLF_doc = get_next_num_piece_commande_v2(mask, logFileWriter_import); // lastNumberReference(mask, logFileWriter_import);
 
                                 int i = 0;
                                 string totallines = "";
@@ -2840,7 +2845,7 @@ namespace importPlanifier.Classes
             double DO_TotalTTC_MS = 0.0;
             //double DO_TotalPoid = 0.0;
 
-            string reference_ME_doc = lastNumberReference("ME", logFileWriter);   //Doc ME
+            string reference_ME_doc = get_next_num_piece_commande_v2("ME", logFileWriter); //lastNumberReference("ME", logFileWriter);   //Doc ME
             if (reference_ME_doc == null)
             {
                 logFileWriter.Flush();
@@ -2848,7 +2853,7 @@ namespace importPlanifier.Classes
                 return false;
             }
 
-            string reference_MS_doc = lastNumberReference("MS", logFileWriter);   //Doc MS
+            string reference_MS_doc = get_next_num_piece_commande_v2("MS", logFileWriter); //lastNumberReference("MS", logFileWriter);   //Doc MS
             if (reference_MS_doc == null)
             {
                 logFileWriter.Flush();
@@ -3403,6 +3408,7 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : StackTrace :" + ex.StackTrace);
                             logFileWriter.WriteLine(DateTime.Now + " | insertStockVeolog() : Import annulée");
                             logFileWriter.Flush();
+                            recapLinesList_new.Add(new CustomMailRecapLines(reference_ME_doc, "L'import du document est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
                             return false;
                         }
                         string[,] products_ME = new string[(s.Count - 1), 72]; // create array with enough space
@@ -3461,8 +3467,8 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Mettre à jour la numérotation du document \"" + reference_ME_doc + "\".");
 
-                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "STK_ME", reference_ME_doc));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "STK_ME", reference_ME_doc), connexion);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "ME", reference_ME_doc));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "ME", reference_ME_doc), connexion);
                             IDataReader reader = command.ExecuteReader();
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Nouvelle numérotation à jour!");
                         }
@@ -3554,8 +3560,8 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Mettre à jour la numérotation du document \"" + reference_MS_doc + "\".");
 
-                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "STK_MS", reference_MS_doc));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "STK_MS", reference_MS_doc), connexion);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "MS", reference_MS_doc));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "MS", reference_MS_doc), connexion);
                             IDataReader reader = command.ExecuteReader();
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Nouvelle numérotation à jour!");
                         }
@@ -3625,8 +3631,9 @@ namespace importPlanifier.Classes
                     string do_totalTTC_ = "";
                     string do_NetAPayer_ = "";
                     string do_MontantRegle_ = "";
+                    string CO_No = "";
 
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupérer la référence Commande client livré, la narure OP ou P et le total ht de la commande " + dh.Ref_Commande_Donneur_Ordre);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Récupérer des informations de la commande la référence " + dh.Ref_Commande_Donneur_Ordre);
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                     {
@@ -3641,13 +3648,13 @@ namespace importPlanifier.Classes
                                 do_totalTTC_ = reader[4].ToString().Replace(",", ".");
                                 do_NetAPayer_ = reader[5].ToString().Replace(",", ".");
                                 do_MontantRegle_ = reader[6].ToString().Replace(",", ".");
+                                CO_No = reader[7].ToString();
                             }
                             else// If no rows returned
                             {
                                 //do nothing.
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Aucune commande trouvé!. ");
                                 logFileWriter.Flush();
-                                logFileWriter.Close();
                                 recapLinesList_new.Add(new CustomMailRecapLines(reference_DESADV_doc, "L'import du bon de livraison est annulée. La commande "+dh.Ref_Commande_Donneur_Ordre+" n'exist pas dans la base Sage", "La commande " + dh.Ref_Commande_Donneur_Ordre + " n'exist pas dans la BDD", "", fileName, logFileName_import));
                                 return null;
                             }
@@ -4031,7 +4038,7 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 51] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                   //DL_QtePL
                                 list_of_cmd_lines[counter, 52] = "";                    //DL_NoColis
                                 list_of_cmd_lines[counter, 53] = "0";                   //DL_NoLink
-                                list_of_cmd_lines[counter, 54] = "0";                    //CO_No
+                                list_of_cmd_lines[counter, 54] = CO_No;                    //CO_No
                                 list_of_cmd_lines[counter, 55] = "0";                //DT_No
                                 list_of_cmd_lines[counter, 56] = "";                    //DL_PieceDE
                                 list_of_cmd_lines[counter, 57] = "NULL";                   //DL_DateDe
@@ -4092,12 +4099,12 @@ namespace importPlanifier.Classes
 
                     logFileWriter.WriteLine("");
                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Vérifier si un produit pour 0 = BL");
-                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat));
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Requête en cours d'exécution ===>\r\n" + QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat, CO_No));
 
                     //generate document BL_____. in database.
                     try
                     {
-                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat), connection); //calling the query and parsing the parameters into it
+                        OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocument_Veolog(true, "3", reference_DESADV_doc, curr_date, veologDeliveryDateTime, dh, nature_op_p_, do_totalHT_, do_totalHTNet_, do_totalTTC_, do_NetAPayer_, do_MontantRegle_, list_of_client_info, dh.Etat, CO_No), connection); //calling the query and parsing the parameters into it
                         command.ExecuteReader(); // executing the query
                     }
                     catch (OdbcException ex)
@@ -4944,8 +4951,8 @@ namespace importPlanifier.Classes
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Mettre à jour la numérotation du document \"" + reference_BLF_doc + "\".");
 
-                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BLF_doc));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, "BLF", reference_BLF_doc), connexion);
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : SQL ===> " + QueryHelper.updateDOC_NumerotationTable(true, ((reference_BLF_doc == "BLF") ? "BLF" : "LF"), reference_BLF_doc));
+                            OdbcCommand command = new OdbcCommand(QueryHelper.updateDOC_NumerotationTable(true, ((reference_BLF_doc == "BLF") ? "BLF" : "LF"), reference_BLF_doc), connexion);
                             IDataReader reader = command.ExecuteReader();
                             logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Nouvelle numérotation à jour!");
                         }
@@ -5702,7 +5709,7 @@ namespace importPlanifier.Classes
                         {
                             if (reader.Read())
                             {
-                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
+                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString());
                                 connection.Close();
                                 return cli;
                             }
@@ -5871,7 +5878,7 @@ namespace importPlanifier.Classes
 
         }
 
-        public static Article getArticle(string code_article, StreamWriter writer)
+        public static Article getArticle(string code_article, string CT_NumCentrale, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | getArticle() : Code Article : "+code_article);
             using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
@@ -5879,8 +5886,8 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    writer.WriteLine(DateTime.Now + " | getArticle() : SQL ===>  " + QueryHelper.getArticle(false, code_article));
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(true, code_article), connection))
+                    writer.WriteLine(DateTime.Now + " | getArticle() : SQL ===>  " + QueryHelper.getArticle(true, code_article, CT_NumCentrale));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(true, code_article, CT_NumCentrale), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -5895,7 +5902,14 @@ namespace importPlanifier.Classes
                             else
                             {
                                 //Console.WriteLine(DateTime.Now + " : Erreur - code article " + code_article + " n'existe pas dans la base.");
-                                writer.WriteLine(DateTime.Now + " | getArticle() : Erreur - code article " + code_article + " n'existe pas dans la base.");
+                                if(CT_NumCentrale != null && CT_NumCentrale != "")
+                                {
+                                    writer.WriteLine(DateTime.Now + " | getArticle() : Erreur - code article " + code_article + " n'existe pas dans la base pour le client ou client centrale " + CT_NumCentrale + ".");
+                                }
+                                else
+                                {
+                                    writer.WriteLine(DateTime.Now + " | getArticle() : Erreur - code article " + code_article + " n'existe pas dans la base.");
+                                }
                                 return null;
                             }
                         }
@@ -5953,8 +5967,6 @@ namespace importPlanifier.Classes
                 {
                     Task t = ts.GetTask(taskName);
                     TaskDefinition td = t.Definition;
-                    //Console.WriteLine("L'import des commandes Planifiée :");
-                    //Console.WriteLine("" + td.Triggers[0]);
                     writer.WriteLine(DateTime.Now + " | InfoTachePlanifier() : taskName trigger[0] = "+ td.Triggers[0]);
                     writer.WriteLine("");
                     writer.WriteLine("");
@@ -6332,6 +6344,7 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
+                    writer.WriteLine(DateTime.Now + " | get_next_num_piece_commande() : SQL - "+ QueryHelper.get_Next_NumPiece_BonCommande(false));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande(false), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
@@ -6363,23 +6376,28 @@ namespace importPlanifier.Classes
 
         public static string get_next_num_piece_commande_v2(string mask, StreamWriter writer)
         {
+            writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | get_next_num_piece_commande_v2() | Mask '"+mask+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
             {
                 try
                 {
+                    string result = "";
+                    string db_result = "";
+
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande_v2(false, mask), connection))
+                    writer.WriteLine(DateTime.Now + " | NextNumPiece_v2() : SQL ==> " + QueryHelper.get_Next_NumPiece_BonCommande_v2(true, mask));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_Next_NumPiece_BonCommande_v2(true, mask), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
                                 //Console.WriteLine(reader[0].ToString());
-                                string num = reader[0].ToString();
-                                writer.WriteLine(DateTime.Now + " | get_next_num_piece_commande_v2() | New Mask '" + num + "'");
+                                db_result = reader[0].ToString();
+                                writer.WriteLine(DateTime.Now + " | get_next_num_piece_commande_v2() | New Mask '" + db_result + "'");
                                 connection.Close();
-                                return num;
+                                //return num;
                             }
                             else
                             {
@@ -6387,12 +6405,32 @@ namespace importPlanifier.Classes
                             }
                         }
                     }
+
+                    int chiffreTotal = 7;
+                    writer.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
+                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
+                    int newMaskID = lastMaskID + 1;
+
+                    result = mask; // put ME before adding '0'
+                    string zeros = "";
+                    string result_ = result + "" + newMaskID;
+
+                    for (int i = result_.Length; i < chiffreTotal; i++)
+                    {
+                        zeros += "0";
+                    }
+                    result += zeros + "" + newMaskID;
+
+                    writer.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask : " + result);
+                    writer.WriteLine("");
+                    return result;
                 }
                 catch (Exception ex)
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     writer.WriteLine(DateTime.Now + " : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine("");
                     return null;
                 }
             }
@@ -6618,7 +6656,7 @@ namespace importPlanifier.Classes
                         {
                             if (reader.Read())
                             {
-                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
+                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString());
                                 connection.Close();
                                 return cli;
                             }
@@ -6666,7 +6704,7 @@ namespace importPlanifier.Classes
                         {
                             if (reader.Read())
                             {
-                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString());
+                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString());
                                 writer.WriteLine(DateTime.Now + " | getClient_v2() : Client trouvé!");
                                 connection.Close();
                                 return cli;
@@ -7042,8 +7080,8 @@ namespace importPlanifier.Classes
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine(ex.Message);
             }
-            //Console.ReadLine();
 
+            Console.WriteLine("");
             Console.WriteLine(DateTime.Now + " : Cleaning Files");
             cleanFiles(new string[12, 2] {
                 { "general_logs", logDirectoryName_general}, //log files
@@ -7075,6 +7113,7 @@ namespace importPlanifier.Classes
                     {
                         if (configBackup.general_Log != 0 && directoriesList[x, 0] == "general_logs")
                         {
+                            Console.WriteLine("");
                             string backUpFolderPath = directoriesList[x,1];
                             if (Directory.Exists(backUpFolderPath))
                             {
@@ -7087,6 +7126,7 @@ namespace importPlanifier.Classes
                                 DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
                                 int filesDeleted = 0;
                                 int allFiles = fileListing.GetFiles("*.txt").Length;
+
                                 for (int y = 0; y < allFiles; y++)
                                 {
                                     FileInfo filename = fileListing.GetFiles("*.txt")[y];
@@ -7094,6 +7134,8 @@ namespace importPlanifier.Classes
                                     DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
 
                                     //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
+                                    
+
                                     if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
                                     {
                                         //file was never modified
@@ -7124,6 +7166,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.import_Log != 0 && directoriesList[x, 0] == "import_logs")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Import logs...");
+
                             string backUpFolderPath = directoriesList[x, 1];
                             if (Directory.Exists(backUpFolderPath))
                             {
@@ -7173,6 +7218,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.export_Log != 0 && directoriesList[x, 0] == "export_Logs")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Export logs...");
+
                             string backUpFolderPath = directoriesList[x, 1];
                             if (Directory.Exists(backUpFolderPath))
                             {
@@ -7222,6 +7270,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.import_files_success != 0 && directoriesList[x, 0] == "import_files_success")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Import files success...");
+
                             string backUpFolderPath = directoriesList[x, 1];
                             if (Directory.Exists(backUpFolderPath))
                             {
@@ -7271,6 +7322,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.import_files_error != 0 && directoriesList[x, 0] == "import_files_error")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Import files error...");
+
                             string backUpFolderPath = directoriesList[x, 1];
                             if (Directory.Exists(backUpFolderPath))
                             {
@@ -7320,6 +7374,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.export_files_BC != 0 && directoriesList[x, 0] == "export_files_BC")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Export files BC...");
+
                             string backUpFolderPath = null;
                             if (configBackup.export_files_BC_type == "Export_Veolog")
                             {
@@ -7381,6 +7438,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Export files BL...");
+
                             string backUpFolderPath = null;
                             if (configBackup.export_files_BL_type == "Export_Plat")
                             {
@@ -7438,6 +7498,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Export files FA...");
+
                             string backUpFolderPath = null;
                             if (configBackup.export_files_FA_type == "Export_Plat")
                             {
@@ -7495,6 +7558,9 @@ namespace importPlanifier.Classes
                         }
                         if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS")
                         {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " : Cleaning Export files ME/MS...");
+
                             string backUpFolderPath = null;
                             if (configBackup.export_files_ME_MS_type == "Veolog_Stock")
                             {

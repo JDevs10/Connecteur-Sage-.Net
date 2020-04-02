@@ -225,7 +225,7 @@ namespace importPlanifier.Classes
                                                     {
                                                         OrderLine line = new OrderLine();
                                                         line.NumLigne = tab[1];
-                                                        line.article = getArticle(tab[2]);
+                                                        line.article = getArticle(tab[2], "");
                                                         if (line.article == null)
                                                         {
                                                             goto goOut;
@@ -561,7 +561,7 @@ namespace importPlanifier.Classes
                         {
                             if (reader.Read())
                             {
-                                Client cli = new Client(reader[0].ToString(),reader[1].ToString(),reader[2].ToString(),reader[3].ToString(),reader[4].ToString(),reader[5].ToString(),reader[6].ToString(),reader[7].ToString(),reader[8].ToString(),reader[9].ToString(),reader[10].ToString(),reader[11].ToString());
+                                Client cli = new Client(reader[0].ToString(),reader[1].ToString(),reader[2].ToString(),reader[3].ToString(),reader[4].ToString(),reader[5].ToString(),reader[6].ToString(),reader[7].ToString(),reader[8].ToString(),reader[9].ToString(),reader[10].ToString(),reader[11].ToString(), reader[12].ToString());
                                 connection.Close();
                                 return cli;
                             }
@@ -736,15 +736,14 @@ namespace importPlanifier.Classes
 
         }
 
-        public static Article getArticle(string code_article)
+        public static Article getArticle(string code_article, string CT_Num)
         {
-            // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
             {
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(false, code_article), connection))
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticle(true, code_article, CT_Num), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -757,21 +756,15 @@ namespace importPlanifier.Classes
                             }
                             else
                             {
-                                Console.WriteLine(DateTime.Now + " : Erreur - code article " + code_article + " n'existe pas dans la base.");
-                                LogFile.WriteLine(DateTime.Now + " : Erreur - code article " + code_article + " n'existe pas dans la base.");
-
                                 return null;
                             }
                         }
-
                     }
 
                 }
                 catch (Exception ex)
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    Console.WriteLine(DateTime.Now + " : Erreur[2]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    LogFile.WriteLine(DateTime.Now + " : Erreur[2]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
                     return null;
                 }
             }

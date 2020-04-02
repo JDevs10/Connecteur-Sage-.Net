@@ -66,7 +66,7 @@ namespace AlertMail.Classes
                 this.smtp = mail.smtp;
                 this.port = mail.port;
                 this.login = mail.login;
-                this.password = Utils.Decrypt(mail.password);
+                this.password = mail.password;
                 this.dest1_enable = mail.dest1_enable;
                 this.dest1 = mail.dest1;
                 this.dest2_enable = mail.dest2_enable;

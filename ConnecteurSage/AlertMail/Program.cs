@@ -124,46 +124,60 @@ namespace AlertMail
                             }
 
                             //Envoi
-                            if(cMail.dest1_enable && mMailCustom_client != null)
+                            if(cMail.dest1_enable)
                             {
-                                try
+                                if(mMailCustom_client != null)
                                 {
-                                    Console.WriteLine("Envoi de mail client en cours....");
-                                    EnvoiMail(cMail, "client", mMailCustom_client.subject, mMailCustom_client.body, mMailCustom_client.attachements);   //cheminLogFile
+                                    try
+                                    {
+                                        Console.WriteLine("Envoi de mail client en cours....");
+                                        EnvoiMail(cMail, "client", mMailCustom_client.subject, mMailCustom_client.body, mMailCustom_client.attachements);   //cheminLogFile
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("");
+                                        Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail Client ***********");
+                                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                        Console.WriteLine("");
+                                    }
                                 }
-                                catch (Exception ex)
+                                else
                                 {
-                                    Console.WriteLine("");
-                                    Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail Client ***********");
-                                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-                                    Console.WriteLine("");
+                                    Console.WriteLine("Nothing to send for the client");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("Send client mail to client desable");
+                                Console.WriteLine("Send mail to client is desable");
                             }
 
-                            if (cMail.dest2_enable && mMailCustom_log != null)
+                            if (cMail.dest2_enable)
                             {
-                                try
+                                if (mMailCustom_client != null)
                                 {
-                                    Console.WriteLine("Envoi de mail log en cours....");
-                                    EnvoiMail(cMail, "log", mMailCustom_log.subject, mMailCustom_log.body, mMailCustom_log.attachements);   //cheminLogFile
+                                    try
+                                    {
+                                        Console.WriteLine("Envoi de mail log en cours....");
+                                        EnvoiMail(cMail, "log", mMailCustom_log.subject, mMailCustom_log.body, mMailCustom_log.attachements);   //cheminLogFile
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("");
+                                        Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail log ***********");
+                                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                        Console.WriteLine("");
+                                    }
                                 }
-                                catch (Exception ex)
+                                else
                                 {
-                                    Console.WriteLine("");
-                                    Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail log ***********");
-                                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                                    Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-                                    Console.WriteLine("");
+                                    Console.WriteLine("No log to send for the team");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("Send log mail to team desable");
+                                Console.WriteLine("Send log mail to team is desable");
                             }
 
                             if (mMailCustom_client != null && mMailCustom_log != null)
@@ -209,8 +223,9 @@ namespace AlertMail
                 DirectoryInfo fileListing1 = new DirectoryInfo(directoryName_ErrorFile);
                 FileInfo[] allFiles_error = fileListing1.GetFiles("*.csv");
 
-                List<string> mailRecapFileNameList = new List<string>();
+                string[,] errorFilesFileNameList_ = new string[allFiles_error.Length, 2];
                 List<string> errorFilesFileNameList = new List<string>();
+                List<string> errorFilesFileList = new List<string>();
 
                 try
                 {
@@ -248,11 +263,16 @@ namespace AlertMail
 
                                         for (int x = 0; x < allFiles_error.Length; x++)
                                         {
+                                            errorFilesFileNameList_[x, 0] = allFiles_error[x].Name;
+                                            errorFilesFileNameList_[x, 1] = allFiles_error[x].FullName;
+
                                             errorFilesFileNameList.Add(allFiles_error[x].Name);
+                                            errorFilesFileList.Add(allFiles_error[x].FullName);
                                         }
 
                                         int a = 0;
-                                        List<string> unknownFile = new List<string>();
+                                        List<string> unknownFileName = new List<string>();
+                                        List<string> unknownFileEDI = new List<string>();
                                         for (int y = 0; y < mailRecap.Lines.Count; y++)
                                         {
                                             Console.WriteLine(y + " - FileInfo : " + errorFilesFileNameList[y]);
@@ -262,46 +282,53 @@ namespace AlertMail
                                                 infoBody2 += (y + 1) + " -\t Le numéro du document \"" + mailRecap.Lines[y].DocumentReference + "\"\nNom du fichier : " + mailRecap.Lines[y].FileName + "\nMessage erreur : " + mailRecap.Lines[y].DocumentErrorMessageDebug + "\nStackTrace: " + mailRecap.Lines[y].DocumentErrorStackTraceDebug + "\nL'erreur peut etre trouvé dans " + mailRecap.Lines[y].FilePath + "\n\n";
                                                 a++;
 
-                                                if (attachements.Contains(mailRecap.Lines[y].FilePath))
+                                                if (!attachements.Contains(mailRecap.Lines[y].FilePath))
                                                 {
                                                     attachements.Add(mailRecap.Lines[y].FilePath);
                                                 }
                                             }
                                             else
                                             {
-                                                unknownFile.Add(errorFilesFileNameList[y]);
+                                                unknownFileName.Add(errorFilesFileNameList_[y, 0]);
+                                                unknownFileEDI.Add(errorFilesFileNameList_[y, 1]);
                                             }
                                         }
 
-                                        if (errorFilesFileNameList.Count > a)
+                                        List<string> mail_r = new List<string>();
+                                        for (int x = 0; x < mailRecap.Lines.Count; x++)
                                         {
-                                            infoBody2 += "Voici d'autre fichier en erreur, ils n'ont pas de log générés à partir du connecteur :\n";
-                                            for (int x = 0; x < unknownFile.Count; x++)
+                                            mail_r.Add(mailRecap.Lines[x].FileName);
+                                        }
+
+                                        int b = 0;
+                                        infoBody2 += "Voici d'autre fichier en erreur, ils n'ont pas de log générés à partir du connecteur :\n";
+                                        for (int x = 0; x < allFiles_error.Length; x++)
+                                        {
+                                            if (!mail_r.Contains(allFiles_error[x].Name))
                                             {
-                                                for (int i = 0; i < allFiles_error.Length; i++)
-                                                {
-                                                    Console.WriteLine("x: " + x + " | i: "+i+ " || unknownFile : " + unknownFile[x] + " == allFiles_error : " + allFiles_error[i].Name);
-                                                    if (unknownFile[x] == allFiles_error[i].Name)
-                                                    {
-                                                        infoBody2 += "\tNom du fichier : \"" + allFiles_error[i].Name + "\", à "+ getFileSize(allFiles_error[i].Length) +"\n";
-                                                    }
-                                                }
+                                                Console.WriteLine("x: " + x + " || allFiles_error : " + allFiles_error[x].Name);
+                                                infoBody2 += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à "+ getFileSize(allFiles_error[x].Length) +"\n";
+                                                attachements.Add(allFiles_error[x].FullName);
                                             }
                                         }
 
+                                        Console.WriteLine("Size 1 : " + attachements.Count);
+
+                                        if (a == 0)
+                                        {
+                                            infoBodyHeader2 = "";
+                                        }
                                     }
 
                                     if (cMail.dest2_enable)
                                     {
+                                        Console.WriteLine("Size 2 : " + allFiles_error.Length);
+                                        Console.WriteLine("Size 3 : " + infoBody2.Length);
                                         if (allFiles_error.Length > 0 && infoBody2.Length > 0)
                                         {
                                             infoBody_end += "Bonjour Team BDC, \n\nVoici un récapitulatif des documents. \n" + infoBodyHeader2 + infoBody2;
 
-                                            EnvoiMail(cMail, "log", "Résumer [" + recap.Client + "] " + recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE.", recap.Attachments);
-
-                                            cMail.remaningTicks = cMail.totalTicks;
-                                            cMail.password = Utils.Encrypt(cMail.password);
-                                            cMail.saveInfo(cMail);
+                                            EnvoiMail(cMail, "log", "Résumer [" + recap.Client + "] " + recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE.", attachements);
 
                                             //delete recap file
                                             if (File.Exists("Mail_Recap.ml"))
@@ -314,12 +341,16 @@ namespace AlertMail
                                     {
                                         Console.WriteLine("Send log mail to team desable");
                                     }
-                                    
+
+                                    //reset the ticks
+                                    cMail.remaningTicks = cMail.totalTicks;
+                                    new ConfSendMail().saveInfo(cMail);
                                 }
                                 else
                                 {
                                     string result = "";
                                     string infoBody = "";
+                                    List<string> attachements = new List<string>();
                                     ConfigurationDNS dns = new ConfigurationDNS();
                                     dns.LoadSQL();
 
@@ -333,17 +364,18 @@ namespace AlertMail
                                             for (int x = 0; x < allFiles_error.Length; x++)
                                             {
                                                 infoBody += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + getFileSize(allFiles_error[x].Length) + "\n Date de création " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].CreationTime) + " et date de modification " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].LastWriteTime);
+
+                                                if (!attachements.Contains(allFiles_error[x].FullName))
+                                                {
+                                                    attachements.Add(allFiles_error[x].FullName);
+                                                }
                                             }
                                         }
 
                                         if (allFiles_error.Length > 0)
                                         {
-                                            EnvoiMail(cMail, "log", "Résumer [" + dns.Prefix + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE.", null);
+                                            EnvoiMail(cMail, "log", "Résumer [" + dns.Prefix + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE.", attachements);
                                         }
-
-                                        cMail.remaningTicks = cMail.totalTicks;
-                                        cMail.password = Utils.Encrypt(cMail.password);
-                                        cMail.saveInfo(cMail);
 
                                         Console.WriteLine("No Mail_Recap.ml File!");
                                     }
@@ -352,16 +384,20 @@ namespace AlertMail
                                         Console.WriteLine("Send log mail to team desable");
                                     }
 
+                                    //reset the ticks
+                                    cMail.remaningTicks = cMail.totalTicks;
+                                    new ConfSendMail().saveInfo(cMail);
                                 }
-                                cMail.remaningTicks = cMail.totalTicks;
-                                cMail.password = Utils.Encrypt(cMail.password);
-                                cMail.saveInfo(cMail);
+                                //cMail.remaningTicks = cMail.totalTicks;
+                                //cMail.password = Utils.Encrypt(cMail.password);
+                                //new ConfSendMail().saveInfo(cMail);
                             }
                             else
                             {
+                                //reduce the ticks
                                 cMail.remaningTicks = cMail.remaningTicks - 1;
-                                cMail.password = Utils.Encrypt(cMail.password);
-                                cMail.saveInfo(cMail);
+                                //cMail.password = Utils.Encrypt(cMail.password);
+                                new ConfSendMail().saveInfo(cMail);
                             }
                         }
                         else
@@ -699,7 +735,7 @@ namespace AlertMail
                 {
                     // Envoi du message SMTP
                     client = new SmtpClient(confMail.smtp, confMail.port);
-                    client.Credentials = new NetworkCredential(confMail.login, confMail.password);
+                    client.Credentials = new NetworkCredential(confMail.login, Utils.Decrypt(confMail.password));
                 }
                 else
                 {
