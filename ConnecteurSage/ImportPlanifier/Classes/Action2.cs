@@ -4743,7 +4743,7 @@ namespace importPlanifier.Classes
                                     list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
                                     list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
 
-                                    list_of_cmd_lines[counter, 72] = "3";                                           // DL_MvtStock
+                                    list_of_cmd_lines[counter, 72] = "1";                                           // DL_MvtStock
                                     list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
                                     list_of_cmd_lines[counter, 74] = ((COLIS_article == null || COLIS_article == "") ? "0.0" : COLIS_article).ToString().Replace(",", ".");    // COLIS
                                     list_of_cmd_lines[counter, 75] = ((PCB_article == null || PCB_article == "") ? "0.0" : PCB_article).ToString().Replace(",", ".");      // PCB

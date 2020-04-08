@@ -42,9 +42,9 @@ namespace importPlanifier.Classes
                 string[] tabCommande = new string[200];
                 List<Order> ordersList = new List<Order>();
                 dir = getPath();
-                Console.WriteLine("##############################################");
-                Console.WriteLine("############ L'import planifier ##############");
-                Console.WriteLine("##############################################");
+                Console.WriteLine("################################################");
+                Console.WriteLine("############## L'import planifier ##############");
+                Console.WriteLine("################################################");
                 Console.WriteLine("");
 
                 if (dir == null)

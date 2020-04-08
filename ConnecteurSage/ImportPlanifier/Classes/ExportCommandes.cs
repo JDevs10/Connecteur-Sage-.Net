@@ -437,23 +437,6 @@ namespace importPlanifier.Classes
                                     }
                                 }
 
-                                //Vérifier si le fichier a bien été créé et écrit
-                                if (File.Exists(exportPath + @"\" + fileName))
-                                {
-                                    if (new FileInfo(exportPath + @"\" + fileName).Length > 0)
-                                    {
-                                        veolog_file_check = true;
-
-                                        //add to backup folder
-                                        addFileToBackUp(path.path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("File: " + fileName + " does not exist!!!");
-                                    logFileWriter.WriteLine(DateTime.Now + " : File: " + fileName + " does not exist!!!");
-                                    //Console.ReadLine();
-                                }
 
                                 //update veolog delivery date
                                 if (veolog_file_check)
@@ -477,11 +460,39 @@ namespace importPlanifier.Classes
                                     {
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+
+                                        if(File.Exists(exportPath + @"\" + fileName)){
+                                            try
+                                            {
+                                                File.Delete(exportPath + @"\" + fileName);
+                                                logFileWriter.WriteLine(DateTime.Now + " Le fichier \" " + exportPath + @"\" + fileName + " \" est supprimer !.");
+                                            }
+                                            catch (Exception exf)
+                                            {
+                                                logFileWriter.WriteLine(DateTime.Now + " ********** Erreur Delete File ********** ");
+                                                logFileWriter.WriteLine(DateTime.Now + " Impossible de supprimer le fichier \" " + exportPath + @"\" + fileName + " \".");
+                                                logFileWriter.WriteLine(DateTime.Now + " Message: " + exf.Message);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " Le fichier \" " + exportPath + @"\" + fileName + " \" n'existe plus (peut déjà être envoyé en EDI).");
+                                        }
+
                                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                         logFileWriter.Flush();
                                         logFileWriter.Close();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+
+                                        if(ex.Message.Contains("Cet élément est en cours d'utilisation !"))
+                                        {
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de mettre la date de livraison veolog à jour dans le champs \"Veolog\".", ex.StackTrace, "", logFileName_export));
+                                        }
+                                        else
+                                        {
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                        }
+                                        
                                         return recapLinesList_new;
                                     }
 
@@ -510,14 +521,63 @@ namespace importPlanifier.Classes
                                         //Exceptions pouvant survenir durant l'exécution de la requête SQL
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+
+                                        if (File.Exists(exportPath + @"\" + fileName))
+                                        {
+                                            try
+                                            {
+                                                File.Delete(exportPath + @"\" + fileName);
+                                                logFileWriter.WriteLine(DateTime.Now + " Le fichier \" " + exportPath + @"\" + fileName + " \" est supprimer !.");
+                                            }
+                                            catch (Exception exf)
+                                            {
+                                                logFileWriter.WriteLine(DateTime.Now + " ********** Erreur Delete File ********** ");
+                                                logFileWriter.WriteLine(DateTime.Now + " Impossible de supprimer le fichier \" " + exportPath + @"\" + fileName + " \".");
+                                                logFileWriter.WriteLine(DateTime.Now + " Message: "+exf.Message);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            logFileWriter.WriteLine(DateTime.Now + " Le fichier \" " + exportPath + @"\" + fileName + " \" n'existe plus (peut déjà être envoyé en EDI).");
+                                        }
+
                                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                         logFileWriter.Flush();
                                         logFileWriter.Close();
-                                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+
+                                        if (ex.Message.Contains("Cet élément est en cours d'utilisation !"))
+                                        {
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".", ex.StackTrace, "", logFileName_export));
+                                        }
+                                        else
+                                        {
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                        }
+
+                                        //recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                                         return recapLinesList_new;
                                     }
                                 }
+
+                                //Vérifier si le fichier a bien été créé et écrit
+                                if (File.Exists(exportPath + @"\" + fileName))
+                                {
+                                    if (new FileInfo(exportPath + @"\" + fileName).Length > 0)
+                                    {
+                                        veolog_file_check = true;
+
+                                        //add to backup folder
+                                        addFileToBackUp(path.path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("File: " + fileName + " does not exist!!!");
+                                    logFileWriter.WriteLine(DateTime.Now + " : File: " + fileName + " does not exist!!!");
+                                    //Console.ReadLine();
+                                }
+                                logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Commande exportée avec succés.");
 
                             //jamp:;

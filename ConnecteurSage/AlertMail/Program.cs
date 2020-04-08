@@ -328,7 +328,7 @@ namespace AlertMail
                                         {
                                             infoBody_end += "Bonjour Team BDC, \n\nVoici un récapitulatif des documents. \n" + infoBodyHeader2 + infoBody2;
 
-                                            EnvoiMail(cMail, "log", "Résumer [" + recap.Client + "] " + recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE.", attachements);
+                                            EnvoiMail(cMail, "log", "Résumer [" + recap.Client + "] " + recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE [" + recap.Client + "].", attachements);
 
                                             //delete recap file
                                             if (File.Exists("Mail_Recap.ml"))
@@ -374,7 +374,7 @@ namespace AlertMail
 
                                         if (allFiles_error.Length > 0)
                                         {
-                                            EnvoiMail(cMail, "log", "Résumer [" + dns.Prefix + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE.", attachements);
+                                            EnvoiMail(cMail, "log", "Résumer [" + dns.Prefix + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE [" + dns.Prefix + "].", attachements);
                                         }
 
                                         Console.WriteLine("No Mail_Recap.ml File!");
@@ -501,15 +501,15 @@ namespace AlertMail
                 //send the recap mail
                 if (sendMailImp & !sendMailExp)
                 {
-                    return new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE. Version client.", null);
+                    return new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + recap_imp.Client + "]. Version client.", null);
                 }
                 else if (sendMailExp & !sendMailImp)
                 {
-                    return new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE. Version client.", null);
+                    return new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + recap_exp.Client + "]. Version client.", null);
                 }
                 else if (sendMailImp && sendMailExp)
                 {
-                    return new MailCustom("[" + dns.Prefix + "] " + recap_imp.Subject + " et " + recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE. Version client.", null);
+                    return new MailCustom("[" + dns.Prefix + "] " + recap_imp.Subject + " et " + recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + dns.Prefix + "]. Version client.", null);
                 }
                 else
                 {
@@ -597,15 +597,15 @@ namespace AlertMail
                 //send the recap mail
                 if (sendMailImp & !sendMailExp)
                 {
-                    return new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE. Version équipe", recap_imp.Attachments);
+                    return new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + recap_imp.Client + "]. Version équipe", recap_imp.Attachments);
                 }
                 else if (sendMailExp & !sendMailImp)
                 {
-                    return new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE. Version équipe", recap_exp.Attachments);
+                    return new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + recap_exp.Client + "]. Version équipe", recap_exp.Attachments);
                 }
                 else if (sendMailImp && sendMailExp)
                 {
-                    return new MailCustom("[" + dns.Prefix + "] " + recap_imp.Subject + " et " + recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE. Version équipe", attachements);
+                    return new MailCustom("[" + dns.Prefix + "] " + recap_imp.Subject + " et " + recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + dns.Prefix + "]. Version équipe", attachements);
                 }
                 else
                 {
