@@ -40,7 +40,6 @@
             this.labelCompanyName = new System.Windows.Forms.Label();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -87,6 +86,7 @@
             this.label_backup_activation = new System.Windows.Forms.Label();
             this.label_backup_generalLog = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.debugMode_checkBox = new System.Windows.Forms.CheckBox();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -224,7 +224,7 @@
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.button10);
+            this.tabPage4.Controls.Add(this.debugMode_checkBox);
             this.tabPage4.Controls.Add(this.button9);
             this.tabPage4.Controls.Add(this.button7);
             this.tabPage4.Controls.Add(this.groupBox2);
@@ -238,16 +238,6 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Config";
             this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(124, 176);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(90, 23);
-            this.button10.TabIndex = 11;
-            this.button10.Text = "Initialisé";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button9
             // 
@@ -726,6 +716,17 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
+            // debugMode_checkBox
+            // 
+            this.debugMode_checkBox.AutoSize = true;
+            this.debugMode_checkBox.Location = new System.Drawing.Point(121, 179);
+            this.debugMode_checkBox.Name = "debugMode_checkBox";
+            this.debugMode_checkBox.Size = new System.Drawing.Size(92, 18);
+            this.debugMode_checkBox.TabIndex = 11;
+            this.debugMode_checkBox.Text = "Debug Mode";
+            this.debugMode_checkBox.UseVisualStyleBackColor = true;
+            this.debugMode_checkBox.CheckedChanged += new System.EventHandler(this.debugMode_checkBox_CheckedChanged);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -814,7 +815,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button button10;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.Button button11;
@@ -831,6 +831,7 @@
         private System.Windows.Forms.Label label_backup_export_ME_MS;
         private System.Windows.Forms.Label label_backup_export_FA;
         private System.Windows.Forms.Label label_backup_exportLog;
+        private System.Windows.Forms.CheckBox debugMode_checkBox;
     }
 
 }

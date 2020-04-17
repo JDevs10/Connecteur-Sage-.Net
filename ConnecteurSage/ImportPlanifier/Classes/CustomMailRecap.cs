@@ -86,6 +86,8 @@ namespace ImportPlanifier.Classes
         [XmlElement]
         public string DocumentReference { set; get; }
         [XmlElement]
+        public string NumCommande { set; get; }
+        [XmlElement]
         public string DocumentErrorMessage { set; get; }
         [XmlElement]
         public string DocumentErrorMessageDebug { set; get; }
@@ -102,9 +104,10 @@ namespace ImportPlanifier.Classes
         {
         }
 
-        public CustomMailRecapLines(string DocumentReference, string DocumentErrorMessage, string DocumentErrorMessageDebug, string DocumentErrorStackTraceDebug, string FileName, string FilePath)
+        public CustomMailRecapLines(string DocumentReference, string NumCommande, string DocumentErrorMessage, string DocumentErrorMessageDebug, string DocumentErrorStackTraceDebug, string FileName, string FilePath)
         {
             this.DocumentReference = DocumentReference;
+            this.NumCommande = NumCommande;
             this.DocumentErrorMessage = DocumentErrorMessage;
             this.DocumentErrorMessageDebug = DocumentErrorMessageDebug;
             this.DocumentErrorStackTraceDebug = DocumentErrorStackTraceDebug;

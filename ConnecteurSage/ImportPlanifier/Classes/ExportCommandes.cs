@@ -40,44 +40,41 @@ namespace importPlanifier.Classes
         {
             try
             {
-            //DocumentVente Facture = new DocumentVente();
-            List<Order> listCommande = new List<Order>();
-             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
-            {
+                 //DocumentVente Facture = new DocumentVente();
+                 List<Order> listCommande = new List<Order>();
+                 using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                 {
                
-                    connection.Open();
-                    //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
-                    {
-                        using (IDataReader reader = command.ExecuteReader())
+                        connection.Open();
+                        //Exécution de la requête permettant de récupérer les articles du dossier
+                        OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
                         {
-                           while(reader.Read())
+                            using (IDataReader reader = command.ExecuteReader())
                             {
-                                Order order = new Order(reader[0].ToString(), reader[1].ToString(), 
-                                    reader[2].ToString().Replace(", ",",")+"."+reader[3].ToString()+"."+reader[6].ToString()+"."+reader[7].ToString(),
-                                    reader[8].ToString(), reader[9].ToString().Replace("00:00:00",""),
-                                    reader[10].ToString(), reader[11].ToString(),
-                                    reader[12].ToString(), reader[13].ToString(), reader[15].ToString(),
-                                    (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[0] : null),
-                                    (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[1] : null),
-                                    reader[16].ToString()
-                                    );
-                                listCommande.Add(order);
+                                while(reader.Read())
+                                {
+                                    Order order = new Order(reader[0].ToString(), reader[1].ToString(), 
+                                        reader[2].ToString().Replace(", ",",")+"."+reader[3].ToString()+"."+reader[6].ToString()+"."+reader[7].ToString(),
+                                        reader[8].ToString(), reader[9].ToString().Replace("00:00:00",""),
+                                        reader[10].ToString(), reader[11].ToString(),
+                                        reader[12].ToString(), reader[13].ToString(), reader[15].ToString(),
+                                        (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[0] : null),
+                                        (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[1] : null),
+                                        reader[16].ToString()
+                                        );
+                                    listCommande.Add(order);
+                                }
                             }
                         }
-                    }
-                    return listCommande;
-
+                        return listCommande;
+                 }
             }
-
-                                 }
-
-                catch (Exception e)
-                {
-                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    Console.WriteLine(e.Message);
-                    return null;
-                }
+            catch (Exception e)
+            {
+                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
 
 
@@ -155,7 +152,7 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                     logFileWriter.Flush();
                     logFileWriter.Close();
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                     return recapLinesList_new;
                 }
             }
@@ -177,7 +174,7 @@ namespace importPlanifier.Classes
 
                         OdbcCommand command = new OdbcCommand(QueryHelper.getCoommandeById(true, lits_of_stock[index, 0]), connexion);
 
-                        //Console.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCoommandeById(true, lits_of_stock[index, 0]));
+                        Console.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCoommandeById(true, lits_of_stock[index, 0]));
                             
                         logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCoommandeById(true, lits_of_stock[index, 0]));
 
@@ -309,55 +306,55 @@ namespace importPlanifier.Classes
                                 {
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ecrire le fichier dans : " + exportPath + @"\" + fileName);
 
-                                //Console.WriteLine("Export File Name: " + exportPath + @"\" + fileName);
+                                    //Console.WriteLine("Export File Name: " + exportPath + @"\" + fileName);
 
-                                if (veolog_format)
+                                    if (veolog_format)
                                     {
-                                    //format Veolog 
-                                    string[] adresse = new string[5];
-                                    string[] date_time_delivery = new string[2];
+                                        //format Veolog 
+                                        string[] adresse = new string[5];
+                                        string[] date_time_delivery = new string[2];
 
-                                    adresse = CommandeAExporter.adresseLivraison.Split(',');
-                                    date_time_delivery = CommandeAExporter.DateLivraison.Split(' ');
+                                        adresse = CommandeAExporter.adresseLivraison.Split(',');
+                                        date_time_delivery = CommandeAExporter.DateLivraison.Split(' ');
 
-                                    //Split the adresse
-                                    CommandeAExporter.adresse = adresse[0];
-                                    CommandeAExporter.adresse_2 = adresse[1];
-                                    CommandeAExporter.codepostale = adresse[2];
-                                    CommandeAExporter.ville = adresse[3];
+                                        //Split the adresse
+                                        CommandeAExporter.adresse = adresse[0];
+                                        CommandeAExporter.adresse_2 = adresse[1];
+                                        CommandeAExporter.codepostale = adresse[2];
+                                        CommandeAExporter.ville = adresse[3];
 
-                                    // Get the country
-                                    CommandeAExporter.pays = adresse[4];
+                                        // Get the country
+                                        CommandeAExporter.pays = adresse[4];
 
-                                    //Get Country ISO
-                                    CountryFormatISO iso = new CountryFormatISO();
-                                    string[,] country_iso = iso.getAllStaticCountryISOCode();
+                                        //Get Country ISO
+                                        CountryFormatISO iso = new CountryFormatISO();
+                                        string[,] country_iso = iso.getAllStaticCountryISOCode();
 
-                                    if (CommandeAExporter.pays == "")
-                                    {
-                                        CommandeAExporter.pays = "France";
-                                    }
-
-                                    for (int i = 0; i < country_iso.GetLength(0); i++)
-                                    {
-                                        if (country_iso[i, 0].ToUpper().Equals(CommandeAExporter.pays.ToUpper()))
+                                        if (CommandeAExporter.pays == "")
                                         {
-                                            CommandeAExporter.pays = country_iso[i, 1];
+                                            CommandeAExporter.pays = "France";
                                         }
-                                    }
+
+                                        for (int i = 0; i < country_iso.GetLength(0); i++)
+                                        {
+                                            if (country_iso[i, 0].ToUpper().Equals(CommandeAExporter.pays.ToUpper()))
+                                            {
+                                                CommandeAExporter.pays = country_iso[i, 1];
+                                            }
+                                        }
 
 
-                                    //Split the DateTime
-                                    DateTime date_delivery = Convert.ToDateTime(CommandeAExporter.DateLivraison);
+                                        //Split the DateTime
+                                        DateTime date_delivery = Convert.ToDateTime(CommandeAExporter.DateLivraison);
 
-                                    //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
-                                    //CommandeAExporter.DateLivraison = date_delivery.Year + "" + date_delivery.Month + "" + date_delivery.Day + "";
-                                    CommandeAExporter.DateLivraison = string.Format("{0:yyyyMMdd}", date_delivery);
+                                        //CommandeAExporter.DateCommande = date_time[0].Replace("/", "");
+                                        //CommandeAExporter.DateLivraison = date_delivery.Year + "" + date_delivery.Month + "" + date_delivery.Day + "";
+                                        CommandeAExporter.DateLivraison = string.Format("{0:yyyyMMdd}", date_delivery);
 
-                                    string[] time_delivery = date_time_delivery[1].Split(':');
-                                    CommandeAExporter.HeureLivraison = time_delivery[0] + "" + time_delivery[1];
+                                        string[] time_delivery = date_time_delivery[1].Split(':');
+                                        CommandeAExporter.HeureLivraison = time_delivery[0] + "" + time_delivery[1];
 
-                                    orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";"+CommandeAExporter.codeClient+";;"+ CommandeAExporter.NomClient + ";"+ CommandeAExporter.adresse + ";"+CommandeAExporter.adresse_2+";;"+ CommandeAExporter.codepostale + ";"+ CommandeAExporter.ville + ";"+ CommandeAExporter.pays + ";"+ CommandeAExporter.telephone + ";"+ CommandeAExporter.email + ";"+ CommandeAExporter.DateLivraison + ";"+ CommandeAExporter.HeureLivraison + ";"+ CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.commentaires); // E line
+                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
 
                                         CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, recapLinesList_new); // Maybe thisssss
 
@@ -401,42 +398,38 @@ namespace importPlanifier.Classes
                                     }
                                     else
                                     {
-                                    //Format Fichier plat
+                                        //Format Fichier plat
                                         orderFileWriter.WriteLine("ORDERS;" + CommandeAExporter.DO_MOTIF + ";" + CommandeAExporter.codeClient + ";" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.codeFournisseur + ";;;" + CommandeAExporter.nom_contact + "." + CommandeAExporter.adresseLivraison.Replace("..", ".").Replace("...", ".") + ";" + CommandeAExporter.deviseCommande + ";;");
                                         if (CommandeAExporter.DateCommande != "")
                                         {
                                             CommandeAExporter.DateCommande = ConvertDate(CommandeAExporter.DateCommande);
                                         }
 
-                                    //if (CommandeAExporter.DateCommande != " ")
-                                    //{
-                                    //    CommandeAExporter.conditionLivraison = "";
-                                    //}
+                                        //if (CommandeAExporter.DateCommande != " ")
+                                        //{
+                                        //    CommandeAExporter.conditionLivraison = "";
 
-                                        orderFileWriter.WriteLine("ORDHD1;" + CommandeAExporter.DateCommande + ";" + CommandeAExporter.conditionLivraison + ";;");
 
-                                        CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, recapLinesList_new);
-
-                                        for (int i = 0; i < CommandeAExporter.Lines.Count; i++)
-                                        {
-                                            if (!IsNumeric(CommandeAExporter.Lines[i].codeAcheteur))
-                                            {
-                                                CommandeAExporter.Lines[i].codeAcheteur = "";
-                                            }
-
-                                            if (!IsNumeric(CommandeAExporter.Lines[i].codeFournis))
-                                            {
-                                                CommandeAExporter.Lines[i].codeFournis = "";
-                                            }
-
-                                        orderFileWriter.WriteLine("ORDLIN;" + CommandeAExporter.Lines[i].NumLigne + ";" + CommandeAExporter.Lines[i].codeArticle + ";GS1;" + CommandeAExporter.Lines[i].codeAcheteur + ";" + CommandeAExporter.Lines[i].codeFournis + ";;A;" + CommandeAExporter.Lines[i].descriptionArticle + ";" + CommandeAExporter.Lines[i].Quantite.Replace(",", ".") + ";LM;" + CommandeAExporter.Lines[i].MontantLigne.Replace(",", ".") + ";;;" + CommandeAExporter.Lines[i].PrixNetHT.Replace(",", ".") + ";;;LM;;;;" + ConvertDate(CommandeAExporter.Lines[i].DateLivraison) + ";");
-                                        }
-                                        orderFileWriter.WriteLine("ORDEND;" + CommandeAExporter.MontantTotal.ToString().Replace(",", ".") + ";");
-
-                                        orderFileWriter.Close();
                                     }
                                 }
 
+                                //Vérifier si le fichier a bien été créé et écrit
+                                if (File.Exists(exportPath + @"\" + fileName))
+                                {
+                                    if (new FileInfo(exportPath + @"\" + fileName).Length > 0)
+                                    {
+                                        veolog_file_check = true;
+
+                                        //add to backup folder
+                                        addFileToBackUp(path.path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("File: " + fileName + " does not exist!!!");
+                                    logFileWriter.WriteLine(DateTime.Now + " : File: " + fileName + " does not exist!!!");
+                                    //Console.ReadLine();
+                                }
 
                                 //update veolog delivery date
                                 if (veolog_file_check)
@@ -486,11 +479,15 @@ namespace importPlanifier.Classes
 
                                         if(ex.Message.Contains("Cet élément est en cours d'utilisation !"))
                                         {
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de mettre la date de livraison veolog à jour dans le champs \"Veolog\".", ex.StackTrace, "", logFileName_export));
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de mettre la date de livraison veolog à jour dans le champs \"Veolog\".", ex.StackTrace, "", logFileName_export));
                                         }
                                         else
                                         {
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : " + ex.Message);
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                                         }
                                         
                                         return recapLinesList_new;
@@ -548,11 +545,15 @@ namespace importPlanifier.Classes
 
                                         if (ex.Message.Contains("Cet élément est en cours d'utilisation !"))
                                         {
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".", ex.StackTrace, "", logFileName_export));
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".", ex.StackTrace, "", logFileName_export));
                                         }
                                         else
                                         {
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : " + ex.Message);
+                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                                         }
 
                                         //recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
@@ -560,23 +561,6 @@ namespace importPlanifier.Classes
                                     }
                                 }
 
-                                //Vérifier si le fichier a bien été créé et écrit
-                                if (File.Exists(exportPath + @"\" + fileName))
-                                {
-                                    if (new FileInfo(exportPath + @"\" + fileName).Length > 0)
-                                    {
-                                        veolog_file_check = true;
-
-                                        //add to backup folder
-                                        addFileToBackUp(path.path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine("File: " + fileName + " does not exist!!!");
-                                    logFileWriter.WriteLine(DateTime.Now + " : File: " + fileName + " does not exist!!!");
-                                    //Console.ReadLine();
-                                }
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Commande exportée avec succés.");
 
@@ -592,7 +576,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.Flush();
                                 logFileWriter.Close();
                                 Console.WriteLine(DateTime.Now + " | ExportCommande() : ERREUR :: " + ex.Message);
-                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                             }
                         }
                         else
@@ -611,7 +595,7 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                         logFileWriter.Flush();
                         logFileWriter.Close();
-                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                         return recapLinesList_new;
                     }
                 }
@@ -753,7 +737,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                 return null;
             }
         }

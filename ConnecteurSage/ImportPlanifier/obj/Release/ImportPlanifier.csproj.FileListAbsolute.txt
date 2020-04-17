@@ -5,3 +5,6 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\Imp
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\ImportPlanifier.exe
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\ImportPlanifier.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\ImportPlanifier.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\ImportPlanifier.exe.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dlls.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dlls.pdb

@@ -183,7 +183,7 @@ namespace ConnecteurSage.Forms
                 try
                 {
                     //Enregistrer la tache planifiée
-                    EnregistrerLaTache(dateTimePicker2.Text, dateTimePicker1.Text);
+                    //EnregistrerLaTache(dateTimePicker2.Text, dateTimePicker1.Text);
 
                     //Enregistrer l'emplacement dans Path.xml
                     Classes.Path path = new Classes.Path(textBox1.Text);

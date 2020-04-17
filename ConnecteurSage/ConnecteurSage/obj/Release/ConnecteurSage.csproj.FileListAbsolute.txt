@@ -1,7 +1,11 @@
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\ConnecteurSage.exe.config
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\ConnecteurSage.exe
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\ConnecteurSage.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Dlls.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Microsoft.Win32.TaskScheduler.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Dlls.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfExport.resources
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfigBackup.resources
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.Configuration.resources
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfMail.resources
@@ -19,5 +23,3 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\Conn
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.exe
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfExport.resources
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csprojAssemblyReference.cache

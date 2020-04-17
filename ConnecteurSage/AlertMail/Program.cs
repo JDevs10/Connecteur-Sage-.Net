@@ -10,6 +10,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.IO;
 using AlertMail.Helpers;
+using System.Runtime.InteropServices;
+using Dlls;
 
 namespace AlertMail
 {
@@ -17,8 +19,37 @@ namespace AlertMail
     {
         private static string localPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
         static void Main(string[] args)
         {
+            Dlls.InitConfig ini = new Dlls.InitConfig();
+            try
+            {
+                int SW;
+                if (ini.checkFileExistance())
+                {
+                    ini.Load();
+                    SW = ini.showWindow;
+                }
+                else
+                {
+                    SW = 5;
+                }
+
+                // hide or show the running software window
+                var handle = GetConsoleWindow();
+                ShowWindow(handle, SW);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Mode débogage 2 : " + ex.Message);
+            }
+
             if (args.Length == 0) //Scan the CSV folder for pending files
             {
                 Console.WriteLine("Scan CSV folder....");
@@ -30,7 +61,7 @@ namespace AlertMail
                 }
 
                 ConfigurationDNS dns = new ConfigurationDNS();
-                dns.LoadSQL();
+                dns.Load();
 
                 DirectoryInfo fileListing1 = new DirectoryInfo(directoryName_csv);
                 FileInfo[] allFiles_csv = fileListing1.GetFiles("*.csv");
@@ -352,7 +383,7 @@ namespace AlertMail
                                     string infoBody = "";
                                     List<string> attachements = new List<string>();
                                     ConfigurationDNS dns = new ConfigurationDNS();
-                                    dns.LoadSQL();
+                                    dns.Load();
 
                                     if (cMail.dest2_enable)
                                     {
@@ -431,7 +462,7 @@ namespace AlertMail
             if (type.Equals("client"))
             {
                 ConfigurationDNS dns = new ConfigurationDNS();
-                dns.LoadSQL();
+                dns.Load();
                 CustomMailRecap recap_imp = null;
                 CustomMailRecap recap_exp = null;
                 bool sendMailImp = false;
@@ -466,7 +497,8 @@ namespace AlertMail
                     }
                     for (int i = 0; i < recap_imp.Lines.Count; i++)
                     {
-                        textImp += (i + 1) + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\" du fichier EDI : " + recap_imp.Lines[i].FileName + ", a une erreur : " + recap_imp.Lines[i].DocumentErrorMessage + "\n";
+                        textImp += (i + 1) + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\" de la commande \"" + recap_imp.Lines[i].NumCommande + "\",\n" +
+                            " \t a une erreur : " + recap_imp.Lines[i].DocumentErrorMessage + "\n";
                     }
                 }
 
@@ -520,7 +552,7 @@ namespace AlertMail
             else if (type.Equals("log"))
             {
                 ConfigurationDNS dns = new ConfigurationDNS();
-                dns.LoadSQL();
+                dns.Load();
                 CustomMailRecap recap_imp = null;
                 CustomMailRecap recap_exp = null;
                 bool sendMailImp = false;
@@ -667,11 +699,14 @@ namespace AlertMail
         {
             try
             {
+                ConfigurationDNS dns = new ConfigurationDNS();
+                dns.Load();
+
                 // Objet mail
                 MailMessage msg = new MailMessage();
 
                 // Expéditeur (obligatoire). Notez qu'on peut spécifier le nom
-                msg.From = new MailAddress(confMail.login, "CONNECTEUR SAGE");
+                msg.From = new MailAddress(confMail.login, "CONNECTEUR SAGE ["+dns.Prefix+"]");
 
                 // Destinataires (il en faut au moins un)
                 if (type.Equals("client"))

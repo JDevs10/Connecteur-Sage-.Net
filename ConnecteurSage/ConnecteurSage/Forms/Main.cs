@@ -14,6 +14,7 @@ using System.Data.Odbc;
 using System.Threading;
 using ConnecteurSage.Helpers;
 using ConnecteurSage.Forms;
+using Dlls;
 
 namespace ConnecteurSage
 {
@@ -53,9 +54,60 @@ namespace ConnecteurSage
             Thread backgroundThread = new Thread(
             new ThreadStart(() =>
             {
+                progressDialog.Text = "Loading Connexion Settings....";
+                for (int n = 0; n < 10; n++)
+                {
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
+                }
+
+                int SW = -1;
+                bool isOpen = false;
+                Dlls.InitConfig ini = new Dlls.InitConfig();
+
+                if (ini.checkFileExistance())
+                {
+                    ini.Load();
+                    SW = ini.showWindow;
+                    isOpen = ini.isOpen;
+                }
+                else
+                {
+                    Dlls.InitConfig newIni = new Dlls.InitConfig(5, false);
+                    Dlls.InitConfig x = new Dlls.InitConfig();
+                    x.saveInfo(newIni);
+                    SW = 5;
+                    isOpen = false;
+                }
+
+                //check if the software is already running ?
+                if (isOpen)
+                {
+                    //Closing
+                    progressDialog.Text = "Le logiciel est déjà en cours d'exécution, nous fermons donc celui-ci....";
+                    for (int n = 10; n < 100; n++)
+                    {
+                        Thread.Sleep(5);
+                        progressDialog.UpdateProgress(n);
+                    }
+                    Application.Exit();
+                }
+
+                if (SW == 5)
+                {
+                    // visible Software while running
+                    debugMode_checkBox.Checked = true;
+                }
+                else if(SW == 0)
+                {
+                    // Hide Software while running
+                    debugMode_checkBox.Checked = false;
+                }
+
+
                 //Loading Connexion Settings
                 progressDialog.Text = "Loading Connexion Settings....";
-                for (int n = 0; n < 20; n++)
+                for (int n = 10; n < 20; n++)
                 {
                     Thread.Sleep(1);
                     progressDialog.UpdateProgress(n);
@@ -424,6 +476,8 @@ namespace ConnecteurSage
 
         private void button10_Click(object sender, EventArgs e)
         {
+
+            /*
             if (initDOC_Numerotation())
             {
                 MessageBox.Show("La table \"DOC_NumerotationTable\" est créé/existe avec des données!",
@@ -439,6 +493,7 @@ namespace ConnecteurSage
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
+            */
         }
 
         public static int checkDOC_Numerotation(OdbcConnection connexion)
@@ -584,6 +639,43 @@ namespace ConnecteurSage
             catch (SDKException ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void debugMode_checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            const int SW_HIDE = 0;
+            const int SW_SHOW = 5;
+
+            if (debugMode_checkBox.Checked) 
+            {
+                try
+                {
+                    Dlls.InitConfig ini = new Dlls.InitConfig(SW_SHOW, false);
+                    Dlls.InitConfig x = new Dlls.InitConfig();
+                    x.saveInfo(ini);
+
+                    //MessageBox.Show("Les fenêtres de planification seront visibles.", "Mode débogage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Mode débogage 1", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                try
+                {
+                    Dlls.InitConfig ini = new Dlls.InitConfig(SW_HIDE, false);
+                    Dlls.InitConfig x = new Dlls.InitConfig();
+                    x.saveInfo(ini);
+
+                    //MessageBox.Show("Les fenêtres de planification ne seront plus visibles.", "Mode débogage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Mode débogage 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

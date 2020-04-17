@@ -188,7 +188,7 @@
             // 
             this.numericUpDown_exportLog.Location = new System.Drawing.Point(88, 84);
             this.numericUpDown_exportLog.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -218,7 +218,7 @@
             // 
             this.numericUpDown_exportME_MS.Location = new System.Drawing.Point(424, 148);
             this.numericUpDown_exportME_MS.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -240,7 +240,7 @@
             // 
             this.numericUpDown_exportFA.Location = new System.Drawing.Point(402, 116);
             this.numericUpDown_exportFA.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -262,7 +262,7 @@
             // 
             this.numericUpDown_exportBL.Location = new System.Drawing.Point(402, 88);
             this.numericUpDown_exportBL.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -284,7 +284,7 @@
             // 
             this.numericUpDown_exportBC.Location = new System.Drawing.Point(403, 61);
             this.numericUpDown_exportBC.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -306,7 +306,7 @@
             // 
             this.numericUpDown_importErreur.Location = new System.Drawing.Point(161, 147);
             this.numericUpDown_importErreur.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -327,7 +327,7 @@
             // 
             this.numericUpDown_importSuccess.Location = new System.Drawing.Point(169, 116);
             this.numericUpDown_importSuccess.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -348,7 +348,7 @@
             // 
             this.numericUpDown_importLog.Location = new System.Drawing.Point(88, 56);
             this.numericUpDown_importLog.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});
@@ -369,7 +369,7 @@
             // 
             this.numericUpDown_generalLog.Location = new System.Drawing.Point(88, 29);
             this.numericUpDown_generalLog.Maximum = new decimal(new int[] {
-            45,
+            60,
             0,
             0,
             0});

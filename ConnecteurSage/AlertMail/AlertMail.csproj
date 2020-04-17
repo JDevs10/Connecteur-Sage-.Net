@@ -63,5 +63,11 @@
   <ItemGroup>
     <Content Include="AlertMail.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dlls\Dlls.csproj">
+      <Project>{c027cebb-a12d-4e99-b835-c159b97261d8}</Project>
+      <Name>Dlls</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
