@@ -40,6 +40,7 @@
             this.labelCompanyName = new System.Windows.Forms.Label();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.debugMode_checkBox = new System.Windows.Forms.CheckBox();
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -86,7 +87,6 @@
             this.label_backup_activation = new System.Windows.Forms.Label();
             this.label_backup_generalLog = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.debugMode_checkBox = new System.Windows.Forms.CheckBox();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -191,7 +191,7 @@
             this.labelCopyright.Name = "labelCopyright";
             this.labelCopyright.Size = new System.Drawing.Size(508, 17);
             this.labelCopyright.TabIndex = 21;
-            this.labelCopyright.Text = "Copyright © 2013 - 2015";
+            this.labelCopyright.Text = "Copyright © xxxx - xxxx";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelCompanyName
@@ -238,6 +238,17 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Config";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // debugMode_checkBox
+            // 
+            this.debugMode_checkBox.AutoSize = true;
+            this.debugMode_checkBox.Location = new System.Drawing.Point(121, 179);
+            this.debugMode_checkBox.Name = "debugMode_checkBox";
+            this.debugMode_checkBox.Size = new System.Drawing.Size(92, 18);
+            this.debugMode_checkBox.TabIndex = 11;
+            this.debugMode_checkBox.Text = "Debug Mode";
+            this.debugMode_checkBox.UseVisualStyleBackColor = true;
+            this.debugMode_checkBox.CheckedChanged += new System.EventHandler(this.debugMode_checkBox_CheckedChanged);
             // 
             // button9
             // 
@@ -715,17 +726,6 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
-            // 
-            // debugMode_checkBox
-            // 
-            this.debugMode_checkBox.AutoSize = true;
-            this.debugMode_checkBox.Location = new System.Drawing.Point(121, 179);
-            this.debugMode_checkBox.Name = "debugMode_checkBox";
-            this.debugMode_checkBox.Size = new System.Drawing.Size(92, 18);
-            this.debugMode_checkBox.TabIndex = 11;
-            this.debugMode_checkBox.Text = "Debug Mode";
-            this.debugMode_checkBox.UseVisualStyleBackColor = true;
-            this.debugMode_checkBox.CheckedChanged += new System.EventHandler(this.debugMode_checkBox_CheckedChanged);
             // 
             // Main
             // 

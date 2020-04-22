@@ -47,6 +47,10 @@ namespace ConnecteurSage
         public Main()
         {
             InitializeComponent();
+            string version = Application.ProductVersion;
+            label3.Text = "Connecteur Sage v" + version + " \nImport et export de documents commerciaux.";
+            labelVersion.Text = "Version : " + version;
+            labelCopyright.Text = "Copyright © 2013 - 2020";
 
             Forms.ProgressDialog progressDialog = new Forms.ProgressDialog();
 
@@ -62,14 +66,12 @@ namespace ConnecteurSage
                 }
 
                 int SW = -1;
-                bool isOpen = false;
                 Dlls.InitConfig ini = new Dlls.InitConfig();
 
                 if (ini.checkFileExistance())
                 {
                     ini.Load();
                     SW = ini.showWindow;
-                    isOpen = ini.isOpen;
                 }
                 else
                 {
@@ -77,20 +79,6 @@ namespace ConnecteurSage
                     Dlls.InitConfig x = new Dlls.InitConfig();
                     x.saveInfo(newIni);
                     SW = 5;
-                    isOpen = false;
-                }
-
-                //check if the software is already running ?
-                if (isOpen)
-                {
-                    //Closing
-                    progressDialog.Text = "Le logiciel est déjà en cours d'exécution, nous fermons donc celui-ci....";
-                    for (int n = 10; n < 100; n++)
-                    {
-                        Thread.Sleep(5);
-                        progressDialog.UpdateProgress(n);
-                    }
-                    Application.Exit();
                 }
 
                 if (SW == 5)
@@ -651,9 +639,18 @@ namespace ConnecteurSage
             {
                 try
                 {
-                    Dlls.InitConfig ini = new Dlls.InitConfig(SW_SHOW, false);
                     Dlls.InitConfig x = new Dlls.InitConfig();
-                    x.saveInfo(ini);
+                    if (x.checkFileExistance())
+                    {
+                        x.Load();
+                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_SHOW, x.isOpen);
+                        ini.saveInfo(ini);
+                    }
+                    else
+                    {
+                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_SHOW, false);
+                        x.saveInfo(ini);
+                    }
 
                     //MessageBox.Show("Les fenêtres de planification seront visibles.", "Mode débogage", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -666,9 +663,24 @@ namespace ConnecteurSage
             {
                 try
                 {
+                    /*
                     Dlls.InitConfig ini = new Dlls.InitConfig(SW_HIDE, false);
                     Dlls.InitConfig x = new Dlls.InitConfig();
                     x.saveInfo(ini);
+                    */
+
+                    Dlls.InitConfig x = new Dlls.InitConfig();
+                    if (x.checkFileExistance())
+                    {
+                        x.Load();
+                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_HIDE, x.isOpen);
+                        ini.saveInfo(ini);
+                    }
+                    else
+                    {
+                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_HIDE, false);
+                        x.saveInfo(ini);
+                    }
 
                     //MessageBox.Show("Les fenêtres de planification ne seront plus visibles.", "Mode débogage", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }

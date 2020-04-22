@@ -131,10 +131,11 @@ namespace importPlanifier.Classes
                         {
                             //if (reader[1].ToString().Equals("1"))
                             //{
-                                if (countLimit < 100)
+                            if (countLimit < 100)
                                 {
                                     lits_of_stock[countLimit, 0] = reader[0].ToString(); // cbMarq
                                     lits_of_stock[countLimit, 1] = reader[1].ToString(); // DO_Statut
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : result "+countLimit + " => cbMarq : " + reader[0].ToString() + " | DO_Statut : " + reader[1].ToString());
                                     //Console.WriteLine(DateTime.Now + " | ExportCommande() : cbMarq = " + reader[0].ToString() + " DO_Statut = " + reader[1].ToString());
                                     countLimit++;
                                 }
@@ -158,9 +159,10 @@ namespace importPlanifier.Classes
             }
 
             logFileWriter.Flush();
-            //Console.WriteLine("OK1 countLimit:" + countLimit + " ");
+            Console.WriteLine(DateTime.Now + " | ExportCommande() :: countLimit:" + countLimit);
+            logFileWriter.WriteLine("");
 
-            for (int index=0; index< countLimit; index++)
+            for (int index=0; index < countLimit; index++)
             {
                 //Console.WriteLine("OK2 index:" + index+ " countLimit:" + countLimit+" ");
                 //CommandeAExporter
