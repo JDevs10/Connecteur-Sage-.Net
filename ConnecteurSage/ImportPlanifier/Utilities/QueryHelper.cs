@@ -77,7 +77,7 @@ namespace importPlanifier.Helpers
                 if (CT_NumCentrale != null && CT_NumCentrale != "")
                 {
                     //return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc where ar.AR_CODEBARRE='" + id + "' and arc.CT_Num ='" + CT_Num + "'";
-                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc, " + getPrefix() + "f_comptetg as CG where ar.AR_Ref = arc.AR_Ref and ar.AR_CODEBARRE='"+id+"' and CG.CT_Num = '"+ CT_NumCentrale + "'";
+                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc, " + getPrefix() + "f_comptetg as CG where ar.AR_Ref = arc.AR_Ref and arc.CT_Num = CG.CT_Num and ar.AR_CODEBARRE='" + id+"' and CG.CT_Num = '"+ CT_NumCentrale + "'";
                 }
                 else
                 {
