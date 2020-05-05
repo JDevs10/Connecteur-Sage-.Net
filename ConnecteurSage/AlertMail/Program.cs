@@ -394,7 +394,7 @@ namespace AlertMail
 
                                             for (int x = 0; x < allFiles_error.Length; x++)
                                             {
-                                                infoBody += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + getFileSize(allFiles_error[x].Length) + "\n Date de création " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].CreationTime) + " et date de modification " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].LastWriteTime);
+                                                infoBody += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + getFileSize(allFiles_error[x].Length) + "\n Date de création " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].CreationTime) + " et date de modification " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].LastWriteTime) +".\n";
 
                                                 if (!attachements.Contains(allFiles_error[x].FullName))
                                                 {
@@ -517,12 +517,12 @@ namespace AlertMail
                     else if (recap_exp.Lines.Count == 1)
                     {
                         sendMailExp = true;
-                        textExp += "L'import d'un document commercial durant l'import a échoué. Voici un résumer du document échoué :\n";
+                        textExp += "L'import d'un document commercial a échoué. Voici un résumé du document :\n";
                     }
                     else if (recap_exp.Lines.Count > 1)
                     {
                         sendMailExp = true;
-                        textExp += "L'import de plusieurs documents commerciaux durant l'import ont échoué. Voici le résumer de chaque document échoué :\n";
+                        textExp += "L'import de plusieurs documents commerciaux a échoué. Voici le résumé détaillé :\n";
                     }
                     for (int i = 0; i < recap_exp.Lines.Count; i++)
                     {
@@ -581,7 +581,7 @@ namespace AlertMail
                     else if (recap_imp.Lines.Count > 1)
                     {
                         sendMailImp = true;
-                        textImp += "L'import de plusieurs documents commerciaux ont échoué. Voici le résumé de chaque document en erreur :\n";
+                        textImp += "L'import de plusieurs documents commerciaux a échoué. Voici le résumé de chaque document en erreur :\n";
                     }
                     for (int i = 0; i < recap_imp.Lines.Count; i++)
                     {
@@ -609,12 +609,12 @@ namespace AlertMail
                     else if (recap_exp.Lines.Count == 1)
                     {
                         sendMailExp = true;
-                        textExp += "L'import d'un document commercial durant l'import a échoué. Voici un résumer du document échoué :\n";
+                        textExp += "L'import d'un document commercial a échoué. Voici un résumé du document :\n";
                     }
                     else if (recap_exp.Lines.Count > 1)
                     {
                         sendMailExp = true;
-                        textExp += "L'import de plusieurs documents commerciaux durant l'import ont échoué. Voici le résumer de chaque document échoué :\n";
+                        textExp += "L'import de plusieurs documents commerciaux a échoué. Voici le résumé de chaque document :\n";
                     }
                     for (int i = 0; i < recap_exp.Lines.Count; i++)
                     {

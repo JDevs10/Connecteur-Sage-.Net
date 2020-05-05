@@ -40,7 +40,6 @@
             this.labelCompanyName = new System.Windows.Forms.Label();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.debugMode_checkBox = new System.Windows.Forms.CheckBox();
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -87,6 +86,7 @@
             this.label_backup_activation = new System.Windows.Forms.Label();
             this.label_backup_generalLog = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.button10 = new System.Windows.Forms.Button();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -224,7 +224,7 @@
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.debugMode_checkBox);
+            this.tabPage4.Controls.Add(this.button10);
             this.tabPage4.Controls.Add(this.button9);
             this.tabPage4.Controls.Add(this.button7);
             this.tabPage4.Controls.Add(this.groupBox2);
@@ -239,20 +239,9 @@
             this.tabPage4.Text = "Config";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // debugMode_checkBox
-            // 
-            this.debugMode_checkBox.AutoSize = true;
-            this.debugMode_checkBox.Location = new System.Drawing.Point(121, 179);
-            this.debugMode_checkBox.Name = "debugMode_checkBox";
-            this.debugMode_checkBox.Size = new System.Drawing.Size(92, 18);
-            this.debugMode_checkBox.TabIndex = 11;
-            this.debugMode_checkBox.Text = "Debug Mode";
-            this.debugMode_checkBox.UseVisualStyleBackColor = true;
-            this.debugMode_checkBox.CheckedChanged += new System.EventHandler(this.debugMode_checkBox_CheckedChanged);
-            // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(412, 176);
+            this.button9.Location = new System.Drawing.Point(416, 176);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(90, 23);
             this.button9.TabIndex = 10;
@@ -262,7 +251,7 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(316, 176);
+            this.button7.Location = new System.Drawing.Point(320, 176);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(90, 23);
             this.button7.TabIndex = 9;
@@ -361,7 +350,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(220, 176);
+            this.button3.Location = new System.Drawing.Point(224, 176);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(90, 23);
             this.button3.TabIndex = 6;
@@ -727,6 +716,16 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(118, 176);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(100, 23);
+            this.button10.TabIndex = 11;
+            this.button10.Text = "Config Générale";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click_1);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -831,7 +830,7 @@
         private System.Windows.Forms.Label label_backup_export_ME_MS;
         private System.Windows.Forms.Label label_backup_export_FA;
         private System.Windows.Forms.Label label_backup_exportLog;
-        private System.Windows.Forms.CheckBox debugMode_checkBox;
+        private System.Windows.Forms.Button button10;
     }
 
 }

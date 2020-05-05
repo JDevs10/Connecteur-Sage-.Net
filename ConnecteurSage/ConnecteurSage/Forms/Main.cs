@@ -81,6 +81,7 @@ namespace ConnecteurSage
                     SW = 5;
                 }
 
+                /*
                 if (SW == 5)
                 {
                     // visible Software while running
@@ -91,6 +92,7 @@ namespace ConnecteurSage
                     // Hide Software while running
                     debugMode_checkBox.Checked = false;
                 }
+                */
 
 
                 //Loading Connexion Settings
@@ -630,64 +632,19 @@ namespace ConnecteurSage
             }
         }
 
-        private void debugMode_checkBox_CheckedChanged(object sender, EventArgs e)
+        private void button10_Click_1(object sender, EventArgs e)
         {
-            const int SW_HIDE = 0;
-            const int SW_SHOW = 5;
-
-            if (debugMode_checkBox.Checked) 
+            try
             {
-                try
+                using (Forms.GeneralConfig form = new Forms.GeneralConfig())
                 {
-                    Dlls.InitConfig x = new Dlls.InitConfig();
-                    if (x.checkFileExistance())
-                    {
-                        x.Load();
-                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_SHOW, x.isOpen);
-                        ini.saveInfo(ini);
-                    }
-                    else
-                    {
-                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_SHOW, false);
-                        x.saveInfo(ini);
-                    }
-
-                    //MessageBox.Show("Les fenêtres de planification seront visibles.", "Mode débogage", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Mode débogage 1", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    form.ShowDialog();
                 }
             }
-            else
+            // Récupération d'une possible SDKException
+            catch (SDKException ex)
             {
-                try
-                {
-                    /*
-                    Dlls.InitConfig ini = new Dlls.InitConfig(SW_HIDE, false);
-                    Dlls.InitConfig x = new Dlls.InitConfig();
-                    x.saveInfo(ini);
-                    */
-
-                    Dlls.InitConfig x = new Dlls.InitConfig();
-                    if (x.checkFileExistance())
-                    {
-                        x.Load();
-                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_HIDE, x.isOpen);
-                        ini.saveInfo(ini);
-                    }
-                    else
-                    {
-                        Dlls.InitConfig ini = new Dlls.InitConfig(SW_HIDE, false);
-                        x.saveInfo(ini);
-                    }
-
-                    //MessageBox.Show("Les fenêtres de planification ne seront plus visibles.", "Mode débogage", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Mode débogage 2", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                MessageBox.Show(ex.Message);
             }
         }
     }

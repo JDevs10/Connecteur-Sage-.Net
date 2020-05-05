@@ -98,15 +98,29 @@ namespace importPlanifier.Helpers
                 }
             }
         }
-        public static string getArticleTaxe(bool sqlConnexion, string id)
+        public static string getArticleTaxe(bool sqlConnexion, string id, string ACP_ComptaCPT_CompteG)
         {
             if (sqlConnexion)
             {
-                return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from " + getPrefix() + "F_ARTCOMPTA where AR_Ref='" + id + "'";
+                if(ACP_ComptaCPT_CompteG != null && !ACP_ComptaCPT_CompteG.Equals(""))
+                {
+                    return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from " + getPrefix() + "F_ARTCOMPTA where AR_Ref='" + id + "' and ACP_ComptaCPT_CompteG = '" + ACP_ComptaCPT_CompteG + "'";
+                }
+                else
+                {
+                    return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from " + getPrefix() + "F_ARTCOMPTA where AR_Ref='" + id + "'";
+                }
             }
             else
             {
-                return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from F_ARTCOMPTA where AR_Ref='" + id + "'";
+                if (ACP_ComptaCPT_CompteG != null && !ACP_ComptaCPT_CompteG.Equals(""))
+                {
+                    return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from F_ARTCOMPTA where AR_Ref='" + id + "' and ACP_ComptaCPT_CompteG = '" + ACP_ComptaCPT_CompteG + "'";
+                }
+                else
+                {
+                    return "SELECT ACP_ComptaCPT_Taxe1, ACP_ComptaCPT_Taxe2, ACP_ComptaCPT_Taxe3 from F_ARTCOMPTA where AR_Ref='" + id + "'";
+                }
             }
         }
 
@@ -209,7 +223,7 @@ namespace importPlanifier.Helpers
                     "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
                     "" + order.conditionLivraison + ",{d '" + order.DateCommande + "'},{d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,2," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
@@ -226,7 +240,7 @@ namespace importPlanifier.Helpers
                     "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
                     "" + order.conditionLivraison + ", {d '" + order.DateCommande + "'}, {d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,2," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }

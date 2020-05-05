@@ -56,12 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Launch.cs" />
     <Compile Include="Classes\Action.cs" />
     <Compile Include="Classes\Action2.cs" />
     <Compile Include="Classes\AdresseLivraison.cs" />
     <Compile Include="Classes\Article.cs" />
     <Compile Include="Classes\Client.cs" />
-    <Compile Include="Classes\ConfigurationBackup.cs" />
     <Compile Include="Classes\ConfigurationDNS.cs" />
     <Compile Include="Classes\ConfigurationExport.cs" />
     <Compile Include="Classes\ConfSendMail.cs" />
@@ -105,6 +105,14 @@
     <ProjectReference Include="..\Dlls\Dlls.csproj">
       <Project>{c027cebb-a12d-4e99-b835-c159b97261d8}</Project>
       <Name>Dlls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fichier-De-Nettoyage\Fichier-De-Nettoyage.csproj">
+      <Project>{a575f215-85ed-44b6-a502-9971f401a116}</Project>
+      <Name>Fichier-De-Nettoyage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Reprocess\Reprocess-Error-Files.csproj">
+      <Project>{ada83e63-ca51-4e6e-b500-d08b92916807}</Project>
+      <Name>Reprocess-Error-Files</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

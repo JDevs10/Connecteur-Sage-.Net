@@ -23,3 +23,4 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\Conn
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.exe
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.GeneralConfig.resources

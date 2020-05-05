@@ -13,6 +13,10 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dlls", "Dlls\Dlls.csproj", "{C027CEBB-A12D-4E99-B835-C159B97261D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reprocess-Error-Files", "Reprocess\Reprocess-Error-Files.csproj", "{ADA83E63-CA51-4E6E-B500-D08B92916807}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fichier-De-Nettoyage", "Fichier-De-Nettoyage\Fichier-De-Nettoyage.csproj", "{A575F215-85ED-44B6-A502-9971F401A116}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +41,14 @@ Global
 		{C027CEBB-A12D-4E99-B835-C159B97261D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C027CEBB-A12D-4E99-B835-C159B97261D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C027CEBB-A12D-4E99-B835-C159B97261D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADA83E63-CA51-4E6E-B500-D08B92916807}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADA83E63-CA51-4E6E-B500-D08B92916807}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADA83E63-CA51-4E6E-B500-D08B92916807}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADA83E63-CA51-4E6E-B500-D08B92916807}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A575F215-85ED-44B6-A502-9971F401A116}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A575F215-85ED-44B6-A502-9971F401A116}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A575F215-85ED-44B6-A502-9971F401A116}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A575F215-85ED-44B6-A502-9971F401A116}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

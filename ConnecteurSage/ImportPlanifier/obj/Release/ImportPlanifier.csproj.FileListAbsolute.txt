@@ -8,3 +8,7 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\obj\Release\Imp
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\ImportPlanifier.exe.config
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dlls.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dlls.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Fichier-De-Nettoyage.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Reprocess-Error-Files.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Fichier-De-Nettoyage.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Reprocess-Error-Files.pdb

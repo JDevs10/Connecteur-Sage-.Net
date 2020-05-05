@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,8 +24,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.10.45.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ApplicationVersion>1.10.46.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -149,6 +149,12 @@
     <Compile Include="Forms\ExportStocks.Designer.cs">
       <DependentUpon>ExportStocks.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\GeneralConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GeneralConfig.Designer.cs">
+      <DependentUpon>GeneralConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\importManuel.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -227,6 +233,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportStocks.resx">
       <DependentUpon>ExportStocks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GeneralConfig.resx">
+      <DependentUpon>GeneralConfig.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\importManuel.resx">
       <DependentUpon>importManuel.cs</DependentUpon>

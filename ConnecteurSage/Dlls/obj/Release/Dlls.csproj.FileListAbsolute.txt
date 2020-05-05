@@ -2,4 +2,3 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Dlls\bin\Release\Dlls.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Dlls\bin\Release\Dlls.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Dlls\obj\Release\Dlls.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Dlls\obj\Release\Dlls.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Dlls\obj\Release\Dlls.csprojAssemblyReference.cache

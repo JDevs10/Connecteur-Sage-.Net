@@ -1,0 +1,4 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Fichier-De-Nettoyage.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Fichier-De-Nettoyage.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.pdb
