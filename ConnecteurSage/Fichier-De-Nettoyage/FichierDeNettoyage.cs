@@ -69,10 +69,14 @@ namespace Fichier_De_Nettoyage
                     writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + directoriesList.GetLength(0) + " dossiers à nettoyer.");
                     writer.Flush();
 
+                    List<String> doneDirectories = new List<string>();
+
                     for (int x = 0; x < directoriesList.GetLength(0); x++)
                     {
-                        if (configBackup.general_Log != 0 && directoriesList[x, 0] == "general_logs")
+                        if (configBackup.general_Log != 0 && directoriesList[x, 0] == "general_logs" && !doneDirectories.Contains("general_logs"))
                         {
+                            doneDirectories.Add("general_logs");
+
                             Console.WriteLine("");
                             Console.WriteLine("Nettoyage des logs généraux ...");
                             writer.WriteLine("");
@@ -134,8 +138,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.import_Log != 0 && directoriesList[x, 0] == "import_logs")
+                        if (configBackup.import_Log != 0 && directoriesList[x, 0] == "import_logs" && !doneDirectories.Contains("import_logs"))
                         {
+                            doneDirectories.Add("import_logs");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Import logs...");
                             writer.WriteLine("");
@@ -194,8 +200,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.export_Log != 0 && directoriesList[x, 0] == "export_Logs")
+                        if (configBackup.export_Log != 0 && directoriesList[x, 0] == "export_Logs" && !doneDirectories.Contains("export_Logs"))
                         {
+                            doneDirectories.Add("export_Logs");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export logs...");
                             writer.WriteLine("");
@@ -253,8 +261,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.import_files_success != 0 && directoriesList[x, 0] == "import_files_success")
+                        if (configBackup.import_files_success != 0 && directoriesList[x, 0] == "import_files_success" && !doneDirectories.Contains("import_files_success"))
                         {
+                            doneDirectories.Add("import_files_success");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import réussi...");
                             writer.WriteLine("");
@@ -312,8 +322,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.import_files_error != 0 && directoriesList[x, 0] == "import_files_error")
+                        if (configBackup.import_files_error != 0 && directoriesList[x, 0] == "import_files_error" && !doneDirectories.Contains("import_files_error"))
                         {
+                            doneDirectories.Add("import_files_error");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import en erreur...");
                             writer.WriteLine("");
@@ -372,8 +384,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.export_files_BC != 0 && directoriesList[x, 0] == "export_files_BC")
+                        if (configBackup.export_files_BC != 0 && directoriesList[x, 0] == "export_files_BC" && !doneDirectories.Contains("export_files_BC"))
                         {
+                            doneDirectories.Add("export_files_BC");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files BC...");
                             writer.WriteLine("");
@@ -447,8 +461,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL")
+                        if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL" && !doneDirectories.Contains("export_files_BL"))
                         {
+                            doneDirectories.Add("export_files_BL");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files BL...");
 
@@ -519,8 +535,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA")
+                        if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA" && !doneDirectories.Contains("export_files_FA"))
                         {
+                            doneDirectories.Add("export_files_FA");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files FA...");
 
@@ -591,8 +609,10 @@ namespace Fichier_De_Nettoyage
                                 writer.Flush();
                             }
                         }
-                        if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS")
+                        if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS" && !doneDirectories.Contains("export_files_ME_MS"))
                         {
+                            doneDirectories.Add("export_files_ME_MS");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files ME/MS...");
 
@@ -691,6 +711,7 @@ namespace Fichier_De_Nettoyage
         public void startClean(string[,] paths)
         {
             Console.WriteLine("");
+            Console.WriteLine("");
             Console.WriteLine("################################ Nettoyage De Fichier ###############################");
             Console.WriteLine("");
 
@@ -723,10 +744,14 @@ namespace Fichier_De_Nettoyage
                 {
                     Console.WriteLine("Cleaning settings are activated !");
 
+                    List<String> doneDirectories = new List<string>();
+
                     for (int x = 0; x < directoriesList.GetLength(0); x++)
                     {
-                        if (configBackup.general_Log != 0 && directoriesList[x, 0] == "general_logs")
+                        if (configBackup.general_Log != 0 && directoriesList[x, 0] == "general_logs" && !doneDirectories.Contains("general_logs"))
                         {
+                            doneDirectories.Add("general_logs");
+
                             Console.WriteLine("");
                             Console.WriteLine("Nettoyage des logs généraux ...");
 
@@ -775,8 +800,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine("");
                             }
                         }
-                        if (configBackup.import_Log != 0 && directoriesList[x, 0] == "import_logs")
+                        if (configBackup.import_Log != 0 && directoriesList[x, 0] == "import_logs" && !doneDirectories.Contains("import_logs"))
                         {
+                            doneDirectories.Add("import_logs");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Import logs...");
 
@@ -825,8 +852,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
                             }
                         }
-                        if (configBackup.export_Log != 0 && directoriesList[x, 0] == "export_Logs")
+                        if (configBackup.export_Log != 0 && directoriesList[x, 0] == "export_Logs" && !doneDirectories.Contains("export_Logs"))
                         {
+                            doneDirectories.Add("export_Logs");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export logs...");
 
@@ -874,8 +903,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
                             }
                         }
-                        if (configBackup.import_files_success != 0 && directoriesList[x, 0] == "import_files_success")
+                        if (configBackup.import_files_success != 0 && directoriesList[x, 0] == "import_files_success" && !doneDirectories.Contains("import_files_success"))
                         {
+                            doneDirectories.Add("import_files_success");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import réussi...");
 
@@ -923,8 +954,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
                             }
                         }
-                        if (configBackup.import_files_error != 0 && directoriesList[x, 0] == "import_files_error")
+                        if (configBackup.import_files_error != 0 && directoriesList[x, 0] == "import_files_error" && !doneDirectories.Contains("import_files_error"))
                         {
+                            doneDirectories.Add("import_files_error");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import en erreur...");
 
@@ -973,8 +1006,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
                             }
                         }
-                        if (configBackup.export_files_BC != 0 && directoriesList[x, 0] == "export_files_BC")
+                        if (configBackup.export_files_BC != 0 && directoriesList[x, 0] == "export_files_BC" && !doneDirectories.Contains("export_files_BC"))
                         {
+                            doneDirectories.Add("export_files_BC");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files BC...");
 
@@ -1036,8 +1071,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
                             }
                         }
-                        if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL")
+                        if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL" && !doneDirectories.Contains("export_files_BL"))
                         {
+                            doneDirectories.Add("export_files_BL");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files BL...");
 
@@ -1095,8 +1132,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
                             }
                         }
-                        if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA")
+                        if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA" && !doneDirectories.Contains("export_files_FA"))
                         {
+                            doneDirectories.Add("export_files_FA");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files FA...");
 
@@ -1154,8 +1193,10 @@ namespace Fichier_De_Nettoyage
                                 Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
                             }
                         }
-                        if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS")
+                        if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS" && !doneDirectories.Contains("export_files_ME_MS"))
                         {
+                            doneDirectories.Add("export_files_ME_MS");
+
                             Console.WriteLine("");
                             Console.WriteLine(DateTime.Now + " : Cleaning Export files ME/MS...");
 

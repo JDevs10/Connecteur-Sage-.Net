@@ -77,7 +77,7 @@ namespace ImportPlanifier
         public void Start()
         {
             // start a thread and start doing some processing
-            Console.WriteLine("Thread started, processing..");
+            //Console.WriteLine("Thread started, processing...\n\n");
 
             Launch mLaunch = new Launch();
             newThread = new Thread(new ThreadStart(mLaunch.go));

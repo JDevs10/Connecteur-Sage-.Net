@@ -25,12 +25,16 @@ namespace Reprocess
             if (!Directory.Exists(directoryName_SuccessFile))
             {
                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => checkFiles() | Le dossier  \"" + directoryName_SuccessFile + "\" n'existe pas!");
-                result = false;
+                writer.WriteLine("");
+                writer.Flush();
+                return false;
             }
             if (!Directory.Exists(directoryName_ErrorFile))
             {
                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => checkFiles() | Le dossier  \"" + directoryName_ErrorFile + "\" n'existe pas!");
-                result = false;
+                writer.WriteLine("");
+                writer.Flush();
+                return false;
             }
 
             DirectoryInfo fileListing = new DirectoryInfo(directoryName_ErrorFile);
@@ -78,7 +82,7 @@ namespace Reprocess
 
                     writer.WriteLine("");
                     writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Index : " + cpt);
-                    writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Date aujourd'hui : " + string.Format("{0:dd-MM-yyyy HH:mm}", fileDateTime) + ", Date de création : " + string.Format("{0:dd-MM-yyyy HH:mm}", fileDateTime) + ", TimeSpan : " + string.Format("{0:HH:mm}", ts));
+                    writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Date aujourd'hui : " + string.Format("{0:dd-MM-yyyy HH:mm}", fileDateTime) + ", Date de création : " + string.Format("{0:dd-MM-yyyy HH:mm}", fileDateTime) + ", TimeSpan : " + string.Format("{0}", ts));
                     writer.Flush();
 
                     // if file hour > 2hs
@@ -104,7 +108,6 @@ namespace Reprocess
                 writer.WriteLine("");
             }
         }
-
 
     }
 }

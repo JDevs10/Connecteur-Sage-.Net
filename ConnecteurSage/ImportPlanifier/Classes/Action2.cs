@@ -6793,6 +6793,7 @@ namespace importPlanifier.Classes
 
         public static ConfSendMail getInfoMail(StreamWriter writer)
         {
+            writer.WriteLine("");
             try
             {
                 writer.WriteLine(DateTime.Now + " : getInfoMail() | File => " + Directory.GetCurrentDirectory() + @"\SettingMail.xml");
@@ -6800,16 +6801,20 @@ namespace importPlanifier.Classes
                 {
                     ConfSendMail confMail = new ConfSendMail();
                     confMail.Load();
+                    writer.WriteLine(DateTime.Now + " : getInfoMail() | Good.");
+                    writer.WriteLine("");
                     return confMail;
                 }
                 else
                 {
+                    writer.WriteLine("");
                     return null;
                 }
             }
             catch (Exception ex)
             {
                 writer.WriteLine(DateTime.Now + " : getInfoMail() | Erreur[43] - " + ex.Message);
+                writer.WriteLine("");
                 return null;
             }
         }
@@ -7015,7 +7020,7 @@ namespace importPlanifier.Classes
             logFileWriter_general.WriteLine("");
             logFileWriter_general.WriteLine("################################ Retraiter les Fichiers ERROR ###############################");
 
-            Reprocess.ReprocessErrorFiles reprocessErrorFiles = new ReprocessErrorFiles();
+            Reprocess.ReprocessErrorFiles reprocessErrorFiles = new Reprocess.ReprocessErrorFiles();
             reprocessErrorFiles.reprocess(logFileWriter_general);
 
             logFileWriter_general.WriteLine("");
@@ -7230,6 +7235,10 @@ namespace importPlanifier.Classes
 
             //Console.ReadLine();
             logFileWriter_general.Flush();
+
+            logFileWriter_general.WriteLine("");
+            logFileWriter_general.WriteLine("#################################### Configuration Général ###################################");
+            logFileWriter_general.WriteLine("");
 
             Dlls.InitConfig x = new Dlls.InitConfig();
             x.resetWindowDisplay(logFileWriter_general);
