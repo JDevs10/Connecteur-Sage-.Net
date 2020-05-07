@@ -40,7 +40,9 @@ namespace ImportPlanifier
         private static bool Handler(CtrlType sig)
         {
             newThread.Abort();
-            Console.WriteLine("Fermeture du système en raison d'un CTRL-C externe, d'une interruption du processus ou d'un arrêt.");
+
+            Connecteur_Info.Batch_Interrup interrup = new Connecteur_Info.Batch_Interrup();
+            interrup.interruption();
 
             //do your cleanup here
             Thread.Sleep(5000); //simulate some cleanup delay

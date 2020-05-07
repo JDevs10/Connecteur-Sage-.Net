@@ -63,13 +63,10 @@ namespace importPlanifier.Classes
 
             Classes.Path path = getPath();
             dir = path.path;
-            Console.WriteLine("Import/Export planifier Sage!!");
-            Console.WriteLine("Execution en cours..");
-            Console.WriteLine("##############################################");
-            Console.WriteLine("############ L'import planifier ##############");
-            Console.WriteLine("##############################################");
-            Console.WriteLine("");
 
+            // Load intro
+            Connecteur_Info.Batch_Intro intro = new Connecteur_Info.Batch_Intro();
+            intro.intro();
 
             if (dir == null)
             {
@@ -154,11 +151,9 @@ namespace importPlanifier.Classes
 
             using (StreamWriter logFileWriter_import = new StreamWriter(logFile_import))
             {
-                logFileWriter_import.WriteLine("#####################################################################################");
-                logFileWriter_import.WriteLine("################################ ConnecteurSage Sage ################################");
-                logFileWriter_import.WriteLine("#####################################################################################");
-                logFileWriter_import.WriteLine("");
-
+                // Load intro
+                Connecteur_Info.Batch_Intro intro_ = new Connecteur_Info.Batch_Intro();
+                intro_.intro(logFileWriter_import);
 
                 /* 
                     action : import documents
@@ -7014,14 +7009,16 @@ namespace importPlanifier.Classes
             var logFile_general = File.Create(logFileName_general);
             logFileWriter_general = new StreamWriter(logFile_general);
 
-            logFileWriter_general.WriteLine("#############################################################################################");
-            logFileWriter_general.WriteLine("#################################### ConnecteurSage Sage ####################################");
-            logFileWriter_general.WriteLine("#############################################################################################");
-            logFileWriter_general.WriteLine("");
-            logFileWriter_general.WriteLine("################################ Retraiter les Fichiers ERROR ###############################");
 
+            // Load intro
+            Connecteur_Info.Batch_Intro intro_B = new Connecteur_Info.Batch_Intro();
+            intro_B.intro(logFileWriter_general);
+
+
+            logFileWriter_general.WriteLine("################################ Retraiter les Fichiers ERROR ###############################");
             Reprocess.ReprocessErrorFiles reprocessErrorFiles = new Reprocess.ReprocessErrorFiles();
             reprocessErrorFiles.reprocess(logFileWriter_general);
+
 
             logFileWriter_general.WriteLine("");
             logFileWriter_general.WriteLine("#################################### Import des documents ###################################");
@@ -7242,6 +7239,10 @@ namespace importPlanifier.Classes
 
             Dlls.InitConfig x = new Dlls.InitConfig();
             x.resetWindowDisplay(logFileWriter_general);
+
+            // Load intro
+            Connecteur_Info.Batch_Ending intro_E = new Connecteur_Info.Batch_Ending();
+            intro_E.ending(logFileWriter_general);
 
             logFileWriter_general.Flush();
             logFileWriter_general.Close();
