@@ -101,6 +101,12 @@
     <Compile Include="Classes\Veolog_DESADV.cs" />
     <Compile Include="Classes\Veolog_DESADV_Colis.cs" />
     <Compile Include="Classes\Veolog_DESADV_Line.cs" />
+    <Compile Include="Forms\AddEmails.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AddEmails.Designer.cs">
+      <DependentUpon>AddEmails.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ConfExport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,17 +119,17 @@
     <Compile Include="Forms\ConfigBackup.Designer.cs">
       <DependentUpon>ConfigBackup.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Configuration.cs">
+    <Compile Include="Forms\ConfigConnexion.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Configuration.Designer.cs">
-      <DependentUpon>Configuration.cs</DependentUpon>
+    <Compile Include="Forms\ConfigConnexion.Designer.cs">
+      <DependentUpon>ConfigConnexion.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ConfMail.cs">
+    <Compile Include="Forms\ConfigEmail.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ConfMail.Designer.cs">
-      <DependentUpon>ConfMail.cs</DependentUpon>
+    <Compile Include="Forms\ConfigEmail.Designer.cs">
+      <DependentUpon>ConfigEmail.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ExportBonLivraison.cs">
       <SubType>Form</SubType>
@@ -210,17 +216,23 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\AddEmails.aa.resx">
+      <DependentUpon>AddEmails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AddEmails.resx">
+      <DependentUpon>AddEmails.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConfExport.resx">
       <DependentUpon>ConfExport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConfigBackup.resx">
       <DependentUpon>ConfigBackup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Configuration.resx">
-      <DependentUpon>Configuration.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ConfigConnexion.resx">
+      <DependentUpon>ConfigConnexion.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ConfMail.resx">
-      <DependentUpon>ConfMail.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ConfigEmail.resx">
+      <DependentUpon>ConfigEmail.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportBonLivraison.resx">
       <DependentUpon>ExportBonLivraison.cs</DependentUpon>
@@ -272,6 +284,10 @@
     <Analyzer Include="Microsoft.Win32.TaskScheduler.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Alert-Mail\Alert-Mail.csproj">
+      <Project>{b5e11fc4-f58c-40b9-99cc-b831ddd17f4a}</Project>
+      <Name>Alert-Mail</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dlls\Dlls.csproj">
       <Project>{c027cebb-a12d-4e99-b835-c159b97261d8}</Project>
       <Name>Dlls</Name>

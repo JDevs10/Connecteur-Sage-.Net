@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reprocess-Error-Files", "Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fichier-De-Nettoyage", "Fichier-De-Nettoyage\Fichier-De-Nettoyage.csproj", "{A575F215-85ED-44B6-A502-9971F401A116}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connecteur-Info", "Connecteur-Info\Connecteur-Info.csproj", "{151FABB0-D64F-42EA-AB2A-AEA6EBC854C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alert-Mail", "Alert-Mail\Alert-Mail.csproj", "{B5E11FC4-F58C-40B9-99CC-B831DDD17F4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,14 @@ Global
 		{A575F215-85ED-44B6-A502-9971F401A116}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A575F215-85ED-44B6-A502-9971F401A116}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A575F215-85ED-44B6-A502-9971F401A116}.Release|Any CPU.Build.0 = Release|Any CPU
+		{151FABB0-D64F-42EA-AB2A-AEA6EBC854C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{151FABB0-D64F-42EA-AB2A-AEA6EBC854C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{151FABB0-D64F-42EA-AB2A-AEA6EBC854C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{151FABB0-D64F-42EA-AB2A-AEA6EBC854C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5E11FC4-F58C-40B9-99CC-B831DDD17F4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5E11FC4-F58C-40B9-99CC-B831DDD17F4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5E11FC4-F58C-40B9-99CC-B831DDD17F4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5E11FC4-F58C-40B9-99CC-B831DDD17F4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

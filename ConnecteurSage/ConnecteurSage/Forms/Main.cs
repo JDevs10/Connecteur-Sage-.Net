@@ -126,7 +126,7 @@ namespace ConnecteurSage
                 {
                     try
                     {
-                        using (Forms.Configuration form = new Forms.Configuration())
+                        using (Forms.ConfigConnexion form = new Forms.ConfigConnexion())
                         {
                             form.ShowDialog(progressDialog);
                         }
@@ -282,7 +282,7 @@ namespace ConnecteurSage
         {
             try
             {
-                using (Forms.Configuration form = new Forms.Configuration())
+                using (Forms.ConfigConnexion form = new Forms.ConfigConnexion())
                 {
                     form.ShowDialog();
                 }
@@ -419,7 +419,7 @@ namespace ConnecteurSage
         {
             try
             {
-                using (Forms.ConfMail form = new Forms.ConfMail())
+                using (Forms.ConfigEmail form = new Forms.ConfigEmail())
                 {
                     form.ShowDialog();
                 }

@@ -1,0 +1,7 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Alert-Mail.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Alert-Mail.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csproj.CopyComplete

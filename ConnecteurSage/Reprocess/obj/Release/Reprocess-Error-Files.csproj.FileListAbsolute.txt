@@ -2,3 +2,4 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Reprocess
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Reprocess-Error-Files.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.csprojAssemblyReference.cache

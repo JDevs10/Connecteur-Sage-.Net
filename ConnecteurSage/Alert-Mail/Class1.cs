@@ -229,6 +229,7 @@ namespace Alert_Mail
             return string.Format("{0:n1}{1}", size, suffixes[cpt]);
         }
 
+        /*
         public static ConfSendMail getInfoMail()
         {
             try
@@ -357,6 +358,7 @@ namespace Alert_Mail
                 //Console.ReadLine();
             }
         }
+        */
 
     }
 }
