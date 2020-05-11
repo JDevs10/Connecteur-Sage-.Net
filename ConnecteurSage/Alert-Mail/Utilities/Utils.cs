@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlertMail.Helpers
+namespace Alert_Mail.Utilities
 {
     public static class Utils
     {

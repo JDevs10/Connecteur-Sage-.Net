@@ -10,7 +10,7 @@ namespace Alert_Mail.Classes
     public class ConfigurationEmail
     {
         public Boolean active { get; set; }
-        public Connexion connexion { get; set; }
+        public Alert_Mail.Classes.Configuration.Connexion connexion { get; set; }
         public EmailLists emailLists { get; set; }
         public EmailImport emailImport { get; set; }
         public EmailExport emailExport { get; set; }
@@ -23,7 +23,7 @@ namespace Alert_Mail.Classes
         {
         }
 
-        public ConfigurationEmail(Boolean active_, Connexion connexion_, EmailLists emailLists_, EmailImport emailImport_, EmailExport emailExport_, EmailError emailError_, EmailSummary emailSummary_, EmailPendingFiles emailPendingFiles_)
+        public ConfigurationEmail(Boolean active_, Alert_Mail.Classes.Configuration.Connexion connexion_, EmailLists emailLists_, EmailImport emailImport_, EmailExport emailExport_, EmailError emailError_, EmailSummary emailSummary_, EmailPendingFiles emailPendingFiles_)
         {
             this.active = active_;
             this.connexion = connexion_;

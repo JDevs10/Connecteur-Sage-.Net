@@ -28,10 +28,10 @@ namespace ConnecteurSage.Forms
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            Classes.Path path = ReturnPath();
+            string path = ReturnPath();
 
             TaskService ts = new TaskService();
-            if (ts.FindTask(taskName, true) != null && path.path != null)
+            if (ts.FindTask(taskName, true) != null && path != null)
             {
                 checkBox1.Checked = true;
                 Task t = ts.GetTask(taskName);
@@ -48,7 +48,7 @@ namespace ConnecteurSage.Forms
                 }
                 dateTimePicker2.Text = "" + td.Triggers[0].StartBoundary.ToString().Substring(0, 10);
                 dateTimePicker1.Text = "" + td.Triggers[0].StartBoundary.ToString().Substring(11, 8);
-                textBox1.Text = path.path;
+                textBox1.Text = path;
                 // Microsoft.Win32.RegistryKey key= Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\EBP\\SDKImport");
                 //chargement du fichier
                 //td.Triggers[0].Repetition.
@@ -68,17 +68,9 @@ namespace ConnecteurSage.Forms
                 checkBox2.Checked = false;
                 }
 
-                Classes.ConfigurationExport export = new Classes.ConfigurationExport();
-                export.Load();
-
-                checkBox3.Checked = ((export.exportBonsCommandes == "True") ?true:false);
-                checkBox4.Checked = ((export.exportBonsLivraisons == "True") ?true:false);
-                checkBox5.Checked = ((export.exportFactures == "True") ?true:false);
-                checkBox6.Checked = ((export.exportStock == "True") ?true:false);
-
             }
 
-            if ((ts.FindTask(taskName, true) == null && path.path == null) || (ts.FindTask(taskName, true) != null && path.path == null) || (ts.FindTask(taskName, true) == null && path.path != null))
+            if ((ts.FindTask(taskName, true) == null && path == null) || (ts.FindTask(taskName, true) != null && path == null) || (ts.FindTask(taskName, true) == null && path != null))
             {
 
                 groupBox1.Enabled = false;
@@ -88,7 +80,6 @@ namespace ConnecteurSage.Forms
                 enregistrerButton.Enabled = false;
 
                 checkBox1.Checked = false;
-                groupBox4.Enabled = false;
                 groupBox3.Enabled = false;
                 checkBox2.Checked = false;
                 checkBox2.Enabled = false;
@@ -98,7 +89,7 @@ namespace ConnecteurSage.Forms
 
             }
 
-            if (ts.FindTask(taskName, true) != null && path.path == null) 
+            if (ts.FindTask(taskName, true) != null && path == null) 
             {
                 //Task t = ts.GetTask(taskName);
                 //TaskDefinition td = t.Definition;
@@ -120,16 +111,12 @@ namespace ConnecteurSage.Forms
 
                 checkBox2.Enabled = false;
 
-                groupBox4.Enabled = false;
-
             }
             else
             {
                 groupBox1.Enabled = true;
 
                 groupBox2.Enabled = true;
-
-                groupBox4.Enabled = true;
 
 
                 enregistrerButton.Enabled = true;
@@ -186,12 +173,14 @@ namespace ConnecteurSage.Forms
                     //EnregistrerLaTache(dateTimePicker2.Text, dateTimePicker1.Text);
 
                     //Enregistrer l'emplacement dans Path.xml
+                    /*
                     Classes.Path path = new Classes.Path(textBox1.Text);
 
                     var myfile = File.Create(pathModule+@"\Path.xml");
                     XmlSerializer xml = new XmlSerializer(typeof(Classes.Path));
                     xml.Serialize(myfile, path);
                     myfile.Close();
+                    */
 
 
                     //Enregistrement du statu export
@@ -294,22 +283,28 @@ namespace ConnecteurSage.Forms
             ts.RootFolder.RegisterTaskDefinition(taskName, td);
         }
 
-        public Classes.Path ReturnPath()
+        public string ReturnPath()
         {
 
-                try
+            try
+            {
+                Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+                if (settings.isSettings())
                 {
-                    Classes.Path path = new Classes.Path();
-                    path.Load();
-                    return path;
-
+                    settings.Load();
+                    return settings.configurationGeneral.paths.EDI_Folder;
                 }
-                catch 
+                else
                 {
-                    //Exception pouvant survenir si l'objet SqlConnection est dans l'état 'Fermé'
-                    MessageBox.Show("Erreur[P1] : path file.");
                     return null;
                 }
+            }
+            catch 
+            {
+                //Exception pouvant survenir si l'objet SqlConnection est dans l'état 'Fermé'
+                MessageBox.Show("Erreur[P1] : path file.");
+                return null;
+            }
            
         }
 

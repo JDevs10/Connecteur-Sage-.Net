@@ -13,11 +13,7 @@ namespace Alert_Mail.Classes.Configuration
         public Boolean activeTeam { get; set; }
         public List<string> emailTeamList { get; set; }
 
-        public EmailLists()
-        {
-
-        }
-
+        public EmailLists(){ }
         public EmailLists(Boolean activeClient, List<string> emailClientList, Boolean activeTeam, List<string> emailTeamList)
         {
             this.activeClient = activeClient;

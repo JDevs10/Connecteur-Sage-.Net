@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using importPlanifier.Helpers;
+using importPlanifier.Utilities;
 using System.IO;
 using System.Data.Odbc;
 using System.Data;
@@ -16,6 +16,7 @@ using System.Diagnostics;
 using ImportPlanifier.Classes;
 using Reprocess;
 using Fichier_De_Nettoyage;
+using Connexion;
 
 namespace importPlanifier.Classes
 {
@@ -61,8 +62,8 @@ namespace importPlanifier.Classes
             List<string> tabCommandeError = new List<string>();
             List<Order> ordersList = new List<Order>();
 
-            Classes.Path path = getPath();
-            dir = path.path;
+            string path = getPath();
+            dir = path;
 
             // Load intro
             Connecteur_Info.Batch_Intro intro = new Connecteur_Info.Batch_Intro();
@@ -298,7 +299,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + ".");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. La commande N° " + order.NumCommande + " existe deja dans la base. N° de pièce : " + existe + ".", "La commande N° " + order.NumCommande + " existe deja dans la base. N° de pièce : " + existe + ".", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines(order.Id, order.NumCommande, null, "La commande N° " + order.NumCommande + " existe deja dans la base. N° de pièce : " + existe + ".", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
 
@@ -792,7 +793,7 @@ namespace importPlanifier.Classes
                                             logFileWriter_import.WriteLine("");
                                             logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Récupére tous les tva");
                                             List<TVA> tvaList = null;
-                                            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                                            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                                             {
                                                 connexion.Open();
                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getAllTVA(true));
@@ -839,12 +840,13 @@ namespace importPlanifier.Classes
                                                         }
 
                                                         string ACP_ComptaCPT_CompteG = null;
-                                                        Dlls.InitConfig ini = new Dlls.InitConfig();
-                                                        if (ini.checkFileExistance())
+                                                        Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+                                                        if (settings.isSettings())
                                                         {
-                                                            ini.Load();
-                                                            ACP_ComptaCPT_CompteG = ini.ACP_ComptaCPT_CompteG;
+                                                            settings.Load();
+                                                            ACP_ComptaCPT_CompteG = "" + settings.configurationGeneral.general.ACP_ComptaCPT_CompteG;
                                                         }
+
 
                                                         //Get article taxes
                                                         logFileWriter_import.WriteLine("");
@@ -2302,10 +2304,10 @@ namespace importPlanifier.Classes
             //logFileWriter_general.Close();
         }
 
-        public static Boolean insertCommande(Client client, Order order, StreamWriter writer, string filename)
+        public Boolean insertCommande(Client client, Order order, StreamWriter writer, string filename)
         {
             writer.WriteLine(DateTime.Now + " | insertCommande() : Called!");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -2334,10 +2336,10 @@ namespace importPlanifier.Classes
 
         }
 
-        public static Boolean insertCommandeLine(Client client, Order order, OrderLine orderLine, StreamWriter writer)
+        public Boolean insertCommandeLine(Client client, Order order, OrderLine orderLine, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | insertCommandeLine() : Called!");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -2374,7 +2376,7 @@ namespace importPlanifier.Classes
             string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion()) //connecting to database as handler
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion()) //connecting to database as handler
             {
                 try
                 {
@@ -2417,7 +2419,7 @@ namespace importPlanifier.Classes
 
                         if (name_article != "")
                         {
-                            using (OdbcConnection connectionSQL = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
+                            using (OdbcConnection connectionSQL = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
                             {
                                 connectionSQL.Open();
                                 using (OdbcCommand command = new OdbcCommand(QueryHelper.getNegativeStockOfAProduct(true, line.reference), connectionSQL)) //execute the function within this statement : getNegativeStockOfAProduct()
@@ -2644,7 +2646,7 @@ namespace importPlanifier.Classes
                 }
 
 
-                using (OdbcConnection connectionSQL = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
+                using (OdbcConnection connectionSQL = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
                 {
                     try
                     {
@@ -2864,7 +2866,7 @@ namespace importPlanifier.Classes
                 return false;
             }
 
-            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -3620,7 +3622,7 @@ namespace importPlanifier.Classes
 
             // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
-            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
             {
                 try
                 {
@@ -4385,7 +4387,7 @@ namespace importPlanifier.Classes
             string curr_date = d.ToString("yyyy-MM-dd");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
-            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
             {
                 try
                 {
@@ -5028,7 +5030,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask ME");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -5131,7 +5133,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask MS");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -5233,7 +5235,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BL");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -5323,7 +5325,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BC");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -5413,7 +5415,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask BLF");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -5502,7 +5504,7 @@ namespace importPlanifier.Classes
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask LF");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -5595,7 +5597,7 @@ namespace importPlanifier.Classes
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : Vérifier si la table de numérotation existe");
 
-            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -5652,7 +5654,7 @@ namespace importPlanifier.Classes
             else if (check == 0 || check == -1)      //if the tDOC_Numerotation doesn't exist then create it 
             {
                 writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation does not existe, so create the table!");
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -5711,7 +5713,7 @@ namespace importPlanifier.Classes
         public static Client getClient(string id, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -5754,7 +5756,7 @@ namespace importPlanifier.Classes
         public static string getStockId(StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | getStockId() : Called!");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -5792,7 +5794,7 @@ namespace importPlanifier.Classes
         public static string getNumLivraison(string client_num, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | getNumLivraison() : Client Numéro => "+client_num);
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -5830,7 +5832,7 @@ namespace importPlanifier.Classes
         public static string insertCommande(Client client, Order order)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -5861,7 +5863,7 @@ namespace importPlanifier.Classes
         public static Boolean insertLigneCommande(Client client, Order order, OrderLine orderLine, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
 
                 try
@@ -5894,7 +5896,7 @@ namespace importPlanifier.Classes
         public static Article getArticle(string code_article, string CT_NumCentrale, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | getArticle() : Code Article : "+code_article);
-            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -5939,13 +5941,17 @@ namespace importPlanifier.Classes
 
         }
 
-        public static Classes.Path getPath()
+        public static string getPath()
         {
             try
             {
-                Classes.Path path = new Classes.Path();
-                path.Load();
-                return path;
+                Init.Classes.SaveLoadInit setting = new Init.Classes.SaveLoadInit();
+                if (setting.isSettings())
+                {
+                    setting.Load();
+                    return setting.configurationGeneral.paths.EDI_Folder;
+                }
+                return null;
             }
             catch(Exception e)
             {
@@ -6005,7 +6011,7 @@ namespace importPlanifier.Classes
         {
             if (typeSQL)
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     try
                     {
@@ -6023,7 +6029,7 @@ namespace importPlanifier.Classes
             }
             else
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     try
                     {
@@ -6043,7 +6049,7 @@ namespace importPlanifier.Classes
         public static Boolean deleteCommandeLigne(string NumCommande)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6064,7 +6070,7 @@ namespace importPlanifier.Classes
         public static string testGamme(int type, string code_article, string gamme, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | testGamme() : Type '"+type+"', Code Article '"+code_article+"', Gamme '"+gamme+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6114,7 +6120,7 @@ namespace importPlanifier.Classes
         public static string existeCommande(string num, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6156,7 +6162,7 @@ namespace importPlanifier.Classes
         public static string existeCommande_v2(string num, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | existeCommande_v2() : Numéro du Doc '"+num+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6197,7 +6203,7 @@ namespace importPlanifier.Classes
         public static string MaxNumPiece(StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6238,7 +6244,7 @@ namespace importPlanifier.Classes
         {
             writer.WriteLine(DateTime.Now + " | MaxNumPiece_v2() : Mask '"+mask+"'");
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6352,7 +6358,7 @@ namespace importPlanifier.Classes
         public static string get_next_num_piece_commande(StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6391,7 +6397,7 @@ namespace importPlanifier.Classes
         {
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | get_next_num_piece_commande_v2() | Mask '"+mask+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -6468,7 +6474,7 @@ namespace importPlanifier.Classes
         public static string get_condition_livraison(string c_mode, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | get_condition_livraison() : C_Mode '"+c_mode+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6506,7 +6512,7 @@ namespace importPlanifier.Classes
         public static List<AdresseLivraison> get_adresse_livraison(AdresseLivraison adresse, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | get_adresse_livraison() : Called1");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6541,7 +6547,7 @@ namespace importPlanifier.Classes
         public static Boolean insert_adresse_livraison(string client, AdresseLivraison adresse, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6569,7 +6575,7 @@ namespace importPlanifier.Classes
         public static string existeFourniseur(string num, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | existeFourniseur() : id '"+num+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6611,7 +6617,7 @@ namespace importPlanifier.Classes
         public static string get_Last_insert_livraison(string client, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6657,7 +6663,7 @@ namespace importPlanifier.Classes
         public static Client getClient(string id, int flag, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6705,7 +6711,7 @@ namespace importPlanifier.Classes
         public static Client getClient_v2(string id, int flag, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | getClient_v2() : id '"+id+"' and flag '"+flag+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6751,7 +6757,7 @@ namespace importPlanifier.Classes
         public static string getDevise(string codeIso, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | getDevise() : Code ISO '"+codeIso+"'");
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6885,7 +6891,7 @@ namespace importPlanifier.Classes
         public static Boolean TestSiNumPieceExisteDeja(string num, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6924,7 +6930,7 @@ namespace importPlanifier.Classes
         public static List<string> TestIntituleLivraison(string Intitule, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -6961,7 +6967,7 @@ namespace importPlanifier.Classes
         public static Conditionnement getConditionnementArticle(string code_article, StreamWriter writer)
         {
             writer.WriteLine(DateTime.Now + " | getConditionnementArticle() : Code Article : "+code_article);
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -7032,11 +7038,11 @@ namespace importPlanifier.Classes
 
             //this.SendToVeolog();
             Console.WriteLine("");
-            Classes.Path path = new Path();
+            string path = null;
             
             try
             {
-                path.Load();
+                path = getPath();
             }catch(Exception ex)
             {
                 Console.WriteLine(DateTime.Now + " : No EDI folder || " + ex.Message);
@@ -7047,9 +7053,7 @@ namespace importPlanifier.Classes
             logFileWriter_general.WriteLine("");
             logFileWriter_general.WriteLine("################################ Export des documents ###############################");
             logFileWriter_general.WriteLine("");
-            ConfigurationExport export = new ConfigurationExport();
-            export.Load();
-            Console.WriteLine(DateTime.Now + " : Path => " + path.path);
+            Console.WriteLine(DateTime.Now + " : Path => " + path);
 
 
             if (recapLinesList_new.Count != 0)
@@ -7059,15 +7063,18 @@ namespace importPlanifier.Classes
 
             List<CustomMailRecapLines> recapLinesList_new___ = new List<CustomMailRecapLines>();
 
+            Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+            settings.Load();
+
             //Export des commandes
-            if (((export.exportBonsCommandes == "True") ? true : false))
+            if (settings.configurationExport.Commande.Activate)
             {
                 Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : Export Bons Commandes");
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export des Commandes activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportCommandes c = new Classes.ExportCommandes(path.path);
+                Classes.ExportCommandes c = new Classes.ExportCommandes(path);
                 recapLinesList_new___ = c.ExportCommande(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -7081,14 +7088,14 @@ namespace importPlanifier.Classes
             logFileWriter_general.Flush();
 
             //Export des DESADV
-            if (((export.exportBonsLivraisons == "True") ? true : false))
+            if (settings.configurationExport.DSADV.Activate)
             {
                 Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : Export Bons Livraisons");
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export des Bons de livraisons activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportBonLivraison b = new Classes.ExportBonLivraison(path.path);
+                Classes.ExportBonLivraison b = new Classes.ExportBonLivraison(path);
                 recapLinesList_new___ = b.ExportBonLivraisonAction(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -7102,14 +7109,14 @@ namespace importPlanifier.Classes
             logFileWriter_general.Flush();
 
             //Export des factures
-            if (((export.exportFactures == "True") ? true : false))
+            if (settings.configurationExport.Facture.Activate)
             {
                 Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : Export Factures");
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export des Factures activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportFactures a = new Classes.ExportFactures(path.path);
+                Classes.ExportFactures a = new Classes.ExportFactures(path);
                 recapLinesList_new___ = a.ExportFacture(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -7123,14 +7130,14 @@ namespace importPlanifier.Classes
             logFileWriter_general.Flush();
 
             //Export des stocks
-            if (((export.exportStock == "True") ? true : false))
+            if (settings.configurationExport.Stock.Activate)
             {
                 Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : Export Stock");
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export du Stock activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportStocks s = new Classes.ExportStocks(path.path);
+                Classes.ExportStocks s = new Classes.ExportStocks(path);
                 recapLinesList_new___ = s.ExportStock(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -7187,10 +7194,10 @@ namespace importPlanifier.Classes
                 ConfSendMail cMail = getInfoMail(logFileWriter_general);
                 if (cMail != null && cMail.active)
                 {
-                    Process emailExe = Process.Start(locationPath + @"\AlertMail.exe", "EndSoftwareExe");
+                    Process emailExe = Process.Start(locationPath + @"\AlertMail.exe", "All_Errors");
                     emailExe.WaitForExit();
 
-                    emailExe = Process.Start(locationPath + @"\AlertMail.exe", "CheckErrorFiles");
+                    emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Error_Summary");
                     emailExe.WaitForExit();
                 }
                 Console.WriteLine(DateTime.Now + " : Mails Done");
@@ -7221,10 +7228,10 @@ namespace importPlanifier.Classes
                 { "export_Logs", new ExportStocks(null).logDirectoryName_export }, //log files
                 { "import_files_success", Directory.GetCurrentDirectory() + @"\Success File" }, //fichier import success
                 { "import_files_error", Directory.GetCurrentDirectory() + @"\Error File" }, //fichier import erreur
-                { "export_files_BC", path.path }, //backup export files
-                { "export_files_BL", path.path }, //backup export files
-                { "export_files_FA", path.path }, //backup export files
-                { "export_files_ME_MS", path.path } //backup export files
+                { "export_files_BC", path }, //backup export files
+                { "export_files_BL", path }, //backup export files
+                { "export_files_FA", path }, //backup export files
+                { "export_files_ME_MS", path } //backup export files
             };
 
             clean.startClean(logFileWriter_general, paths);
@@ -7237,8 +7244,8 @@ namespace importPlanifier.Classes
             logFileWriter_general.WriteLine("#################################### Configuration Général ###################################");
             logFileWriter_general.WriteLine("");
 
-            Dlls.InitConfig x = new Dlls.InitConfig();
-            x.resetWindowDisplay(logFileWriter_general);
+            Init.Init init = new Init.Init();
+            init.setDisplay(logFileWriter_general, false);
 
             // Load intro
             Connecteur_Info.Batch_Ending intro_E = new Connecteur_Info.Batch_Ending();

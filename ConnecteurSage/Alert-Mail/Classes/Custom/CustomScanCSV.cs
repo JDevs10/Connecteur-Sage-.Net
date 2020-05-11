@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace AlertMail.Classes
+namespace Alert_Mail.Classes.Custom
 {
     public class CustomScanCSV
     {
@@ -43,38 +43,5 @@ namespace AlertMail.Classes
             this.Attachments = Attachments;
         }
 
-        public void saveInfo(CustomScanCSV mCustomMailRecap, string fileName)
-        {
-            try
-            {
-                var myfile = File.Create(pathModule + @"\" + fileName);
-                XmlSerializer xml = new XmlSerializer(typeof(CustomScanCSV));
-                xml.Serialize(myfile, mCustomMailRecap);
-                myfile.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("" + ex.Message);
-            }
-        }
-        public void Load(string fileName)
-        {
-            if (File.Exists(fileName))
-            {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(CustomScanCSV));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
-                CustomScanCSV mCustom = new CustomScanCSV();
-                mCustom = (CustomScanCSV)reader.Deserialize(file);
-
-                this.MailType = mCustom.MailType;
-                this.Client = mCustom.Client;
-                this.Subject = mCustom.Subject;
-                this.DateTimeCreated = mCustom.DateTimeCreated;
-                this.DateTimeModified = mCustom.DateTimeModified;
-                this.FileName = mCustom.FileName;
-                this.Attachments = mCustom.Attachments;
-                file.Close();
-            }
-        }
     }
 }

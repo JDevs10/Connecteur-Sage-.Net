@@ -44,8 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="Classes\ConfigurationDNS.cs" />
+    <Compile Include="EmailManagement.cs" />
     <Compile Include="Classes\ConfigurationEmail.cs" />
     <Compile Include="Classes\Configuration\Connexion.cs" />
     <Compile Include="Classes\Configuration\EmailError.cs" />
@@ -64,6 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Connexion\Connexion.csproj">
+      <Project>{5d4414bd-f65b-4891-bae5-6a5d767a0fd0}</Project>
+      <Name>Connexion</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

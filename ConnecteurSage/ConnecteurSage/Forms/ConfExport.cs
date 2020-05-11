@@ -62,51 +62,27 @@ namespace ConnecteurSage.Forms
                 comboBox11.Items.Add(list3[i]);
             }
 
-
-            //Recuperer les donnees sauvegarde dans le fichier
-            if (File.Exists(pathModule + @"\SettingExport.xml"))
+            Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+            if (settings.isSettings())
             {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationExport));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingExport.xml");
-                ConfigurationExport setting = new ConfigurationExport();
-                setting = (ConfigurationExport)reader.Deserialize(file);
+                settings.Load();
+                Config_Export.Classes.ConfigurationExport configurationExport = settings.configurationExport;
 
-                comboBox1.Text = ((setting.exportBonsCommandes == "True") ? "Activer" : "Désactiver");
-                comboBox2.Text = ((setting.exportBonsLivraisons == "True") ? "Activer" : "Désactiver");
-                comboBox3.Text = ((setting.exportFactures == "True") ? "Activer" : "Désactiver");
-                comboBox4.Text = ((setting.exportStock == "True") ? "Activer" : "Désactiver");
+                comboBox1.Text = ((configurationExport.Commande.Activate) ? "Activer" : "Désactiver");
+                comboBox2.Text = ((configurationExport.DSADV.Activate) ? "Activer" : "Désactiver");
+                comboBox3.Text = ((configurationExport.Facture.Activate) ? "Activer" : "Désactiver");
+                comboBox4.Text = ((configurationExport.Stock.Activate) ? "Activer" : "Désactiver");
 
-                comboBox5.Text = setting.exportBonsCommandes_Format;
-                comboBox8.Text = setting.exportBonsLivraisons_Format;
-                comboBox7.Text = setting.exportFactures_Format;
-                comboBox6.Text = setting.exportStock_Format;
+                comboBox5.Text = configurationExport.Commande.Format;
+                comboBox8.Text = configurationExport.DSADV.Format;
+                comboBox7.Text = configurationExport.Facture.Format;
+                comboBox6.Text = configurationExport.Stock.Format;
 
-                comboBox12.Text = getStatutName(setting.exportBonsCommandes_Statut);
-                comboBox9.Text = getStatutName(setting.exportBonsLivraisons_Statut);
-                comboBox10.Text = getStatutName(setting.exportFactures_Statut);
-                comboBox11.Text = getStatutName(setting.exportStock_Statut);
-                file.Close();
+                comboBox12.Text = getStatutName(configurationExport.Commande.Status);
+                comboBox9.Text = getStatutName(configurationExport.DSADV.Status);
+                comboBox10.Text = getStatutName(configurationExport.Facture.Status);
+                comboBox11.Text = getStatutName(configurationExport.Stock.Status);
             }
-
-            /*
-            List<string> list2 = EnumDsn();
-            for (int i = 0; i < list2.Count; i++)
-            {
-                comboBox2.Items.Add(list2[i]);
-            }
-
-            if (File.Exists(pathModule + @"\SettingStatut.xml"))
-            {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationStatuts));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingStatut.xml");
-                ConfigurationStatuts setting = new ConfigurationStatuts();
-                setting = (ConfigurationStatuts)reader.Deserialize(file);
-
-                comboBox2.Text = setting.DNS_2;
-                textBox2.Text = setting.Nom_2;
-                textBox3.Text = Utils.Decrypt(setting.Password_2);
-                file.Close();
-            }*/
 
         }
 
@@ -162,58 +138,6 @@ namespace ConnecteurSage.Forms
             return result;
         }
 
-        /*
-        //Requette SQL pour trouver dans la BDD les statuts
-        public static int getListeStatutValue(bool statut)
-        {
-            Boolean[] list = getValuesExport();
-
-            for (int i = 0; i < list.Count(); i++)
-            {
-                if(list[i].Nom.Equals(name))
-                {
-                    value = list[i].Value;
-                    break;
-                }
-            }
-            return value;
-        }
-
-        public static string getListeStatutName(int value)
-        {
-            string name = "";
-            Boolean[] list = getValuesExport();
-
-            for (int i = 0; i < list.Count(); i++)
-            {
-                if (list[i])
-                {
-                    name = "True";
-                    break;
-                }
-                else
-                {
-                    name = "False";
-                    break;
-                }
-            }
-            return name;
-        }
-
-        public static IEnumerable<string> EnumDsn(RegistryKey rootKey)
-        {
-            RegistryKey regKey = rootKey.OpenSubKey(@"Software\ODBC\ODBC.INI\ODBC Data Sources");
-            if (regKey != null)
-            {
-                foreach (string name in regKey.GetValueNames())
-                {
-                    string value = regKey.GetValue(name, "").ToString();
-                    yield return name;
-                }
-            }
-        }
-        */
-
         private void button2_Click(object sender, EventArgs e)
         {
             Close();
@@ -225,38 +149,18 @@ namespace ConnecteurSage.Forms
                 !string.IsNullOrEmpty(comboBox5.Text) || !string.IsNullOrEmpty(comboBox8.Text) || !string.IsNullOrEmpty(comboBox7.Text) || !string.IsNullOrEmpty(comboBox6.Text) ||
                 !string.IsNullOrEmpty(comboBox12.Text) || !string.IsNullOrEmpty(comboBox9.Text) || !string.IsNullOrEmpty(comboBox10.Text) || !string.IsNullOrEmpty(comboBox11.Text))
             {
-                ConfigurationExport configurationStatut = new ConfigurationExport()
-                {
-                    exportBonsCommandes = ((comboBox1.Text == "Activer") ? "True" : "False"),
-                    exportBonsLivraisons = ((comboBox2.Text == "Activer") ? "True" : "False"),
-                    exportFactures = ((comboBox3.Text == "Activer") ? "True" : "False"),
-                    exportStock = ((comboBox4.Text == "Activer") ? "True" : "False"),
+                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                Config_Export.Classes.ConfigurationExport configurationExport = new Config_Export.Classes.ConfigurationExport(
+                    new Config_Export.Classes.Custom.Commande(((comboBox1.Text == "Activer") ? true : false), comboBox5.Text, getStatutValue(comboBox12.Text)),
+                    new Config_Export.Classes.Custom.DSADV(((comboBox2.Text == "Activer") ? true : false), comboBox8.Text, getStatutValue(comboBox9.Text)),
+                    new Config_Export.Classes.Custom.Facture(((comboBox3.Text == "Activer") ? true : false), comboBox7.Text, getStatutValue(comboBox10.Text)),
+                    new Config_Export.Classes.Custom.Stock(((comboBox4.Text == "Activer") ? true : false), comboBox6.Text, getStatutValue(comboBox11.Text))
+                );
 
-                    exportBonsCommandes_Format = comboBox5.Text,
-                    exportBonsLivraisons_Format = comboBox8.Text,
-                    exportFactures_Format = comboBox7.Text,
-                    exportStock_Format = comboBox6.Text,
+                settings.configurationExport = configurationExport;
+                settings.saveInfo();
 
-                    exportBonsCommandes_Statut = getStatutValue(comboBox12.Text),
-                    exportBonsLivraisons_Statut = getStatutValue(comboBox9.Text),
-                    exportFactures_Statut = getStatutValue(comboBox10.Text),
-                    exportStock_Statut = getStatutValue(comboBox11.Text)
-                };
-
-                try
-                {
-                    var myfile = File.Create(pathModule + @"\SettingExport.xml");
-                    XmlSerializer xml = new XmlSerializer(typeof(ConfigurationExport));
-                    xml.Serialize(myfile, configurationStatut);
-                    myfile.Close();
-
-                    Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(""+ex.Message);
-                }
-
+                Close();
             }
             else {
                 if (!string.IsNullOrEmpty(comboBox1.Text))

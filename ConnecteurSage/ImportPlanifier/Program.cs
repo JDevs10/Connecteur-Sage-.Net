@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Dlls;
 using System.Threading;
 using System.IO;
 
@@ -96,9 +95,10 @@ namespace ImportPlanifier
 
             //////////////////////////////////////////////////////////////////////////////////////
             ///// Check if the app is running
+            ///
 
-            Dlls.InitConfig ini___ = new Dlls.InitConfig();
-            int result = ini___.checkRunningApp();
+            Init.Init init = new Init.Init();
+            int result =  init.checkRunningApp();
 
             if (result != 99)
             {

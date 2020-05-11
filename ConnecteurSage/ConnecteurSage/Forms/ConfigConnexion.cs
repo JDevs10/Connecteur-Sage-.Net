@@ -29,36 +29,24 @@ namespace ConnecteurSage.Forms
                 comboBox1.Items.Add(list1[i]);
             }
 
-            if (File.Exists(pathModule + @"\Setting.xml"))
-            {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\Setting.xml");
-                ConfigurationDNS setting = new ConfigurationDNS();
-                setting = (ConfigurationDNS)reader.Deserialize(file);
-
-                comboBox1.Text = setting.DNS_1;
-                textBox2.Text = setting.Nom_1;
-                textBox3.Text = Utils.Decrypt(setting.Password_1);
-                file.Close();
-            }
-
             List<string> list2 = EnumDsn();
             for (int i = 0; i < list2.Count; i++)
             {
                 comboBox2.Items.Add(list2[i]);
             }
 
-            if (File.Exists(pathModule + @"\SettingSQL.xml"))
+            Connexion.ConnexionSaveLoad settings = new Connexion.ConnexionSaveLoad();
+            if (settings.isSettings())
             {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingSQL.xml");
-                ConfigurationDNS setting = new ConfigurationDNS();
-                setting = (ConfigurationDNS)reader.Deserialize(file);
+                settings.Load();
 
-                comboBox2.Text = setting.DNS_2;
-                textBox4.Text = setting.Nom_2;
-                textBox1.Text = Utils.Decrypt(setting.Password_2);
-                file.Close();
+                comboBox1.Text = settings.configurationConnexion.ODBC.DNS;
+                textBox2.Text = settings.configurationConnexion.ODBC.USER;
+                textBox3.Text = settings.configurationConnexion.ODBC.PWD;
+
+                comboBox2.Text = settings.configurationConnexion.SQL.DNS;
+                textBox4.Text = settings.configurationConnexion.SQL.USER;
+                textBox1.Text = settings.configurationConnexion.SQL.PWD;
             }
         }
 
@@ -97,54 +85,14 @@ namespace ConnecteurSage.Forms
                 return;
             }
 
+            Connexion.Classes.ConfigurationConnexion configurationConnexion = new Connexion.Classes.ConfigurationConnexion(
+                new Connexion.Classes.Custom.ODBC(comboBox1.Text, textBox2.Text, textBox3.Text),
+                new Connexion.Classes.Custom.SQL(comboBox2.Text.Split('_')[0], comboBox2.Text, textBox4.Text, textBox1.Text)
+            );
+            Connexion.ConnexionSaveLoad settings = new Connexion.ConnexionSaveLoad();
+            settings.configurationConnexion = configurationConnexion;
+            settings.saveInfo();
 
-            ConfigurationDNS configurationDNS1 = new ConfigurationDNS()
-            {
-                Prefix = comboBox1.Text.Split('_')[0],
-                DNS_1 = "" + comboBox1.Text,
-                Nom_1 = "" + textBox2.Text,
-                Password_1 = "" + Utils.Encrypt(textBox3.Text),
-
-            };
-
-            try
-            {
-                var myfile = File.Create(pathModule + @"\Setting.xml");
-                XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
-                xml.Serialize(myfile, configurationDNS1);
-                myfile.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("" + ex.Message);
-            }
-
-
-            //DSN II            
-            ConfigurationDNS configurationDNS2 = new ConfigurationDNS()
-            {
-                Prefix = comboBox2.Text.Split('_')[0],
-                DNS_2 = "" + comboBox2.Text,
-                Nom_2 = "" + textBox4.Text,
-                Password_2 = "" + Utils.Encrypt(textBox1.Text),
-
-            };
-
-            try
-            {
-
-                var myfile = File.Create(pathModule + @"\SettingSQL.xml");
-                XmlSerializer xml = new XmlSerializer(typeof(ConfigurationDNS));
-                xml.Serialize(myfile, configurationDNS2);
-                myfile.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("" + ex.Message);
-            }
-
-            //Update Main UI
-            Main.ModifierButtonDNS(comboBox1.Text, textBox2.Text, comboBox2.Text, textBox4.Text);
             Close();
         }
 

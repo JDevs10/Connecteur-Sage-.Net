@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data.Odbc;
-using importPlanifier.Helpers;
+using importPlanifier.Utilities;
 using System.Data;
 using System.IO;
 using ImportPlanifier.Classes;
+using Connexion;
 
 namespace importPlanifier.Classes
 {
@@ -34,17 +35,19 @@ namespace importPlanifier.Classes
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVente> listDocumentVente = new List<DocumentVente>();
 
-                ConfigurationExport export = new ConfigurationExport();
-                writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Répurère le statut dans la config export.");
-                export.Load();
+                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                settings.Load();
 
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+
+                writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Répurère le statut dans la config export.");
+
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     DocumentVente documentVente;
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : SQL ===> " + QueryHelper.getListDocumentVente(false, 3, export.exportBonsLivraisons_Statut));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3, export.exportBonsLivraisons_Statut), connection);
+                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : SQL ===> " + QueryHelper.getListDocumentVente(false, 3, settings.configurationExport.DSADV.Status));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3, settings.configurationExport.DSADV.Status), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -99,7 +102,7 @@ namespace importPlanifier.Classes
             {
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVenteLine> lignesDocumentVente = new List<DocumentVenteLine>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -145,7 +148,7 @@ namespace importPlanifier.Classes
             try
             {
                 //List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -234,13 +237,13 @@ namespace importPlanifier.Classes
                          System.IO.Directory.CreateDirectory(outputFile);
                      }
 
-                    ConfigurationExport export = new ConfigurationExport();
+                    Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                    settings.Load();
                     logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le format du fichier dans la config export.");
-                    export.Load();
 
                     for (int i = 0; i < BonLivrasonAExporter.Count; i++)
                     {
-                        if (export.exportFactures_Format == "Plat")
+                        if (settings.configurationExport.DSADV.Format == "Plat")
                         {
                             exportTo = @"Export\Plat_BonLivraison";
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Nombre de DESADV à exporter ===> " + i + "/" + BonLivrasonAExporter.Count);
@@ -299,10 +302,10 @@ namespace importPlanifier.Classes
                         else
                         {
                             logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Format Fichier ********************");
-                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!");
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!");
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                             logFileWriter_export.Flush();
-                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.", "Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
+                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.", "Le format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
                             return recapLinesList_new;
                         }
 
@@ -383,7 +386,7 @@ namespace importPlanifier.Classes
             try
             {
                 //List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();

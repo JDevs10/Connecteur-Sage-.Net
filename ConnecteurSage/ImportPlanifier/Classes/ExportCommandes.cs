@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using importPlanifier.Helpers;
+using importPlanifier.Utilities;
 using System.Data.Odbc;
 using System.Data;
 using System.IO;
 using System.Globalization;
 using ImportPlanifier.Classes;
+using Connexion;
 
 namespace importPlanifier.Classes
 {
@@ -42,7 +43,7 @@ namespace importPlanifier.Classes
             {
                  //DocumentVente Facture = new DocumentVente();
                  List<Order> listCommande = new List<Order>();
-                 using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                 using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                  {
                
                         connection.Open();
@@ -85,9 +86,12 @@ namespace importPlanifier.Classes
         /// </summary>
         public List<CustomMailRecapLines> ExportCommande(List<CustomMailRecapLines> recapLinesList_new)
         {
-            Classes.Path path = new Path();
-            path.Load();
-            string exportPath = path.path;
+            string path = "";
+            Init.Classes.SaveLoadInit setting = new Init.Classes.SaveLoadInit();
+            setting.Load();
+            path = setting.configurationGeneral.paths.EDI_Folder;
+
+            string exportPath = path;
             string exportTo = "";
 
             Order CommandeAExporter = null;
@@ -116,14 +120,17 @@ namespace importPlanifier.Classes
             string[,] lits_of_stock = new string[100, 2];
             int countLimit = 0;
 
-            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
             {
+                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
                 try
                 {
-                    connexion.Open();
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeStatut(true), connexion);
+                    settings.Load();
 
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeStatut(true));
+                    connexion.Open();
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeStatut(true, settings.configurationExport.Commande.Status), connexion);
+
+                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.getCommandeStatut(true, settings.configurationExport.Commande.Status));
 
                     using (IDataReader reader = command.ExecuteReader())
                     {
@@ -148,7 +155,7 @@ namespace importPlanifier.Classes
                 catch (OdbcException ex)
                 {
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  ********************** OdbcException *********************");
-                    logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  SQL ===> " + QueryHelper.getCommandeStatut(true));
+                    logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  SQL ===> " + QueryHelper.getCommandeStatut(true, settings.configurationExport.Commande.Status));
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Message : " + ex.Message + ".");
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                     logFileWriter.Flush();
@@ -166,7 +173,7 @@ namespace importPlanifier.Classes
             {
                 //Console.WriteLine("OK2 index:" + index+ " countLimit:" + countLimit+" ");
                 //CommandeAExporter
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     //Console.WriteLine("OK3");
                     try
@@ -262,10 +269,10 @@ namespace importPlanifier.Classes
 
 
                                 //Verifier le format utilise depuis le fichier de config
-                                ConfigurationExport export = new ConfigurationExport();
-                                export.Load();
+                                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                                settings.Load();
 
-                                bool veolog_format = (export.exportBonsCommandes_Format == "Véolog" ? true : false);
+                                bool veolog_format = (settings.configurationExport.Commande.Format == "Véolog" ? true : false);
                                 Console.WriteLine("veolog_format : "+ veolog_format);
                                 if (veolog_format)
                                 {
@@ -423,7 +430,7 @@ namespace importPlanifier.Classes
                                         veolog_file_check = true;
 
                                         //add to backup folder
-                                        addFileToBackUp(path.path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
+                                        addFileToBackUp(path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
                                     }
                                 }
                                 else
@@ -681,7 +688,7 @@ namespace importPlanifier.Classes
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -714,7 +721,7 @@ namespace importPlanifier.Classes
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     List<OrderLine> lines = new List<OrderLine>();
 
@@ -762,7 +769,7 @@ namespace importPlanifier.Classes
             try
             {
                 //List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();

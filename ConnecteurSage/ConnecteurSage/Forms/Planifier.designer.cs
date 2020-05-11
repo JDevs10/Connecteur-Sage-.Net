@@ -45,8 +45,6 @@ namespace ConnecteurSage.Forms
             this.enregistrerButton = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -54,10 +52,11 @@ namespace ConnecteurSage.Forms
             this.label8 = new System.Windows.Forms.Label();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox6 = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -221,24 +220,6 @@ namespace ConnecteurSage.Forms
             this.label5.TabIndex = 9;
             this.label5.Text = "pour une heure qui vous convient.";
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(74, 60);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(35, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "label6";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(74, 77);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(35, 13);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "label7";
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::ConnecteurSage.Properties.Resources.scheduled_tasks_icon1;
@@ -312,14 +293,6 @@ namespace ConnecteurSage.Forms
             this.checkBox3.Size = new System.Drawing.Size(104, 24);
             this.checkBox3.TabIndex = 0;
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Location = new System.Drawing.Point(0, 0);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(200, 100);
-            this.groupBox4.TabIndex = 0;
-            this.groupBox4.TabStop = false;
-            // 
             // checkBox5
             // 
             this.checkBox5.Location = new System.Drawing.Point(0, 0);
@@ -341,12 +314,29 @@ namespace ConnecteurSage.Forms
             this.checkBox6.Size = new System.Drawing.Size(104, 24);
             this.checkBox6.TabIndex = 0;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(74, 77);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(35, 13);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "label7";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(74, 60);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "label6";
+            // 
             // Planifier
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(362, 495);
-            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label7);
@@ -399,17 +389,16 @@ namespace ConnecteurSage.Forms
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DateTimePicker dateTimePicker2;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox checkBox5;
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.CheckBox checkBox6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
     }
 }

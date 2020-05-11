@@ -57,16 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Launch.cs" />
-    <Compile Include="Classes\Action.cs" />
     <Compile Include="Classes\Action2.cs" />
     <Compile Include="Classes\AdresseLivraison.cs" />
     <Compile Include="Classes\Article.cs" />
     <Compile Include="Classes\Client.cs" />
     <Compile Include="Classes\ConfigurationDNS.cs" />
-    <Compile Include="Classes\ConfigurationExport.cs" />
     <Compile Include="Classes\ConfSendMail.cs" />
-    <Compile Include="Classes\Connexion.cs" />
-    <Compile Include="Classes\CorrectionLivraison.cs" />
     <Compile Include="Classes\Customer.cs" />
     <Compile Include="Classes\CustomMailRecap.cs" />
     <Compile Include="Classes\Desadv.cs" />
@@ -78,7 +74,6 @@
     <Compile Include="Classes\ExportFactures.cs" />
     <Compile Include="Classes\ExportStocks.cs" />
     <Compile Include="Classes\Order.cs" />
-    <Compile Include="Classes\Path.cs" />
     <Compile Include="Classes\SDKException.cs" />
     <Compile Include="Classes\Societe.cs" />
     <Compile Include="Classes\Stock.cs" />
@@ -102,17 +97,25 @@
     <Content Include="scheduled-tasks-icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Config-Export\Config-Export.csproj">
+      <Project>{938d2d68-fbac-4ec4-a96b-bd754f0f59a2}</Project>
+      <Name>Config-Export</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Connecteur-Info\Connecteur-Info.csproj">
       <Project>{151fabb0-d64f-42ea-ab2a-aea6ebc854c2}</Project>
       <Name>Connecteur-Info</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dlls\Dlls.csproj">
-      <Project>{c027cebb-a12d-4e99-b835-c159b97261d8}</Project>
-      <Name>Dlls</Name>
+    <ProjectReference Include="..\Connexion\Connexion.csproj">
+      <Project>{5d4414bd-f65b-4891-bae5-6a5d767a0fd0}</Project>
+      <Name>Connexion</Name>
     </ProjectReference>
     <ProjectReference Include="..\Fichier-De-Nettoyage\Fichier-De-Nettoyage.csproj">
       <Project>{a575f215-85ed-44b6-a502-9971f401a116}</Project>
       <Name>Fichier-De-Nettoyage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Init\Init.csproj">
+      <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
+      <Name>Init</Name>
     </ProjectReference>
     <ProjectReference Include="..\Reprocess\Reprocess-Error-Files.csproj">
       <Project>{ada83e63-ca51-4e6e-b500-d08b92916807}</Project>

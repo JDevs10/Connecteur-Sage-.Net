@@ -81,9 +81,7 @@
     <Compile Include="Classes\Client.cs" />
     <Compile Include="Classes\ConfigurationBackup.cs" />
     <Compile Include="Classes\ConfigurationDNS.cs" />
-    <Compile Include="Classes\ConfigurationExport.cs" />
     <Compile Include="Classes\ConfSendMail.cs" />
-    <Compile Include="Classes\Connexion.cs" />
     <Compile Include="Classes\Customer.cs" />
     <Compile Include="Classes\Desadv.cs" />
     <Compile Include="Classes\DesadvLine.cs" />
@@ -92,7 +90,6 @@
     <Compile Include="Classes\DocumentVenteLine.cs" />
     <Compile Include="Classes\GenererCle.cs" />
     <Compile Include="Classes\Order.cs" />
-    <Compile Include="Classes\Path.cs" />
     <Compile Include="Classes\SDKException.cs" />
     <Compile Include="Classes\Societe.cs" />
     <Compile Include="Classes\Statut.cs" />
@@ -288,9 +285,17 @@
       <Project>{b5e11fc4-f58c-40b9-99cc-b831ddd17f4a}</Project>
       <Name>Alert-Mail</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Dlls\Dlls.csproj">
-      <Project>{c027cebb-a12d-4e99-b835-c159b97261d8}</Project>
-      <Name>Dlls</Name>
+    <ProjectReference Include="..\Config-Export\Config-Export.csproj">
+      <Project>{938d2d68-fbac-4ec4-a96b-bd754f0f59a2}</Project>
+      <Name>Config-Export</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Connexion\Connexion.csproj">
+      <Project>{5d4414bd-f65b-4891-bae5-6a5d767a0fd0}</Project>
+      <Name>Connexion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Init\Init.csproj">
+      <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
+      <Name>Init</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -32,7 +32,7 @@
             this.debugMode_checkBox = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox_activate_compt_g_taxe = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -41,8 +41,12 @@
             this.label4 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // debugMode_checkBox
@@ -54,7 +58,6 @@
             this.debugMode_checkBox.TabIndex = 12;
             this.debugMode_checkBox.Text = "Debug Mode";
             this.debugMode_checkBox.UseVisualStyleBackColor = true;
-            this.debugMode_checkBox.CheckedChanged += new System.EventHandler(this.debugMode_checkBox_CheckedChanged);
             // 
             // pictureBox1
             // 
@@ -68,7 +71,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.checkBox1);
+            this.groupBox2.Controls.Add(this.checkBox_activate_compt_g_taxe);
             this.groupBox2.Controls.Add(this.textBox1);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label5);
@@ -82,18 +85,18 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Paramétrage";
             // 
-            // checkBox1
+            // checkBox_activate_compt_g_taxe
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(112, 86);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(77, 17);
-            this.checkBox1.TabIndex = 15;
-            this.checkBox1.Text = "Désactiver";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBox_activate_compt_g_taxe.AutoSize = true;
+            this.checkBox_activate_compt_g_taxe.Checked = true;
+            this.checkBox_activate_compt_g_taxe.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_activate_compt_g_taxe.Location = new System.Drawing.Point(112, 86);
+            this.checkBox_activate_compt_g_taxe.Name = "checkBox_activate_compt_g_taxe";
+            this.checkBox_activate_compt_g_taxe.Size = new System.Drawing.Size(77, 17);
+            this.checkBox_activate_compt_g_taxe.TabIndex = 15;
+            this.checkBox_activate_compt_g_taxe.Text = "Désactiver";
+            this.checkBox_activate_compt_g_taxe.UseVisualStyleBackColor = true;
+            this.checkBox_activate_compt_g_taxe.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // textBox1
             // 
@@ -152,7 +155,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(254, 232);
+            this.button1.Location = new System.Drawing.Point(254, 315);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 16;
@@ -162,7 +165,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(173, 232);
+            this.button2.Location = new System.Drawing.Point(173, 315);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 17;
@@ -170,11 +173,42 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button3);
+            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Location = new System.Drawing.Point(12, 232);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(329, 63);
+            this.groupBox1.TabIndex = 18;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Chemin de l\'import :";
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(256, 26);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(69, 23);
+            this.button3.TabIndex = 1;
+            this.button3.Text = "Parcourir";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.BackColor = System.Drawing.Color.White;
+            this.textBox2.Location = new System.Drawing.Point(6, 28);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(244, 20);
+            this.textBox2.TabIndex = 0;
+            // 
             // GeneralConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(353, 264);
+            this.ClientSize = new System.Drawing.Size(353, 355);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label4);
@@ -186,6 +220,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -200,10 +236,13 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox_activate_compt_g_taxe;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TextBox textBox2;
     }
 }

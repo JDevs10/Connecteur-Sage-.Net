@@ -13,6 +13,7 @@ using System.Data.Odbc;
 using ConnecteurSage.Helpers;
 using System.Threading;
 using System.Net.Mail;
+using Connexion;
 
 namespace ConnecteurSage.Forms
 {
@@ -1779,7 +1780,7 @@ namespace ConnecteurSage.Forms
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : Vérifier si la table de numérotation existe");
 
-            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -1832,7 +1833,7 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask ME");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -1935,7 +1936,7 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask MS");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -2037,7 +2038,7 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BL");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -2127,7 +2128,7 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BC");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -2217,7 +2218,7 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask BCF");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -2306,7 +2307,7 @@ namespace ConnecteurSage.Forms
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask CF");
 
-                using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     try
                     {
@@ -2396,7 +2397,7 @@ namespace ConnecteurSage.Forms
         public static Client getClient(string id, int flag)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -2444,7 +2445,7 @@ namespace ConnecteurSage.Forms
         public static string getStockId()
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -2486,7 +2487,7 @@ namespace ConnecteurSage.Forms
         public static string getNumLivraison(string client_num)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -2528,7 +2529,7 @@ namespace ConnecteurSage.Forms
         public static string get_Last_insert_livraison(string client)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -2570,7 +2571,7 @@ namespace ConnecteurSage.Forms
         public static Boolean insertCommande(Client client,Order order)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -2597,7 +2598,7 @@ namespace ConnecteurSage.Forms
 
         public static Boolean insertDesadv(Desadv d, List<DesadvLine> dl)
         {
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion()) //connecting to database as handler
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion()) //connecting to database as handler
             {
                 try
                 {
@@ -2648,7 +2649,7 @@ namespace ConnecteurSage.Forms
             string curr_time = "000" + d.ToString("hhmmss");
             string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion()) //connecting to database as handler
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion()) //connecting to database as handler
             {
                 try
                 {
@@ -2906,7 +2907,7 @@ namespace ConnecteurSage.Forms
                 }
 
 
-                using (OdbcConnection connectionSQL = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
+                using (OdbcConnection connectionSQL = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
                 {
                     try
                     {
@@ -3110,7 +3111,7 @@ namespace ConnecteurSage.Forms
                 return false;
             }
 
-            using (OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL())
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -3838,7 +3839,7 @@ namespace ConnecteurSage.Forms
 
             // AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch
 
-            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL()) //connecting to database as handler
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
             {
                 try
                 {
@@ -4388,7 +4389,7 @@ namespace ConnecteurSage.Forms
         public static Boolean insertCommandeLine(Client client, Order order, OrderLine orderLine)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4416,7 +4417,7 @@ namespace ConnecteurSage.Forms
         public static Boolean deleteCommande(string NumCommande)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4440,7 +4441,7 @@ namespace ConnecteurSage.Forms
         public static Boolean UpdateCommandeTaxes(string montantTaxes, string do_piece)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4462,7 +4463,7 @@ namespace ConnecteurSage.Forms
         public static Article getArticle(string code_article)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4505,7 +4506,7 @@ namespace ConnecteurSage.Forms
         public static Conditionnement getConditionnementArticle(string code_article)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4544,7 +4545,7 @@ namespace ConnecteurSage.Forms
         public static string testGamme(int type,string code_article,string gamme)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4594,7 +4595,7 @@ namespace ConnecteurSage.Forms
         public static string getDevise(string codeIso)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4635,7 +4636,7 @@ namespace ConnecteurSage.Forms
         public static string existeCommande(string num)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4675,7 +4676,7 @@ namespace ConnecteurSage.Forms
         public static string existeFourniseur(string num)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4717,7 +4718,7 @@ namespace ConnecteurSage.Forms
         public static string MaxNumPiece()
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4814,7 +4815,7 @@ namespace ConnecteurSage.Forms
         public static string get_next_num_piece_commande()
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4854,7 +4855,7 @@ namespace ConnecteurSage.Forms
         public static string get_condition_livraison(string c_mode)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4894,7 +4895,7 @@ namespace ConnecteurSage.Forms
         public static List<AdresseLivraison> get_adresse_livraison(AdresseLivraison adresse)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4930,7 +4931,7 @@ namespace ConnecteurSage.Forms
         public static Boolean insert_adresse_livraison(string client,AdresseLivraison adresse)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4958,7 +4959,7 @@ namespace ConnecteurSage.Forms
         public static Boolean TestSiNumPieceExisteDeja(string num)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {
@@ -4996,7 +4997,7 @@ namespace ConnecteurSage.Forms
         public static List<string> TestIntituleLivraison(string Intitule)
         {
             // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
                 {

@@ -1,5 +1,4 @@
-﻿using AlertMail.Helpers;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +15,7 @@ namespace Alert_Mail.Classes
         private string fileName = "SettingMail.json";
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        public ConfigurationSaveLoad()
-        {
-
-        }
-
+        public ConfigurationSaveLoad(){ }
         public ConfigurationSaveLoad(ConfigurationEmail mConfigurationEmail)
         {
             this.configurationEmail = mConfigurationEmail;
@@ -69,6 +64,22 @@ namespace Alert_Mail.Classes
                 Console.WriteLine("" + ex.Message);
             }
         }
+
+
+        public string FormatJson()
+        {
+            if (isSettings())
+            {
+                Load();
+                var f = Newtonsoft.Json.JsonConvert.SerializeObject(this.configurationEmail, Newtonsoft.Json.Formatting.Indented);
+                return f;
+            }
+            else
+            {
+                return "No file \""+fileName+"\" found!";
+            }
+        }
+
 
     }
 }

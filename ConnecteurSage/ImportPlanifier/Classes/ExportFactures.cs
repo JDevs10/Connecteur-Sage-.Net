@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Data.Odbc;
 using System.Data;
-using importPlanifier.Helpers;
+using importPlanifier.Utilities;
 using System.IO;
 using System.Globalization;
 using ImportPlanifier.Classes;
+using Connexion;
 
 namespace importPlanifier.Classes
 {
@@ -42,15 +43,15 @@ namespace importPlanifier.Classes
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVente> listDocumentVente = new List<DocumentVente>();
 
-                ConfigurationExport export = new ConfigurationExport();
+                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                settings.Load();
                 writer.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le statut dans la config export.");
-                export.Load();
 
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     connection.Open();
-                    writer.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : SQL ===> "+ QueryHelper.getListDocumentVente(false, 67, export.exportFactures_Statut));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 67, export.exportFactures_Statut), connection);
+                    writer.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : SQL ===> "+ QueryHelper.getListDocumentVente(false, 67, settings.configurationExport.Facture.Status));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 67, settings.configurationExport.Facture.Status), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -104,7 +105,7 @@ namespace importPlanifier.Classes
             {
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVenteLine> lignesDocumentVente = new List<DocumentVenteLine>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
@@ -151,7 +152,7 @@ namespace importPlanifier.Classes
             try
             {
                 //List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -194,7 +195,7 @@ namespace importPlanifier.Classes
             writer.WriteLine(DateTime.Now + " | getTVA() : Called!");
             try
             {
-                connexion = Connexion.CreateOdbcConnextion();
+                connexion = ConnexionManager.CreateOdbcConnextion();
                 connexion.Open();
 
                 writer.WriteLine(DateTime.Now + " | getTVA() : Récupére tous les tva dans une liste.");
@@ -238,7 +239,7 @@ namespace importPlanifier.Classes
             try
             {
                 //List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -510,7 +511,7 @@ namespace importPlanifier.Classes
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
@@ -543,7 +544,7 @@ namespace importPlanifier.Classes
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
@@ -638,11 +639,11 @@ namespace importPlanifier.Classes
                                 System.IO.Directory.CreateDirectory(outputFile);
                             }
 
-                            ConfigurationExport export = new ConfigurationExport();
+                            Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                            settings.Load();
                             logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le format du fichier dans la config export.");
-                            export.Load();
 
-                            if(export.exportFactures_Format == "Plat")
+                            if(settings.configurationExport.Facture.Format == "Plat")
                             {
                                 exportTo = @"Export\Plat_Facture";
 
@@ -954,10 +955,10 @@ namespace importPlanifier.Classes
                             else
                             {
                                 logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Format Fichier ********************");
-                                logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!");
+                                logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!");
                                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \""+Directory.GetCurrentDirectory() +@"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                                 logFileWriter_export.Flush();
-                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Le format \"" + export.exportFactures_Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
+                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
                             }
                             
 
@@ -1048,7 +1049,7 @@ namespace importPlanifier.Classes
             {
                 //DocumentVente Facture = new DocumentVente();
                 //List<DocumentVente> listDocumentVente = new List<DocumentVente>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -1085,7 +1086,7 @@ namespace importPlanifier.Classes
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();

@@ -3,6 +3,12 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\AlertMail
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.exe
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.csprojAssemblyReference.cache
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Dlls.dll
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Dlls.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Alert-Mail.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Alert-Mail.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Connexion.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Connexion.pdb

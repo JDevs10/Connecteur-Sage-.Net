@@ -44,5 +44,11 @@
     <Compile Include="ReprocessErrorFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Init\Init.csproj">
+      <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
+      <Name>Init</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

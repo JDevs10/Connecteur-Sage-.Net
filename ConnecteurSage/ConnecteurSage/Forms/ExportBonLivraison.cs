@@ -11,6 +11,7 @@ using ConnecteurSage.Classes;
 using ConnecteurSage.Helpers;
 using System.Threading;
 using System.IO;
+using Connexion;
 
 namespace ConnecteurSage.Forms
 {
@@ -34,7 +35,7 @@ namespace ConnecteurSage.Forms
             {
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVente> listDocumentVente = new List<DocumentVente>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     DocumentVente documentVente;
                     connection.Open();
@@ -93,7 +94,7 @@ namespace ConnecteurSage.Forms
             {
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVenteLine> lignesDocumentVente = new List<DocumentVenteLine>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -139,7 +140,7 @@ namespace ConnecteurSage.Forms
             try
             {
                 List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -405,7 +406,7 @@ namespace ConnecteurSage.Forms
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     List<OrderLine> lines = new List<OrderLine>();
 

@@ -85,6 +85,8 @@ namespace ConnecteurSage.Forms
                 /// Inport mail configuration
                 /// 
                 checkBox4.Checked = settings.configurationEmail.emailImport.active;
+                radioButton1.Checked = settings.configurationEmail.emailImport.eachDocument;
+                radioButton2.Checked = settings.configurationEmail.emailImport.atTheEnd;
                 checkBox5.Checked = settings.configurationEmail.emailImport.informClient;
                 checkBox6.Checked = settings.configurationEmail.emailImport.informTeam;
 
@@ -92,6 +94,8 @@ namespace ConnecteurSage.Forms
                 /// Export mail configuration
                 /// 
                 checkBox9.Checked = settings.configurationEmail.emailExport.active;
+                radioButton3.Checked = settings.configurationEmail.emailExport.eachDocument;
+                radioButton4.Checked = settings.configurationEmail.emailExport.atTheEnd;
                 checkBox8.Checked = settings.configurationEmail.emailExport.informClient;
                 checkBox7.Checked = settings.configurationEmail.emailExport.informTeam;
 
@@ -119,6 +123,11 @@ namespace ConnecteurSage.Forms
         private void cancel_config_Click(object sender, EventArgs e)
         {
             Close();
+            /*
+            ConfigurationSaveLoad settings = new ConfigurationSaveLoad();
+            settings.Load();
+            MessageBox.Show(settings.FormatJson(), "Json");
+            */
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -151,11 +160,15 @@ namespace ConnecteurSage.Forms
             {
                 checkBox5.Enabled = true;
                 checkBox6.Enabled = true;
+                radioButton1.Enabled = true;
+                radioButton2.Enabled = true;
             }
             else
             {
                 checkBox5.Enabled = false;
                 checkBox6.Enabled = false;
+                radioButton1.Enabled = false;
+                radioButton2.Enabled = false;
             }
         }
 
@@ -165,11 +178,15 @@ namespace ConnecteurSage.Forms
             {
                 checkBox8.Enabled = true;
                 checkBox7.Enabled = true;
+                radioButton3.Enabled = true;
+                radioButton4.Enabled = true;
             }
             else
             {
                 checkBox8.Enabled = false;
                 checkBox7.Enabled = false;
+                radioButton3.Enabled = false;
+                radioButton4.Enabled = false;
             }
         }
 
@@ -308,10 +325,14 @@ namespace ConnecteurSage.Forms
                     teamEmails),
                 new Alert_Mail.Classes.Configuration.EmailImport(
                     checkBox4.Checked,
+                    radioButton1.Checked,
+                    radioButton2.Checked,
                     checkBox5.Checked,
                     checkBox6.Checked),
                 new Alert_Mail.Classes.Configuration.EmailExport(
                     checkBox9.Checked,
+                    radioButton3.Checked,
+                    radioButton4.Checked,
                     checkBox8.Checked,
                     checkBox7.Checked),
                 new Alert_Mail.Classes.Configuration.EmailError(
@@ -320,7 +341,8 @@ namespace ConnecteurSage.Forms
                     checkBox10.Checked),
                 new Alert_Mail.Classes.Configuration.EmailSummary(
                     checkBox15.Checked,
-                    Convert.ToInt16(numericUpDown1.Value)),
+                    Convert.ToInt16(numericUpDown1.Value),
+                    DateTime.Now),
                 new Alert_Mail.Classes.Configuration.EmailPendingFiles(
                     checkBox13.Checked,
                     Convert.ToInt16(numericUpDown2.Value))

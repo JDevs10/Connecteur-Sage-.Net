@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml.Serialization;
 using importPlanifier.Classes;
 
-namespace importPlanifier.Helpers
+namespace importPlanifier.Utilities
 {
     /// <summary>
     /// Classe statique permettant de stocker toutes les requêtes SQL utilisées dans l'application
@@ -632,18 +632,15 @@ namespace importPlanifier.Helpers
         }
 
 
-        public static string getCommandeStatut(bool sqlConnexion)
+        public static string getCommandeStatut(bool sqlConnexion, string statut)
         {
-            ConfigurationExport export = new ConfigurationExport();
-            export.Load();
-
             if (sqlConnexion)
             {
-                return "SELECT cbMarq, DO_Statut FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
+                return "SELECT cbMarq, DO_Statut FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + statut + " ORDER BY cbMarq DESC";
             }
             else
             {
-                return "SELECT cbMarq, DO_Statut FROM F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + export.exportBonsCommandes_Statut + " ORDER BY cbMarq DESC";
+                return "SELECT cbMarq, DO_Statut FROM F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = " + statut + " ORDER BY cbMarq DESC";
             }
         }
 

@@ -12,6 +12,7 @@ using ConnecteurSage.Helpers;
 using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
+using Connexion;
 
 namespace ConnecteurSage.Forms
 {
@@ -46,7 +47,7 @@ namespace ConnecteurSage.Forms
             {
             //DocumentVente Facture = new DocumentVente();
             List<Order> listCommande = new List<Order>();
-             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+             using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                
                     connection.Open();
@@ -97,8 +98,10 @@ namespace ConnecteurSage.Forms
         /// </summary>
         private void ExportFacture(StreamWriter logFileWriter)
         {
-            Classes.Path path = new Classes.Path();
-            path.Load();
+            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+            settings.Load();
+
+            string path = settings.configurationGeneral.paths.EDI_Folder;
             string exportTo = "";
 
             //if (check_cmd_VeologPendingTable && cmd_VeologPendingTable_ref != "")
@@ -350,7 +353,7 @@ namespace ConnecteurSage.Forms
                                     veolog_file_check = true;
 
                                     //add to backup folder
-                                    addFileToBackUp(path.path + @"\BackUp\" + exportTo, textBox1.Text + @"\" + fileName, fileName, logFileWriter);
+                                    addFileToBackUp(path + @"\BackUp\" + exportTo, textBox1.Text + @"\" + fileName, fileName, logFileWriter);
                                 }
                             }
                             else
@@ -370,7 +373,7 @@ namespace ConnecteurSage.Forms
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
-                                    using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                    using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                                     {
                                         connection.Open();
 
@@ -406,7 +409,7 @@ namespace ConnecteurSage.Forms
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
-                                    using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                                    using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                                     {
                                         connection.Open();
 
@@ -483,7 +486,7 @@ namespace ConnecteurSage.Forms
                     {
                         try
                         {
-                            using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                             {
                                 connection.Open();
 
@@ -849,7 +852,7 @@ namespace ConnecteurSage.Forms
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -883,7 +886,7 @@ namespace ConnecteurSage.Forms
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     List<OrderLine> lines = new List<OrderLine>();
 

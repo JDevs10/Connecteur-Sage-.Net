@@ -14,7 +14,8 @@ using System.Data.Odbc;
 using System.Threading;
 using ConnecteurSage.Helpers;
 using ConnecteurSage.Forms;
-using Dlls;
+using System.Diagnostics;
+using Connexion;
 
 namespace ConnecteurSage
 {
@@ -58,41 +59,29 @@ namespace ConnecteurSage
             Thread backgroundThread = new Thread(
             new ThreadStart(() =>
             {
-                progressDialog.Text = "Loading Connexion Settings....";
+                progressDialog.Text = "Loading General Settings....";
                 for (int n = 0; n < 10; n++)
                 {
                     Thread.Sleep(1);
                     progressDialog.UpdateProgress(n);
                 }
 
-                int SW = -1;
-                Dlls.InitConfig ini = new Dlls.InitConfig();
-
-                if (ini.checkFileExistance())
+                Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+                if (!settings.isSettings())
                 {
-                    ini.Load();
-                    SW = ini.showWindow;
+                    try
+                    {
+                        using (Forms.GeneralConfig form = new Forms.GeneralConfig())
+                        {
+                            form.ShowDialog(progressDialog);
+                        }
+                    }
+                    // Récupération d'une possible SDKException
+                    catch (SDKException ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
-                else
-                {
-                    Dlls.InitConfig newIni = new Dlls.InitConfig(5, false);
-                    Dlls.InitConfig x = new Dlls.InitConfig();
-                    x.saveInfo(newIni);
-                    SW = 5;
-                }
-
-                /*
-                if (SW == 5)
-                {
-                    // visible Software while running
-                    debugMode_checkBox.Checked = true;
-                }
-                else if(SW == 0)
-                {
-                    // Hide Software while running
-                    debugMode_checkBox.Checked = false;
-                }
-                */
 
 
                 //Loading Connexion Settings
@@ -103,24 +92,16 @@ namespace ConnecteurSage
                     progressDialog.UpdateProgress(n);
                 }
 
-                if (File.Exists(pathModule + @"\Setting.xml") && File.Exists(pathModule + @"\SettingSQL.xml"))
+                Connexion.ConnexionSaveLoad conn_Settings = new ConnexionSaveLoad();
+
+                if (conn_Settings.isSettings())
                 {
-                    //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
-                    //StreamReader file = new System.IO.StreamReader("Setting.xml");
-                    //ConfigurationDNS setting = new ConfigurationDNS();
-                    //setting = (ConfigurationDNS)reader.Deserialize(file);
+                    conn_Settings.Load();
 
-                    ConfigurationDNS setting1 = new ConfigurationDNS();
-                    setting1.Load();
-                    ConfigurationDNS setting2 = new ConfigurationDNS();
-                    setting2.LoadSQL();
-
-                    label1.Text = "DSN ODBC : " + setting1.DNS_1;
-                    label2.Text = "DSN ODBC Nom : " + setting1.Nom_1;
-                    label5.Text = "DSN SQL : " + setting2.DNS_2;
-                    label9.Text = "DSN SQL Nom : " + setting1.Nom_2;
-                    //file.Close();
-
+                    label1.Text = "DSN ODBC : " + conn_Settings.configurationConnexion.ODBC.DNS;
+                    label2.Text = "DSN ODBC Nom : " + conn_Settings.configurationConnexion.ODBC.USER;
+                    label5.Text = "DSN SQL : " + conn_Settings.configurationConnexion.SQL.DNS;
+                    label9.Text = "DSN SQL Nom : " + conn_Settings.configurationConnexion.SQL.USER;
                 }
                 else
                 {
@@ -146,20 +127,16 @@ namespace ConnecteurSage
                     progressDialog.UpdateProgress(n);
                 }
 
-                if (File.Exists(pathModule + @"\SettingExport.xml"))
+                Config_Export.ConfigurationSaveLoad export_Settings = new Config_Export.ConfigurationSaveLoad();
+
+                if (export_Settings.isSettings())
                 {
-                    //XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
-                    //StreamReader file = new System.IO.StreamReader("Setting.xml");
-                    //ConfigurationDNS setting = new ConfigurationDNS();
-                    //setting = (ConfigurationDNS)reader.Deserialize(file);
+                    export_Settings.Load();
 
-                    ConfigurationExport setting = new ConfigurationExport();
-                    setting.Load();
-
-                    label6.Text = "Statut d'Export Commande : " + ((setting.exportBonsCommandes == "True") ? "Activer" : "Désactiver");
-                    label7.Text = "Statut d'Export Livraision : " + ((setting.exportBonsLivraisons == "True") ? "Activer" : "Désactiver");
-                    label8.Text = "Statut d'Export Facture : " + ((setting.exportFactures == "True") ? "Activer" : "Désactiver");
-                    label10.Text = "Statut Export Stock : " + ((setting.exportStock == "True") ? "Activer" : "Désactiver");
+                    label6.Text = "Statut d'Export Commande : " + ((export_Settings.configurationExport.Commande.Activate) ? "Activer" : "Désactiver");
+                    label7.Text = "Statut d'Export Livraision : " + ((export_Settings.configurationExport.DSADV.Activate) ? "Activer" : "Désactiver");
+                    label8.Text = "Statut d'Export Facture : " + ((export_Settings.configurationExport.Facture.Activate) ? "Activer" : "Désactiver");
+                    label10.Text = "Statut Export Stock : " + ((export_Settings.configurationExport.Stock.Activate) ? "Activer" : "Désactiver");
                 }
                 else
                 {
@@ -330,10 +307,21 @@ namespace ConnecteurSage
         {
             try
             {
+                /*
                 using (Forms.Planifier form = new Forms.Planifier())
                 {
                     form.ShowDialog();
+                }*/
+
+                //Open Z-Cron
+                if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Z-Cron\z-cron.exe"))
+                {
+                    MessageBox.Show("Ne peut pas ouvrir Z-Cron à : " + Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Z-Cron\z-cron.exe", "Z-Cron", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
+                Process emailExe = Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Z-Cron\z-cron.exe");
+                emailExe.WaitForExit();
+
             }
             // Récupération d'une possible SDKException
             catch (SDKException ex)
@@ -535,7 +523,7 @@ namespace ConnecteurSage
             bool result = false;
             try
             {
-                OdbcConnection connexion = Connexion.CreateOdbcConnexionSQL();
+                OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL();
                 connexion.Open();
                 int check = checkDOC_Numerotation(connexion);
                 OdbcCommand command = null;

@@ -703,9 +703,9 @@
             this.label_backup_activation.AutoSize = true;
             this.label_backup_activation.Location = new System.Drawing.Point(16, 22);
             this.label_backup_activation.Name = "label_backup_activation";
-            this.label_backup_activation.Size = new System.Drawing.Size(85, 14);
+            this.label_backup_activation.Size = new System.Drawing.Size(68, 14);
             this.label_backup_activation.TabIndex = 0;
-            this.label_backup_activation.Text = "Activation : Oui";
+            this.label_backup_activation.Text = "Activation : ";
             // 
             // label_backup_generalLog
             // 

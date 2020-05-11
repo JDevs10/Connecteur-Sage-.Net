@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace AlertMail.Classes
+namespace Alert_Mail.Classes.Custom
 {
     public class CustomMailRecapLines
     {

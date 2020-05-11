@@ -85,6 +85,10 @@
             this.save_config = new System.Windows.Forms.Button();
             this.pictureBox_logo = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
@@ -649,6 +653,8 @@
             // groupBox3
             // 
             this.groupBox3.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.groupBox3.Controls.Add(this.radioButton2);
+            this.groupBox3.Controls.Add(this.radioButton1);
             this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Controls.Add(this.checkBox6);
             this.groupBox3.Controls.Add(this.checkBox5);
@@ -666,6 +672,8 @@
             // groupBox4
             // 
             this.groupBox4.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.groupBox4.Controls.Add(this.radioButton4);
+            this.groupBox4.Controls.Add(this.radioButton3);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.checkBox7);
             this.groupBox4.Controls.Add(this.checkBox8);
@@ -777,6 +785,54 @@
             this.label1.Text = "Veuillez completer les informations \r\nafin de reçevoir les notifications par mail" +
     ".";
             // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Enabled = false;
+            this.radioButton1.Location = new System.Drawing.Point(177, 95);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(148, 18);
+            this.radioButton1.TabIndex = 15;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Pour Chaque Document";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Enabled = false;
+            this.radioButton2.Location = new System.Drawing.Point(177, 118);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(123, 18);
+            this.radioButton2.TabIndex = 16;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "A la fin de l\'import";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Enabled = false;
+            this.radioButton3.Location = new System.Drawing.Point(177, 95);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(148, 18);
+            this.radioButton3.TabIndex = 17;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "Pour Chaque Document";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Enabled = false;
+            this.radioButton4.Location = new System.Drawing.Point(177, 118);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(122, 18);
+            this.radioButton4.TabIndex = 18;
+            this.radioButton4.TabStop = true;
+            this.radioButton4.Text = "A la fin de l\'export";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            // 
             // ConfigEmail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -887,5 +943,9 @@
         private System.Windows.Forms.Button save_config;
         private System.Windows.Forms.PictureBox pictureBox_logo;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.RadioButton radioButton3;
     }
 }

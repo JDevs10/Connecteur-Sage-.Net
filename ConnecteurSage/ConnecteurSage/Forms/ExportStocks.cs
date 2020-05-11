@@ -11,6 +11,7 @@ using ConnecteurSage.Classes;
 using ConnecteurSage.Helpers;
 using System.Threading;
 using System.IO;
+using Connexion;
 
 namespace ConnecteurSage.Forms
 {
@@ -132,7 +133,7 @@ namespace ConnecteurSage.Forms
             try
             {
                 List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -170,7 +171,7 @@ namespace ConnecteurSage.Forms
             try
             {
                 List<Stock> stock_info = new List<Stock>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                 {
 
                     connection.Open();//connecting as handler with database

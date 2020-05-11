@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.IO;
-using importPlanifier.Helpers;
+using importPlanifier.Utilities;
 
 namespace importPlanifier.Classes
 {

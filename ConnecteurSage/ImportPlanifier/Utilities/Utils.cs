@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 using Microsoft.Win32;
 using System.Configuration;
 
-namespace importPlanifier.Helpers
+namespace importPlanifier.Utilities
 {
     /// <summary>
     /// Classe statique utilitaire

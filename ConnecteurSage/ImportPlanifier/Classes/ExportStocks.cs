@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using importPlanifier.Helpers;
+using importPlanifier.Utilities;
 using System.Data.Odbc;
 using System.Data;
 using System.IO;
 using ImportPlanifier.Classes;
+using Connexion;
 
 namespace importPlanifier.Classes
 {
@@ -40,30 +41,30 @@ namespace importPlanifier.Classes
             {
             //DocumentVente Facture = new DocumentVente();
             List<Order> listCommande = new List<Order>();
-             using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
-                    connection.Open();
-                    //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
+                connection.Open();
+                //Exécution de la requête permettant de récupérer les articles du dossier
+                OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
+                {
+                    using (IDataReader reader = command.ExecuteReader())
                     {
-                        using (IDataReader reader = command.ExecuteReader())
+                        while(reader.Read())
                         {
-                           while(reader.Read())
-                            {
-                                Order order = new Order(reader[0].ToString(), reader[1].ToString(), 
-                                    reader[2].ToString().Replace(", ",",")+"."+reader[3].ToString()+"."+reader[6].ToString()+"."+reader[7].ToString(),
-                                    reader[8].ToString(), reader[9].ToString().Replace("00:00:00",""),
-                                    reader[10].ToString(), reader[11].ToString(),
-                                    reader[12].ToString(), reader[13].ToString(), reader[15].ToString(),
-                                    (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[0] : null),
-                                    (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[1] : null),
-                                    reader[16].ToString()
-                                    );
-                                listCommande.Add(order);
-                            }
+                            Order order = new Order(reader[0].ToString(), reader[1].ToString(), 
+                                reader[2].ToString().Replace(", ",",")+"."+reader[3].ToString()+"."+reader[6].ToString()+"."+reader[7].ToString(),
+                                reader[8].ToString(), reader[9].ToString().Replace("00:00:00",""),
+                                reader[10].ToString(), reader[11].ToString(),
+                                reader[12].ToString(), reader[13].ToString(), reader[15].ToString(),
+                                (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[0] : null),
+                                (reader[14].ToString().Split(';').Length == 2 ? reader[14].ToString().Split(';')[1] : null),
+                                reader[16].ToString()
+                                );
+                            listCommande.Add(order);
                         }
                     }
-                    return listCommande;
+                }
+                return listCommande;
 
             }
 
@@ -260,7 +261,7 @@ namespace importPlanifier.Classes
             try
             {
                 List<Stock> stock_info = new List<Stock>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnexionSQL())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                 {
                     connection.Open();//connecting as handler with database
 
@@ -314,7 +315,7 @@ namespace importPlanifier.Classes
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
@@ -347,7 +348,7 @@ namespace importPlanifier.Classes
         {
             try
             {
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     List<OrderLine> lines = new List<OrderLine>();
 
@@ -394,7 +395,7 @@ namespace importPlanifier.Classes
             try
             {
                 //List<Customer> listClient = new List<Customer>();
-                using (OdbcConnection connection = Connexion.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();

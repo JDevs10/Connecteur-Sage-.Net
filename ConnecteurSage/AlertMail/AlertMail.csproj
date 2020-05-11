@@ -46,16 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\ConfigurationDNS.cs" />
-    <Compile Include="Classes\CustomMailRecap.cs" />
-    <Compile Include="Classes\ConfSendMail.cs" />
-    <Compile Include="Classes\CustomMailRecapLines.cs" />
-    <Compile Include="Classes\MailCustom.cs" />
-    <Compile Include="Classes\Path.cs" />
-    <Compile Include="Classes\CustomScanCSV.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -64,9 +56,13 @@
     <Content Include="AlertMail.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dlls\Dlls.csproj">
-      <Project>{c027cebb-a12d-4e99-b835-c159b97261d8}</Project>
-      <Name>Dlls</Name>
+    <ProjectReference Include="..\Alert-Mail\Alert-Mail.csproj">
+      <Project>{b5e11fc4-f58c-40b9-99cc-b831ddd17f4a}</Project>
+      <Name>Alert-Mail</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Init\Init.csproj">
+      <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
+      <Name>Init</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
