@@ -31,7 +31,6 @@ namespace ConnecteurSage.Classes
          * */
 
         public string DL_PrixUnitaire { set; get; } // Prix unitaire HT
-
         public string DL_Taxe1 { set; get; }
         public string DL_Taxe2 { set; get; }
         public string DL_Taxe3 { set; get; }
@@ -48,17 +47,10 @@ namespace ConnecteurSage.Classes
          * 
          * */
         public string DL_MontantHT { set; get; }
-        public string DL_MontantTTC { set; get; }
+        public string DL_MontantTTC { set; get; } // Montant TTC de la ligne
         public string DL_NoColis { set; get; }
-
-        public string FNT_MontantHT { set; get; } // Montant HT net de la ligne
-
-        public string FNT_MontantTaxes { set; get; } // Montant total des taxes de la ligne
-        public string FNT_MontantTTC { set; get; } // Montant TTC de la ligne
-        public string FNT_PrixUNet { set; get; } // Prix unitaire net de la ligne
-        public string FNT_PrixUNetTTC { set; get; } //Prix unitaire net TTC de la ligne
-        public string FNT_RemiseGlobale { set; get; } //Montant de la remise
-
+        public string DL_MontantTaxes { set; get; } // Montant total des taxes de la ligne
+        public string DL_PrixUNet { set; get; }
         public string AR_CODEBARRE { set; get; } // CODE BARRE
 
         public DocumentVenteLine()
@@ -69,35 +61,29 @@ namespace ConnecteurSage.Classes
         public DocumentVenteLine(
             string DO_Date,
             string DO_DateLivr,
-        string DL_Ligne,
-        string AR_Ref,
-        string DL_Design,
-        string DL_Qte,
-        string DL_QteBC,
-        string DL_QteBL,
-        string EU_Qte,
-        string DL_PoidsNet,
-        string DL_PoidsBrut,
-        string DL_Remise01REM_Valeur,
-        string DL_Remise01REM_Type,
-        string DL_Remise03REM_Valeur,
-        string DL_Remise03REM_Type,
-        string DL_PrixUnitaire,
-        string DL_Taxe1,
-        string DL_Taxe2,
-        string DL_Taxe3,
-        string DL_TypeTaxe1,
-        string DL_TypeTaxe2,
-        string DL_TypeTaxe3,
-        string DL_MontantHT,
-        string DL_MontantTTC,
-        string DL_NoColis,
-        string FNT_MontantHT,
-        string FNT_MontantTaxes,
-        string FNT_MontantTTC,
-        string FNT_PrixUNet,
-        string FNT_PrixUNetTTC,
-        string FNT_RemiseGlobale,
+            string DL_Ligne,
+            string AR_Ref,
+            string DL_Design,
+            string DL_Qte,
+            string DL_QteBC,
+            string DL_QteBL,
+            string EU_Qte,
+            string DL_PoidsNet,
+            string DL_PoidsBrut,
+            string DL_Remise01REM_Valeur,
+            string DL_Remise01REM_Type,
+            string DL_Remise03REM_Valeur,
+            string DL_Remise03REM_Type,
+            string DL_PrixUnitaire,
+            string DL_Taxe1,
+            string DL_Taxe2,
+            string DL_Taxe3,
+            string DL_TypeTaxe1,
+            string DL_TypeTaxe2,
+            string DL_TypeTaxe3,
+            string DL_MontantHT,
+            string DL_MontantTTC,
+            string DL_NoColis,
             string AR_CODEBARRE)
         {
             this.DO_Date = DO_Date;
@@ -125,14 +111,7 @@ namespace ConnecteurSage.Classes
             this.DL_MontantHT = DL_MontantHT;
             this.DL_MontantTTC = DL_MontantTTC;
             this.DL_NoColis = DL_NoColis;
-            this.FNT_MontantHT = FNT_MontantHT;
-            this.FNT_MontantTaxes = FNT_MontantTaxes;
-            this.FNT_MontantTTC = FNT_MontantTTC;
-            this.FNT_PrixUNet = FNT_PrixUNet;
-            this.FNT_PrixUNetTTC = FNT_PrixUNetTTC;
-            this.FNT_RemiseGlobale = FNT_RemiseGlobale;
             this.AR_CODEBARRE = AR_CODEBARRE;
-
         }
     }
 }

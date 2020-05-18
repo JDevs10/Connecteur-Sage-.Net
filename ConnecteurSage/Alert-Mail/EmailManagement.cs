@@ -29,26 +29,446 @@ namespace Alert_Mail
             return settings.configurationConnexion.SQL.PREFIX;
         }
 
+        public void createInportMailFile(StreamWriter writer, List<CustomMailSuccess> successList) 
+        {
+            if(successList.Count > 0)
+            {
+                Alert_Mail.Classes.ConfigurationSaveLoad configurationSaveLoad1 = new Alert_Mail.Classes.ConfigurationSaveLoad();
+                if (configurationSaveLoad1.isSettings())
+                {
+                    configurationSaveLoad1.Load();
+
+                    if (configurationSaveLoad1.configurationEmail.active)
+                    {
+                        if (configurationSaveLoad1.configurationEmail.emailImport.active)
+                        {
+                            writer.WriteLine("");
+                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | ################################ Alert Mail Import ###############################");
+                            writer.WriteLine("");
+                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Il y a " + successList.Count + " documents qui sont importé.");
+
+                            if (configurationSaveLoad1.configurationEmail.emailImport.eachDocument)
+                            {
+                                Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+                                connexionSaveLoad.Load();
+
+                                // Inform the client
+                                if (configurationSaveLoad1.configurationEmail.emailImport.informClient)
+                                {
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer le client à chaque import de document.");
+
+                                    string header = "Bonjour, \n";
+                                    string body = "La commande : " + successList[0].NumCommande + " de " + successList[0].Client + " est importée.\nLa livraison est prévue pour le " + successList[0].DateTimeDelivery + ".\n";
+                                    string footer = "\nCordialement,\nConnecteur SAGE ["+ connexionSaveLoad .configurationConnexion.SQL.PREFIX+ "]. Version client";
+
+                                    for (int i = 0; i < successList[0].Lines.Count; i++)
+                                    {
+                                        body += (i+1)+"-\tL'article : " + successList[0].Lines[i].ProductName + " dont le CodeBare : " + successList[0].Lines[i].ProductRef + ", le prix TTC : " + successList[0].Lines[i].ProductPriceTTC + " et la quantité commandée : " + successList[0].Lines[i].ProductQte + "\n";
+                                    }
+
+                                    // send mail
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null);
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | email envoyé au client.");
+                                }
+                                
+                                // Inform the team
+                                if (configurationSaveLoad1.configurationEmail.emailImport.informTeam)
+                                {
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer l'équipe à chaque import de document.");
+
+                                    string header = "Bonjour, \n";
+                                    string body = "La commande : " + successList[0].NumCommande + " de " + successList[0].Client + " est importée.\nLa livraison est prévue pour le " + successList[0].DateTimeDelivery + ".\n";
+                                    string footer = "\nCordialement,\nConnecteur SAGE [" + connexionSaveLoad.configurationConnexion.SQL.PREFIX + "]. Version équipe";
+
+                                    for (int i = 0; i < successList[0].Lines.Count; i++)
+                                    {
+                                        body += (i + 1)+"-\tL'article : " + successList[0].Lines[i].ProductName + " dont le CodeBare : " + successList[0].Lines[i].ProductRef + ", le prix TTC : " + successList[0].Lines[i].ProductPriceTTC + " et la quantité commandée : " + successList[0].Lines[i].ProductQte + "\n";
+                                    }
+
+                                    // send mail
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null);
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | email envoyé à l'équipe.");
+                                }
+
+                                // clear the list after each successful import
+                                successList.Clear();
+                            }
+                            else if (configurationSaveLoad1.configurationEmail.emailImport.atTheEnd)
+                            {
+                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer le client et ou l'équipe à la fin de l'execution.");
+
+                                Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
+                                configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_SUC_Imp, successList);
+
+                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Le fichier " + configurationCustomMailSaveLoad.fileName_SUC_Imp + " est créé!");
+
+                                // clear the list after each successful import
+                                successList.Clear();
+                            }
+                            writer.WriteLine("");
+                            writer.Flush();
+                        }
+                        else
+                        {
+                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Notification mail import est désactivé!");
+                            writer.WriteLine("");
+                        }
+                    }
+                    else
+                    {
+                        writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | AlertMail est désactivé!");
+                        writer.WriteLine("");
+                    }
+                }
+                else
+                {
+                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Aucune configuration d'AlertMail trouvé!");
+                    writer.WriteLine("");
+                }
+            }
+            writer.Flush();
+        }
+
+        public void createExportMailFile(StreamWriter writer, List<CustomMailRecapLines> successLinesList, List<CustomMailSuccess> successList)
+        {
+            if(successLinesList.Count > 0)
+            {
+                Alert_Mail.Classes.ConfigurationSaveLoad configurationSaveLoad1 = new Alert_Mail.Classes.ConfigurationSaveLoad();
+                if (configurationSaveLoad1.isSettings())
+                {
+                    configurationSaveLoad1.Load();
+
+                    if (configurationSaveLoad1.configurationEmail.active)
+                    {
+                        if (configurationSaveLoad1.configurationEmail.emailExport.active)
+                        {
+                            writer.WriteLine("");
+                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | ################################ Alert Mail Export ###############################");
+                            writer.WriteLine("");
+                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Il y a " + successLinesList.Count + " documents qui sont exporté!");
+
+                            if (configurationSaveLoad1.configurationEmail.emailExport.eachDocument)
+                            {
+                                Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+                                connexionSaveLoad.Load();
+
+                                // Inform the client
+                                if (configurationSaveLoad1.configurationEmail.emailExport.informClient)
+                                {
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer le client à chaque export de document.");
+
+                                    string header = "Bonjour, \n";
+                                    string body = "Le document : " + successList[0].NumCommande + " est exportée.\n";
+                                    string footer = "\nCordialement,\nConnecteur SAGE [" + connexionSaveLoad.configurationConnexion.SQL.PREFIX + "]. Version client";
+
+                                    for (int i = 0; i < successList[0].Lines.Count; i++)
+                                    {
+                                        body += (i + 1) + "-\tL'article : " + successList[0].Lines[i].ProductName + " dont le CodeBare : " + successList[0].Lines[i].ProductRef + ", le prix TTC : " + successList[0].Lines[i].ProductPriceTTC + " et la quantité : " + successList[0].Lines[i].ProductQte + "\n";
+                                    }
+
+                                    // send mail
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null);
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | email envoyé au client.");
+                                }
+
+                                // Inform the team
+                                if (configurationSaveLoad1.configurationEmail.emailImport.informTeam)
+                                {
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer l'équipe à chaque export de document.");
+
+                                    string header = "Bonjour, \n";
+                                    string body = "Le document : " + successList[0].NumCommande + " est exportée.\n";
+                                    string footer = "\nCordialement,\nConnecteur SAGE [" + connexionSaveLoad.configurationConnexion.SQL.PREFIX + "]. Version équipe";
+
+                                    for (int i = 0; i < successList[0].Lines.Count; i++)
+                                    {
+                                        body += (i + 1) + "-\tL'article : " + successList[0].Lines[i].ProductName + " dont le CodeBare : " + successList[0].Lines[i].ProductRef + ", le prix TTC : " + successList[0].Lines[i].ProductPriceTTC + " et la quantité : " + successList[0].Lines[i].ProductQte + "\n";
+                                    }
+
+                                    // send mail
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null);
+                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | email envoyé à l'équipe.");
+                                }
+
+                                // clear the list after each successful import
+                                successList.Clear();
+                            }
+                            else if (configurationSaveLoad1.configurationEmail.emailExport.atTheEnd)
+                            {
+                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer le client et ou l'équipe à la fin de l'execution.");
+
+                                Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
+                                configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_SUC_Exp, successList);
+
+                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Le fichier " + configurationCustomMailSaveLoad.fileName_SUC_Exp + " est créé!");
+
+                            }
+                            writer.WriteLine("");
+                            writer.Flush();
+                            successLinesList.Clear();
+                        }
+                        else
+                        {
+                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Notification mail export est désactivé!");
+                            writer.WriteLine("");
+                        }
+                    }
+                    else
+                    {
+                        writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | AlertMail est désactivé!");
+                        writer.WriteLine("");
+                    }
+                }
+                else
+                {
+                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Aucune configuration d'AlertMail trouvé!");
+                    writer.WriteLine("");
+                }
+            }
+        }
+
         public MailCustom generateMailBody(string type)
         {
-            if (type.Equals("client"))
+            if (type.Equals("client_import"))
+            {
+                List<CustomMailSuccess> success_imp_list = null;
+                ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
+
+                bool sendMailImp = false;
+                string textImp = "";
+                string textImp_2 = "";
+
+                //check if the file exist
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_SUC_Imp))
+                {
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Imp, new List<CustomMailSuccess>());
+                    success_imp_list = configurationCustomMailSaveLoad.customMailSuccessList;
+
+                    //make the following body message
+                    if (success_imp_list.Count == 0)
+                    {
+                        sendMailImp = false;
+                    }
+                    else if (success_imp_list.Count == 1)
+                    {
+                        sendMailImp = true;
+                        textImp += "L'import du document commercial avec succès : \n";
+                    }
+                    else if (success_imp_list.Count > 1)
+                    {
+                        sendMailImp = true;
+                        textImp += "L'import de plusieurs documents commerciaux avec succès. Voici le résumé :";
+                    }
+
+                    for (int i = 0; i < success_imp_list.Count; i++)
+                    {
+                        textImp += "\n"+(i + 1) + " - Le numéro du document \"" + success_imp_list[i].DocumentReference + "\" de la commande \"" + success_imp_list[i].NumCommande + "\",\n";
+
+                        for(int x = 0; x < success_imp_list[i].Lines.Count; x++)
+                        {
+                            textImp_2 += "\t - " + success_imp_list[i].Lines[x].ProductQte + " " + success_imp_list[i].Lines[x].ProductName + " dont le CodeBarre " + success_imp_list[i].Lines[x].ProductRef + " au TTC : " + success_imp_list[i].Lines[x].ProductPriceTTC + "\n";
+                        }
+                        textImp += textImp_2;
+                        textImp_2 = "";
+                    }
+                }
+
+                //send the recap mail
+                if (sendMailImp)
+                {
+                    return new MailCustom("[" + getDNS() + "] " + success_imp_list[0].Subject, "Bonjour, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version client.", null);
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            else if (type.Equals("team_import")) /// need to to do
+            {
+                List<CustomMailSuccess> success_imp_list = null;
+                ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
+
+                bool sendMailImp = false;
+                string textImp = "";
+                string textImp_2 = "";
+
+                //check if the file exist
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_SUC_Imp))
+                {
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Imp, new List<CustomMailSuccess>());
+                    success_imp_list = configurationCustomMailSaveLoad.customMailSuccessList;
+
+                    //make the following body message
+                    if (success_imp_list.Count == 0)
+                    {
+                        sendMailImp = false;
+                    }
+                    else if (success_imp_list.Count == 1)
+                    {
+                        sendMailImp = true;
+                        textImp += "L'import du document commercial avec succès : \n";
+                    }
+                    else if (success_imp_list.Count > 1)
+                    {
+                        sendMailImp = true;
+                        textImp += "L'import de plusieurs documents commerciaux avec succès. Voici le résumé :";
+                    }
+
+                    for (int i = 0; i < success_imp_list.Count; i++)
+                    {
+                        textImp += "\n" + (i + 1) + " - Le numéro du document \"" + success_imp_list[i].DocumentReference + "\" de la commande \"" + success_imp_list[i].NumCommande + "\",\n";
+
+                        for (int x = 0; x < success_imp_list[i].Lines.Count; x++)
+                        {
+                            textImp_2 += "\t - " + success_imp_list[i].Lines[x].ProductQte + " " + success_imp_list[i].Lines[x].ProductName + " dont le CodeBarre " + success_imp_list[i].Lines[x].ProductRef + " au TTC : " + success_imp_list[i].Lines[x].ProductPriceTTC + "\n";
+                        }
+                        textImp += textImp_2;
+                        textImp_2 = "";
+                    }
+                }
+
+                //send the recap mail
+                if (sendMailImp)
+                {
+                    return new MailCustom("[" + getDNS() + "] " + success_imp_list[0].Subject, "Bonjour Team, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version équipe.", null);
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            else if (type.Equals("client_export"))
+            {
+                List<CustomMailSuccess> success_exp_list = null;
+                ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
+
+                bool sendMailExp = false;
+                string textExp = "";
+                string textExp_2 = "";
+
+                //check if the file exist
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_SUC_Exp))
+                {
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Exp, new List<CustomMailSuccess>());
+                    success_exp_list = configurationCustomMailSaveLoad.customMailSuccessList;
+
+
+                    //make the following body message
+                    if (success_exp_list.Count == 0)
+                    {
+                        sendMailExp = false;
+                    }
+                    else if (success_exp_list.Count == 1)
+                    {
+                        sendMailExp = true;
+                        textExp += "L'import d'un document commercial avec succès :\n";
+                    }
+                    else if (success_exp_list.Count > 1)
+                    {
+                        sendMailExp = true;
+                        textExp += "L'import de plusieurs documents commerciaux avec succès. Voici le résumé détaillé :\n";
+                    }
+
+                    for (int i = 0; i < success_exp_list.Count; i++)
+                    {
+                        textExp += "\n" + (i + 1) + " - Le numéro du document \"" + success_exp_list[i].DocumentReference + "\" de la commande \"" + success_exp_list[i].NumCommande + "\",\n";
+
+                        for (int x = 0; x < success_exp_list[i].Lines.Count; x++)
+                        {
+                            textExp_2 += "\t - " + success_exp_list[i].Lines[x].ProductQte + " " + success_exp_list[i].Lines[x].ProductName + " dont le CodeBarre " + success_exp_list[i].Lines[x].ProductRef + " au TTC : " + success_exp_list[i].Lines[x].ProductPriceTTC + "\n";
+                        }
+                        textExp += textExp_2;
+                        textExp_2 = "";
+                    }
+                }
+
+                if (sendMailExp)
+                {
+                    return new MailCustom("[" + getDNS() + "] " + success_exp_list[0].Subject, "Bonjour, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version client.", null);
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            else if (type.Equals("team_export"))
+            {
+                List<CustomMailSuccess> success_exp_list = null;
+                ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
+
+                bool sendMailExp = false;
+                string textExp = "";
+                string textExp_2 = "";
+
+                //check if the file exist
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_SUC_Exp))
+                {
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Exp, new List<CustomMailSuccess>());
+                    success_exp_list = configurationCustomMailSaveLoad.customMailSuccessList;
+
+
+                    //make the following body message
+                    if (success_exp_list.Count == 0)
+                    {
+                        sendMailExp = false;
+                    }
+                    else if (success_exp_list.Count == 1)
+                    {
+                        sendMailExp = true;
+                        textExp += "L'import d'un document commercial avec succès :\n";
+                    }
+                    else if (success_exp_list.Count > 1)
+                    {
+                        sendMailExp = true;
+                        textExp += "L'import de plusieurs documents commerciaux avec succès. Voici le résumé détaillé :\n";
+                    }
+
+                    for (int i = 0; i < success_exp_list.Count; i++)
+                    {
+                        textExp += "\n" + (i + 1) + " - Le numéro du document \"" + success_exp_list[i].DocumentReference + "\" de la commande \"" + success_exp_list[i].NumCommande + "\",\n";
+
+                        for (int x = 0; x < success_exp_list[i].Lines.Count; x++)
+                        {
+                            textExp_2 += "\t - " + success_exp_list[i].Lines[x].ProductQte + " " + success_exp_list[i].Lines[x].ProductName + " dont le CodeBarre " + success_exp_list[i].Lines[x].ProductRef + " au TTC : " + success_exp_list[i].Lines[x].ProductPriceTTC + "\n";
+                        }
+                        textExp += textExp_2;
+                        textExp_2 = "";
+                    }
+
+                }
+
+                if (sendMailExp)
+                {
+                    return new MailCustom("[" + getDNS() + "] " + success_exp_list[0].Subject, "Bonjour Team, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version équipe.", null);
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            else if (type.Equals("client_error"))
             {
                 CustomMailRecap recap_imp = null;
                 CustomMailRecap recap_exp = null;
+                ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
+
                 bool sendMailImp = false;
                 string textImp = "";
+                string textImp_ = "";
                 bool sendMailExp = false;
                 string textExp = "";
+                string textExp_ = "";
                 List<string> attachements = new List<string>();
 
                 //check if the file exist
-                if (File.Exists("Mail_IMP.ml"))
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_ERR_Imp))
                 {
-                    recap_imp = new CustomMailRecap();
-                    recap_imp.Lines = new List<CustomMailRecapLines>();
-                    recap_imp.Load("Mail_IMP.ml");
-
-
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_ERR_Imp);
+                    recap_imp = configurationCustomMailSaveLoad.customMailRecap;
 
                     //make the following body message
                     if (recap_imp.Lines.Count == 0)
@@ -65,24 +485,33 @@ namespace Alert_Mail
                         sendMailImp = true;
                         textImp += "L'import de plusieurs documents commerciaux ont échoué. Voici le résumé de chaque document en erreur :\n";
                     }
-                    int i = 0;
-                    while (i < recap_imp.Lines.Count)
+
+                    
+                    for (int i = 0; i < recap_imp.Lines.Count; i++)
                     {
                         if(recap_imp.Lines[i].DocumentErrorMessage != null && !recap_imp.Lines[i].DocumentErrorMessage.Equals(""))
                         {
-                            textImp += (i + 1) + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\" de la commande \"" + recap_imp.Lines[i].NumCommande + "\",\n" +
+                            textImp_ += (i + 1) + " -\t Le numéro du document \"" + recap_imp.Lines[i].DocumentReference + "\" de la commande \"" + recap_imp.Lines[i].NumCommande + "\",\n" +
                             " \t a une erreur : " + recap_imp.Lines[i].DocumentErrorMessage + "\n";
-                            i++;
                         }
+                    }
+
+                    if (textImp_.Equals(""))
+                    {
+                        sendMailImp = false;
+                    }
+                    else
+                    {
+                        textImp += textImp_;
                     }
                 }
 
                 //check if the file exist
-                if (File.Exists("Mail_EXP.ml"))
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_ERR_Exp))
                 {
-                    recap_exp = new CustomMailRecap();
-                    recap_exp.Lines = new List<CustomMailRecapLines>();
-                    recap_exp.Load("Mail_EXP.ml");
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_ERR_Exp);
+                    recap_exp = configurationCustomMailSaveLoad.customMailRecap;
+
 
                     //make the following body message
                     if (recap_exp.Lines.Count == 0)
@@ -99,14 +528,22 @@ namespace Alert_Mail
                         sendMailExp = true;
                         textExp += "L'import de plusieurs documents commerciaux a échoué. Voici le résumé détaillé :\n";
                     }
-                    int i = 0;
-                    while (i < recap_exp.Lines.Count)
+                    
+                    for (int i = 0; i < recap_exp.Lines.Count; i++)
                     {
                         if (recap_exp.Lines[i].DocumentErrorMessage != null && !recap_exp.Lines[i].DocumentErrorMessage.Equals(""))
                         {
-                            textExp += (i + 1) + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\" du fichier EDI : " + recap_exp.Lines[i].FileName + ", a une erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\n";
-                            i++;
+                            textExp_ += (i + 1) + " -\t Le numéro du document \"" + recap_exp.Lines[i].DocumentReference + "\" du fichier EDI : " + recap_exp.Lines[i].FileName + ", a une erreur : " + recap_exp.Lines[i].DocumentErrorMessage + "\n";
                         }
+                    }
+
+                    if (textExp_.Equals(""))
+                    {
+                        sendMailExp = false;
+                    }
+                    else
+                    {
+                        textExp += textExp_;
                     }
                 }
 
@@ -133,6 +570,8 @@ namespace Alert_Mail
             {
                 CustomMailRecap recap_imp = null;
                 CustomMailRecap recap_exp = null;
+                ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
+
                 bool sendMailImp = false;
                 string textImp = "";
                 bool sendMailExp = false;
@@ -140,11 +579,10 @@ namespace Alert_Mail
                 List<string> attachements = new List<string>();
 
                 //check if the file exist
-                if (File.Exists("Mail_IMP.ml"))
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_ERR_Imp))
                 {
-                    recap_imp = new CustomMailRecap();
-                    recap_imp.Lines = new List<CustomMailRecapLines>();
-                    recap_imp.Load("Mail_IMP.ml");
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_ERR_Imp);
+                    recap_imp = configurationCustomMailSaveLoad.customMailRecap;
 
                     //make the following body message
                     if (recap_imp.Lines.Count == 0)
@@ -172,12 +610,12 @@ namespace Alert_Mail
                 }
 
                 //check if the file exist
-                if (File.Exists("Mail_EXP.ml"))
+                //check if the file exist
+                if (configurationCustomMailSaveLoad.isSettings(configurationCustomMailSaveLoad.fileName_ERR_Exp))
                 {
-                    attachements.Clear();
-                    recap_exp = new CustomMailRecap();
-                    recap_exp.Lines = new List<CustomMailRecapLines>();
-                    recap_exp.Load("Mail_EXP.ml");
+                    configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_ERR_Exp);
+                    recap_exp = configurationCustomMailSaveLoad.customMailRecap;
+
 
                     //make the following body message
                     if (recap_exp.Lines.Count == 0)
@@ -257,7 +695,9 @@ namespace Alert_Mail
                     MailMessage msg = new MailMessage();
 
                     // Expéditeur (obligatoire). Notez qu'on peut spécifier le nom
-                    msg.From = new MailAddress(mConfigurationEmail.connexion.login, "CONNECTEUR SAGE [" + getDNS() + "]");
+                    msg.From = new MailAddress(Utils.Decrypt(mConfigurationEmail.connexion.login), "CONNECTEUR SAGE [" + getDNS() + "]");
+
+                    Console.WriteLine("emailClientList : " + mConfigurationEmail.emailLists.emailClientList[0]);
 
                     // Destinataires (il en faut au moins un)
                     if (type.Equals("client"))
@@ -288,6 +728,7 @@ namespace Alert_Mail
                         {
                             for (int x = 0; x < mConfigurationEmail.emailLists.emailTeamList.Count; x++)
                             {
+                                Console.WriteLine("team : " + mConfigurationEmail.emailLists.emailTeamList[x]);
                                 if (!string.IsNullOrEmpty(mConfigurationEmail.emailLists.emailTeamList[x]))
                                 {
                                     Console.WriteLine("");
@@ -310,7 +751,7 @@ namespace Alert_Mail
                     }
 
 
-                    msg.Subject = subject;
+                    msg.Subject = "TEST : " + subject;
 
                     Console.WriteLine("Suject : " + subject);
                     // Texte du mail (facultatif)

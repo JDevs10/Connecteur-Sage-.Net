@@ -44,9 +44,19 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button3 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.checkBox_reprocess_activate = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7_reprocess = new System.Windows.Forms.Label();
+            this.numericUpDown1_reprocess_cd = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_hour = new System.Windows.Forms.NumericUpDown();
+            this.label7_reprocess_hour = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1_reprocess_cd)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_hour)).BeginInit();
             this.SuspendLayout();
             // 
             // debugMode_checkBox
@@ -155,7 +165,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(254, 315);
+            this.button1.Location = new System.Drawing.Point(254, 447);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 16;
@@ -165,7 +175,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(173, 315);
+            this.button2.Location = new System.Drawing.Point(173, 447);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 17;
@@ -203,11 +213,88 @@
             this.textBox2.Size = new System.Drawing.Size(244, 20);
             this.textBox2.TabIndex = 0;
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label7_reprocess_hour);
+            this.groupBox3.Controls.Add(this.numericUpDown_hour);
+            this.groupBox3.Controls.Add(this.numericUpDown1_reprocess_cd);
+            this.groupBox3.Controls.Add(this.label7_reprocess);
+            this.groupBox3.Controls.Add(this.label6);
+            this.groupBox3.Controls.Add(this.checkBox_reprocess_activate);
+            this.groupBox3.Location = new System.Drawing.Point(12, 301);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(395, 137);
+            this.groupBox3.TabIndex = 19;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Retraitement des fichiers en erreur";
+            // 
+            // checkBox_reprocess_activate
+            // 
+            this.checkBox_reprocess_activate.AutoSize = true;
+            this.checkBox_reprocess_activate.Location = new System.Drawing.Point(9, 43);
+            this.checkBox_reprocess_activate.Name = "checkBox_reprocess_activate";
+            this.checkBox_reprocess_activate.Size = new System.Drawing.Size(59, 17);
+            this.checkBox_reprocess_activate.TabIndex = 16;
+            this.checkBox_reprocess_activate.Text = "Activer";
+            this.checkBox_reprocess_activate.UseVisualStyleBackColor = true;
+            this.checkBox_reprocess_activate.CheckedChanged += new System.EventHandler(this.checkBox_reprocess_activate_CheckedChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(6, 16);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(296, 14);
+            this.label6.TabIndex = 20;
+            this.label6.Text = "Voici les paramètres des fichiers en erreur sur X heures.";
+            // 
+            // label7_reprocess
+            // 
+            this.label7_reprocess.AutoSize = true;
+            this.label7_reprocess.Enabled = false;
+            this.label7_reprocess.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7_reprocess.Location = new System.Drawing.Point(65, 95);
+            this.label7_reprocess.Name = "label7_reprocess";
+            this.label7_reprocess.Size = new System.Drawing.Size(189, 14);
+            this.label7_reprocess.TabIndex = 21;
+            this.label7_reprocess.Text = "Cette fonctionnalité est désactiver !";
+            // 
+            // numericUpDown1_reprocess_cd
+            // 
+            this.numericUpDown1_reprocess_cd.Enabled = false;
+            this.numericUpDown1_reprocess_cd.Location = new System.Drawing.Point(9, 95);
+            this.numericUpDown1_reprocess_cd.Name = "numericUpDown1_reprocess_cd";
+            this.numericUpDown1_reprocess_cd.Size = new System.Drawing.Size(50, 20);
+            this.numericUpDown1_reprocess_cd.TabIndex = 22;
+            this.numericUpDown1_reprocess_cd.ValueChanged += new System.EventHandler(this.numericUpDown1_reprocess_cd_ValueChanged);
+            // 
+            // numericUpDown_hour
+            // 
+            this.numericUpDown_hour.Enabled = false;
+            this.numericUpDown_hour.Location = new System.Drawing.Point(9, 64);
+            this.numericUpDown_hour.Name = "numericUpDown_hour";
+            this.numericUpDown_hour.Size = new System.Drawing.Size(50, 20);
+            this.numericUpDown_hour.TabIndex = 23;
+            this.numericUpDown_hour.ValueChanged += new System.EventHandler(this.numericUpDown_hour_ValueChanged);
+            // 
+            // label7_reprocess_hour
+            // 
+            this.label7_reprocess_hour.AutoSize = true;
+            this.label7_reprocess_hour.Enabled = false;
+            this.label7_reprocess_hour.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7_reprocess_hour.Location = new System.Drawing.Point(65, 63);
+            this.label7_reprocess_hour.Name = "label7_reprocess_hour";
+            this.label7_reprocess_hour.Size = new System.Drawing.Size(174, 14);
+            this.label7_reprocess_hour.TabIndex = 24;
+            this.label7_reprocess_hour.Text = "Retraitement tous les X heure(s).";
+            // 
             // GeneralConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(353, 355);
+            this.ClientSize = new System.Drawing.Size(414, 479);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -222,6 +309,10 @@
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1_reprocess_cd)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_hour)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -244,5 +335,12 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.NumericUpDown numericUpDown1_reprocess_cd;
+        private System.Windows.Forms.Label label7_reprocess;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox checkBox_reprocess_activate;
+        private System.Windows.Forms.Label label7_reprocess_hour;
+        private System.Windows.Forms.NumericUpDown numericUpDown_hour;
     }
 }

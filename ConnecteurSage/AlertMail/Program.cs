@@ -64,21 +64,21 @@ namespace AlertMail
                 /// 
                 if (args.Length == 0)
                 {
-                    pendingFilesMail(settings);
+                    pendingFilesMail(settings); //Send a Mail every x time
                 }
-                else if (args.Length > 0 && args[0] == "Import_Mail_11") //Send a Mail after the connector execution 
+                else if (args.Length > 0 && args[0] == "Import_Mail_11") //Send a Mail after each document import
                 {
                     importMail(settings, 11);
                 }
-                else if (args.Length > 0 && args[0] == "Import_Mail_22") //Send a Mail after the connector execution 
+                else if (args.Length > 0 && args[0] == "Import_Mail_22") //Send a Mail after all documents imported 
                 {
                     importMail(settings, 22);
                 }
-                else if (args.Length > 0 && args[0] == "Export_Mail_11") //Send a Mail after the connector execution 
+                else if (args.Length > 0 && args[0] == "Export_Mail_11") //Send a Mail after each document export
                 {
                     exportMail(settings, 11);
                 }
-                else if (args.Length > 0 && args[0] == "Export_Mail_22") //Send a Mail after the connector execution 
+                else if (args.Length > 0 && args[0] == "Export_Mail_22") //Send a Mail after all documents exported 
                 {
                     exportMail(settings, 22);
                 }
@@ -86,7 +86,7 @@ namespace AlertMail
                 {
                     errorMail(settings);
                 }
-                else if (args.Length > 0 && args[0] == "Error_Summary")
+                else if (args.Length > 0 && args[0] == "Error_Summary") //Send a Mail every x time
                 {
                     summaryMail(file, settings);
                 }
@@ -104,23 +104,107 @@ namespace AlertMail
             //Console.ReadLine();
         }
 
-
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// _x_ argument (11 or 22) depends, if its after each import "11" or at the end of all import "22"
+        /// 
         private static void importMail(ConfigurationEmail settings, int _x_)
         {
-            Console.WriteLine("Import mail...");
-
             if (settings.emailImport.active)
             {
                 if (settings.emailImport.eachDocument && _x_ == 11)
                 {
 
-                }else if (settings.emailImport.atTheEnd && _x_ == 11)
+                }
+                else if (settings.emailImport.atTheEnd && _x_ == 22)
                 {
+                    Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
+                    try
+                    {
+                        // get and load the file
+                        Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
+                        configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Imp, new List<CustomMailSuccess>());
 
+                        // Mapping
+                        MailCustom mMailCustom_client = null;
+                        MailCustom mMailCustom_team = null;
+                        try
+                        {
+                            mMailCustom_client = emailManagement.generateMailBody("client_import");
+                            mMailCustom_team = emailManagement.generateMailBody("team_import");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " | Main() : *********** Exception generateMailBody() ***********");
+                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                            Console.WriteLine("");
+                            mMailCustom_client = null;
+                            mMailCustom_team = null;
+                        }
+
+
+                        if (settings.emailImport.informClient)
+                        {
+                            try
+                            {
+                                Console.WriteLine("Envoi de mail client en cours....");
+                                emailManagement.EnvoiMail(settings, "client", mMailCustom_client.subject, mMailCustom_client.body, null);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail log ***********");
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                Console.WriteLine("");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Envoyer un mail d'import au client est désactivé");
+                        }
+
+                        if (settings.emailImport.informTeam)
+                        {
+                            try
+                            {
+                                Console.WriteLine("Envoi de mail log en cours....");
+                                emailManagement.EnvoiMail(settings, "log", mMailCustom_team.subject, mMailCustom_team.body, null);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail log ***********");
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                Console.WriteLine("");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Envoyer un mail d'import à l'équipe est désactivé");
+                        }
+
+
+                        ConfigurationCustomMailSaveLoad xxx = new ConfigurationCustomMailSaveLoad();
+
+                        if (File.Exists(xxx.fileName_SUC_Imp))
+                        {
+                            File.Delete(xxx.fileName_SUC_Imp);
+                        }
+
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Main EndSoftwareExe ***********");
+                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                    }
                 }
                 else
                 {
-
+                    Console.WriteLine("Argument settings.emailImport.xxxxx n'est pas valide...");
                 }
             }
             else
@@ -129,23 +213,108 @@ namespace AlertMail
             }
         }
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// _x_ argument (11 or 22) depends, if its after each export "11" or at the end of all export "22"
+        /// 
         private static void exportMail(ConfigurationEmail settings, int _x_)
         {
             Console.WriteLine("Export mail...");
 
             if (settings.emailExport.active)
-            {
+            {   
                 if (settings.emailExport.eachDocument && _x_ == 11)
                 {
 
                 }
-                else if (settings.emailExport.atTheEnd && _x_ == 11)
+                else if (settings.emailExport.atTheEnd && _x_ == 22)
                 {
+                    Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
+                    try
+                    {
+                        // get and load the file
+                        Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
+                        configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Exp, new List<CustomMailSuccess>());
 
+                        // Mapping
+                        MailCustom mMailCustom_client = null;
+                        MailCustom mMailCustom_team = null;
+                        try
+                        {
+                            mMailCustom_client = emailManagement.generateMailBody("client_export");
+                            mMailCustom_team = emailManagement.generateMailBody("team_export");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine(DateTime.Now + " | Main() : *********** Exception generateMailBody() ***********");
+                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                            Console.WriteLine("");
+                            mMailCustom_client = null;
+                            mMailCustom_team = null;
+                        }
+
+
+                        if (settings.emailExport.informClient)
+                        {
+                            try
+                            {
+                                Console.WriteLine("Envoi de mail client en cours....");
+                                emailManagement.EnvoiMail(settings, "client", mMailCustom_client.subject, mMailCustom_client.body, null);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail log ***********");
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                Console.WriteLine("");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Envoyer un mail d'import au client est désactivé");
+                        }
+
+                        if (settings.emailExport.informTeam)
+                        {
+                            try
+                            {
+                                Console.WriteLine("Envoi de mail log en cours....");
+                                emailManagement.EnvoiMail(settings, "log", mMailCustom_team.subject, mMailCustom_team.body, null);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("");
+                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail log ***********");
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                                Console.WriteLine("");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Envoyer un mail d'import à l'équipe est désactivé");
+                        }
+
+
+                        ConfigurationCustomMailSaveLoad xxx = new ConfigurationCustomMailSaveLoad();
+                        if (File.Exists(xxx.fileName_SUC_Exp))
+                        {
+                            File.Delete(xxx.fileName_SUC_Exp);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Main EndSoftwareExe ***********");
+                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
+                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
+                    }
                 }
                 else
                 {
-
+                    Console.WriteLine("Argument settings.emailExport.xxxxx n'est pas valide...");
                 }
             }
             else
@@ -163,17 +332,17 @@ namespace AlertMail
 
                 if (settings.emailError.active)
                 {
-
                     if (settings.emailLists.emailClientList.Count == 0 && settings.emailLists.emailTeamList.Count == 0)
                     {
                         Console.WriteLine("Aucun address mail enregistré!");
+                        return;
                     }
 
                     MailCustom mMailCustom_client = null;
                     MailCustom mMailCustom_log = null;
                     try
                     {
-                        mMailCustom_client = emailManagement.generateMailBody("client");
+                        mMailCustom_client = emailManagement.generateMailBody("client_error");
                         mMailCustom_log = emailManagement.generateMailBody("log");
                     }
                     catch (Exception ex)
@@ -246,13 +415,15 @@ namespace AlertMail
 
                     if (mMailCustom_client != null && mMailCustom_log != null)
                     {
-                        if (File.Exists("Mail_IMP.ml"))
+                        ConfigurationCustomMailSaveLoad xxx = new ConfigurationCustomMailSaveLoad();
+
+                        if (File.Exists(xxx.fileName_ERR_Imp))
                         {
-                            File.Delete("Mail_IMP.ml");
+                            File.Delete(xxx.fileName_ERR_Imp);
                         }
-                        if (File.Exists("Mail_EXP.ml"))
+                        if (File.Exists(xxx.fileName_ERR_Exp))
                         {
-                            File.Delete("Mail_EXP.ml");
+                            File.Delete(xxx.fileName_ERR_Exp);
                         }
                     }
                 }
@@ -300,19 +471,27 @@ namespace AlertMail
                     DateTime lastActivated = settings.emailSummary.lastActivated;
                     TimeSpan ts = today - lastActivated;
 
+                    Console.WriteLine("Today : " + today);
+                    Console.WriteLine("LastActivated : " + lastActivated);
+                    Console.WriteLine("Ago : " + ts);
+
                     if (ts.TotalHours >= Convert.ToDouble(settings.emailSummary.hours))
                     {
                         Console.WriteLine("Envoi un Mail Résumer en cours...");
 
-                        if (File.Exists("Mail_Recap.ml"))
+                        ConfigurationCustomMailSaveLoad mConfigurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
+
+                        if (mConfigurationCustomMailSaveLoad.isSettings(mConfigurationCustomMailSaveLoad.fileName_ERR_recap))
                         {
+                            // uncomment the Recap file creation too!!!!!
+                            /*
                             if (settings.emailLists.emailClientList.Count == 0 && settings.emailLists.emailTeamList.Count == 0)
                             {
                                 Console.WriteLine("Aucun address mail enregistré!");
                             }
 
                             CustomMailRecap recap = new CustomMailRecap();
-                            recap.Load("Mail_Recap.ml");
+                            //recap.Load("Mail_Recap.ml");
                             string infoBody_end = "";
                             string infoBody2 = "";
                             string infoBodyHeader2 = "";
@@ -322,28 +501,34 @@ namespace AlertMail
                             //import file error
                             if (allFiles_error.Length > 0)
                             {
-                                CustomMailRecap mailRecap = new CustomMailRecap();
-                                mailRecap.Lines = new List<CustomMailRecapLines>();
-                                mailRecap.Load("Mail_Recap.ml");
+                                mConfigurationCustomMailSaveLoad.Load(mConfigurationCustomMailSaveLoad.fileName_ERR_recap);
+                                CustomMailRecap mailRecap = mConfigurationCustomMailSaveLoad.customMailRecap;
+                                
+                                //mailRecap.Lines = new List<CustomMailRecapLines>();
 
-                                infoBodyHeader2 += "Il y a " + allFiles_error.Length + " fichier(s) qui sont tombé en erreur lors de l'import, qui sont dans le le répertoire '" + directoryName_ErrorFile + "' :\n";
-
-                                for (int x = 0; x < allFiles_error.Length; x++)
+                                if(mailRecap.Lines.Count > 0)
                                 {
-                                    errorFilesFileNameList_[x, 0] = allFiles_error[x].Name;
-                                    errorFilesFileNameList_[x, 1] = allFiles_error[x].FullName;
-
-                                    errorFilesFileNameList.Add(allFiles_error[x].Name);
-                                    errorFilesFileList.Add(allFiles_error[x].FullName);
+                                    infoBodyHeader2 += "Il y a " + allFiles_error.Length + " fichier(s) qui sont tombé en erreur lors de l'import. Ils qui sont dans le le répertoire '" + directoryName_ErrorFile + "' :\n";
                                 }
+
+                                for (int x = 0; x < mailRecap.Lines.Count; x++)
+                                {
+                                    errorFilesFileNameList_[x, 0] = mailRecap.Lines[x].NumCommande;
+                                    errorFilesFileNameList_[x, 1] = mailRecap.Lines[x].FilePath;
+
+                                    errorFilesFileNameList.Add(mailRecap.Lines[x].NumCommande);
+                                    errorFilesFileList.Add(mailRecap.Lines[x].FilePath);
+                                }
+
+                                Console.WriteLine("mailRecap.Lines.Count : " + mailRecap.Lines.Count);
 
                                 int a = 0;
                                 List<string> unknownFileName = new List<string>();
                                 List<string> unknownFileEDI = new List<string>();
                                 for (int y = 0; y < mailRecap.Lines.Count; y++)
                                 {
-                                    Console.WriteLine(y + " - FileInfo : " + errorFilesFileNameList[y]);
-                                    if (errorFilesFileNameList.Contains(mailRecap.Lines[y].FileName))
+                                    Console.WriteLine(y + " - FileNameList : " + errorFilesFileNameList[y] + "\nNumCommande : " + mailRecap.Lines[y].NumCommande);
+                                    if (errorFilesFileNameList.Contains(mailRecap.Lines[y].NumCommande))
                                     {
                                         Console.WriteLine("y: " + y + " || FileInfo : " + allFiles_error[y].Name + " == Mail Recap : " + allFiles_error[y].Name);
                                         infoBody2 += (y + 1) + " -\t Le numéro du document \"" + mailRecap.Lines[y].DocumentReference + "\"\nNom du fichier : " + mailRecap.Lines[y].FileName + "\nMessage erreur : " + mailRecap.Lines[y].DocumentErrorMessageDebug + "\nStackTrace: " + mailRecap.Lines[y].DocumentErrorStackTraceDebug + "\nL'erreur peut etre trouvé dans " + mailRecap.Lines[y].FilePath + "\n\n";
@@ -361,21 +546,10 @@ namespace AlertMail
                                     }
                                 }
 
-                                List<string> mail_r = new List<string>();
-                                for (int x = 0; x < mailRecap.Lines.Count; x++)
-                                {
-                                    mail_r.Add(mailRecap.Lines[x].FileName);
-                                }
-
-                                infoBody2 += "Voici d'autre fichier en erreur, ils n'ont pas de log générés à partir du connecteur :\n";
                                 for (int x = 0; x < allFiles_error.Length; x++)
                                 {
-                                    if (!mail_r.Contains(allFiles_error[x].Name))
-                                    {
-                                        Console.WriteLine("x: " + x + " || allFiles_error : " + allFiles_error[x].Name);
-                                        infoBody2 += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + emailManagement.getFileSize(allFiles_error[x].Length) + "\n";
-                                        attachements.Add(allFiles_error[x].FullName);
-                                    }
+                                    infoBody2 += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + emailManagement.getFileSize(allFiles_error[x].Length) + "\n";
+                                    attachements.Add(allFiles_error[x].FullName);
                                 }
 
                                 Console.WriteLine("Size 1 : " + attachements.Count);
@@ -386,32 +560,25 @@ namespace AlertMail
                                 }
                             }
 
-                            if (settings.emailSummary.active)
+                            if (allFiles_error.Length > 0 && infoBody2.Length > 0)
                             {
-                                Console.WriteLine("Size 2 : " + allFiles_error.Length);
-                                Console.WriteLine("Size 3 : " + infoBody2.Length);
-                                if (allFiles_error.Length > 0 && infoBody2.Length > 0)
+                                infoBody_end += "Bonjour Team BDC, \n\nVoici un récapitulatif des documents. \n" + infoBodyHeader2 + infoBody2;
+
+                                emailManagement.EnvoiMail(settings, "log", "Résumer [" + recap.Client + "] " + recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE [" + recap.Client + "].", attachements);
+
+                                //delete recap file
+                                
+                                if (File.Exists(mConfigurationCustomMailSaveLoad.fileName_ERR_recap))
                                 {
-                                    infoBody_end += "Bonjour Team BDC, \n\nVoici un récapitulatif des documents. \n" + infoBodyHeader2 + infoBody2;
-
-                                    emailManagement.EnvoiMail(settings, "log", "Résumer [" + recap.Client + "] " + recap.Subject, infoBody_end + "\nCordialement,\nConnecteur SAGE [" + recap.Client + "].", attachements);
-
-                                    //delete recap file
-                                    if (File.Exists("Mail_Recap.ml"))
-                                    {
-                                        File.Delete("Mail_Recap.ml");
-                                    }
+                                    File.Delete(mConfigurationCustomMailSaveLoad.fileName_ERR_recap);
                                 }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Send log mail to team desable");
                             }
 
                             // the DateTime
                             settings.emailSummary.lastActivated = DateTime.Now;
                             file.configurationEmail = settings;
                             file.saveInfo();
+                            */
                         }
                         else
                         {
@@ -419,35 +586,28 @@ namespace AlertMail
                             List<string> attachements = new List<string>();
                             string dns = emailManagement.getDNS();
 
-                            if (settings.emailSummary.active)
+                            //import file error
+                            if (allFiles_error.Length > 0)
                             {
-                                //import file error
-                                if (allFiles_error.Length > 0)
+                                infoBody = "Il y a " + allFiles_error.Length + " fichier(s) qui sont dans le le répertoire erreur '" + directoryName_ErrorFile + "' :\n";
+
+                                for (int x = 0; x < allFiles_error.Length; x++)
                                 {
-                                    infoBody = "Il y a " + allFiles_error.Length + " fichier(s) qui sont dans le le répertoire erreur '" + directoryName_ErrorFile + "' :\n";
+                                    infoBody += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + emailManagement.getFileSize(allFiles_error[x].Length) + "\n Date de création " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].CreationTime) + " et date de modification " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].LastWriteTime) + ".\n";
 
-                                    for (int x = 0; x < allFiles_error.Length; x++)
+                                    if (!attachements.Contains(allFiles_error[x].FullName))
                                     {
-                                        infoBody += "\tNom du fichier : \"" + allFiles_error[x].Name + "\", à " + emailManagement.getFileSize(allFiles_error[x].Length) + "\n Date de création " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].CreationTime) + " et date de modification " + string.Format("{0:yyyy/MM/dd HH:mm}", allFiles_error[x].LastWriteTime) + ".\n";
-
-                                        if (!attachements.Contains(allFiles_error[x].FullName))
-                                        {
-                                            attachements.Add(allFiles_error[x].FullName);
-                                        }
+                                        attachements.Add(allFiles_error[x].FullName);
                                     }
                                 }
-
-                                if (allFiles_error.Length > 0)
-                                {
-                                    emailManagement.EnvoiMail(settings, "log", "Résumer [" + dns + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE [" + dns + "].", attachements);
-                                }
-
-                                Console.WriteLine("No Mail_Recap.ml File!");
                             }
-                            else
+
+                            if (allFiles_error.Length > 0)
                             {
-                                Console.WriteLine("Send log mail to team desable");
+                                emailManagement.EnvoiMail(settings, "log", "Résumer [" + dns + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE [" + dns + "].", attachements);
                             }
+
+                            Console.WriteLine("No Mail_Recap.ml File!");
 
                             // the DateTime
                             settings.emailSummary.lastActivated = DateTime.Now;
@@ -506,6 +666,10 @@ namespace AlertMail
                         FileInfo csv_file = allFiles_csv[x];
                         DateTime fileDateTime = File.GetCreationTime(csv_file.FullName);
                         TimeSpan ts = today - fileDateTime;
+
+                        Console.WriteLine("Today : " + today);
+                        Console.WriteLine("File DateTime : " + fileDateTime);
+                        Console.WriteLine("Ago : " + ts);
 
                         if (ts.TotalHours >= Convert.ToDouble(settings.emailPendingFiles.hours))
                         {

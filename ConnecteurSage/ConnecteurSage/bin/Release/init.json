@@ -1,1 +1,16 @@
-{"general":{"showWindow":5,"isAppOpen":false,"isACP_ComptaCPT_CompteG":true,"ACP_ComptaCPT_CompteG":857500},"paths":{"EDI_Folder":"C:\\WorkPlace\\Connecteur-Sage-.Net\\Documentation"}}
+{
+  "general": {
+    "showWindow": 5,
+    "isAppOpen": false,
+    "isACP_ComptaCPT_CompteG": true,
+    "ACP_ComptaCPT_CompteG": 757100
+  },
+  "paths": {
+    "EDI_Folder": "C:\\Users\\Anexys\\Documents"
+  },
+  "reprocess": {
+    "activate": true,
+    "hour": 1,
+    "countDown": 6
+  }
+}

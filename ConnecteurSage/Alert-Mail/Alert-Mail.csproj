@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\ConfigurationCustomMailSaveLoad.cs" />
+    <Compile Include="Classes\Custom\CustomMailSuccess.cs" />
+    <Compile Include="Classes\Custom\CustomMailSuccessLines.cs" />
     <Compile Include="EmailManagement.cs" />
     <Compile Include="Classes\ConfigurationEmail.cs" />
     <Compile Include="Classes\Configuration\Connexion.cs" />
@@ -56,7 +59,6 @@
     <Compile Include="Classes\ConfigurationSaveLoad.cs" />
     <Compile Include="Classes\Custom\CustomMailRecap.cs" />
     <Compile Include="Classes\Custom\CustomMailRecapLines.cs" />
-    <Compile Include="Classes\Custom\CustomScanCSV.cs" />
     <Compile Include="Classes\Custom\MailCustom.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Utils.cs" />

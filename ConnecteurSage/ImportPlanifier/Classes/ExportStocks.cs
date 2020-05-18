@@ -6,7 +6,6 @@ using importPlanifier.Utilities;
 using System.Data.Odbc;
 using System.Data;
 using System.IO;
-using ImportPlanifier.Classes;
 using Connexion;
 
 namespace importPlanifier.Classes
@@ -88,7 +87,7 @@ namespace importPlanifier.Classes
         /// </summary>
         /// 
         // Need to finish 
-        public List<CustomMailRecapLines> ExportStock(List<CustomMailRecapLines> recapLinesList_new)
+        public List<Alert_Mail.Classes.Custom.CustomMailRecapLines> ExportStock(List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             if (!Directory.Exists(logDirectoryName_export))
             {
@@ -125,7 +124,7 @@ namespace importPlanifier.Classes
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le chemin pour l'export du fichier stock liste doit être renseigné !");
                     logFileWriter_export.Flush();
                     logFileWriter_export.Close();
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", "Le chemin pour l'export du fichier stock liste doit être renseigné !", "", "", logFileName_export));
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", "Le chemin pour l'export du fichier stock liste doit être renseigné !", "", "", logFileName_export));
                     return recapLinesList_new;
                 }
 
@@ -200,7 +199,7 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 logFileWriter_export.Flush();
                 logFileWriter_export.Close();
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
             }
 
             logFileWriter_export.Flush();
@@ -256,7 +255,7 @@ namespace importPlanifier.Classes
             writer.Flush();
         }
 
-        private List<Stock> GetStockArticle(StreamWriter logFileWriter, List<CustomMailRecapLines> recapLinesList_new)
+        private List<Stock> GetStockArticle(StreamWriter logFileWriter, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -285,7 +284,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 logFileWriter.WriteLine(DateTime.Now + " : GetStockArticle | " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", e.Message, e.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }

@@ -248,6 +248,29 @@ namespace ConnecteurSage
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
+            /*
+            Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
+            Alert_Mail.Classes.Custom.CustomMailRecap customMailRecap = new Alert_Mail.Classes.Custom.CustomMailRecap(
+                "Mail_IMP",
+                "CFCI",
+                "Test from PC",
+                DateTime.Now + "",
+                DateTime.Now + "",
+                new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>() 
+                {
+                    new Alert_Mail.Classes.Custom.CustomMailRecapLines("DOC_Ref 1", "NumC_MD 1", "Error msg", "Error Debug msg", "Error Debug StackTrace", "File Name", "File Path"),
+                    new Alert_Mail.Classes.Custom.CustomMailRecapLines("DOC_Ref 2", "NumC_MD 2", "Error msg", "Error Debug msg", "Error Debug StackTrace", "File Name", "File Path"),
+                    new Alert_Mail.Classes.Custom.CustomMailRecapLines("DOC_Ref 3", "NumC_MD 3", "Error msg", "Error Debug msg", "Error Debug StackTrace", "File Name", "File Path")
+                },
+                new List<string>()
+                {
+                    "File Name 1", "File name 2", "File name 3"
+                }
+            );
+
+            configurationCustomMailSaveLoad.customMailRecap = customMailRecap;
+            configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_Imp);
+            */
         }
 
         private void label1_Click(object sender, EventArgs e)

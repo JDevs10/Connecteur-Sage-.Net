@@ -28,8 +28,9 @@ namespace Init
 
             if (settings.isSettings())
             {
+                settings.Load();
                 // Update ini file
-                General mGeneral = this.mConfigurationGeneral.general;
+                General mGeneral = settings.configurationGeneral.general;
                 General newGeneral = new General(mGeneral.showWindow, show, mGeneral.isACP_ComptaCPT_CompteG, mGeneral.ACP_ComptaCPT_CompteG);
 
                 writer.WriteLine("");
@@ -37,12 +38,27 @@ namespace Init
                 writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() | isAppOpen : " + newGeneral.isAppOpen);
                 writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() | ACP_ComptaCPT_CompteG : " + newGeneral.ACP_ComptaCPT_CompteG);
 
-                this.mConfigurationGeneral.general = newGeneral;
-                settings.configurationGeneral = this.mConfigurationGeneral;
+                settings.configurationGeneral.general = newGeneral;
                 settings.saveInfo();
             }
             writer.WriteLine("");
             writer.Flush();
+        }
+
+        public void setDisplay(Boolean show)
+        {
+            SaveLoadInit settings = new SaveLoadInit();
+
+            if (settings.isSettings())
+            {
+                settings.Load();
+                // Update ini file
+                General mGeneral = settings.configurationGeneral.general;
+                General newGeneral = new General(mGeneral.showWindow, show, mGeneral.isACP_ComptaCPT_CompteG, mGeneral.ACP_ComptaCPT_CompteG);
+                
+                settings.configurationGeneral.general = newGeneral;
+                settings.saveInfo();
+            }
         }
 
 
@@ -54,11 +70,12 @@ namespace Init
             {
                 try
                 {
-                    General mGeneral = this.mConfigurationGeneral.general;
+                    settings.Load();
+                    General mGeneral = settings.configurationGeneral.general;
 
                     if (mGeneral.isAppOpen)
                     {
-                        Console.WriteLine("Le Planificateur est déja en cour");
+                        Console.WriteLine("Le Planificateur est déja en cours");
                         for (int z = 5; z > 0; z--)
                         {
                             Console.WriteLine(DateTime.Now + " Fermeture dans " + z + " seconds....");
@@ -69,9 +86,10 @@ namespace Init
                     }
                     else
                     {
+                        Console.WriteLine("Le Planificateur en marche...");
+
                         General newGeneral = new General(mGeneral.showWindow, true, mGeneral.isACP_ComptaCPT_CompteG, mGeneral.ACP_ComptaCPT_CompteG);
-                        this.mConfigurationGeneral.general = newGeneral;
-                        settings.configurationGeneral = this.mConfigurationGeneral;
+                        settings.configurationGeneral.general = newGeneral;
                         settings.saveInfo();
                         return mGeneral.showWindow;
                     }
@@ -84,6 +102,7 @@ namespace Init
             }
             else
             {
+                Console.WriteLine("Error[1]");
                 return 99;
             }
         }

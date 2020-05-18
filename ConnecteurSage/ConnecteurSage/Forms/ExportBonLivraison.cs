@@ -88,23 +88,34 @@ namespace ConnecteurSage.Forms
             }
         }
 
-        private List<DocumentVenteLine> getDocumentLine(string codeDocument)
+        private List<DocumentVenteLine> getDocumentLine(StreamWriter logFileWriter, string codeDocument)
         {
             try
             {
+                logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : called.");
+                logFileWriter.Flush();
+
                 //DocumentVente Facture = new DocumentVente();
-                List<DocumentVenteLine> lignesDocumentVente = new List<DocumentVenteLine>();
-                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
+                List <DocumentVenteLine> lignesDocumentVente = new List<DocumentVenteLine>();
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                 {
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(false, codeDocument), connection);
+                    logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL => " + QueryHelper.getListDocumentVenteLine(true, codeDocument));
+                    logFileWriter.Flush(); 
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(true, codeDocument), connection);
                     {
+                        logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 1");
+                        int lines = 1;
                         using (IDataReader reader = command.ExecuteReader())
                         {
+                            logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 2");
                             while (reader.Read())
                             {
+                                logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : Line troué : " + lines);
+                                logFileWriter.Flush();
+
                                 DocumentVenteLine ligne = new DocumentVenteLine(reader[0].ToString().Replace("00:00:00", ""), reader[1].ToString().Replace("00:00:00", ""),
                                     reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(),
                                     reader[8].ToString(), reader[9].ToString(),
@@ -112,9 +123,7 @@ namespace ConnecteurSage.Forms
                                     reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString(),
                                     reader[16].ToString(), reader[17].ToString(), reader[18].ToString(), reader[19].ToString(),
                                     reader[20].ToString(), reader[21].ToString(), reader[22].ToString(), reader[23].ToString(),
-                                    reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString(),
-                                    reader[28].ToString(), reader[29].ToString(), reader[30].ToString(), reader[31].ToString()
-                            
+                                    reader[24].ToString(), reader[25].ToString()
                                     );
                                 lignesDocumentVente.Add(ligne);
                             }
@@ -131,6 +140,11 @@ namespace ConnecteurSage.Forms
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 MessageBox.Show("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : ############################# Erreur #############################");
+                logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : Message : " + "" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : Stacktrace : " + e.StackTrace);
+                logFileWriter.Flush();
                 return null;
             }
         }
@@ -641,6 +655,7 @@ namespace ConnecteurSage.Forms
                     return;
                 }
 
+                logFileWriter.Flush();
 
                 var fileName = string.Format("BonLivraison{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EdiCode + ".csv", DateTime.Now);
 
@@ -652,25 +667,22 @@ namespace ConnecteurSage.Forms
                     //writer.WriteLine("");
                     //writer.WriteLine("");
 
+                    logFileWriter.Flush();
                     for (int i = 0; i < BonLivrasonAExporter.Count; i++)
                     {
                         //string EANClient = GetEANClient(BonLivrasonAExporter[i].CustomerId);
 
                         //string[] tab = new string[] { "", "", "" };
 
-                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : " + i + "/" + BonLivrasonAExporter.Count + " a exporter.");
-
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : " + (i+1) + "/" + BonLivrasonAExporter.Count + " a exporter.");
+                        logFileWriter.Flush();
                         //if (BonLivrasonAExporter[i].OriginDocumentType == "8")
                         //{ // Return la commande d'origin                            
                         //    tab = GetCommandeFacture(BonLivrasonAExporter[i].Id).Split(';');
                         //}
 
-
-
-
                         writer.WriteLine("DESHDR;v01.0;;" + BonLivrasonAExporter[i].DO_Piece.Replace("BL", "") + ";" + customer.CT_EdiCode + ";9;;9;" + customer.CT_EdiCode + ";9;" + customer.CT_EdiCode + ";9;;9;;9;;9;;" + ConvertDate(BonLivrasonAExporter[i].DO_dateLivr) + ";;;;;" + BonLivrasonAExporter[i].LI_ADRESSE + ";;;;;;;;;;;;;;9;");
                         writer.WriteLine("");
-
                         writer.WriteLine("DESHD2;;;;" + customer.CT_Adresse + ";;" + customer.CT_CodePostal + ";" + customer.CT_Ville + ";" + customer.CT_Pays + ";" + customer.CT_Intitule + ";" + customer.CT_Telephone + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                         writer.WriteLine("");
 
@@ -678,29 +690,27 @@ namespace ConnecteurSage.Forms
                         //{ // Return mode de transport                           
                         //    BonLivrasonAExporter[i].IntrastatTransportMode = GetModeTransport(BonLivrasonAExporter[i].IntrastatTransportMode);
                         //}
-
                         writer.WriteLine("DESTRP;;;;;;;;;;");
                         writer.WriteLine("");
-
                         writer.WriteLine("DESLOG;;;;" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                         writer.WriteLine("");
+                        writer.Flush();
 
-
-                        BonLivrasonAExporter[i].lines = getDocumentLine(BonLivrasonAExporter[i].DO_Piece);
+                        BonLivrasonAExporter[i].lines = getDocumentLine(logFileWriter, BonLivrasonAExporter[i].DO_Piece);
 
                         for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
                         {
-
-                            writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].FNT_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
+                            writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].DL_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].DL_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
+                            writer.Flush();
                             writer.WriteLine("");
-
-
                         }
 
 
                         writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
+                        writer.Flush();
                         writer.WriteLine("");
                         writer.WriteLine("");
+                        writer.Flush();
                     }
 
 
@@ -711,6 +721,7 @@ namespace ConnecteurSage.Forms
                                              MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : Bon de Livraison Exporté");
+                logFileWriter.Flush();
                 logFileWriter.Close();
 
             }
@@ -721,6 +732,7 @@ namespace ConnecteurSage.Forms
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                 logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter.Flush();
                 logFileWriter.Close();
             }
         }

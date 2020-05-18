@@ -49,7 +49,7 @@ namespace Config_Export
             try
             {
                 var myfile = File.Create(pathModule + @"\" + fileName);
-                string json = JsonConvert.SerializeObject(this.configurationExport);
+                string json = JsonConvert.SerializeObject(this.configurationExport, Newtonsoft.Json.Formatting.Indented);
 
                 using (StreamWriter writer = new StreamWriter(myfile))
                 {

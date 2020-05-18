@@ -55,7 +55,7 @@ namespace Connexion
 
                 this.configurationConnexion.ODBC.PWD = Utilities.Utils.Encrypt(this.configurationConnexion.ODBC.PWD);
                 this.configurationConnexion.SQL.PWD = Utilities.Utils.Encrypt(this.configurationConnexion.SQL.PWD);
-                string json = JsonConvert.SerializeObject(this.configurationConnexion);
+                string json = JsonConvert.SerializeObject(this.configurationConnexion, Newtonsoft.Json.Formatting.Indented);
 
                 using (StreamWriter writer = new StreamWriter(myfile))
                 {

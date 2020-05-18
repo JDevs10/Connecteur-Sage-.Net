@@ -686,6 +686,8 @@ namespace Fichier_De_Nettoyage
                         }
 
                     }
+
+                    Console.WriteLine("Out of cleaning...");
                 }
                 else
                 {

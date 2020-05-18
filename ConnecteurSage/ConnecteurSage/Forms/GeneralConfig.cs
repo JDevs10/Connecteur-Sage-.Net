@@ -60,6 +60,23 @@ namespace ConnecteurSage.Forms
                 }
 
                 textBox2.Text = configurationGeneral.paths.EDI_Folder;
+
+                ////////////////////////////////////////////////////////////////////////////////////
+                /// Reprocess
+                /// 
+                if (configurationGeneral.reprocess.activate)
+                {
+                    checkBox_reprocess_activate.Text = "Activer";
+                    checkBox_reprocess_activate.Checked = true;
+                }
+                else
+                {
+                    checkBox_reprocess_activate.Text = "Désactiver";
+                    checkBox_reprocess_activate.Checked = false;
+                }
+
+                numericUpDown_hour.Value = configurationGeneral.reprocess.hour;
+                numericUpDown1_reprocess_cd.Value = configurationGeneral.reprocess.countDown;
             }
         }
 
@@ -106,8 +123,15 @@ namespace ConnecteurSage.Forms
                 return;
             }
 
+            if(checkBox_reprocess_activate.Checked == true && Convert.ToInt32(numericUpDown_hour.Value) == 0)
+            {
+                MessageBox.Show("Heure de retraitement n'est pas configuré !", "Retraitement", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             configurationGeneral.general = new Init.Classes.Configuration.General(show, false, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(textBox1.Text.Trim()));
             configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
+            configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, Convert.ToInt32(numericUpDown_hour.Value), Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
             settings.configurationGeneral = configurationGeneral;
             settings.saveInfo();
 
@@ -139,6 +163,52 @@ namespace ConnecteurSage.Forms
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void checkBox_reprocess_activate_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_reprocess_activate.Checked)
+            {
+                numericUpDown_hour.Enabled = true;
+                label7_reprocess_hour.Enabled = true;
+                numericUpDown1_reprocess_cd.Enabled = true;
+                label7_reprocess.Enabled = true;
+            }
+            else
+            {
+                numericUpDown_hour.Enabled = false;
+                label7_reprocess_hour.Enabled = false;
+                numericUpDown1_reprocess_cd.Enabled = false;
+                label7_reprocess.Enabled = false;
+            }
+        }
+
+        private void numericUpDown1_reprocess_cd_ValueChanged(object sender, EventArgs e)
+        {
+            int count = Convert.ToInt32(numericUpDown1_reprocess_cd.Value);
+            if (count == 0)
+            {
+                label7_reprocess.Text = "Cette fonctionnalité est désactiver!\n" +
+                                        "Aucun fichier ne sera supprimé pendant / après le retraitement.";
+            }
+            else
+            {
+                label7_reprocess.Text = "Si le fichier a été retraité " + count + " fois, \n" +
+                                        "il sera supprimé de la file d'attente.";
+            }
+        }
+
+        private void numericUpDown_hour_ValueChanged(object sender, EventArgs e)
+        {
+            int count = Convert.ToInt32(numericUpDown_hour.Value);
+            if (count == 0)
+            {
+                label7_reprocess_hour.Text = "Ce paramètre est obligatoire\nSi activé !!!.";
+            }
+            else
+            {
+                label7_reprocess_hour.Text = "Retraitement tous les " + count + " heure(s).";
             }
         }
     }

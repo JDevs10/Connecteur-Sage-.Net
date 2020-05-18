@@ -47,6 +47,7 @@
     <Compile Include="Classes\ConfigurationGeneral.cs" />
     <Compile Include="Classes\Configuration\General.cs" />
     <Compile Include="Classes\Configuration\Paths.cs" />
+    <Compile Include="Classes\Configuration\Reprocess.cs" />
     <Compile Include="Classes\SaveLoadInit.cs" />
     <Compile Include="Init.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

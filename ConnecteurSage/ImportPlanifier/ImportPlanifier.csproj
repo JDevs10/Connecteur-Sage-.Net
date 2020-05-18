@@ -61,10 +61,7 @@
     <Compile Include="Classes\AdresseLivraison.cs" />
     <Compile Include="Classes\Article.cs" />
     <Compile Include="Classes\Client.cs" />
-    <Compile Include="Classes\ConfigurationDNS.cs" />
-    <Compile Include="Classes\ConfSendMail.cs" />
     <Compile Include="Classes\Customer.cs" />
-    <Compile Include="Classes\CustomMailRecap.cs" />
     <Compile Include="Classes\Desadv.cs" />
     <Compile Include="Classes\DesadvLine.cs" />
     <Compile Include="Classes\DocumentVente.cs" />
@@ -97,6 +94,10 @@
     <Content Include="scheduled-tasks-icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Alert-Mail\Alert-Mail.csproj">
+      <Project>{b5e11fc4-f58c-40b9-99cc-b831ddd17f4a}</Project>
+      <Name>Alert-Mail</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Config-Export\Config-Export.csproj">
       <Project>{938d2d68-fbac-4ec4-a96b-bd754f0f59a2}</Project>
       <Name>Config-Export</Name>

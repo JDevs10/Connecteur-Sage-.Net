@@ -66,6 +66,11 @@ namespace ImportPlanifier
             ///
             Console.WriteLine("Cleanup complete !");
 
+            Init.Init init = new Init.Init();
+            init.setDisplay(false);
+
+            Console.WriteLine("General Config reseted!");
+
             //allow main to run off
             exitSystem = true;
 
@@ -108,6 +113,7 @@ namespace ImportPlanifier
             }
             else
             {
+                Console.ReadLine();
                 return;
             }
             ///////////////////////////////////////////

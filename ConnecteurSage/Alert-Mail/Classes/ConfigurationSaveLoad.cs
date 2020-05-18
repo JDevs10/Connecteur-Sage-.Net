@@ -49,7 +49,7 @@ namespace Alert_Mail.Classes
             try
             {
                 var myfile = File.Create(pathModule + @"\" + fileName);
-                string json = JsonConvert.SerializeObject(this.configurationEmail);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(this.configurationEmail, Newtonsoft.Json.Formatting.Indented);
 
                 using (StreamWriter writer = new StreamWriter(myfile))
                 {
@@ -66,18 +66,10 @@ namespace Alert_Mail.Classes
         }
 
 
-        public string FormatJson()
+        public string FormatJson(Object obj)
         {
-            if (isSettings())
-            {
-                Load();
-                var f = Newtonsoft.Json.JsonConvert.SerializeObject(this.configurationEmail, Newtonsoft.Json.Formatting.Indented);
-                return f;
-            }
-            else
-            {
-                return "No file \""+fileName+"\" found!";
-            }
+            var f = Newtonsoft.Json.JsonConvert.SerializeObject(obj, Newtonsoft.Json.Formatting.Indented);
+            return f;
         }
 
 

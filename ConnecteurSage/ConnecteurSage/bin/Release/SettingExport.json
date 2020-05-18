@@ -1,1 +1,22 @@
-{"Commande":{"Activate":true,"Format":"Véolog","Status":"1"},"DSADV":{"Activate":false,"Format":"","Status":""},"Facture":{"Activate":false,"Format":"","Status":""},"Stock":{"Activate":false,"Format":"","Status":""}}
+{
+  "Commande": {
+    "Activate": true,
+    "Format": "Véolog",
+    "Status": "1"
+  },
+  "DSADV": {
+    "Activate": false,
+    "Format": "",
+    "Status": ""
+  },
+  "Facture": {
+    "Activate": false,
+    "Format": "",
+    "Status": ""
+  },
+  "Stock": {
+    "Activate": false,
+    "Format": "",
+    "Status": ""
+  }
+}

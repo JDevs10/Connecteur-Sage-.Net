@@ -7,7 +7,6 @@ using System.Data.Odbc;
 using System.Data;
 using System.IO;
 using System.Globalization;
-using ImportPlanifier.Classes;
 using Connexion;
 
 namespace importPlanifier.Classes
@@ -84,7 +83,7 @@ namespace importPlanifier.Classes
         /// <summary>
         /// Génération du fichier d'import, lancement de l'application et import des commandes
         /// </summary>
-        public List<CustomMailRecapLines> ExportCommande(List<CustomMailRecapLines> recapLinesList_new)
+        public List<Alert_Mail.Classes.Custom.CustomMailRecapLines> ExportCommande(List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             string path = "";
             Init.Classes.SaveLoadInit setting = new Init.Classes.SaveLoadInit();
@@ -160,7 +159,7 @@ namespace importPlanifier.Classes
                     logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                     logFileWriter.Flush();
                     logFileWriter.Close();
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                     return recapLinesList_new;
                 }
             }
@@ -287,11 +286,11 @@ namespace importPlanifier.Classes
                                         Directory.CreateDirectory(exportPath);
                                     }
 
-                                    ConfigurationDNS dns = new ConfigurationDNS();
-                                    dns.LoadSQL();
-                                        
+                                    Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+                                    connexionSaveLoad.Load();
+
                                     veolog_format = true;
-                                    fileName = string.Format("orders_"+dns.Prefix+"_{0:yyyyMMdd}_"+CommandeAExporter.NumCommande+".csv", DateTime.Now);
+                                    fileName = string.Format("orders_"+ connexionSaveLoad.configurationConnexion.SQL.PREFIX +"_{0:yyyyMMdd}_"+CommandeAExporter.NumCommande+".csv", DateTime.Now);
                                 }
                                 else
                                 {
@@ -384,10 +383,12 @@ namespace importPlanifier.Classes
                                             declarerpourrien = CommandeAExporter.Lines[i].Quantite.Split(',');
                                             qteTotal = qteTotal + Convert.ToInt16(declarerpourrien[0]);
 
-                                            //add zeros to the article reference only for ALDI 
-                                            ConfigurationDNS dns = new ConfigurationDNS();
-                                            dns.LoadSQL();
-                                            if (dns.Prefix.Contains("CFCI") || dns.Prefix.Contains("TABLEWEAR") && CommandeAExporter.NomClient.Contains("ALDI"))
+                                            //add zeros to the article reference only for ALDI
+                                            Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+                                            connexionSaveLoad.Load();
+                                            string dns = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
+
+                                            if (dns.Contains("CFCI") || dns.Contains("TABLEWEAR") && CommandeAExporter.NomClient.Contains("ALDI"))
                                             {
                                                 int maxChar = 13;
                                                 int refChar = CommandeAExporter.Lines[i].codeArticle.Length;
@@ -490,13 +491,13 @@ namespace importPlanifier.Classes
                                         {
                                             logFileWriter.WriteLine("");
                                             logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de mettre la date de livraison veolog à jour dans le champs \"Veolog\".", ex.StackTrace, "", logFileName_export));
+                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de mettre la date de livraison veolog à jour dans le champs \"Veolog\".", ex.StackTrace, "", logFileName_export));
                                         }
                                         else
                                         {
                                             logFileWriter.WriteLine("");
                                             logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : " + ex.Message);
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                                         }
                                         
                                         return recapLinesList_new;
@@ -556,13 +557,13 @@ namespace importPlanifier.Classes
                                         {
                                             logFileWriter.WriteLine("");
                                             logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".");
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".", ex.StackTrace, "", logFileName_export));
+                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + CommandeAExporter.NumCommande + "\".", ex.StackTrace, "", logFileName_export));
                                         }
                                         else
                                         {
                                             logFileWriter.WriteLine("");
                                             logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : " + ex.Message);
-                                            recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                                         }
 
                                         //recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
@@ -585,7 +586,7 @@ namespace importPlanifier.Classes
                                 logFileWriter.Flush();
                                 logFileWriter.Close();
                                 Console.WriteLine(DateTime.Now + " | ExportCommande() : ERREUR :: " + ex.Message);
-                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                             }
                         }
                         else
@@ -604,7 +605,7 @@ namespace importPlanifier.Classes
                         logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() |  Scan annulée");
                         logFileWriter.Flush();
                         logFileWriter.Close();
-                        recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                         return recapLinesList_new;
                     }
                 }
@@ -717,7 +718,7 @@ namespace importPlanifier.Classes
             }
         }
 
-        private List<OrderLine> getLigneCommande(string code, List<CustomMailRecapLines> recapLinesList_new)
+        private List<OrderLine> getLigneCommande(string code, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -746,7 +747,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                 return null;
             }
         }

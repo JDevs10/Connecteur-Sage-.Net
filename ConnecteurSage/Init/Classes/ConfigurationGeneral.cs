@@ -11,12 +11,14 @@ namespace Init.Classes
     {
         public General general;
         public Paths paths;
+        public Reprocess reprocess;
 
         public ConfigurationGeneral() { }
-        public ConfigurationGeneral(General General_, Paths paths_)
+        public ConfigurationGeneral(General General_, Paths paths_, Reprocess reprocess_)
         {
             this.general = General_;
             this.paths = paths_;
+            this.reprocess = reprocess_;
         }
     }
 }

@@ -53,12 +53,12 @@ namespace Init.Classes
                 this.configurationGeneral = deserializedProduct;
                 file.Close();
 
-                writer.WriteLine(DateTime.Now + " : Init.dll => SaveLoadInit => Load() | Loading...");
+                writer.WriteLine(DateTime.Now + " : Reprocess.dll => SaveLoadInit => Load() | Loading...");
                 writer.WriteLine(FormatJson(this.configurationGeneral));
             }
             else
             {
-                writer.WriteLine(DateTime.Now + " : Init.dll => SaveLoadInit => Load() | No file \"" + fileName + "\" found!");
+                writer.WriteLine(DateTime.Now + " : Reprocess.dll => SaveLoadInit => Load() | No file \"" + fileName + "\" found!");
             }
             writer.WriteLine("");
             writer.Flush();
@@ -69,7 +69,7 @@ namespace Init.Classes
             try
             {
                 var myfile = File.Create(pathModule + @"\" + fileName);
-                string json = JsonConvert.SerializeObject(this.configurationGeneral);
+                string json = JsonConvert.SerializeObject(this.configurationGeneral, Newtonsoft.Json.Formatting.Indented);
 
                 using (StreamWriter writer = new StreamWriter(myfile))
                 {
@@ -93,7 +93,7 @@ namespace Init.Classes
                 var myfile = File.Create(pathModule + @"\" + fileName);
                 string json = JsonConvert.SerializeObject(this.configurationGeneral);
 
-                writer_.WriteLine(DateTime.Now + " : Init.dll => SaveLoadInit => saveInfo() | Saving....");
+                writer_.WriteLine(DateTime.Now + " : Reprocess.dll => SaveLoadInit => saveInfo() | Saving....");
                 writer_.WriteLine(FormatJson(this.configurationGeneral));
 
                 using (StreamWriter writer = new StreamWriter(myfile))
@@ -107,9 +107,9 @@ namespace Init.Classes
             catch (Exception ex)
             {
                 Console.WriteLine("" + ex.Message);
-                writer_.WriteLine(DateTime.Now + " : Init.dll => SaveLoadInit => saveInfo() | ************** Exception **************");
-                writer_.WriteLine(DateTime.Now + " : Init.dll => SaveLoadInit => saveInfo() | Message : " + ex.Message);
-                writer_.WriteLine(DateTime.Now + " : Init.dll => SaveLoadInit => saveInfo() | StackTrace : " + ex.StackTrace);
+                writer_.WriteLine(DateTime.Now + " : Reprocess.dll => SaveLoadInit => saveInfo() | ************** Exception **************");
+                writer_.WriteLine(DateTime.Now + " : Reprocess.dll => SaveLoadInit => saveInfo() | Message : " + ex.Message);
+                writer_.WriteLine(DateTime.Now + " : Reprocess.dll => SaveLoadInit => saveInfo() | StackTrace : " + ex.StackTrace);
             }
             writer_.WriteLine("");
             writer_.Flush();

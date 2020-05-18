@@ -17,15 +17,11 @@ namespace importPlanifier.Utilities
             string result = "";
             string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-            if (File.Exists(pathModule + @"\SettingSQL.xml"))
+            Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+            if (connexionSaveLoad.isSettings())
             {
-                XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationDNS));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingSQL.xml");
-                ConfigurationDNS setting = new ConfigurationDNS();
-                setting = (ConfigurationDNS)reader.Deserialize(file);
-
-                result = setting.Prefix + ".dbo.";
-                file.Close();
+                connexionSaveLoad.Load();
+                result = connexionSaveLoad.configurationConnexion.SQL.PREFIX + ".dbo.";
             }
 
             return result;
@@ -37,11 +33,11 @@ namespace importPlanifier.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale FROM " + getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule FROM " + getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             else
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             
         }

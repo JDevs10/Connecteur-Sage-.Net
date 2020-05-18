@@ -7,7 +7,6 @@ using System.Data;
 using importPlanifier.Utilities;
 using System.IO;
 using System.Globalization;
-using ImportPlanifier.Classes;
 using Connexion;
 
 namespace importPlanifier.Classes
@@ -97,7 +96,7 @@ namespace importPlanifier.Classes
             }
         }
 
-        private List<DocumentVenteLine> getDocumentLine(string codeDocument, StreamWriter writer, List<CustomMailRecapLines> recapLinesList_new)
+        private List<DocumentVenteLine> getDocumentLine(string codeDocument, StreamWriter writer, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | getDocumentLine() : codeDocument => "+ codeDocument);
@@ -142,12 +141,12 @@ namespace importPlanifier.Classes
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 writer.WriteLine(DateTime.Now + " | getDocumentLine() : " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 writer.WriteLine("");
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
 
-        private Customer GetClient(string do_tiers, List<CustomMailRecapLines> recapLinesList_new)
+        private Customer GetClient(string do_tiers, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -167,7 +166,7 @@ namespace importPlanifier.Classes
                             }
                             else
                             {
-                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Aucun Client trouvé", "", "", logFileName_export));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Aucun Client trouvé", "", "", logFileName_export));
                                 return null;
                             }
                         }
@@ -181,7 +180,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
@@ -234,7 +233,7 @@ namespace importPlanifier.Classes
             return tvaList;
         }
 
-        private void UpdateDocumentVente(string do_piece, List<CustomMailRecapLines> recapLinesList_new)
+        private void UpdateDocumentVente(string do_piece, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -254,7 +253,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(do_piece, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(do_piece, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
             }
         }
 
@@ -507,7 +506,7 @@ namespace importPlanifier.Classes
         //    }
         //}
 
-        private Societe getInfoSociete(List<CustomMailRecapLines> recapLinesList_new)
+        private Societe getInfoSociete(List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -525,7 +524,7 @@ namespace importPlanifier.Classes
                             }
                         }
                     }
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Aucun Société trouvé.", "", "", logFileName_export));
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Aucun Société trouvé.", "", "", logFileName_export));
                     return null;
                 }
 
@@ -535,12 +534,12 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                 return null;
             }
         }
 
-        private string getGNLClientLivraison(string intitule, List<CustomMailRecapLines> recapLinesList_new)
+        private string getGNLClientLivraison(string intitule, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -558,7 +557,7 @@ namespace importPlanifier.Classes
                             }
                         }
                     }
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Client n'est pas trouvé!", "", "", logFileName_export));
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Client n'est pas trouvé!", "", "", logFileName_export));
                     return null;
 
                 }
@@ -569,12 +568,12 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                 return null;
             }
         }
 
-        public List<CustomMailRecapLines> ExportFacture(List<CustomMailRecapLines> recapLinesList_new)
+        public List<Alert_Mail.Classes.Custom.CustomMailRecapLines> ExportFacture(List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -958,7 +957,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!");
                                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \""+Directory.GetCurrentDirectory() +@"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                                 logFileWriter_export.Flush();
-                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
                             }
                             
 
@@ -978,7 +977,7 @@ namespace importPlanifier.Classes
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportCommande() : Export annullé");
                     logFileWriter_export.Flush();
-                    recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                 }
             }
             catch (Exception ex)
@@ -1043,7 +1042,7 @@ namespace importPlanifier.Classes
             writer.Flush();
         }
 
-        private string GetModeReglement(string do_piece, List<CustomMailRecapLines> recapLinesList_new)
+        private string GetModeReglement(string do_piece, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
@@ -1064,7 +1063,7 @@ namespace importPlanifier.Classes
                             }
                             else
                             {
-                                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Aucun mode de réglement trouvé!", "", "", logFileName_export));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Aucun mode de réglement trouvé!", "", "", logFileName_export));
                                 return null;
                             }
                         }
@@ -1077,7 +1076,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
