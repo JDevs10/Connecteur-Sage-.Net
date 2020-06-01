@@ -8,9 +8,16 @@
   "paths": {
     "EDI_Folder": "C:\\Users\\Anexys\\Documents"
   },
+  "priceType": {
+    "activate": false,
+    "cmdEDIPrice": false,
+    "productPrice": false,
+    "categoryPrice": false,
+    "clientPrice": false
+  },
   "reprocess": {
     "activate": true,
-    "hour": 1,
-    "countDown": 6
+    "hour": 1.5,
+    "countDown": 7
   }
 }

@@ -1,0 +1,43 @@
+{
+  "Doc_Achat": {
+    "Commande": {
+      "Activate": "true",
+      "Format": "Véolog",
+      "Status": "0"
+    },
+    "DSADV": {
+      "Activate": "true",
+      "Format": "Véolog",
+      "Status": "2"
+    },
+    "Facture": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    }
+  },
+  "Doc_Stock": {
+    "Stock": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    }
+  },
+  "Doc_Ventes": {
+    "Commande": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    },
+    "DSADV": {
+      "Activate": "true",
+      "Format": "",
+      "Status": "2"
+    },
+    "Facture": {
+      "Activate": " false",
+      "Format": "",
+      "Status": ""
+    }
+  }
+}

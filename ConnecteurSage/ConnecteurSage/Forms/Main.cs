@@ -658,5 +658,21 @@ namespace ConnecteurSage
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void button_config_import_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Forms.ConfigImport form = new Forms.ConfigImport())
+                {
+                    form.ShowDialog();
+                }
+            }
+            // Récupération d'une possible SDKException
+            catch (SDKException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

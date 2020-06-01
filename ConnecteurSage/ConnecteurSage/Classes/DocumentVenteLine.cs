@@ -20,6 +20,8 @@ namespace ConnecteurSage.Classes
         public string DL_PoidsBrut { set; get; }
         public string DL_Remise01REM_Valeur { set; get; }
         public string DL_Remise01REM_Type { set; get; }
+        public string DL_Remise02REM_Valeur { set; get; }
+        public string DL_Remise02REM_Type { set; get; }
         public string DL_Remise03REM_Valeur { set; get; }
         public string DL_Remise03REM_Type { set; get; }
 
@@ -72,6 +74,8 @@ namespace ConnecteurSage.Classes
             string DL_PoidsBrut,
             string DL_Remise01REM_Valeur,
             string DL_Remise01REM_Type,
+            string DL_Remise02REM_Valeur,
+            string DL_Remise02REM_Type,
             string DL_Remise03REM_Valeur,
             string DL_Remise03REM_Type,
             string DL_PrixUnitaire,
@@ -99,6 +103,8 @@ namespace ConnecteurSage.Classes
             this.DL_PoidsBrut = DL_PoidsBrut;
             this.DL_Remise01REM_Valeur = DL_Remise01REM_Valeur;
             this.DL_Remise01REM_Type = DL_Remise01REM_Type;
+            this.DL_Remise02REM_Valeur = DL_Remise02REM_Valeur;
+            this.DL_Remise02REM_Type = DL_Remise02REM_Type;
             this.DL_Remise03REM_Valeur = DL_Remise03REM_Valeur;
             this.DL_Remise03REM_Type = DL_Remise03REM_Type;
             this.DL_PrixUnitaire = DL_PrixUnitaire;
@@ -112,6 +118,15 @@ namespace ConnecteurSage.Classes
             this.DL_MontantTTC = DL_MontantTTC;
             this.DL_NoColis = DL_NoColis;
             this.AR_CODEBARRE = AR_CODEBARRE;
+
+            // Calculate the Net Unite Price
+            double total_remise = Convert.ToDouble(this.DL_Remise01REM_Valeur) + Convert.ToDouble(this.DL_Remise02REM_Valeur) + Convert.ToDouble(this.DL_Remise03REM_Valeur);
+            double total_remise_Pourcent = total_remise / 100;
+            double PV_Net = Convert.ToDouble(this.DL_PrixUnitaire) * total_remise_Pourcent;     //PV_Net == Prix de Vente Net
+            this.DL_PrixUNet = (Convert.ToDouble(this.DL_PrixUnitaire) - PV_Net).ToString();    //Prix Unitaire Net
+
+            // Calculate DL_MontantTaxes
+            this.DL_MontantTaxes = (Convert.ToDouble(this.DL_Taxe1) + Convert.ToDouble(this.DL_Taxe2) + Convert.ToDouble(this.DL_Taxe3)).ToString();
         }
     }
 }

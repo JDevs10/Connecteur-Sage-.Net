@@ -113,7 +113,6 @@ namespace ImportPlanifier
             }
             else
             {
-                Console.ReadLine();
                 return;
             }
             ///////////////////////////////////////////

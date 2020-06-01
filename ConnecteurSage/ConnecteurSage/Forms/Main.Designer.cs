@@ -53,7 +53,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.button8 = new System.Windows.Forms.Button();
@@ -63,7 +62,6 @@
             this.button5 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button4 = new System.Windows.Forms.Button();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -71,7 +69,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.button11 = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.label_backup_exportLog = new System.Windows.Forms.Label();
@@ -86,30 +83,34 @@
             this.label_backup_importLog = new System.Windows.Forms.Label();
             this.label_backup_activation = new System.Windows.Forms.Label();
             this.label_backup_generalLog = new System.Windows.Forms.Label();
+            this.button_config_import = new System.Windows.Forms.Button();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.SuspendLayout();
             // 
             // Fermer
             // 
-            this.Fermer.Location = new System.Drawing.Point(464, 403);
+            this.Fermer.Location = new System.Drawing.Point(543, 399);
             this.Fermer.Name = "Fermer";
             this.Fermer.Size = new System.Drawing.Size(75, 23);
             this.Fermer.TabIndex = 1;
@@ -132,7 +133,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 23);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(523, 233);
+            this.tabPage3.Size = new System.Drawing.Size(613, 233);
             this.tabPage3.TabIndex = 5;
             this.tabPage3.Text = "À propos";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -155,7 +156,7 @@
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 42.85714F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(517, 227);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(607, 227);
             this.tableLayoutPanel.TabIndex = 2;
             // 
             // labelProductName
@@ -165,7 +166,7 @@
             this.labelProductName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelProductName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelProductName.Name = "labelProductName";
-            this.labelProductName.Size = new System.Drawing.Size(508, 17);
+            this.labelProductName.Size = new System.Drawing.Size(598, 17);
             this.labelProductName.TabIndex = 19;
             this.labelProductName.Text = "Connecteur Sage";
             this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -177,7 +178,7 @@
             this.labelVersion.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelVersion.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(508, 17);
+            this.labelVersion.Size = new System.Drawing.Size(598, 17);
             this.labelVersion.TabIndex = 0;
             this.labelVersion.Text = "Version : 0.5.5_CUSTOM";
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -189,7 +190,7 @@
             this.labelCopyright.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelCopyright.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCopyright.Name = "labelCopyright";
-            this.labelCopyright.Size = new System.Drawing.Size(508, 17);
+            this.labelCopyright.Size = new System.Drawing.Size(598, 17);
             this.labelCopyright.TabIndex = 21;
             this.labelCopyright.Text = "Copyright © xxxx - xxxx";
             this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -201,7 +202,7 @@
             this.labelCompanyName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelCompanyName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCompanyName.Name = "labelCompanyName";
-            this.labelCompanyName.Size = new System.Drawing.Size(508, 17);
+            this.labelCompanyName.Size = new System.Drawing.Size(598, 17);
             this.labelCompanyName.TabIndex = 22;
             this.labelCompanyName.Text = "ANEXYS";
             this.labelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -215,7 +216,7 @@
             this.textBoxDescription.Name = "textBoxDescription";
             this.textBoxDescription.ReadOnly = true;
             this.textBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxDescription.Size = new System.Drawing.Size(508, 93);
+            this.textBoxDescription.Size = new System.Drawing.Size(598, 93);
             this.textBoxDescription.TabIndex = 23;
             this.textBoxDescription.TabStop = false;
             this.textBoxDescription.Text = "Le connecteur Sage permet d\'importer ou d\'exporter des documents commerciaux éléc" +
@@ -224,6 +225,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.button_config_import);
             this.tabPage4.Controls.Add(this.button10);
             this.tabPage4.Controls.Add(this.button9);
             this.tabPage4.Controls.Add(this.button7);
@@ -234,7 +236,7 @@
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage4.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.tabPage4.Size = new System.Drawing.Size(523, 233);
+            this.tabPage4.Size = new System.Drawing.Size(613, 233);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Config";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -251,7 +253,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(416, 176);
+            this.button9.Location = new System.Drawing.Point(512, 176);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(90, 23);
             this.button9.TabIndex = 10;
@@ -281,7 +283,7 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Location = new System.Drawing.Point(121, 26);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(385, 144);
+            this.groupBox2.Size = new System.Drawing.Size(481, 144);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Paramétrage";
@@ -368,16 +370,6 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::ConnecteurSage.Properties.Resources.configuration;
-            this.pictureBox1.Location = new System.Drawing.Point(35, 26);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 7;
-            this.pictureBox1.TabStop = false;
-            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.groupBox6);
@@ -388,7 +380,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 23);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(523, 233);
+            this.tabPage2.Size = new System.Drawing.Size(613, 233);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Export";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -396,7 +388,7 @@
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.button8);
-            this.groupBox6.Location = new System.Drawing.Point(149, 174);
+            this.groupBox6.Location = new System.Drawing.Point(195, 174);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(293, 53);
             this.groupBox6.TabIndex = 3;
@@ -416,7 +408,7 @@
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.button6);
-            this.groupBox5.Location = new System.Drawing.Point(149, 116);
+            this.groupBox5.Location = new System.Drawing.Point(195, 116);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(293, 51);
             this.groupBox5.TabIndex = 2;
@@ -436,7 +428,7 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.button5);
-            this.groupBox4.Location = new System.Drawing.Point(149, 61);
+            this.groupBox4.Location = new System.Drawing.Point(195, 61);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(293, 51);
             this.groupBox4.TabIndex = 1;
@@ -456,7 +448,7 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.button4);
-            this.groupBox3.Location = new System.Drawing.Point(149, 6);
+            this.groupBox3.Location = new System.Drawing.Point(195, 6);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(293, 51);
             this.groupBox3.TabIndex = 0;
@@ -473,15 +465,6 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // pictureBox3
-            // 
-            this.pictureBox3.Image = global::ConnecteurSage.Properties.Resources.document_export;
-            this.pictureBox3.Location = new System.Drawing.Point(3, 51);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(140, 137);
-            this.pictureBox3.TabIndex = 1;
-            this.pictureBox3.TabStop = false;
-            // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.label4);
@@ -489,7 +472,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 23);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(523, 233);
+            this.tabPage1.Size = new System.Drawing.Size(613, 233);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Import";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -551,7 +534,7 @@
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(531, 260);
+            this.tabControl1.Size = new System.Drawing.Size(621, 260);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 10;
             // 
@@ -563,20 +546,10 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 23);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(523, 233);
+            this.tabPage5.Size = new System.Drawing.Size(613, 233);
             this.tabPage5.TabIndex = 6;
             this.tabPage5.Text = "Sauvegarder";
             this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // pictureBox4
-            // 
-            this.pictureBox4.Image = global::ConnecteurSage.Properties.Resources.configuration;
-            this.pictureBox4.Location = new System.Drawing.Point(14, 23);
-            this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(64, 64);
-            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox4.TabIndex = 14;
-            this.pictureBox4.TabStop = false;
             // 
             // button11
             // 
@@ -604,7 +577,7 @@
             this.groupBox7.Controls.Add(this.label_backup_generalLog);
             this.groupBox7.Location = new System.Drawing.Point(89, 23);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(428, 163);
+            this.groupBox7.Size = new System.Drawing.Size(513, 163);
             this.groupBox7.TabIndex = 12;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Paramétrage";
@@ -621,7 +594,7 @@
             // label_backup_export_BLF
             // 
             this.label_backup_export_BLF.AutoSize = true;
-            this.label_backup_export_BLF.Location = new System.Drawing.Point(231, 137);
+            this.label_backup_export_BLF.Location = new System.Drawing.Point(244, 137);
             this.label_backup_export_BLF.Name = "label_backup_export_BLF";
             this.label_backup_export_BLF.Size = new System.Drawing.Size(135, 14);
             this.label_backup_export_BLF.TabIndex = 10;
@@ -630,7 +603,7 @@
             // label_backup_export_ME_MS
             // 
             this.label_backup_export_ME_MS.AutoSize = true;
-            this.label_backup_export_ME_MS.Location = new System.Drawing.Point(231, 114);
+            this.label_backup_export_ME_MS.Location = new System.Drawing.Point(244, 114);
             this.label_backup_export_ME_MS.Name = "label_backup_export_ME_MS";
             this.label_backup_export_ME_MS.Size = new System.Drawing.Size(150, 14);
             this.label_backup_export_ME_MS.TabIndex = 9;
@@ -639,7 +612,7 @@
             // label_backup_export_FA
             // 
             this.label_backup_export_FA.AutoSize = true;
-            this.label_backup_export_FA.Location = new System.Drawing.Point(231, 91);
+            this.label_backup_export_FA.Location = new System.Drawing.Point(244, 91);
             this.label_backup_export_FA.Name = "label_backup_export_FA";
             this.label_backup_export_FA.Size = new System.Drawing.Size(131, 14);
             this.label_backup_export_FA.TabIndex = 8;
@@ -648,7 +621,7 @@
             // label_backup_export_BL
             // 
             this.label_backup_export_BL.AutoSize = true;
-            this.label_backup_export_BL.Location = new System.Drawing.Point(231, 68);
+            this.label_backup_export_BL.Location = new System.Drawing.Point(244, 68);
             this.label_backup_export_BL.Name = "label_backup_export_BL";
             this.label_backup_export_BL.Size = new System.Drawing.Size(131, 14);
             this.label_backup_export_BL.TabIndex = 7;
@@ -665,7 +638,7 @@
             // label_backup_export_BC
             // 
             this.label_backup_export_BC.AutoSize = true;
-            this.label_backup_export_BC.Location = new System.Drawing.Point(230, 44);
+            this.label_backup_export_BC.Location = new System.Drawing.Point(243, 44);
             this.label_backup_export_BC.Name = "label_backup_export_BC";
             this.label_backup_export_BC.Size = new System.Drawing.Size(132, 14);
             this.label_backup_export_BC.TabIndex = 5;
@@ -716,21 +689,60 @@
             this.label_backup_generalLog.TabIndex = 1;
             this.label_backup_generalLog.Text = "Log général :";
             // 
+            // button_config_import
+            // 
+            this.button_config_import.Location = new System.Drawing.Point(416, 176);
+            this.button_config_import.Name = "button_config_import";
+            this.button_config_import.Size = new System.Drawing.Size(90, 23);
+            this.button_config_import.TabIndex = 12;
+            this.button_config_import.Text = "Config Import";
+            this.button_config_import.UseVisualStyleBackColor = true;
+            this.button_config_import.Click += new System.EventHandler(this.button_config_import_Click);
+            // 
             // pictureBox2
             // 
             this.pictureBox2.Image = global::ConnecteurSage.Properties.Resources.sage_header;
             this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(556, 78);
+            this.pictureBox2.Size = new System.Drawing.Size(642, 78);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Image = global::ConnecteurSage.Properties.Resources.document_export;
+            this.pictureBox3.Location = new System.Drawing.Point(3, 51);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(140, 137);
+            this.pictureBox3.TabIndex = 1;
+            this.pictureBox3.TabStop = false;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::ConnecteurSage.Properties.Resources.configuration;
+            this.pictureBox1.Location = new System.Drawing.Point(35, 26);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            // 
+            // pictureBox4
+            // 
+            this.pictureBox4.Image = global::ConnecteurSage.Properties.Resources.configuration;
+            this.pictureBox4.Location = new System.Drawing.Point(14, 23);
+            this.pictureBox4.Name = "pictureBox4";
+            this.pictureBox4.Size = new System.Drawing.Size(64, 64);
+            this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox4.TabIndex = 14;
+            this.pictureBox4.TabStop = false;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(555, 438);
+            this.ClientSize = new System.Drawing.Size(638, 438);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.Fermer);
@@ -749,23 +761,23 @@
             this.tabPage4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -831,6 +843,7 @@
         private System.Windows.Forms.Label label_backup_export_FA;
         private System.Windows.Forms.Label label_backup_exportLog;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button button_config_import;
     }
 
 }

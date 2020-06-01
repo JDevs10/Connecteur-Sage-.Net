@@ -106,5 +106,20 @@ namespace Init
                 return 99;
             }
         }
+
+
+        // Pretty Print any Class Object JSON
+        public string FormatJson(Object obj)
+        {
+            var f = Newtonsoft.Json.JsonConvert.SerializeObject(obj, Newtonsoft.Json.Formatting.Indented);
+            return f;
+        }
+
+        // Pretty Print any Class List Object JSON
+        public string FormatJson(List<Object> objList)
+        {
+            var f = Newtonsoft.Json.JsonConvert.SerializeObject(objList, Newtonsoft.Json.Formatting.Indented);
+            return f;
+        }
     }
 }

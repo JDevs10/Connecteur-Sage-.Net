@@ -13,6 +13,7 @@ namespace importPlanifier.Classes
         public string Date_De_Expedition;
         public string Heure_De_Expedition;
         public string Etat;
+        public string Relicat;
 
         public Veolog_DESADV()
         {
@@ -25,6 +26,7 @@ namespace importPlanifier.Classes
             this.Date_De_Expedition = Date_De_Expedition;
             this.Heure_De_Expedition = Heure_De_Expedition;
             this.Etat = Etat;
+            this.Relicat = Relicat;
         }
 
 

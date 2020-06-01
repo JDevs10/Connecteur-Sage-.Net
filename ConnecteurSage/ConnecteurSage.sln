@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connexion", "Connexion\Conn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Config-Export", "Config-Export\Config-Export.csproj", "{938D2D68-FBAC-4EC4-A96B-BD754F0F59A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Config-Import", "Config-Import\Config-Import.csproj", "{AF89695C-A092-42CB-915B-27101839AD57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{938D2D68-FBAC-4EC4-A96B-BD754F0F59A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{938D2D68-FBAC-4EC4-A96B-BD754F0F59A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{938D2D68-FBAC-4EC4-A96B-BD754F0F59A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF89695C-A092-42CB-915B-27101839AD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF89695C-A092-42CB-915B-27101839AD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF89695C-A092-42CB-915B-27101839AD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF89695C-A092-42CB-915B-27101839AD57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

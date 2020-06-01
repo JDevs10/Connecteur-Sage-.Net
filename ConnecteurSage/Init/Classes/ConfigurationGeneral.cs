@@ -11,13 +11,15 @@ namespace Init.Classes
     {
         public General general;
         public Paths paths;
+        public PriceType priceType;
         public Reprocess reprocess;
 
         public ConfigurationGeneral() { }
-        public ConfigurationGeneral(General General_, Paths paths_, Reprocess reprocess_)
+        public ConfigurationGeneral(General General_, Paths paths_, PriceType priceType_, Reprocess reprocess_)
         {
             this.general = General_;
             this.paths = paths_;
+            this.priceType = priceType_;
             this.reprocess = reprocess_;
         }
     }

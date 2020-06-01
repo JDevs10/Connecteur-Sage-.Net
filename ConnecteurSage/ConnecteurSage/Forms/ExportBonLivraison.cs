@@ -123,11 +123,13 @@ namespace ConnecteurSage.Forms
                                     reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString(),
                                     reader[16].ToString(), reader[17].ToString(), reader[18].ToString(), reader[19].ToString(),
                                     reader[20].ToString(), reader[21].ToString(), reader[22].ToString(), reader[23].ToString(),
-                                    reader[24].ToString(), reader[25].ToString()
+                                    reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString()
                                     );
                                 lignesDocumentVente.Add(ligne);
                             }
+                            logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 3");
                         }
+                        logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 4");
                     }
                     return lignesDocumentVente;
 
@@ -698,6 +700,16 @@ namespace ConnecteurSage.Forms
 
                         BonLivrasonAExporter[i].lines = getDocumentLine(logFileWriter, BonLivrasonAExporter[i].DO_Piece);
 
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : After Lines");
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : BonLivrasonAExporter[i].lines.Count = "+ BonLivrasonAExporter[i].lines.Count);
+
+                        Init.Init init = new Init.Init();
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : JSON : \n" + init.FormatJson(BonLivrasonAExporter[i].lines));
+
+                        // DL_PrixUNet et non DL_PrixUnitaire
+                        //writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[0].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[0].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[0].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[0].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[0].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[0].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[0].DL_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[0].DL_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[0].DL_NoColis + ";;;;;;;;;;;");
+
+
                         for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
                         {
                             writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].DL_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].DL_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
@@ -731,7 +743,7 @@ namespace ConnecteurSage.Forms
                 MessageBox.Show("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 logFileWriter.Flush();
                 logFileWriter.Close();
             }

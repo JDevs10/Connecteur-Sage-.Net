@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -107,33 +108,75 @@ namespace ConnecteurSage.Forms
             Init.Classes.ConfigurationGeneral configurationGeneral = new Init.Classes.ConfigurationGeneral();
             Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
 
-            if (debugMode_checkBox.Checked)
+            if (!settings.isSettings())
             {
-                show = SW_SHOW;
+                if (debugMode_checkBox.Checked)
+                {
+                    show = SW_SHOW;
+                }
+                else
+                {
+                    show = SW_HIDE;
+                }
+
+                int _;
+                if (!textBox1.Text.Equals("") && !int.TryParse(textBox1.Text.Trim(), out _))
+                {
+                    MessageBox.Show("Seulement les chiffres entre 0 à 9 sont valide!", "Compt. G. Taxe", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                if (checkBox_reprocess_activate.Checked == true && Convert.ToInt32(numericUpDown_hour.Value) == 0)
+                {
+                    MessageBox.Show("Heure de retraitement n'est pas configuré !", "Retraitement", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                configurationGeneral.general = new Init.Classes.Configuration.General(show, false, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(textBox1.Text.Trim()));
+                configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
+                configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
+                configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
+                settings.configurationGeneral = configurationGeneral;
+                settings.saveInfo();
             }
             else
             {
-                show = SW_HIDE;
+                // if the config exist, then only get the isAppOpen variable
+                // and re-save it with the new overall config
+                settings.Load();
+                Init.Classes.ConfigurationGeneral configurationGeneral_2 = settings.configurationGeneral;
+
+                if (debugMode_checkBox.Checked)
+                {
+                    show = SW_SHOW;
+                }
+                else
+                {
+                    show = SW_HIDE;
+                }
+
+                int _;
+                if (!textBox1.Text.Equals("") && !int.TryParse(textBox1.Text.Trim(), out _))
+                {
+                    MessageBox.Show("Seulement les chiffres entre 0 à 9 sont valide!", "Compt. G. Taxe", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                if (checkBox_reprocess_activate.Checked == true && Convert.ToInt32(numericUpDown_hour.Value) == 0)
+                {
+                    MessageBox.Show("Heure de retraitement n'est pas configuré !", "Retraitement", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                configurationGeneral.general = new Init.Classes.Configuration.General(show, configurationGeneral_2.general.isAppOpen, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(textBox1.Text.Trim()));
+                configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
+                configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
+                configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
+                settings.configurationGeneral = configurationGeneral;
+                settings.saveInfo();
             }
 
-            int _;
-            if (!textBox1.Text.Equals("") && !int.TryParse(textBox1.Text.Trim(), out _))
-            {
-                MessageBox.Show("Seulement les chiffres entre 0 à 9 sont valide!", "Compt. G. Taxe", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            if(checkBox_reprocess_activate.Checked == true && Convert.ToInt32(numericUpDown_hour.Value) == 0)
-            {
-                MessageBox.Show("Heure de retraitement n'est pas configuré !", "Retraitement", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            configurationGeneral.general = new Init.Classes.Configuration.General(show, false, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(textBox1.Text.Trim()));
-            configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
-            configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, Convert.ToInt32(numericUpDown_hour.Value), Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
-            settings.configurationGeneral = configurationGeneral;
-            settings.saveInfo();
+            
 
             Close();
         }
@@ -174,6 +217,8 @@ namespace ConnecteurSage.Forms
                 label7_reprocess_hour.Enabled = true;
                 numericUpDown1_reprocess_cd.Enabled = true;
                 label7_reprocess.Enabled = true;
+                button_reprocess.Enabled = true;
+                button_tmp.Enabled = true;
             }
             else
             {
@@ -181,6 +226,8 @@ namespace ConnecteurSage.Forms
                 label7_reprocess_hour.Enabled = false;
                 numericUpDown1_reprocess_cd.Enabled = false;
                 label7_reprocess.Enabled = false;
+                button_reprocess.Enabled = false;
+                button_tmp.Enabled = false;
             }
         }
 
@@ -209,6 +256,95 @@ namespace ConnecteurSage.Forms
             else
             {
                 label7_reprocess_hour.Text = "Retraitement tous les " + count + " heure(s).";
+            }
+        }
+
+        private void checkBox_activer_tarif_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_activer_tarif.Checked)
+            {
+                radioButton_tarif_cmd_EDI.Enabled = true;
+                radioButton_tarif_produit.Enabled = true;
+                radioButton_tarif_categorie.Enabled = true;
+                radioButton_tarif_client.Enabled = true;
+            }
+            else
+            {
+                radioButton_tarif_cmd_EDI.Enabled = false;
+                radioButton_tarif_cmd_EDI.Checked = false;
+
+                radioButton_tarif_produit.Enabled = false;
+                radioButton_tarif_produit.Checked = false;
+
+                radioButton_tarif_categorie.Enabled = false;
+                radioButton_tarif_categorie.Checked = false;
+
+                radioButton_tarif_client.Enabled = false;
+                radioButton_tarif_client.Checked = false;
+            }
+        }
+
+        private void button_reprocess_Click(object sender, EventArgs e)
+        {
+            DirectoryInfo fileListing = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\" + "Error File");
+            FileInfo[] allFiles = fileListing.GetFiles("*.csv");
+
+            if(allFiles.Length > 0)
+            {
+                DialogResult resultDialog = MessageBox.Show("Voulez vous vraiment traiter les " + allFiles.Length + " fichier(s) EDI en erreur maitenant ?",
+                                                         "Warning Retraitement Erreur !",
+                                                         MessageBoxButtons.YesNo,
+                                                         MessageBoxIcon.Question);
+
+                if (resultDialog == DialogResult.Yes)
+                {
+                    try
+                    {
+                        Reprocess.ReprocessErrorFiles reprocessErrorFiles = new Reprocess.ReprocessErrorFiles();
+                        reprocessErrorFiles.reprocessManually();
+                        MessageBox.Show("Tous les Fichiers EDI sont transférés dans le repairtoir EDI.\nLors du prochain traitement du connecteur, ces fichiers seront traités.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Message : " + ex.Message + "\n\nStackTrace : " + ex.StackTrace, "Retraitement Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else if (resultDialog == DialogResult.No)
+                {
+
+                }
+            }
+        }
+
+        private void button_tmp_Click(object sender, EventArgs e)
+        {
+            DirectoryInfo fileListing = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\" + "tmp");
+            FileInfo[] allFiles = fileListing.GetFiles("*.csv");
+
+            if (allFiles.Length > 0)
+            {
+                DialogResult resultDialog = MessageBox.Show("Voulez vous vraiment traiter les " + allFiles.Length + " fichier(s) EDI dans la poubelle maitenant ?\nVérifiez que ces fichiers ou documents sont corrects avant de les retraiter!",
+                                                         "Warning Retraitement Poubelle !!",
+                                                         MessageBoxButtons.YesNo,
+                                                         MessageBoxIcon.Question);
+
+                if (resultDialog == DialogResult.Yes)
+                {
+                    try
+                    {
+                        Reprocess.ReprocessErrorFiles reprocessErrorFiles = new Reprocess.ReprocessErrorFiles();
+                        reprocessErrorFiles.reprocessTmpManually();
+                        MessageBox.Show("Tous les Fichiers EDI dans la poubelle sont transférés dans le repairtoir EDI.\nLors du prochain traitement du connecteur, ces fichiers seront traités.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Message : " + ex.Message + "\n\nStackTrace : " + ex.StackTrace, "Retraitement Poubelle", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else if (resultDialog == DialogResult.No)
+                {
+
+                }
             }
         }
     }

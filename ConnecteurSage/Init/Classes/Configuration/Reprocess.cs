@@ -9,11 +9,11 @@ namespace Init.Classes.Configuration
     public class Reprocess
     {
         public Boolean activate;
-        public int hour;
+        public decimal hour;
         public int countDown;
 
         public Reprocess() { }
-        public Reprocess(Boolean activate, int hour, int countDown)
+        public Reprocess(Boolean activate, decimal hour, int countDown)
         {
             this.activate = activate;
             this.hour = hour;

@@ -32,13 +32,16 @@ namespace importPlanifier.Classes
         private static Alert_Mail.Classes.Custom.CustomMailSuccess mCustomMailSuccess;
         private static List<Alert_Mail.Classes.Custom.CustomMailSuccess> successList;
         private static List<Alert_Mail.Classes.Custom.CustomMailSuccessLines> successListLines;
+        private static List<string> existAlreadyList;
 
         /* JL LOG */
+        private static string logFileName_general;
         private static string logFileName_import;
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
         private string directoryName_SuccessFile = Directory.GetCurrentDirectory() + @"\" + "Success File";
         private string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
+        private string directoryName_DumpFile = Directory.GetCurrentDirectory() + @"\" + "Dump File";
         private StreamWriter logFileWriter_general = null;
         //private StreamWriter logFileWriter_import = null;
 
@@ -131,21 +134,64 @@ namespace importPlanifier.Classes
             }
 
             logFileWriter_general.Flush();
-            logFileWriter_general.WriteLine(DateTime.Now + " : "+infoPlan);
-            logFileWriter_general.WriteLine(DateTime.Now + " : Dossier : " + fileListing);
-            logFileWriter_general.WriteLine("");
-            logFileWriter_general.WriteLine(DateTime.Now + " : Scan du dossier ...");
-            logFileWriter_general.WriteLine("");
 
             recapLinesList_new = new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>();
             successList = new List<Alert_Mail.Classes.Custom.CustomMailSuccess>();
             successListLines = new List<Alert_Mail.Classes.Custom.CustomMailSuccessLines>();
+            existAlreadyList = new List<string>();
 
             using (StreamWriter logFileWriter_import = new StreamWriter(logFile_import))
             {
                 // Load intro
                 Connecteur_Info.Batch_Intro intro_ = new Connecteur_Info.Batch_Intro();
                 intro_.intro(logFileWriter_import);
+
+
+                //Check configuration import
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("");
+                Config_Import.ConfigurationSaveLoad importSetting = new Config_Import.ConfigurationSaveLoad();
+                if (importSetting.isSettings())
+                {
+                    try
+                    {
+                        if (importSetting.checkSettingsIntegrity().Contains("Erreur Config Import"))
+                        {
+                            logFileWriter_general.WriteLine(DateTime.Now + " : ################################### Erreur Config Import ###################################");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Message Dev.: => L'intégralité de la configuration import dans " + importSetting.fileName + " n'est pas valide, veuillez verifier son intégralité.");
+                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("", "", null, "La configuration " + importSetting.fileName + " n'existe pas!", "", null, logFileName_general));
+                            goto goAlertMail;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ################################### Erreur Config Import ###################################");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Message Dev.: => L'intégralité de la configuration import dans " + importSetting.fileName + " n'est pas valide, veuillez verifier son intégralité.");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Message => "+ex.Message);
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Stacktrace => "+ex.StackTrace);
+                        logFileWriter_general.WriteLine("");
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("", "", null, ex.Message, ex.StackTrace, importSetting.fileName, logFileName_general));
+                        goto goAlertMail;
+                    }
+                    logFileWriter_general.Flush();
+                }
+                else
+                {
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.Flush();
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("", "", null, "La configuration " + importSetting.fileName + " n'existe pas!", "", null, logFileName_general));
+                    goto goAlertMail;
+                }
+
+                logFileWriter_general.Flush();
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine(DateTime.Now + " : " + infoPlan);
+                logFileWriter_general.WriteLine(DateTime.Now + " : Dossier : " + fileListing);
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Scan du dossier ...");
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.Flush();
 
                 /* 
                     action : import documents
@@ -178,1117 +224,1707 @@ namespace importPlanifier.Classes
 
                         string[] lines = System.IO.File.ReadAllLines(fileListing + @"\" + filename, Encoding.Default);
 
-                        if (lines[0].Split(';')[0] == "ORDERS" && filename.Name.Contains("EDI_ORDERS") && lines[0].Split(';').Length == 11)
+                        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        /// Les Entetes
+                        ///
+                        
+
+                        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        /// Document Fournisseur
+                        ///
+                        #region Document_Fournisseur
+                        // Commande
+                        if (Boolean.Parse(importSetting.configurationImport.Doc_Achat.Commande.Activate))
                         {
                             logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Orders Test Trouvé");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des commandes fournisseur activé.");
+
+
+
+                        }
+                        else
+                        {
                             logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des commandes fournisseur désactivé.");
+                            logFileWriter_general.WriteLine("");
+                        }
 
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import Commande Manuel.");
+                        // Bon de livraison
+                        if (Boolean.Parse(importSetting.configurationImport.Doc_Achat.DSADV.Activate))
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des bons de livraison fournisseur activé.");
 
-                            Boolean prixDef = false;
-                            //Boolean insertAdressLivr = false;
-                            Order order = new Order();
-
-                            order.Id = get_next_num_piece_commande(logFileWriter_import);
-
-                            if (order.Id == "erreur")
+                            if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP41") || filename.Name.Contains("TWP41")) //Import Veolog BLF doc
                             {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : orderId erreur");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                /*
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, lines[0].Split(';')[1], "Echec de l'import d'une commande", "orderId erreur", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new CustomMailRecapLines("", "L'import de la commande est annulée. Erreur dans le fichier EDI", "L'import du BLF est désactivé !", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
-                            }
-                            
-                            if (order.Id == null)
-                            {
-                                Console.WriteLine("Erreur [10] : numéro de piece non valide");
+                                */
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Bon de Livraison Fournisseur BLF Trouvé");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                logFileWriter_general.WriteLine("");
 
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog Bon de Livraison Fournisseur BLF Inventaire.");
 
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : orderId est null");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", lines[0].Split(';')[1], "Impossible de générer un nouveau numéro de piece", "Numéro de piece non valide - orderId est null", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            order.Lines = new List<OrderLine>();
-
-                            order.NumCommande = lines[0].Split(';')[1];
-
-                            if (order.NumCommande.Length > 10)
-                            {
-                                Console.WriteLine("Numéro de commande doit être < 10");
-
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée", "Numéro de commande doit être < 10 => " + order.NumCommande, "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            if (order.NumCommande == "")
-                            {
-                                Console.WriteLine("Le champ numéro de commande est vide.");
-
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée", "Le champ numéro de commande est vide.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            if (!IsNumeric(order.NumCommande))
-                            {
-                                Console.WriteLine("Le champ numéro de commande est invalide.");
-
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée", "Le champ numéro de commande est invalide => " + order.NumCommande, "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            string existe = existeCommande(order.NumCommande, logFileWriter_import);
-
-                            if (existe != null && existe != "erreur")
-                            {
-                                Console.WriteLine("La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + "");
-
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + ".");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, null, "La commande N° " + order.NumCommande + " existe deja dans la base. N° de pièce : " + existe + ".", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            if (existe == "erreur")
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : N° de pièce : '" + existe + "' trouvée dans la Base de Données");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. N° de pièce '" + existe + "' est trouvée dans la Base de Données.", "N° de pièce : '" + existe + "' trouvée dans la Base de Données.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            file_doc_reference = order.NumCommande;
-
-                            order.codeClient = lines[0].Split(';')[2];
-                            order.codeAcheteur = lines[0].Split(';')[3];
-                            order.codeFournisseur = lines[0].Split(';')[4];
-                            //order.adresseLivraison = lines[0].Split(';')[7];
-
-                            if(order.codeClient == "")
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code client dans le fichier est vide, verifier le code client.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Le champ du code client dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            if (order.codeAcheteur == "")
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code acheteur dans le fichier est vide, verifier le code client.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Le champ du code acheteur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            if (order.codeFournisseur == "")
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code fournisseur dans le fichier est vide, verifier le code client.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Le champ du code fournisseur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            Client client = getClient(order.codeClient, 1, logFileWriter_import);
-                            if (client == null)
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. le cLient (" + order.codeClient + ") n'est pas trouvé dans Sage !", "Client trouvé est null, verifier le code client (" + order.codeClient + ").", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-
-                            Client client2 = getClient(order.codeAcheteur, 2, logFileWriter_import);
-                            if (client2 == null)
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. L'acheteur (" + order.codeAcheteur + ") n'est pas trouvé dans Sage !", "Acheteur trouvé est null, verifier le code Acheteur (" + order.codeAcheteur + ").", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-
-                            if (existeFourniseur(order.codeFournisseur, logFileWriter_import) == null)
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. Le fournisseur (" + order.codeFournisseur + ") n'est pas trouvé dans Sage !", "Fournisseur trouvé est null, verifier le code Fournisseur (" + order.codeFournisseur + ").", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-
-                            order.adresseLivraison = lines[0].Split(';')[7];
-                            string[] tab_adress = order.adresseLivraison.Split('.');
-
-                            if (tab_adress.Length != 5)
-                            {
-                                Console.WriteLine("La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays");
-
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-                            order.nom_contact = tab_adress[0];
-                            order.adresse = tab_adress[1].Replace("'", "''");
-                            order.codepostale = tab_adress[2];
-                            order.ville = tab_adress[3].Replace("'", "''");
-                            order.pays = tab_adress[4];
-
-
-                            List<AdresseLivraison> listAdress = get_adresse_livraison(new AdresseLivraison(1, client.CT_Num, order.nom_contact, order.adresse, order.codepostale, order.ville, order.pays), logFileWriter_import);
-
-                            // Ajouter ville dans la réference
-                            //string[] part = order.adresseLivraison.Split('.');
-                            //if (part.Length >= 2)
-                            //{
-                            order.Reference = order.ville;
-                            //}
-
-                            order.deviseCommande = lines[0].Split(';')[8];
-
-                            if (order.deviseCommande != "")
-                            {
-                                order.deviseCommande = getDevise(order.deviseCommande, logFileWriter_import);
-                            }
-
-
-                            if (order.deviseCommande == "erreur")
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : deviseCommande == erreur");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "deviseCommande == erreur.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-
-                            if (lines[1].Split(';')[0] == "ORDHD1" && lines[1].Split(';').Length == 5)
-                            {
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ORDHD1 trouvé.");
-                                logFileWriter_import.WriteLine("");
-
-                                if (lines[1].Split(';')[1].Length == 8)
+                                file_doc_reference = lines[0].Split(';')[1];
+                                if (lines[0].Split(';').Length == 8)
                                 {
-                                    order.DateCommande = ConvertDate(lines[1].Split(';')[1]);
-                                    order.conditionLivraison = lines[1].Split(';')[2];
+                                    Connexion.ConnexionSaveLoad connexionSaveLoad = new ConnexionSaveLoad();
+                                    connexionSaveLoad.Load();
 
-                                    if (order.conditionLivraison != "")
+                                    string mask = "";
+                                    string prefix = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
+                                    if(prefix == "CFCI")
                                     {
-                                        order.conditionLivraison = get_condition_livraison(order.conditionLivraison, logFileWriter_import);
+                                        mask = "BLF";
+                                    }
+                                    else if (prefix == "TABLEWEAR")
+                                    {
+                                        mask = "LF";
+                                    }
+                                    else
+                                    {
+                                        mask = "BLF";
                                     }
 
-                                    if (string.IsNullOrEmpty(order.conditionLivraison))
-                                    {
-                                        order.conditionLivraison = "1";
-                                    }
+                                    string reference_BLF_doc = get_next_num_piece_commande_v2(mask, logFileWriter_import); // lastNumberReference(mask, logFileWriter_import);
 
-                                    if (lines[2].Split(';')[0] == "ORDLIN" && lines[2].Split(';').Length == 23)
-                                    {
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : ORDLIN trouvé.");
-                                        var totalLines = lines.Count();
-                                        var currentIndexLine = 1;
+                                    int i = 0;
+                                    string totallines = "";
+                                    Veolog_BCF dh = new Veolog_BCF();
+                                    Veolog_BCF_Lines dll = new Veolog_BCF_Lines();
 
-                                        //decimal total = 0m;
-                                        foreach (string ligneDuFichier in lines)
+                                    List<String> doubleProductCheck = new List<String>();
+                                    List<Veolog_BCF_Lines> dl = new List<Veolog_BCF_Lines>(); //creating new object type BCF line and store item values
+
+                                    foreach (string ligneDuFichier in lines) //read lines by line
+                                    {
+                                        string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                        if (tab[0] == "E") //checking if its header of file for control
                                         {
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : ORDLIN line " + currentIndexLine + " / " + totalLines + ".");
+                                            Veolog_BCF bcf_info = new Veolog_BCF();
+                                            bcf_info.Ref_Commande_Donneur_Ordre = tab[1];
+                                            bcf_info.Ref_Commande_Fournisseur = tab[2];
+                                            bcf_info.Origine_Commande = tab[3];
+                                            bcf_info.Code_Fournisseur = tab[4];
+                                            bcf_info.Date_De_Reception = tab[5];
+                                            bcf_info.Heure_De_Reception = tab[6];
+                                            bcf_info.Etat = tab[7];
 
-                                            string[] tab = ligneDuFichier.Split(';');
-
-
-                                            switch (tab[0])
+                                            if (bcf_info.Etat == "S") // S : Stocké
                                             {
-                                                case "ORDLIN":
-                                                    if (tab.Length == 23)
-                                                    {
-                                                        OrderLine line = new OrderLine();
-                                                        line.NumLigne = tab[1];
-                                                        line.article = getArticle(tab[2], client.CT_NumCentrale, logFileWriter_import);
+                                                bcf_info.Etat = "1";
+                                            }
+                                            else if (bcf_info.Etat == "C") // C : Cloturé
+                                            {
+                                                bcf_info.Etat = "0";
+                                            }
+                                            else if(bcf_info.Etat == "")
+                                            {
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Le "+ mask + " " + reference_BLF_doc + " n'a pas d'Etat ou Option. Les options depuis le cahier des charges sont : S => Stocké ou C => Cloturé");
+                                            }
+                                            else
+                                            {
+                                                //deplacer les fichiers csv
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le "+ mask);
 
-                                                        if (line.article == null)
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit S : Stocké ou C : Cloturé.");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                logFileWriter_import.Flush();
+                                                tabCommandeError.Add(filename.Name);
+                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit S : Stocké ou C : Cloturé.", "", filename.Name, logFileName_import));
+                                                goto goErrorLoop;
+                                            }
+
+                                            dh = bcf_info;
+                                        }
+                                        if (tab[0] == "L") //checking if its line of document inside the file for control
+                                        {
+                                            //check if an article exist in my check list
+                                            if (!doubleProductCheck.Contains(tab[2]))
+                                            {
+                                                Veolog_BCF_Lines bcfLine_info = new Veolog_BCF_Lines();
+
+                                                bcfLine_info.Type_Ligne = tab[0];
+                                                bcfLine_info.Numero_Ligne_Donneur_Ordre = tab[1];
+                                                bcfLine_info.Code_Article = tab[2];
+                                                bcfLine_info.Libelle_Article = tab[3];
+                                                bcfLine_info.Quantite = tab[4];
+                                                bcfLine_info.Numero_Lot = tab[5];
+
+                                                dl.Add(bcfLine_info);
+                                                doubleProductCheck.Add(bcfLine_info.Code_Article);
+                                            }
+                                            else
+                                            {
+                                                logFileWriter_general.WriteLine("");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
+                                                logFileWriter_general.WriteLine("");
+                                            }
+                                            i++;
+                                        }
+
+                                        if (tab[0] == "F") //checking if its end of file for control
+                                        {
+                                            totallines = tab[1];
+                                        }
+                                    }
+
+
+                                    if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
+                                    {
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                                    }
+                                    else
+                                    {
+                                        if (insertSupplierOrder(reference_BLF_doc, dh, dl, filename.Name, logFileWriter_import) != null) //insert the database with the values obtained from the document
+                                        {
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : importe du "+ mask + " avec succès");
+
+                                            //deplacer les fichiers csv
+                                            string theFileName = filename.FullName;
+                                            string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "__" + System.IO.Path.GetFileName(theFileName);
+                                            File.Move(theFileName, newFileLocation);
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine("");
+                                            SaveSuccess++;
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le "+ mask);
+                                            tabCommandeError.Add(filename.Name);
+                                            goto goErrorLoop;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                    logFileWriter_import.Flush();
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                            //END   BLF/LF Relicat
+                            }
+                            else
+                            {
+
+                                //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
+                                logFileWriter_import.Flush();
+                                tabCommandeError.Add(filename.Name);
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", null, "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                goto goErrorLoop;
+                            }
+                        }
+                        else
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des bons de livraison fournisseur désactivé.");
+                            logFileWriter_general.WriteLine("");
+                        }
+
+                        // Facture
+                        if (Boolean.Parse(importSetting.configurationImport.Doc_Achat.Facture.Activate))
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des factures fournisseur activé.");
+
+
+                        }
+                        else
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des factures fournisseur désactivé.");
+                            logFileWriter_general.WriteLine("");
+                        }
+                        #endregion
+
+                        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        /// Document Client
+                        ///
+                        #region Document_Client
+                        // Commande
+                        if (Boolean.Parse(importSetting.configurationImport.Doc_Ventes.Commande.Activate))
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des commandes activé.");
+
+                            if (lines[0].Split(';')[0] == "ORDERS" && filename.Name.Contains("EDI_ORDERS") && lines[0].Split(';').Length == 11)
+                            {
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Orders Test Trouvé");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                logFileWriter_general.WriteLine("");
+
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import Commande Manuel.");
+
+                                Boolean prixDef = false;
+                                //Boolean insertAdressLivr = false;
+                                Order order = new Order();
+
+                                order.Id = get_next_num_piece_commande(logFileWriter_import);
+
+                                if (order.Id == "erreur")
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : orderId erreur");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, lines[0].Split(';')[1], "Echec de l'import d'une commande", "orderId erreur", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                if (order.Id == null)
+                                {
+                                    Console.WriteLine("Erreur [10] : numéro de piece non valide");
+
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : orderId est null");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", lines[0].Split(';')[1], "Impossible de générer un nouveau numéro de piece", "Numéro de piece non valide - orderId est null", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                order.Lines = new List<OrderLine>();
+
+                                order.NumCommande = lines[0].Split(';')[1];
+
+                                if (order.NumCommande.Length > 10)
+                                {
+                                    Console.WriteLine("Numéro de commande doit être < 10");
+
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de commande doit être < 10");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée", "Numéro de commande doit être < 10 => " + order.NumCommande, "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                if (order.NumCommande == "")
+                                {
+                                    Console.WriteLine("Le champ numéro de commande est vide.");
+
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est vide.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée", "Le champ numéro de commande est vide.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                if (!IsNumeric(order.NumCommande))
+                                {
+                                    Console.WriteLine("Le champ numéro de commande est invalide.");
+
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ numéro de commande est invalide.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée", "Le champ numéro de commande est invalide => " + order.NumCommande, "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                string existe = existeCommande(order.NumCommande, logFileWriter_import);
+
+                                if (existe != null && existe != "erreur")
+                                {
+                                    Console.WriteLine("La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + "");
+
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : La commande N° " + order.NumCommande + " existe deja dans la base.\nN° de pièce : " + existe + ".");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, null, "La commande N° " + order.NumCommande + " existe deja dans la base. N° de pièce : " + existe + ".", "", filename.Name, logFileName_import));
+                                    existAlreadyList.Add("Commande : " + order.NumCommande);
+                                    goto goErrorLoop;
+                                }
+
+                                if (existe == "erreur")
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : N° de pièce : '" + existe + "' trouvée dans la Base de Données");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. N° de pièce '" + existe + "' est trouvée dans la Base de Données.", "N° de pièce : '" + existe + "' trouvée dans la Base de Données.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                file_doc_reference = order.NumCommande;
+
+                                order.codeClient = lines[0].Split(';')[2];
+                                order.codeAcheteur = lines[0].Split(';')[3];
+                                order.codeFournisseur = lines[0].Split(';')[4];
+                                //order.adresseLivraison = lines[0].Split(';')[7];
+
+                                if (order.codeClient == "")
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code client dans le fichier est vide, verifier le code client.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Le champ du code client dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                if (order.codeAcheteur == "")
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code acheteur dans le fichier est vide, verifier le code client.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Le champ du code acheteur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                if (order.codeFournisseur == "")
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ du code fournisseur dans le fichier est vide, verifier le code client.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Le champ du code fournisseur dans le fichier est vide, verifier le code client.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                Client client = getClient(order.codeClient, 1, logFileWriter_import);
+                                if (client == null)
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Client trouvé est null, verifier le code client.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. le cLient (" + order.codeClient + ") n'est pas trouvé dans Sage !", "Client trouvé est null, verifier le code client (" + order.codeClient + ").", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+
+                                Client client2 = getClient(order.codeAcheteur, 2, logFileWriter_import);
+                                if (client2 == null)
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. L'acheteur (" + order.codeAcheteur + ") n'est pas trouvé dans Sage !", "Acheteur trouvé est null, verifier le code Acheteur (" + order.codeAcheteur + ").", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+
+                                if (existeFourniseur(order.codeFournisseur, logFileWriter_import) == null)
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. Le fournisseur (" + order.codeFournisseur + ") n'est pas trouvé dans Sage !", "Fournisseur trouvé est null, verifier le code Fournisseur (" + order.codeFournisseur + ").", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+
+                                order.adresseLivraison = lines[0].Split(';')[7];
+                                string[] tab_adress = order.adresseLivraison.Split('.');
+
+                                if (tab_adress.Length != 5)
+                                {
+                                    Console.WriteLine("La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays");
+
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "La forme de l'adresse de livraison est incorrecte, Veuillez respecter la forme suivante :\nNom.Adresse.CodePostal.Ville.Pays.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+                                order.nom_contact = tab_adress[0];
+                                order.adresse = tab_adress[1].Replace("'", "''");
+                                order.codepostale = tab_adress[2];
+                                order.ville = tab_adress[3].Replace("'", "''");
+                                order.pays = tab_adress[4];
+
+
+                                List<AdresseLivraison> listAdress = get_adresse_livraison(new AdresseLivraison(1, client.CT_Num, order.nom_contact, order.adresse, order.codepostale, order.ville, order.pays), logFileWriter_import);
+
+                                // Ajouter ville dans la réference
+                                //string[] part = order.adresseLivraison.Split('.');
+                                //if (part.Length >= 2)
+                                //{
+                                order.Reference = order.ville;
+                                //}
+
+                                order.deviseCommande = lines[0].Split(';')[8];
+
+                                if (order.deviseCommande != "")
+                                {
+                                    order.deviseCommande = getDevise(order.deviseCommande, logFileWriter_import);
+                                }
+
+
+                                if (order.deviseCommande == "erreur")
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : deviseCommande == erreur");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "deviseCommande == erreur.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+
+                                if (lines[1].Split(';')[0] == "ORDHD1" && lines[1].Split(';').Length == 5)
+                                {
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ORDHD1 trouvé.");
+                                    logFileWriter_import.WriteLine("");
+
+                                    if (lines[1].Split(';')[1].Length == 8)
+                                    {
+                                        order.DateCommande = ConvertDate(lines[1].Split(';')[1]);
+                                        order.conditionLivraison = lines[1].Split(';')[2];
+
+                                        if (order.conditionLivraison != "")
+                                        {
+                                            order.conditionLivraison = get_condition_livraison(order.conditionLivraison, logFileWriter_import);
+                                        }
+
+                                        if (string.IsNullOrEmpty(order.conditionLivraison))
+                                        {
+                                            order.conditionLivraison = "1";
+                                        }
+
+                                        if (lines[2].Split(';')[0] == "ORDLIN" && lines[2].Split(';').Length == 23)
+                                        {
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ORDLIN trouvé.");
+                                            var totalLines = lines.Count();
+                                            var currentIndexLine = 1;
+
+                                            //decimal total = 0m;
+                                            foreach (string ligneDuFichier in lines)
+                                            {
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : ORDLIN line " + currentIndexLine + " / " + totalLines + ".");
+
+                                                string[] tab = ligneDuFichier.Split(';');
+
+
+                                                switch (tab[0])
+                                                {
+                                                    case "ORDLIN":
+                                                        if (tab.Length == 23)
                                                         {
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-                                                            tabCommandeError.Add(filename.Name);
-                                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulé. Cet article (" + tab[2] + ") n'existe pas pour le client ou la centrale ("+ client.CT_Num + ").", "Cet article (" + tab[2] + ") n'existe pas dans la base. Cet article (" + tab[2] + ") n'existe pas pour le client ou la centrale (" + client.CT_Num + ")", "", filename.Name, logFileName_import));
-                                                            goto goErrorLoop;
-                                                        }
+                                                            OrderLine line = new OrderLine();
+                                                            line.NumLigne = tab[1];
+                                                            line.article = getArticle(tab[2], client.CT_NumCentrale, logFileWriter_import);
 
-                                                        if (line.article.RP_CODEDEFAUT == null || line.article.RP_CODEDEFAUT == "")
-                                                        {
-                                                            line.article.RP_CODEDEFAUT = "NULL";
-                                                        }
-
-
-                                                        line.article.Conditionnement = getConditionnementArticle(line.article.AR_REF, logFileWriter_import);
-
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : tab ===> line.article.Conditionnement");
-                                                        if (line.article.AR_Nomencl == "2" || line.article.AR_Nomencl == "3")
-                                                        {
-                                                            line.article.AR_REFCompose = line.article.AR_REF;
-                                                        }
-
-                                                        if (line.article.gamme1 != "0")
-                                                        {
-                                                            line.article.gamme1 = testGamme(0, line.article.AR_REF, line.article.gamme1, logFileWriter_import);
-                                                        }
-
-                                                        if (line.article.gamme2 != "0")
-                                                        {
-                                                            line.article.gamme2 = testGamme(1, line.article.AR_REF, line.article.gamme2, logFileWriter_import);
-                                                        }
-
-                                                        line.Quantite = tab[9].Replace(",", ".");
-                                                        decimal d = Decimal.Parse(line.Quantite, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
-                                                        if (d == 0)
-                                                        {
-                                                            line.Quantite = "1";
-                                                        }
-
-
-                                                        if (line.article.Conditionnement != null)
-                                                        {
-                                                            int quantite_Conditionnement = Calcule_conditionnement(d, line.article.Conditionnement.EC_QUANTITE, logFileWriter_import);
-                                                            line.Calcule_conditionnement = quantite_Conditionnement.ToString();
-                                                        }
-
-                                                        line.PrixNetHT = tab[14].Replace(",", ".");
-                                                        if(line.PrixNetHT == "")
-                                                        {
-                                                            line.PrixNetHT = "0.0";
-                                                        }
-
-                                                        line.MontantLigne = tab[11];
-                                                        line.DateLivraison = ConvertDate(tab[21]);
-                                                        if (line.DateLivraison.Length == 6)
-                                                        {
-                                                            line.DateLivraison = "Null";
-                                                        }
-
-                                                        try
-                                                        {
-                                                            if (!string.IsNullOrEmpty(line.article.AR_POIDSBRUT))
+                                                            if (line.article == null)
                                                             {
-                                                                line.article.AR_POIDSBRUT = Convert.ToString(d * Decimal.Parse(line.article.AR_POIDSBRUT, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture)).Replace(",", ".");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+                                                                tabCommandeError.Add(filename.Name);
+                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulé. Cet article (" + tab[2] + ") n'existe pas pour le client ou la centrale (" + client.CT_Num + ").", "Cet article (" + tab[2] + ") n'existe pas dans la base. Cet article (" + tab[2] + ") n'existe pas pour le client ou la centrale (" + client.CT_Num + ")", "", filename.Name, logFileName_import));
+                                                                goto goErrorLoop;
                                                             }
-                                                            if (!string.IsNullOrEmpty(line.article.AR_POIDSNET))
+
+                                                            if (line.article.RP_CODEDEFAUT == null || line.article.RP_CODEDEFAUT == "")
                                                             {
-                                                                line.article.AR_POIDSNET = Convert.ToString(d * Decimal.Parse(line.article.AR_POIDSNET, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture)).Replace(",", ".");
+                                                                line.article.RP_CODEDEFAUT = "NULL";
                                                             }
+
+
+                                                            line.article.Conditionnement = getConditionnementArticle(line.article.AR_REF, logFileWriter_import);
+
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " : tab ===> line.article.Conditionnement");
+                                                            if (line.article.AR_Nomencl == "2" || line.article.AR_Nomencl == "3")
+                                                            {
+                                                                line.article.AR_REFCompose = line.article.AR_REF;
+                                                            }
+
+                                                            if (line.article.gamme1 != "0")
+                                                            {
+                                                                line.article.gamme1 = testGamme(0, line.article.AR_REF, line.article.gamme1, logFileWriter_import);
+                                                            }
+
+                                                            if (line.article.gamme2 != "0")
+                                                            {
+                                                                line.article.gamme2 = testGamme(1, line.article.AR_REF, line.article.gamme2, logFileWriter_import);
+                                                            }
+
+                                                            line.Quantite = tab[9].Replace(",", ".");
+                                                            decimal d = Decimal.Parse(line.Quantite, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+                                                            if (d == 0)
+                                                            {
+                                                                line.Quantite = "1";
+                                                            }
+
+
+                                                            if (line.article.Conditionnement != null)
+                                                            {
+                                                                int quantite_Conditionnement = Calcule_conditionnement(d, line.article.Conditionnement.EC_QUANTITE, logFileWriter_import);
+                                                                line.Calcule_conditionnement = quantite_Conditionnement.ToString();
+                                                            }
+
+                                                            line.PrixNetHT = tab[14].Replace(",", ".");
+                                                            if (line.PrixNetHT == "")
+                                                            {
+                                                                line.PrixNetHT = "0.0";
+                                                            }
+
+                                                            line.MontantLigne = tab[11];
+                                                            line.DateLivraison = ConvertDate(tab[21]);
+                                                            if (line.DateLivraison.Length == 6)
+                                                            {
+                                                                line.DateLivraison = "Null";
+                                                            }
+
+                                                            try
+                                                            {
+                                                                if (!string.IsNullOrEmpty(line.article.AR_POIDSBRUT))
+                                                                {
+                                                                    line.article.AR_POIDSBRUT = Convert.ToString(d * Decimal.Parse(line.article.AR_POIDSBRUT, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture)).Replace(",", ".");
+                                                                }
+                                                                if (!string.IsNullOrEmpty(line.article.AR_POIDSNET))
+                                                                {
+                                                                    line.article.AR_POIDSNET = Convert.ToString(d * Decimal.Parse(line.article.AR_POIDSNET, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture)).Replace(",", ".");
+                                                                }
+                                                            }
+                                                            catch
+                                                            {
+                                                                Console.WriteLine("Erreur de conversion de poids.");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                                tabCommandeError.Add(filename.Name);
+                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur de conversion de poids.", "", filename.Name, logFileName_import));
+                                                                goto goErrorLoop;
+                                                            }
+
+                                                            line.codeAcheteur = tab[4].Replace(" ", "");
+                                                            line.codeFournis = tab[5].Replace(" ", "");
+                                                            //line.codeFournis = line.codeFournis.Replace(Environment.NewLine, String.Empty);
+                                                            line.descriptionArticle = tab[8].Replace("'", "''");
+                                                            if (string.IsNullOrEmpty(line.descriptionArticle))
+                                                            {
+                                                                line.descriptionArticle = line.article.AR_DESIGN;
+                                                            }
+
+                                                            //total = total + Decimal.Parse(tab[11].Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+
+                                                            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                            /// Get PriceType from settings and use the following
+                                                            /// 
+                                                            Init.Classes.SaveLoadInit init_settings = new Init.Classes.SaveLoadInit();
+                                                            if (init_settings.isSettings())
+                                                            {
+                                                                init_settings.Load();
+                                                            }
+                                                            else
+                                                            {
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur Init Configuration *********************");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur Init Configuration *********************");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : La configuration init.ini n'exist pas! Vérifié le fichier et son contenu.");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                                tabCommandeError.Add(filename.Name);
+                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.\nUne erreur dans les paramèrtes du connecteur, ce problème sera vérifié et résolu entre une à trois heures ouvrables.", "La configuration init.ini n'exist pas! Vérifié le fichier et son contenu.", "", filename.Name, logFileName_import));
+                                                                goto goErrorLoop;
+                                                            }
+
+                                                            //get setting obj
+                                                            if (init_settings.configurationGeneral.priceType == null ||
+                                                                init_settings.configurationGeneral.priceType.GetType() != typeof(Init.Classes.Configuration.PriceType))
+                                                            {
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur Init Configuration *********************");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur Init Configuration *********************");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : L'intégralité du Type/Typeof ne correspond pas ou n'est pas à jour de la dernière version du Type.");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                                tabCommandeError.Add(filename.Name);
+                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.\nUne erreur dans les paramèrtes du connecteur, ce problème sera vérifié et résolu entre une à trois heures ouvrables.", "L'intégralité du Type/Typeof ne correspond pas ou n'est pas à jour de la dernière version du Type.", "", filename.Name, logFileName_import));
+                                                                goto goErrorLoop;
+                                                            }
+
+                                                            //EDI Order Price
+                                                            if (init_settings.configurationGeneral.priceType.activate && init_settings.configurationGeneral.priceType.cmdEDIPrice)
+                                                            {
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le Connecteur utilise le prix depuis le fichier EDI.");
+                                                                logFileWriter_import.WriteLine("");
+
+                                                                try
+                                                                {
+                                                                    line.PrixNetHT = tab[14].Replace(",", ".");
+                                                                    if (line.PrixNetHT == "")
+                                                                    {
+                                                                        line.PrixNetHT = "0.0";
+                                                                    }
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Prix trouvé => " + line.PrixNetHT);
+                                                                }
+                                                                catch(Exception ex)
+                                                                {
+                                                                    line.PrixNetHT = "0.0";
+                                                                    logFileWriter_import.WriteLine("");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning Prix EDI *********************");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Mettre le prix à 0.0");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Message : " + ex.Message);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : StackTrace : " + ex.StackTrace);
+                                                                    logFileWriter_import.WriteLine("");
+                                                                    logFileWriter_import.WriteLine("");
+                                                                }
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix de la commande EDI : " + line.PrixNetHT);
+                                                                logFileWriter_import.WriteLine("");
+                                                            }
+
+                                                            //Article Price
+                                                            if (init_settings.configurationGeneral.priceType.activate && init_settings.configurationGeneral.priceType.productPrice)
+                                                            {
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le Connecteur utilise le prix depuis la fiche article.");
+                                                                logFileWriter_import.WriteLine("");
+
+                                                                line.PrixNetHT = line.article.AR_PRIXVEN;
+
+                                                                /*
+                                                                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
+                                                                {
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Récupère le prix fiche produit");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : SQL => " + QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre));
+                                                                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre), connexion))
+                                                                    {
+                                                                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                                        {
+                                                                            if (reader.Read()) // If any rows returned
+                                                                            {
+                                                                                line.PrixNetHT = tab[1].Replace(",", ".");
+                                                                            }
+                                                                            else // If no rows returned
+                                                                            {
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+
+                                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                                                logFileWriter_import.WriteLine("");
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!");
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                                                tabCommandeError.Add(filename.Name);
+                                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "", filename.Name, logFileName_import));
+                                                                                goto goErrorLoop;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    connexion.Close();
+                                                                }
+                                                                */
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix de la fiche article : " + line.PrixNetHT);
+                                                            }
+
+                                                            //Category Price
+                                                            if (init_settings.configurationGeneral.priceType.activate && init_settings.configurationGeneral.priceType.categoryPrice)
+                                                            {
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le Connecteur utilise le prix de la catégorie tarifaire.");
+                                                                logFileWriter_import.WriteLine("");
+
+                                                                // Find category price
+                                                                // If success then use it
+                                                                // If not found then use the price from the article info
+
+                                                                int N_CatTarif = -1;
+                                                                double AC_PrixVen = 0.0;
+                                                                string AR_PrixVen = null;
+                                                                bool categoryPriceFound = false;
+                                                                try
+                                                                {
+                                                                    using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
+                                                                    {
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : SQL => " + QueryHelper.getArticleCategoryPrice(true, client.CT_Num, line.article.AR_CodeBarre));
+                                                                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticleCategoryPrice(true, client.CT_Num, line.article.AR_CodeBarre), connexion))
+                                                                        {
+                                                                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                                            {
+                                                                                if (reader.Read()) // If any rows returned
+                                                                                {
+                                                                                    categoryPriceFound = true;
+                                                                                    N_CatTarif = Convert.ToInt32(reader[0].ToString());
+                                                                                    AC_PrixVen = Convert.ToDouble(reader[1].ToString().Replace(",", "."));
+                                                                                    AR_PrixVen = reader[2].ToString();
+                                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : N_CatTarif => " + N_CatTarif + " | AC_PrixVen => " + AC_PrixVen + " | AR_PrixVen => " + AR_PrixVen);
+                                                                                }
+                                                                                else // If no rows returned
+                                                                                {
+                                                                                    categoryPriceFound = false;
+                                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                        // check category special price 
+                                                                        if (categoryPriceFound)
+                                                                        {
+                                                                            // check if the cat is 0 && price found is not 0
+                                                                            // use product info price
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Vérifie si N_CatTarif est >= 1 et AC_PrixVen est > 0.0");
+                                                                            if (N_CatTarif >= 1 && AC_PrixVen >= 0.0)
+                                                                            {
+                                                                                line.PrixNetHT = AC_PrixVen.ToString().Replace(",", ".");
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix spécial du catégorie => " + AC_PrixVen);
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                // use client special price 
+                                                                                line.PrixNetHT = AR_PrixVen.Replace(",", ".");
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix du fiche produit => " + AR_PrixVen);
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            // use product info price
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Récupère le prix fiche produit");
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : SQL => " + QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre));
+                                                                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre), connexion))
+                                                                            {
+                                                                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                                                {
+                                                                                    if (reader.Read()) // If any rows returned
+                                                                                    {
+                                                                                        line.PrixNetHT = tab[1].Replace(",", ".");
+                                                                                    }
+                                                                                    else // If no rows returned
+                                                                                    {
+                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+
+                                                                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                                                        logFileWriter_import.WriteLine("");
+                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!");
+                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                                                        tabCommandeError.Add(filename.Name);
+                                                                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "", filename.Name, logFileName_import));
+                                                                                        goto goErrorLoop;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                catch (Exception ex)
+                                                                {
+                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                                    logFileWriter_import.WriteLine("");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Message => " + ex.Message);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : StackTrace => " + ex.StackTrace);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                                    tabCommandeError.Add(filename.Name);
+                                                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", ex.Message, ex.StackTrace, filename.Name, logFileName_import));
+                                                                    goto goErrorLoop;
+                                                                }
+
+                                                            }
+
+                                                            //Client Price
+                                                            if (init_settings.configurationGeneral.priceType.activate && init_settings.configurationGeneral.priceType.clientPrice)
+                                                            {
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le Connecteur utilise le prix tarifaire client.");
+                                                                logFileWriter_import.WriteLine("");
+
+                                                                int N_CatTarif = -1;
+                                                                double AC_PrixVen = 0.0;
+                                                                string AR_PrixVen = null;
+                                                                bool clientPriceFound = false;
+                                                                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
+                                                                {
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : SQL => " + QueryHelper.getArticleClientPrice(true, client.CT_Num, line.article.AR_CodeBarre));
+                                                                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticleClientPrice(true, client.CT_Num, line.article.AR_CodeBarre), connexion))
+                                                                    {
+                                                                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                                        {
+                                                                            if (reader.Read()) // If any rows returned
+                                                                            {
+                                                                                clientPriceFound = true;
+                                                                                N_CatTarif = Convert.ToInt32(reader[0].ToString());
+                                                                                AC_PrixVen = Convert.ToDouble(reader[1].ToString().Replace(",", "."));
+                                                                                AR_PrixVen = reader[2].ToString();
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : N_CatTarif => " + N_CatTarif + " | AC_PrixVen => "+ AC_PrixVen + " | AR_PrixVen => " + AR_PrixVen);
+                                                                            }
+                                                                            else // If no rows returned
+                                                                            {
+                                                                                clientPriceFound = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    // check client special price 
+                                                                    if (clientPriceFound)
+                                                                    {
+                                                                        // check if the cat is 0 && price found is not 0
+                                                                        // use product info price
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Vérifie si N_CatTarif est > 1 et AC_PrixVen est > 0.0");
+                                                                        if ((N_CatTarif == 0 || N_CatTarif == 1) && AC_PrixVen == 0.0)
+                                                                        {
+                                                                            line.PrixNetHT = AC_PrixVen.ToString().Replace(",", ".");
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix spécial du client => " + AC_PrixVen);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            // use client special price 
+                                                                            line.PrixNetHT = AR_PrixVen.Replace(",", ".");
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix du fiche produit => " + AR_PrixVen);
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        // use product info price
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Récupère le prix fiche produit");
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : SQL => " + QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre));
+                                                                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre), connexion))
+                                                                        {
+                                                                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                                            {
+                                                                                if (reader.Read()) // If any rows returned
+                                                                                {
+                                                                                    line.PrixNetHT = tab[1].Replace(",", ".");
+                                                                                }
+                                                                                else // If no rows returned
+                                                                                {
+                                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+
+                                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                                                    logFileWriter_import.WriteLine("");
+                                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : La récupération prix vente de l'article ("+ line.article.AR_CodeBarre + ") n'exizste pas!");
+                                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                                                    tabCommandeError.Add(filename.Name);
+                                                                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "", filename.Name, logFileName_import));
+                                                                                    goto goErrorLoop;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    connexion.Close();
+                                                                }
+                                                            }
+
+                                                            /*
+                                                            decimal prix = Decimal.Parse(line.PrixNetHT, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+                                                            decimal prixSage = Decimal.Parse(line.article.AR_PRIXVEN.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+
+                                                            logFileWriter_import.WriteLine("");
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Prix *********************");
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Prix trouvé dans le fichier EDI => " + prix + " && Prix trouvé dans Sage => " + prixSage);
+                                                            logFileWriter_import.WriteLine("");
+
+                                                            if (prixSage == 0.0m) //if sage article prie is 0.0 then use the EDI file price
+                                                            {
+                                                                line.PrixNetHT = prix.ToString().Replace(',', '.');
+                                                            }
+                                                            else if (prix != prixSage)
+                                                            {
+                                                                Console.WriteLine("Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning Prix *********************");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
+
+                                                                //use the article prix from the db
+                                                                if (prixSage != 0.000000m)
+                                                                {
+                                                                    Console.WriteLine("Utilise le prix de la base : " + prixSage);
+                                                                    line.PrixNetHT = prixSage.ToString().Replace(',', '.');
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix de la base : " + prixSage + ".");
+                                                                }
+                                                                else
+                                                                {
+                                                                    Console.WriteLine("Utilise le prix envoyer par le client : " + prix);
+                                                                    line.PrixNetHT = prix.ToString().Replace(',', '.');
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix envoyer par le client : " + prix + ".");
+                                                                }
+                                                                logFileWriter_import.WriteLine("");
+                                                            }
+                                                            */
+
+
+
+                                                            order.Lines.Add(line);
                                                         }
-                                                        catch
+                                                        else
                                                         {
-                                                            Console.WriteLine("Erreur de conversion de poids.");
+                                                            Console.WriteLine("Erreur dans la ligne " + pos + " du fichier.", "Erreur de lecture !!");
+
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
 
                                                             logFileWriter_import.WriteLine("");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Erreur de conversion de poids.");
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier " + filename + ".", "Erreur de lecture.");
                                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                             tabCommandeError.Add(filename.Name);
-                                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur de conversion de poids.", "", filename.Name, logFileName_import));
+                                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur dans la ligne " + pos + " du fichier " + filename + ".", "", filename.Name, logFileName_import));
                                                             goto goErrorLoop;
                                                         }
+                                                        break;
+                                                }
 
-                                                        line.codeAcheteur = tab[4].Replace(" ", "");
-                                                        line.codeFournis = tab[5].Replace(" ", "");
-                                                        //line.codeFournis = line.codeFournis.Replace(Environment.NewLine, String.Empty);
-                                                        line.descriptionArticle = tab[8].Replace("'", "''");
-                                                        if (string.IsNullOrEmpty(line.descriptionArticle))
-                                                        {
-                                                            line.descriptionArticle = line.article.AR_DESIGN;
-                                                        }
+                                                pos++;
 
-                                                        //total = total + Decimal.Parse(tab[11].Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+                                            }
+
+                                            //order.MontantTotal = total;
+
+                                            order.DateLivraison = "Null";
+
+                                            for (int i = 0; i < order.Lines.Count; i++)
+                                            {
+                                                if (order.Lines[i].DateLivraison.Length == 10)
+                                                {
+                                                    order.DateLivraison = order.Lines[i].DateLivraison;
+                                                    goto jamp;
+                                                }
+                                            }
+
+                                        jamp:
 
 
-                                                        decimal prix = Decimal.Parse(line.PrixNetHT, NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+                                            if (order.codeClient != "")
+                                            {
 
+                                                if (string.IsNullOrEmpty(order.deviseCommande))
+                                                {
+                                                    order.deviseCommande = client.N_Devise;
+                                                }
 
-                                                        decimal prixSage = Decimal.Parse(line.article.AR_PRIXVEN.Replace(",", "."), NumberStyles.AllowCurrencySymbol | NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+                                                order.StockId = getStockId(logFileWriter_import);
+                                                if (string.IsNullOrEmpty(order.StockId))
+                                                {
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
 
-                                                        logFileWriter_import.WriteLine("");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Prix *********************");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Prix trouvé dans le fichier EDI => " + prix + " && Prix trouvé dans Sage => " + prixSage);
-                                                        logFileWriter_import.WriteLine("");
+                                                    logFileWriter_import.WriteLine("");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_import.WriteLine("");
+                                                    tabCommandeError.Add(filename.Name);
+                                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Stock ID est null ou vide.", "", filename.Name, logFileName_import));
+                                                    goto goErrorLoop;
+                                                }
 
-                                                        if (prixSage == 0.0m) //if sage article prie is 0.0 then use the EDI file price
-                                                        {
-                                                            line.PrixNetHT = prix.ToString().Replace(',', '.');
-                                                        }
-                                                        else if (prix != prixSage)
-                                                        {
-                                                            Console.WriteLine("Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning Prix *********************");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Prix de l'article " + line.article.AR_REF + "(" + tab[2] + ") dans la base est : " + prixSage + "\nIl est différent du prix envoyer par le client : " + prix + ".");
+                                                if (!prixDef)
+                                                {
+                                                    string Ref = order.Reference + "/" + order.NumCommande;
 
-                                                            //use the article prix from the db
-                                                            if (prixSage != 0.000000m)
-                                                            {
-                                                                Console.WriteLine("Utilise le prix de la base : " + prixSage);
-                                                                line.PrixNetHT = prixSage.ToString().Replace(',', '.');
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix de la base : " + prixSage + ".");
-                                                            }
-                                                            else
-                                                            {
-                                                                Console.WriteLine("Utilise le prix envoyer par le client : " + prix);
-                                                                line.PrixNetHT = prix.ToString().Replace(',', '.');
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix envoyer par le client : " + prix + ".");
-                                                            }
-                                                            logFileWriter_import.WriteLine("");
-                                                        }
-
-                                                        order.Lines.Add(line);
+                                                    if (Ref.Length <= 17)
+                                                    {
+                                                        order.Reference = Ref;
                                                     }
                                                     else
                                                     {
-                                                        Console.WriteLine("Erreur dans la ligne " + pos + " du fichier.", "Erreur de lecture !!");
+                                                        int reste = 16 - order.NumCommande.Length;
 
-                                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                                        logFileWriter_import.WriteLine("");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la ligne " + pos + " du fichier " + filename + ".", "Erreur de lecture.");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                        tabCommandeError.Add(filename.Name);
-                                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur dans la ligne " + pos + " du fichier " + filename + ".", "", filename.Name, logFileName_import));
-                                                        goto goErrorLoop;
-                                                    }
-                                                    break;
-                                            }
-
-                                            pos++;
-
-                                        }
-
-                                        //order.MontantTotal = total;
-
-                                        order.DateLivraison = "Null";
-
-                                        for (int i = 0; i < order.Lines.Count; i++)
-                                        {
-                                            if (order.Lines[i].DateLivraison.Length == 10)
-                                            {
-                                                order.DateLivraison = order.Lines[i].DateLivraison;
-                                                goto jamp;
-                                            }
-                                        }
-
-                                    jamp:
-
-
-                                        if (order.codeClient != "")
-                                        {
-
-                                            if (string.IsNullOrEmpty(order.deviseCommande))
-                                            {
-                                                order.deviseCommande = client.N_Devise;
-                                            }
-
-                                            order.StockId = getStockId(logFileWriter_import);
-                                            if (string.IsNullOrEmpty(order.StockId))
-                                            {
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                                logFileWriter_import.WriteLine("");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Stock ID est null ou vide.");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter_import.WriteLine("");
-                                                tabCommandeError.Add(filename.Name);
-                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Stock ID est null ou vide.", "", filename.Name, logFileName_import));
-                                                goto goErrorLoop;
-                                            }
-
-                                            if (!prixDef)
-                                            {
-                                                string Ref = order.Reference + "/" + order.NumCommande;
-
-                                                if (Ref.Length <= 17)
-                                                {
-                                                    order.Reference = Ref;
-                                                }
-                                                else
-                                                {
-                                                    int reste = 16 - order.NumCommande.Length;
-
-                                                    if (order.Reference.Length > reste)
-                                                    {
-                                                        order.Reference = order.Reference.Substring(0, reste) + "/" + order.NumCommande;
-                                                    }
-                                                }
-                                            }
-
-                                            if (prixDef)
-                                            {
-                                                string pr = "/AP";
-                                                string Ref = order.Reference + "/" + order.NumCommande + pr;
-
-                                                if (Ref.Length <= 17)
-                                                {
-                                                    order.Reference = Ref;
-                                                }
-                                                else
-                                                {
-                                                    int reste = 16 - order.NumCommande.Length - pr.Length;
-
-                                                    if (order.Reference.Length > reste)
-                                                    {
-                                                        order.Reference = order.Reference.Substring(0, reste) + "/" + order.NumCommande + pr;
-                                                    }
-                                                }
-
-                                            }
-
-                                            if (order.Lines.Count == 0)
-                                            {
-                                                Console.WriteLine("Aucun ligne de commande enregistré.");
-
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = " + order.Lines.Count());
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter_import.WriteLine("");
-                                                tabCommandeError.Add(filename.Name);
-                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Aucun ligne de commande enregistré. ligne = " + order.Lines.Count(), "", filename.Name, logFileName_import));
-                                                goto goErrorLoop;
-                                            }
-                                            MessageErreur = new List<string>();
-
-                                            order.adresseLivraison = getNumLivraison(client.CT_Num, logFileWriter_import);
-                                            if (string.IsNullOrEmpty(order.adresseLivraison))
-                                            {
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide.");
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                logFileWriter_import.WriteLine("");
-                                                tabCommandeError.Add(filename.Name);
-                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Adresse de livraison est null ou vide.", "", filename.Name, logFileName_import));
-                                                goto goErrorLoop;
-                                            }
-
-                                            //Get the list of all Taxes (TVA)
-                                            //So i can calculate the ttc later
-                                            logFileWriter_import.WriteLine("");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Récupére tous les tva");
-                                            List<TVA> tvaList = null;
-                                            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                                            {
-                                                connexion.Open();
-                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getAllTVA(true));
-                                                using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connexion))
-                                                {
-                                                    using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                                                    {
-                                                        if (reader.Read()) // If any rows returned
+                                                        if (order.Reference.Length > reste)
                                                         {
-                                                            tvaList = new List<TVA>();
-                                                            tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
-                                                            while (reader.Read())
+                                                            order.Reference = order.Reference.Substring(0, reste) + "/" + order.NumCommande;
+                                                        }
+                                                    }
+                                                }
+
+                                                if (prixDef)
+                                                {
+                                                    string pr = "/AP";
+                                                    string Ref = order.Reference + "/" + order.NumCommande + pr;
+
+                                                    if (Ref.Length <= 17)
+                                                    {
+                                                        order.Reference = Ref;
+                                                    }
+                                                    else
+                                                    {
+                                                        int reste = 16 - order.NumCommande.Length - pr.Length;
+
+                                                        if (order.Reference.Length > reste)
+                                                        {
+                                                            order.Reference = order.Reference.Substring(0, reste) + "/" + order.NumCommande + pr;
+                                                        }
+                                                    }
+
+                                                }
+
+                                                if (order.Lines.Count == 0)
+                                                {
+                                                    Console.WriteLine("Aucun ligne de commande enregistré.");
+
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Aucun ligne de commande enregistré. ligne = " + order.Lines.Count());
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_import.WriteLine("");
+                                                    tabCommandeError.Add(filename.Name);
+                                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Aucun ligne de commande enregistré. ligne = " + order.Lines.Count(), "", filename.Name, logFileName_import));
+                                                    goto goErrorLoop;
+                                                }
+                                                MessageErreur = new List<string>();
+
+                                                order.adresseLivraison = getNumLivraison(client.CT_Num, logFileWriter_import);
+                                                if (string.IsNullOrEmpty(order.adresseLivraison))
+                                                {
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Adresse de livraison est null ou vide.");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_import.WriteLine("");
+                                                    tabCommandeError.Add(filename.Name);
+                                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Adresse de livraison est null ou vide.", "", filename.Name, logFileName_import));
+                                                    goto goErrorLoop;
+                                                }
+
+                                                //Get the list of all Taxes (TVA)
+                                                //So i can calculate the ttc later
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Récupére tous les tva");
+                                                List<TVA> tvaList = null;
+                                                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
+                                                {
+                                                    connexion.Open();
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getAllTVA(true));
+                                                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connexion))
+                                                    {
+                                                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                        {
+                                                            if (reader.Read()) // If any rows returned
                                                             {
+                                                                tvaList = new List<TVA>();
                                                                 tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                                                while (reader.Read())
+                                                                {
+                                                                    tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                                                }
                                                             }
-                                                        }
-                                                        else// If no rows returned
-                                                        {
-                                                            //do nothing.
-                                                            tvaList = null;
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                            else// If no rows returned
+                                                            {
+                                                                //do nothing.
+                                                                tvaList = null;
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                            }
                                                         }
                                                     }
-                                                }
 
-                                                string taxCode = "";
-                                                string taxValue = "";
-                                                double totalHT = 0.0;
-                                                double totalTTC = 0.0;
+                                                    string taxCode = "";
+                                                    string taxValue = "";
+                                                    double totalHT = 0.0;
+                                                    double totalTTC = 0.0;
 
-                                                if (insertCommande(client, order, logFileWriter_import, filename.Name))
-                                                {
-                                                    int nbr_ = 0;
 
-                                                    for (int i = 0; i < order.Lines.Count; i++)
+
+                                                    if (insertCommande(client, order, importSetting.configurationImport.Doc_Ventes.Commande.Status, logFileWriter_import, filename.Name))
                                                     {
-                                                        if (order.Lines[i].article.AR_SuiviStock == "0")
-                                                        {
-                                                            order.Lines[i].article.AR_StockId = "0";
-                                                        }
-                                                        else
-                                                        {
-                                                            order.Lines[i].article.AR_StockId = order.StockId;
-                                                        }
+                                                        int nbr_ = 0;
 
-                                                        string ACP_ComptaCPT_CompteG = null;
-                                                        Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-                                                        if (settings.isSettings())
+                                                        for (int i = 0; i < order.Lines.Count; i++)
                                                         {
-                                                            settings.Load();
-                                                            ACP_ComptaCPT_CompteG = "" + settings.configurationGeneral.general.ACP_ComptaCPT_CompteG;
-                                                        }
-
-
-                                                        //Get article taxes
-                                                        logFileWriter_import.WriteLine("");
-                                                        logFileWriter_import.WriteLine("Récupérer les TVA des l'article " + order.Lines[i].article.AR_REF);
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG));
-                                                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG), connexion))
-                                                        {
-                                                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                            if (order.Lines[i].article.AR_SuiviStock == "0")
                                                             {
-                                                                if (reader.Read()) // If any rows returned
-                                                                {
-                                                                    order.Lines[i].article.DL_CodeTaxe1 = reader[0].ToString();
-                                                                    order.Lines[i].article.DL_CodeTaxe2 = reader[1].ToString();
-                                                                    order.Lines[i].article.DL_CodeTaxe3 = reader[2].ToString();
-                                                                    logFileWriter_import.WriteLine("DL_CodeTaxe1 : "+ order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
-                                                                    logFileWriter_import.WriteLine("");
-                                                                }
-                                                                else// If no rows returned
-                                                                {
-                                                                    //do nothing.
-                                                                    order.Lines[i].article.DL_CodeTaxe1 = "C00";
-                                                                    order.Lines[i].article.DL_CodeTaxe2 = "C00";
-                                                                    order.Lines[i].article.DL_CodeTaxe3 = "C00";
-                                                                    logFileWriter_import.WriteLine("Aucune reponse.");
-                                                                    logFileWriter_import.WriteLine("DL_CodeTaxe1 : " + order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
-                                                                    logFileWriter_import.WriteLine("");
-                                                                }
-                                                            }
-                                                        }
-
-
-                                                        //Add TVA && Calculate product ttc
-                                                        double product_ttc = 0.0;
-                                                        try
-                                                        {
-                                                            logFileWriter_import.WriteLine("");
-                                                            Connexion.ConnexionSaveLoad connexionSaveLoad = new ConnexionSaveLoad();
-                                                            connexionSaveLoad.Load();
-                                                            string dns = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
-
-                                                            if (tvaList != null)
-                                                            {
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : List des TVA trouvé");
-                                                                TVA tva__1 = null;
-                                                                TVA tva__2 = null;
-                                                                TVA tva__3 = null;
-                                                                bool tva_1 = false;
-                                                                bool tva_2 = false;
-                                                                bool tva_3 = false;
-
-                                                                //find and add CodeTaxe1
-                                                                foreach (TVA tva_ in tvaList)
-                                                                {
-                                                                    if (order.Lines[i].article.DL_CodeTaxe1 != null && order.Lines[i].article.DL_CodeTaxe1 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe1)
-                                                                    {
-                                                                        tva__1 = tva_;
-                                                                        tva_1 = true;
-                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 " + tva__1.TA_Code + " trouvé \"" + tva__1.TA_Taux + "\"");
-                                                                        break;
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        if (order.Lines[i].article.DL_CodeTaxe1 == null)
-                                                                        {
-                                                                            //tva = tva_;
-                                                                            tva_1 = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 NULL trouvé, alors TVA mis à 0");
-                                                                            break;
-                                                                        }
-                                                                        else if (order.Lines[i].article.DL_CodeTaxe1 == "")
-                                                                        {
-                                                                            //tva = tva_;
-                                                                            tva_1 = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 VIDE trouvé, alors TVA mis à 0");
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                //find and add CodeTaxe2
-                                                                foreach (TVA tva_ in tvaList)
-                                                                {
-                                                                    if (order.Lines[i].article.DL_CodeTaxe2 != null && order.Lines[i].article.DL_CodeTaxe2 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe2)
-                                                                    {
-                                                                        tva__2 = tva_;
-                                                                        tva_2 = true;
-                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 " + tva__2.TA_Code + " trouvé \"" + tva__2.TA_Taux + "\"");
-                                                                        break;
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        if (order.Lines[i].article.DL_CodeTaxe2 == null)
-                                                                        {
-                                                                            //tva = tva_;
-                                                                            tva_2 = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 NULL trouvé, alors TVA mis à 0");
-                                                                            break;
-                                                                        }
-                                                                        else if (order.Lines[i].article.DL_CodeTaxe2 == "")
-                                                                        {
-                                                                            //tva = tva_;
-                                                                            tva_2 = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 VIDE trouvé, alors TVA mis à 0");
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                //find and add CodeTaxe3
-                                                                foreach (TVA tva_ in tvaList)
-                                                                {
-                                                                    if (order.Lines[i].article.DL_CodeTaxe3 != null && order.Lines[i].article.DL_CodeTaxe3 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe3)
-                                                                    {
-                                                                        tva__3 = tva_;
-                                                                        tva_3 = true;
-                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 " + tva__3.TA_Code + " trouvé \"" + tva__3.TA_Taux + "\"");
-                                                                        break;
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        if (order.Lines[i].article.DL_CodeTaxe3 == null)
-                                                                        {
-                                                                            //tva = tva_;
-                                                                            tva_3 = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 NULL trouvé, alors TVA mis à 0");
-                                                                            break;
-                                                                        }
-                                                                        else if (order.Lines[i].article.DL_CodeTaxe3 == "")
-                                                                        {
-                                                                            //tva = tva_;
-                                                                            tva_3 = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 VIDE trouvé, alors TVA mis à 0");
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Calcule TVA ******************** ");
-                                                                double endTVA = 0.0;
-
-                                                                if (tva_1)
-                                                                {
-                                                                    endTVA += Convert.ToDouble(tva__1.TA_Taux);
-                                                                    order.Lines[i].article.DL_Taxe1 = tva__1.TA_Taux.Replace(",", ".");
-                                                                }
-                                                                else
-                                                                {
-                                                                    order.Lines[i].article.DL_CodeTaxe1 = "C00";
-                                                                    order.Lines[i].article.DL_Taxe1 = "0.000000";
-                                                                    endTVA += 0.0;
-                                                                }
-
-                                                                if (tva_2)
-                                                                {
-                                                                    //endTVA += Convert.ToDouble(tva__2.TA_Taux);
-                                                                    order.Lines[i].article.DL_Taxe2 = tva__2.TA_Taux.Replace(",", ".");
-                                                                }
-                                                                else
-                                                                {
-                                                                    order.Lines[i].article.DL_CodeTaxe2 = "C00";
-                                                                    order.Lines[i].article.DL_Taxe2 = "0.000000";
-                                                                    endTVA += 0.0;
-                                                                }
-
-                                                                if (tva_3)
-                                                                {
-                                                                    //endTVA += Convert.ToDouble(tva__3.TA_Taux);
-                                                                    order.Lines[i].article.DL_Taxe3 = tva__3.TA_Taux.Replace(",", ".");
-                                                                }
-                                                                else
-                                                                {
-                                                                    order.Lines[i].article.DL_CodeTaxe3 = "C00";
-                                                                    order.Lines[i].article.DL_Taxe3 = "0.000000";
-                                                                    endTVA += 0.0;
-                                                                }
-
-                                                                // test
-                                                                order.Lines[i].article.DL_CodeTaxe1 = "C20";
-                                                                order.Lines[i].article.DL_Taxe1 = "20.000000";
-                                                                endTVA += 20.0;
-
-                                                                double product_ht = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
-                                                                double product_tva_P = (product_ht * Convert.ToDouble(endTVA)) / 100;
-                                                                product_ttc = product_ht + product_tva_P;
-                                                                order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
-
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 => " + order.Lines[i].article.DL_Taxe1);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 => " + order.Lines[i].article.DL_Taxe2);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 => " + order.Lines[i].article.DL_Taxe3);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix HT => " + product_ht + " | TVA => " + endTVA + " % | Prix TTC => " + product_ttc);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
-                                                                logFileWriter_import.WriteLine("");
+                                                                order.Lines[i].article.AR_StockId = "0";
                                                             }
                                                             else
                                                             {
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Warning TVA ********************");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BC seront 0");
-                                                                logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Calcule TVA ******************** ");
-
-                                                                double product_ht = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
-                                                                double product_tva_P = (product_ht * 0.0) / 100;
-                                                                product_ttc = product_ht + product_tva_P;
-                                                                order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
-                                                                order.Lines[i].article.DL_Taxe1 = "0.000000";
-                                                                order.Lines[i].article.DL_CodeTaxe1 = "C00";
-                                                                order.Lines[i].article.DL_Taxe2 = "0.000000";
-                                                                order.Lines[i].article.DL_CodeTaxe2 = "C00";
-                                                                order.Lines[i].article.DL_Taxe3 = "0.000000";
-                                                                order.Lines[i].article.DL_CodeTaxe3 = "C00";
-
-
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 => " + order.Lines[i].article.DL_Taxe1);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 => " + order.Lines[i].article.DL_Taxe2);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 => " + order.Lines[i].article.DL_Taxe3);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix HT => " + product_ht + " | TVA => 0.0 % | Prix TTC => " + product_ttc);
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
-                                                                logFileWriter_import.WriteLine("");
+                                                                order.Lines[i].article.AR_StockId = order.StockId;
                                                             }
-                                                            order.Lines[i].PrixNetHT.Replace(",", ".");
-                                                            logFileWriter_import.Flush();
 
-                                                        }
-                                                        catch (Exception ex)
-                                                        {
+                                                            string ACP_ComptaCPT_CompteG = "";
+                                                            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+                                                            if (settings.isSettings())
+                                                            {
+                                                                settings.Load();
+                                                                ACP_ComptaCPT_CompteG = "" + settings.configurationGeneral.general.ACP_ComptaCPT_CompteG;
+                                                            }
+                                                            else
+                                                            {
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : La configuration general n'est pas trouvé!");
+                                                                tabCommandeError.Add(filename.Name);
+                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.\nUne erreur dans les paramèrtes du connecteur, ce problème sera vérifié et résolu entre une à trois heures ouvrables.", "Import de la commande " + order.Id + " du client " + order.NomClient + " à échoué.\nVeuillez vérifier la config du \"Compt. G. Taxe\" sur le Connecteur.", "", filename.Name, logFileName_import));
+                                                                goto goErrorLoop;
+                                                            }
+
+                                                            // Get article taxes
                                                             logFileWriter_import.WriteLine("");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Exception TVA ********************");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : StackTrace :" + ex.StackTrace);
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Import annulée");
-                                                            logFileWriter_import.Flush();
-                                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur lors du calcule du prix d'article TTC, message : " + ex.Message, ex.StackTrace, filename.Name, logFileName_import));
-                                                            nbr_ = 0;
-                                                            break;
-                                                        }
-
-                                                        //add more info to BC
-                                                        
-
-                                                        //add BC history in the cmd lines
-                                                        order.Lines[i].DO_Ref = order.NumCommande;
-                                                        order.Lines[i].DL_PieceBC = order.Id;
-                                                        order.Lines[i].DL_QteBC = order.Lines[i].Quantite;
-                                                        order.Lines[i].DL_QteDE = order.Lines[i].Quantite;
-                                                        order.Lines[i].DL_QtePL = order.Lines[i].Quantite;
-                                                        order.Lines[i].DL_DateBC = order.DateCommande;
-                                                        order.Lines[i].DL_DateDE = order.DateCommande;
-                                                        order.Lines[i].DL_DatePL = "1753-01-01";
-
-                                                        order.Lines[i].article.DL_PrixUnitaire_salePriceHT = order.Lines[i].PrixNetHT;
-
-                                                        order.Lines[i].DL_MontantHT = (Convert.ToDouble(order.Lines[i].article.DL_PrixUnitaire_salePriceHT.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",",".");
-                                                        order.Lines[i].DL_MontantTTC = (Convert.ToDouble(order.Lines[i].article.DL_PUTTC.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",", ".");
-
-                                                        logFileWriter_import.WriteLine("");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : DL_MontantHT : " + order.Lines[i].DL_MontantHT + " = DL_PrixUnitaire : " + order.Lines[i].article.DL_PrixUnitaire_salePriceHT + " X DL_QteBC : " + order.Lines[i].DL_QteBC);
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : DL_MontantTTC : " + order.Lines[i].DL_MontantTTC + " = DL_PUTTC : " + order.Lines[i].article.DL_PUTTC + " X DL_QteBC : " + order.Lines[i].DL_QteBC);
+                                                            logFileWriter_import.WriteLine("Récupérer les TVA des l'article " + order.Lines[i].article.AR_REF);
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG));
+                                                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG), connexion))
+                                                            {
+                                                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                                {
+                                                                    if (reader.Read()) // If any rows returned
+                                                                    {
+                                                                        order.Lines[i].article.DL_CodeTaxe1 = reader[0].ToString();
+                                                                        order.Lines[i].article.DL_CodeTaxe2 = reader[1].ToString();
+                                                                        order.Lines[i].article.DL_CodeTaxe3 = reader[2].ToString();
+                                                                        logFileWriter_import.WriteLine("DL_CodeTaxe1 : " + order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
+                                                                        logFileWriter_import.WriteLine("");
+                                                                    }
+                                                                    else// If no rows returned
+                                                                    {
+                                                                        //do nothing.
+                                                                        order.Lines[i].article.DL_CodeTaxe1 = "C00";
+                                                                        order.Lines[i].article.DL_CodeTaxe2 = "C00";
+                                                                        order.Lines[i].article.DL_CodeTaxe3 = "C00";
+                                                                        logFileWriter_import.WriteLine("Aucune reponse.");
+                                                                        logFileWriter_import.WriteLine("DL_CodeTaxe1 : " + order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
+                                                                        logFileWriter_import.WriteLine("");
+                                                                    }
+                                                                }
+                                                            }
 
 
-                                                        if (insertCommandeLine(client, order, order.Lines[i], logFileWriter_import))
-                                                        {
-                                                            //Update docline artile stock
+                                                            //Add TVA && Calculate product ttc
+                                                            double product_ttc = 0.0;
                                                             try
                                                             {
                                                                 logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Le Code TVA (" + order.Lines[i].article.DL_CodeTaxe1 + ") et la valuer du TVA (" + order.Lines[i].article.DL_Taxe1 + ")");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Additionner le total HT (" + order.Lines[i].PrixNetHT + ") et TTC (" + order.Lines[i].article.DL_PUTTC + ")");
+                                                                Connexion.ConnexionSaveLoad connexionSaveLoad = new ConnexionSaveLoad();
+                                                                connexionSaveLoad.Load();
+                                                                string dns = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
 
-                                                                taxCode = order.Lines[i].article.DL_CodeTaxe1;
-                                                                taxValue = order.Lines[i].article.DL_Taxe1;
-                                                                totalHT += Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
-                                                                totalTTC += Convert.ToDouble(order.Lines[i].article.DL_PUTTC.Replace(".", ","));
-
-
-                                                                bool found_stock = false;
-                                                                double AS_StockReel = 0.0;
-                                                                double AS_StockReserve = 0.0;
-                                                                double AS_StockMontant = 0.0;
-                                                                double productPrixUnite = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace('.', ','));
-
-                                                                logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : get current stock in F_ARTSTOCK table in the database");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : requette sql ===> " + QueryHelper.getArticleStock(true, order.Lines[i].article.AR_REF));
-                                                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, order.Lines[i].article.AR_REF), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                                                if (tvaList != null)
                                                                 {
-                                                                    using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : List des TVA trouvé");
+                                                                    TVA tva__1 = null;
+                                                                    TVA tva__2 = null;
+                                                                    TVA tva__3 = null;
+                                                                    bool tva_1 = false;
+                                                                    bool tva_2 = false;
+                                                                    bool tva_3 = false;
+
+                                                                    //find and add CodeTaxe1
+                                                                    foreach (TVA tva_ in tvaList)
                                                                     {
-                                                                        if (reader.Read()) // If any rows returned
+                                                                        if (order.Lines[i].article.DL_CodeTaxe1 != null && order.Lines[i].article.DL_CodeTaxe1 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe1)
                                                                         {
-                                                                            found_stock = true;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Stock trouvé : AS_StockReel (" + reader[0].ToString() + "), AS_StockReserve (" + reader[1].ToString() + "), AS_StockMontant (" + reader[2].ToString() + ").");
-                                                                            AS_StockReel = Convert.ToDouble(reader[0].ToString().Replace(".", ","));
-                                                                            AS_StockReserve = Convert.ToDouble(reader[1].ToString().Replace(".", ","));
-                                                                            AS_StockMontant = Convert.ToDouble(reader[2].ToString().Replace(".", ","));
+                                                                            tva__1 = tva_;
+                                                                            tva_1 = true;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 " + tva__1.TA_Code + " trouvé \"" + tva__1.TA_Taux + "\"");
+                                                                            break;
                                                                         }
-                                                                        else // If no rows returned
+                                                                        else
                                                                         {
-                                                                             //do nothing.
-                                                                            found_stock = false;
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse.");
+                                                                            if (order.Lines[i].article.DL_CodeTaxe1 == null)
+                                                                            {
+                                                                                //tva = tva_;
+                                                                                tva_1 = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 NULL trouvé, alors TVA mis à 0");
+                                                                                break;
+                                                                            }
+                                                                            else if (order.Lines[i].article.DL_CodeTaxe1 == "")
+                                                                            {
+                                                                                //tva = tva_;
+                                                                                tva_1 = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 VIDE trouvé, alors TVA mis à 0");
+                                                                                break;
+                                                                            }
                                                                         }
                                                                     }
+
+                                                                    //find and add CodeTaxe2
+                                                                    foreach (TVA tva_ in tvaList)
+                                                                    {
+                                                                        if (order.Lines[i].article.DL_CodeTaxe2 != null && order.Lines[i].article.DL_CodeTaxe2 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe2)
+                                                                        {
+                                                                            tva__2 = tva_;
+                                                                            tva_2 = true;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 " + tva__2.TA_Code + " trouvé \"" + tva__2.TA_Taux + "\"");
+                                                                            break;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (order.Lines[i].article.DL_CodeTaxe2 == null)
+                                                                            {
+                                                                                //tva = tva_;
+                                                                                tva_2 = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 NULL trouvé, alors TVA mis à 0");
+                                                                                break;
+                                                                            }
+                                                                            else if (order.Lines[i].article.DL_CodeTaxe2 == "")
+                                                                            {
+                                                                                //tva = tva_;
+                                                                                tva_2 = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 VIDE trouvé, alors TVA mis à 0");
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    //find and add CodeTaxe3
+                                                                    foreach (TVA tva_ in tvaList)
+                                                                    {
+                                                                        if (order.Lines[i].article.DL_CodeTaxe3 != null && order.Lines[i].article.DL_CodeTaxe3 != "" && tva_.TA_Code == order.Lines[i].article.DL_CodeTaxe3)
+                                                                        {
+                                                                            tva__3 = tva_;
+                                                                            tva_3 = true;
+                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 " + tva__3.TA_Code + " trouvé \"" + tva__3.TA_Taux + "\"");
+                                                                            break;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (order.Lines[i].article.DL_CodeTaxe3 == null)
+                                                                            {
+                                                                                //tva = tva_;
+                                                                                tva_3 = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 NULL trouvé, alors TVA mis à 0");
+                                                                                break;
+                                                                            }
+                                                                            else if (order.Lines[i].article.DL_CodeTaxe3 == "")
+                                                                            {
+                                                                                //tva = tva_;
+                                                                                tva_3 = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 VIDE trouvé, alors TVA mis à 0");
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    logFileWriter_import.WriteLine("");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Calcule TVA ******************** ");
+                                                                    double endTVA = 0.0;
+
+                                                                    if (tva_1)
+                                                                    {
+                                                                        endTVA += Convert.ToDouble(tva__1.TA_Taux);
+                                                                        order.Lines[i].article.DL_Taxe1 = tva__1.TA_Taux.Replace(",", ".");
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        order.Lines[i].article.DL_CodeTaxe1 = "C00";
+                                                                        order.Lines[i].article.DL_Taxe1 = "0.000000";
+                                                                        endTVA += 0.0;
+                                                                    }
+
+                                                                    if (tva_2)
+                                                                    {
+                                                                        endTVA += Convert.ToDouble(tva__2.TA_Taux);
+                                                                        order.Lines[i].article.DL_Taxe2 = tva__2.TA_Taux.Replace(",", ".");
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        order.Lines[i].article.DL_CodeTaxe2 = "C00";
+                                                                        order.Lines[i].article.DL_Taxe2 = "0.000000";
+                                                                        endTVA += 0.0;
+                                                                    }
+
+                                                                    if (tva_3)
+                                                                    {
+                                                                        endTVA += Convert.ToDouble(tva__3.TA_Taux);
+                                                                        order.Lines[i].article.DL_Taxe3 = tva__3.TA_Taux.Replace(",", ".");
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        order.Lines[i].article.DL_CodeTaxe3 = "C00";
+                                                                        order.Lines[i].article.DL_Taxe3 = "0.000000";
+                                                                        endTVA += 0.0;
+                                                                    }
+
+                                                                    // test
+                                                                    //order.Lines[i].article.DL_CodeTaxe1 = "C20";
+                                                                    //order.Lines[i].article.DL_Taxe1 = "20.000000";
+                                                                    //endTVA += 20.0;
+
+                                                                    double product_ht = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
+                                                                    double product_tva_P = (product_ht * Convert.ToDouble(endTVA)) / 100;
+                                                                    product_ttc = product_ht + product_tva_P;
+                                                                    order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 => " + order.Lines[i].article.DL_Taxe1);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 => " + order.Lines[i].article.DL_Taxe2);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 => " + order.Lines[i].article.DL_Taxe3);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix HT => " + product_ht + " | TVA => " + endTVA + " % | Prix TTC => " + product_ttc);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
+                                                                    logFileWriter_import.WriteLine("");
                                                                 }
-
-
-                                                                if (found_stock)
+                                                                else
                                                                 {
-                                                                    //Calculate stock info
-                                                                    //double AS_CMUP = AS_StockMontant / AS_StockReel;
-                                                                    double new_AS_StockReel = AS_StockReel; // - Convert.ToDouble(order.Lines[i].Quantite.Replace('.', ','));
-                                                                    double new_AS_StockReserve = AS_StockReserve + Convert.ToDouble(order.Lines[i].Quantite.Replace('.', ','));
-                                                                    double new_AS_StockMontant = new_AS_StockReel * productPrixUnite;
-                                                                    double new_AS_CMUP = new_AS_StockMontant / new_AS_StockReel;
-
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Warning TVA ********************");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BC seront 0");
                                                                     logFileWriter_import.WriteLine("");
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_StockReel: " + new_AS_StockReel);
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_StockReserve: " + new_AS_StockReserve + " = AS_StockReserve: " + AS_StockReserve + " + Quantite: " + Convert.ToDouble(order.Lines[i].Quantite.Replace('.', ',')));
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_StockMontant: " + new_AS_StockMontant + " = new_AS_StockReel: " + new_AS_StockReel + " * productPrixUnite: " + productPrixUnite);
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_CMUP: " + new_AS_CMUP + " = new_AS_StockMontant: " + new_AS_StockMontant + " / new_AS_StockReel: " + new_AS_StockReel);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Calcule TVA ******************** ");
 
+                                                                    double product_ht = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
+                                                                    double product_tva_P = (product_ht * 0.0) / 100;
+                                                                    product_ttc = product_ht + product_tva_P;
+                                                                    order.Lines[i].article.DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                                                    order.Lines[i].article.DL_Taxe1 = "0.000000";
+                                                                    order.Lines[i].article.DL_CodeTaxe1 = "C00";
+                                                                    order.Lines[i].article.DL_Taxe2 = "0.000000";
+                                                                    order.Lines[i].article.DL_CodeTaxe2 = "C00";
+                                                                    order.Lines[i].article.DL_Taxe3 = "0.000000";
+                                                                    order.Lines[i].article.DL_CodeTaxe3 = "C00";
+
+
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 1 => " + order.Lines[i].article.DL_Taxe1);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 2 => " + order.Lines[i].article.DL_Taxe2);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : TVA 3 => " + order.Lines[i].article.DL_Taxe3);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix HT => " + product_ht + " | TVA => 0.0 % | Prix TTC => " + product_ttc);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Prix TTC créé");
                                                                     logFileWriter_import.WriteLine("");
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : update article " + order.Lines[i].article.AR_DESIGN + " (Ref:" + order.Lines[i].article.AR_REF + ") stock in F_ARTSTOCK table in the database");
-                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : requette sql ===> " + QueryHelper.updateArticleStock(true, order.Lines[i].article.AR_REF, new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
-
-                                                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, order.Lines[i].article.AR_REF, new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connexion);
-                                                                    command.ExecuteReader();
                                                                 }
+                                                                order.Lines[i].PrixNetHT.Replace(",", ".");
+                                                                logFileWriter_import.Flush();
 
-                                                                // add product in the list
-                                                                successListLines.Add(new Alert_Mail.Classes.Custom.CustomMailSuccessLines(order.Lines[i].article.AR_REF, order.Lines[i].article.AR_DESIGN, order.Lines[i].article.DL_PUTTC, order.Lines[i].DL_QteBC));
-
-                                                                nbr_++;
                                                             }
-                                                            catch (OdbcException ex)
+                                                            catch (Exception ex)
                                                             {
                                                                 logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ********************** OdbcException Update F_ARTSTOCK table *********************");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Message :" + ex.Message);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ******************** Exception TVA ********************");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : StackTrace :" + ex.StackTrace);
                                                                 logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Import annulée");
                                                                 logFileWriter_import.Flush();
-                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", ex.Message, ex.StackTrace, filename.Name, logFileName_import));
-                                                                deleteCommandeLigne(order.NumCommande);
+                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur lors du calcule du prix d'article TTC, message : " + ex.Message, ex.StackTrace, filename.Name, logFileName_import));
                                                                 nbr_ = 0;
                                                                 break;
                                                             }
 
+                                                            //add more info to BC
+
+
+                                                            //add BC history in the cmd lines
+                                                            order.Lines[i].DO_Ref = order.NumCommande;
+                                                            order.Lines[i].DL_PieceBC = order.Id;
+                                                            order.Lines[i].DL_QteBC = order.Lines[i].Quantite;
+                                                            order.Lines[i].DL_QteDE = order.Lines[i].Quantite;
+                                                            order.Lines[i].DL_QtePL = order.Lines[i].Quantite;
+                                                            order.Lines[i].DL_DateBC = order.DateCommande;
+                                                            order.Lines[i].DL_DateDE = order.DateCommande;
+                                                            order.Lines[i].DL_DatePL = "1753-01-01";
+
+                                                            order.Lines[i].article.DL_PrixUnitaire_salePriceHT = order.Lines[i].PrixNetHT;
+
+                                                            order.Lines[i].DL_MontantHT = (Convert.ToDouble(order.Lines[i].article.DL_PrixUnitaire_salePriceHT.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",", ".");
+                                                            order.Lines[i].DL_MontantTTC = (Convert.ToDouble(order.Lines[i].article.DL_PUTTC.Replace(".", ",")) * Convert.ToDouble(order.Lines[i].DL_QteBC.Replace(".", ","))).ToString().Replace(",", ".");
+
+                                                            logFileWriter_import.WriteLine("");
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : DL_MontantHT : " + order.Lines[i].DL_MontantHT + " = DL_PrixUnitaire : " + order.Lines[i].article.DL_PrixUnitaire_salePriceHT + " X DL_QteBC : " + order.Lines[i].DL_QteBC);
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : DL_MontantTTC : " + order.Lines[i].DL_MontantTTC + " = DL_PUTTC : " + order.Lines[i].article.DL_PUTTC + " X DL_QteBC : " + order.Lines[i].DL_QteBC);
+
+
+                                                            if (insertCommandeLine(client, order, order.Lines[i], logFileWriter_import))
+                                                            {
+                                                                //Update docline artile stock
+                                                                try
+                                                                {
+                                                                    logFileWriter_import.WriteLine("");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Le Code TVA (" + order.Lines[i].article.DL_CodeTaxe1 + ") et la valuer du TVA (" + order.Lines[i].article.DL_Taxe1 + ")");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Additionner le total HT (" + order.Lines[i].PrixNetHT + ") et TTC (" + order.Lines[i].article.DL_PUTTC + ")");
+
+                                                                    taxCode = order.Lines[i].article.DL_CodeTaxe1;
+                                                                    taxValue = order.Lines[i].article.DL_Taxe1;
+                                                                    totalHT += Convert.ToDouble(order.Lines[i].PrixNetHT.Replace(".", ","));
+                                                                    totalTTC += Convert.ToDouble(order.Lines[i].article.DL_PUTTC.Replace(".", ","));
+
+
+                                                                    bool found_stock = false;
+                                                                    double AS_StockReel = 0.0;
+                                                                    double AS_StockReserve = 0.0;
+                                                                    double AS_StockMontant = 0.0;
+                                                                    double productPrixUnite = Convert.ToDouble(order.Lines[i].PrixNetHT.Replace('.', ','));
+
+                                                                    logFileWriter_import.WriteLine("");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : get current stock in F_ARTSTOCK table in the database");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : requette sql ===> " + QueryHelper.getArticleStock(true, order.Lines[i].article.AR_REF));
+                                                                    using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, order.Lines[i].article.AR_REF), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                                                    {
+                                                                        using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                                                                        {
+                                                                            if (reader.Read()) // If any rows returned
+                                                                            {
+                                                                                found_stock = true;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Stock trouvé : AS_StockReel (" + reader[0].ToString() + "), AS_StockReserve (" + reader[1].ToString() + "), AS_StockMontant (" + reader[2].ToString() + ").");
+                                                                                AS_StockReel = Convert.ToDouble(reader[0].ToString().Replace(".", ","));
+                                                                                AS_StockReserve = Convert.ToDouble(reader[1].ToString().Replace(".", ","));
+                                                                                AS_StockMontant = Convert.ToDouble(reader[2].ToString().Replace(".", ","));
+                                                                            }
+                                                                            else // If no rows returned
+                                                                            {
+                                                                                //do nothing.
+                                                                                found_stock = false;
+                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse.");
+                                                                            }
+                                                                        }
+                                                                    }
+
+
+                                                                    if (found_stock)
+                                                                    {
+                                                                        //Calculate stock info
+                                                                        //double AS_CMUP = AS_StockMontant / AS_StockReel;
+                                                                        double new_AS_StockReel = AS_StockReel; // - Convert.ToDouble(order.Lines[i].Quantite.Replace('.', ','));
+                                                                        double new_AS_StockReserve = AS_StockReserve + Convert.ToDouble(order.Lines[i].Quantite.Replace('.', ','));
+                                                                        double new_AS_StockMontant = new_AS_StockReel * productPrixUnite;
+                                                                        double new_AS_CMUP = new_AS_StockMontant / new_AS_StockReel;
+
+                                                                        logFileWriter_import.WriteLine("");
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_StockReel: " + new_AS_StockReel);
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_StockReserve: " + new_AS_StockReserve + " = AS_StockReserve: " + AS_StockReserve + " + Quantite: " + Convert.ToDouble(order.Lines[i].Quantite.Replace('.', ',')));
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_StockMontant: " + new_AS_StockMontant + " = new_AS_StockReel: " + new_AS_StockReel + " * productPrixUnite: " + productPrixUnite);
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : new_AS_CMUP: " + new_AS_CMUP + " = new_AS_StockMontant: " + new_AS_StockMontant + " / new_AS_StockReel: " + new_AS_StockReel);
+
+                                                                        logFileWriter_import.WriteLine("");
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : update article " + order.Lines[i].article.AR_DESIGN + " (Ref:" + order.Lines[i].article.AR_REF + ") stock in F_ARTSTOCK table in the database");
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : requette sql ===> " + QueryHelper.updateArticleStock(true, order.Lines[i].article.AR_REF, new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
+
+                                                                        OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, order.Lines[i].article.AR_REF, new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connexion);
+                                                                        command.ExecuteReader();
+                                                                    }
+
+                                                                    // add product in the list
+                                                                    successListLines.Add(new Alert_Mail.Classes.Custom.CustomMailSuccessLines(order.Lines[i].article.AR_REF, order.Lines[i].article.AR_DESIGN, order.Lines[i].article.DL_PUTTC, order.Lines[i].DL_QteBC));
+
+                                                                    nbr_++;
+                                                                }
+                                                                catch (OdbcException ex)
+                                                                {
+                                                                    logFileWriter_import.WriteLine("");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : ********************** OdbcException Update F_ARTSTOCK table *********************");
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Message :" + ex.Message);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : StackTrace :" + ex.StackTrace);
+                                                                    logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Import annulée");
+                                                                    logFileWriter_import.Flush();
+                                                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", ex.Message, ex.StackTrace, filename.Name, logFileName_import));
+                                                                    deleteCommandeLigne(order.NumCommande);
+                                                                    nbr_ = 0;
+                                                                    break;
+                                                                }
+
+                                                            }
+
+                                                            mCustomMailSuccess = new Alert_Mail.Classes.Custom.CustomMailSuccess();
+                                                            mCustomMailSuccess.ID = index;  // index is the current document id/position in the EDI folder
+                                                            mCustomMailSuccess.MailType = "Mail_Success_IMP";
+                                                            mCustomMailSuccess.Client = client.CT_Intitule;
+                                                            mCustomMailSuccess.Subject = "Import du document " + order.NumCommande;
+                                                            mCustomMailSuccess.DateTimeCreated = string.Format("{0:dd-MM-yyyy HH.mm.ss}", DateTime.Now);
+                                                            mCustomMailSuccess.DateTimeModified = "";
+                                                            mCustomMailSuccess.DateTimeDelivery = order.DateLivraison;
+                                                            mCustomMailSuccess.DocumentReference = order.Id;
+                                                            mCustomMailSuccess.NumCommande = order.NumCommande;
+                                                            mCustomMailSuccess.FileName = filename.Name;
+                                                            mCustomMailSuccess.FilePath = filename.FullName;
+                                                            mCustomMailSuccess.Lines = successListLines;
+
+                                                        }
+                                                        string mot = "";
+                                                        for (int i = 0; i < MessageErreur.Count; i++)
+                                                        {
+                                                            mot = mot + MessageErreur[i] + "\n";
                                                         }
 
-                                                        mCustomMailSuccess = new Alert_Mail.Classes.Custom.CustomMailSuccess();
-                                                        mCustomMailSuccess.ID = index;  // index is the current document id/position in the EDI folder
-                                                        mCustomMailSuccess.MailType = "Mail_Success_IMP";
-                                                        mCustomMailSuccess.Client = client.CT_Intitule;
-                                                        mCustomMailSuccess.Subject = "Import du document " + order.NumCommande;
-                                                        mCustomMailSuccess.DateTimeCreated = string.Format("{0:dd-MM-yyyy HH.mm.ss}", DateTime.Now);
-                                                        mCustomMailSuccess.DateTimeModified = "";
-                                                        mCustomMailSuccess.DateTimeDelivery = order.DateLivraison;
-                                                        mCustomMailSuccess.DocumentReference = order.Id;
-                                                        mCustomMailSuccess.NumCommande = order.NumCommande;
-                                                        mCustomMailSuccess.FileName = filename.Name;
-                                                        mCustomMailSuccess.FilePath = filename.FullName;
-                                                        mCustomMailSuccess.Lines = successListLines;
-
-                                                    }
-                                                    string mot = "";
-                                                    for (int i = 0; i < MessageErreur.Count; i++)
-                                                    {
-                                                        mot = mot + MessageErreur[i] + "\n";
-                                                    }
-
-                                                    if (nbr_ == 0)
-                                                    {
-                                                        deleteCommande(false, order.NumCommande);
-
-                                                        Console.WriteLine("" + nbr_ + "/" + order.Lines.Count + " ligne(s) Non enregistrée(s).\n" + mot);
-
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : " + nbr_ + "/" + order.Lines.Count + " ligne(s) Non enregistrée(s), Document.\n" + mot);
-                                                        tabCommande.Add(filename.Name);
-                                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", nbr_ + " / " + order.Lines.Count + " ligne(s) Non enregistrée(s).", mot, filename.Name, logFileName_import));
-                                                        logFileWriter_import.WriteLine("");
-                                                        connexion.Close();
-                                                        //force to go at the end
-                                                        goto goErrorLoop;
-                                                    }
-                                                    else
-                                                    {
-                                                        //Update BC with TVA, totalHT, totalTTC
-                                                        try
+                                                        if (nbr_ == 0)
                                                         {
-                                                            logFileWriter_import.WriteLine("");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Ajouter : le code TVA, la valeur du tva, le montant HT et TTC dans le document " + order.NumCommande);
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.updateOrderValues(true, taxCode, taxValue, totalHT.ToString().Replace(",", "."), totalTTC.ToString().Replace(",", "."), order.Id));
-                                                            OdbcCommand command_ = new OdbcCommand(QueryHelper.updateOrderValues(true, taxCode, taxValue, totalHT.ToString().Replace(",", "."), totalTTC.ToString().Replace(",", "."), order.Id), connexion);
-                                                            IDataReader reader = command_.ExecuteReader(); // read rows of the executed query
-                                                              
-                                                        }
-                                                        catch (Exception e)
-                                                        {
-                                                            logFileWriter_import.WriteLine("");
-                                                            logFileWriter_import.WriteLine("*************** Exception updateOrderValues() ***************");
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() | Message : " + e.Message);
-                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() | StackTrace : " + e.StackTrace);
+                                                            deleteCommande(false, order.NumCommande);
+
+                                                            Console.WriteLine("" + nbr_ + "/" + order.Lines.Count + " ligne(s) Non enregistrée(s).\n" + mot);
+
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " : " + nbr_ + "/" + order.Lines.Count + " ligne(s) Non enregistrée(s), Document.\n" + mot);
                                                             tabCommande.Add(filename.Name);
-                                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Exception updateOrderValues()\n" +e.Message, e.StackTrace, filename.Name, logFileName_import));
+                                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", nbr_ + " / " + order.Lines.Count + " ligne(s) Non enregistrée(s).", mot, filename.Name, logFileName_import));
                                                             logFileWriter_import.WriteLine("");
                                                             connexion.Close();
                                                             //force to go at the end
                                                             goto goErrorLoop;
                                                         }
+                                                        else
+                                                        {
+                                                            //Update BC with TVA, totalHT, totalTTC
+                                                            try
+                                                            {
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Ajouter : le code TVA, la valeur du tva, le montant HT et TTC dans le document " + order.NumCommande);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.updateOrderValues(true, taxCode, taxValue, totalHT.ToString().Replace(",", "."), totalTTC.ToString().Replace(",", "."), order.Id));
+                                                                OdbcCommand command_ = new OdbcCommand(QueryHelper.updateOrderValues(true, taxCode, taxValue, totalHT.ToString().Replace(",", "."), totalTTC.ToString().Replace(",", "."), order.Id), connexion);
+                                                                IDataReader reader = command_.ExecuteReader(); // read rows of the executed query
 
-                                                        logFileWriter_import.WriteLine("");
+                                                            }
+                                                            catch (Exception e)
+                                                            {
+                                                                logFileWriter_import.WriteLine("");
+                                                                logFileWriter_import.WriteLine("*************** Exception updateOrderValues() ***************");
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() | Message : " + e.Message);
+                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() | StackTrace : " + e.StackTrace);
+                                                                tabCommande.Add(filename.Name);
+                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Exception updateOrderValues()\n" + e.Message, e.StackTrace, filename.Name, logFileName_import));
+                                                                logFileWriter_import.WriteLine("");
+                                                                connexion.Close();
+                                                                //force to go at the end
+                                                                goto goErrorLoop;
+                                                            }
 
-                                                        Console.WriteLine("" + nbr_ + "/" + order.Lines.Count + " ligne(s) enregistrée(s).\n" + mot);
+                                                            logFileWriter_import.WriteLine("");
 
-                                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                                        logFileWriter_general.WriteLine(DateTime.Now + " : importe du BC avec succès");
-                                                        logFileWriter_import.WriteLine("");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : " + nbr_ + "/" + order.Lines.Count + " ligne(s) enregistrée(s).\n" + mot);
-                                                        logFileWriter_import.WriteLine("");
+                                                            Console.WriteLine("" + nbr_ + "/" + order.Lines.Count + " ligne(s) enregistrée(s).\n" + mot);
 
-                                                        SaveSuccess++;
+                                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                                            logFileWriter_general.WriteLine(DateTime.Now + " : importe du BC avec succès");
+                                                            logFileWriter_import.WriteLine("");
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " : " + nbr_ + "/" + order.Lines.Count + " ligne(s) enregistrée(s).\n" + mot);
+                                                            logFileWriter_import.WriteLine("");
 
-                                                        //deplacer les fichiers csv
-                                                        string theFileName = filename.FullName;
-                                                        string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "__" + System.IO.Path.GetFileName(theFileName);
-                                                        File.Move(theFileName, newFileLocation);
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+                                                            SaveSuccess++;
 
-                                                        //Successful mail import
-                                                        successList.Add(mCustomMailSuccess);
+                                                            //deplacer les fichiers csv
+                                                            string theFileName = filename.FullName;
+                                                            string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "__" + System.IO.Path.GetFileName(theFileName);
+                                                            File.Move(theFileName, newFileLocation);
+                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
-                                                        logFileWriter_import.WriteLine("");
-                                                        logFileWriter_import.WriteLine("");
-                                                        connexion.Close();
+                                                            //Successful mail import
+                                                            successList.Add(mCustomMailSuccess);
 
-                                                        //force to go at the end
+                                                            logFileWriter_import.WriteLine("");
+                                                            logFileWriter_import.WriteLine("");
+                                                            connexion.Close();
+
+                                                            //force to go at the end
+                                                            goto goErrorLoop;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        tabCommandeError.Add(filename.Name);
                                                         goto goErrorLoop;
                                                     }
+
                                                 }
-                                                else
-                                                {
-                                                    tabCommandeError.Add(filename.Name);
-                                                    goto goErrorLoop;
-                                                }
-                                                
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Il faut mentionner le code client.");
+
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                tabCommandeError.Add(filename.Name);
+                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Il faut mentionner le code client.", "", filename.Name, logFileName_import));
+                                                goto goErrorLoop;
                                             }
                                         }
                                         else
                                         {
-                                            Console.WriteLine("Il faut mentionner le code client.");
+                                            Console.WriteLine("Erreur dans la troisième ligne du fichier.");
 
                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
@@ -1296,16 +1932,17 @@ namespace importPlanifier.Classes
 
                                             logFileWriter_import.WriteLine("");
                                             logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Il faut mentionner le code client.");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Parametre: " + lines[2].Split(';')[0] + " || Size: " + lines[2].Split(';').Length);
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                             tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Il faut mentionner le code client.", "", filename.Name, logFileName_import));
+                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur dans la troisième ligne du fichier.", "", filename.Name, logFileName_import));
                                             goto goErrorLoop;
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Erreur dans la troisième ligne du fichier.");
+                                        Console.WriteLine("Date de la commande est incorrecte");
 
                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                         logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
@@ -1313,17 +1950,16 @@ namespace importPlanifier.Classes
 
                                         logFileWriter_import.WriteLine("");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la troisième ligne du fichier.");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Parametre: " + lines[2].Split(';')[0] + " || Size: " + lines[2].Split(';').Length);
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                         tabCommandeError.Add(filename.Name);
-                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur dans la troisième ligne du fichier.", "", filename.Name, logFileName_import));
+                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.Date de la commande est incorrecte.", "Date de la commande est incorrecte.", "", filename.Name, logFileName_import));
                                         goto goErrorLoop;
                                     }
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Date de la commande est incorrecte");
+                                    Console.WriteLine("Erreur dans la deuxième ligne du fichier.");
 
                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                     logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
@@ -1331,509 +1967,199 @@ namespace importPlanifier.Classes
 
                                     logFileWriter_import.WriteLine("");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Date de la commande est incorrecte.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la deuxième ligne du fichier.");
                                     logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                     tabCommandeError.Add(filename.Name);
-                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.Date de la commande est incorrecte.", "Date de la commande est incorrecte.", "", filename.Name, logFileName_import));
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur dans la deuxième ligne du fichier.", "", filename.Name, logFileName_import));
                                     goto goErrorLoop;
                                 }
+
                             }
                             else
                             {
-                                Console.WriteLine("Erreur dans la deuxième ligne du fichier.");
 
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
+                                //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
                                 logFileWriter_import.WriteLine("");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Erreur dans la deuxième ligne du fichier.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
+                                logFileWriter_import.Flush();
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", "Erreur dans la deuxième ligne du fichier.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", null, "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
-
                         }
-                        else if (lines[0].Split(';')[0] == "INVPRT") //check if the document is an inventory stock document to handle further
+                        else
                         {
                             logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Stock Trouvé");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des commandes désactivé.");
                             logFileWriter_general.WriteLine("");
+                        }
 
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
+                        // Bon de Livraison
+                        if (Boolean.Parse(importSetting.configurationImport.Doc_Ventes.DSADV.Activate))
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des bons de livraison activé.");
 
-                            if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
+                            if (lines[0].Split(';')[0] == "DESADV") //check if the document is an desadv stock document to handle further
                             {
-                                string reference_me_doc = get_next_num_piece_commande_v2("ME", logFileWriter_import); //lastNumberReference("ME", logFileWriter_import);    //"ME00004";//get last reference number for entry STOCK document MEXXXXX and increment it
-                                string reference_ms_doc = get_next_num_piece_commande_v2("MS", logFileWriter_import); //lastNumberReference("MS", logFileWriter_import);    //"MS00007";//get last reference number for removal STOCK document MSXXXXX and increment it
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier DESADV Trouvé");
+                                logFileWriter_general.WriteLine("");
 
-                                int i = 0;
-                                string totallines = "";
-                                List<Stock> s = new List<Stock>();
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import DESADV.");
 
-                                foreach (string ligneDuFichier in lines) //read lines by line
+                                if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
                                 {
-                                    //MessageBox.Show("READING IMPORTED FILE");
+                                    int i = 0;
+                                    string totallines = "";
+                                    Desadv d = new Desadv(); //creating new object type desadv and storing values
+                                    List<DesadvLine> dl = new List<DesadvLine>(); //creating new object type desadvline and storing item values
 
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Lecture du fichier d'importation.");
-
-                                    string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
-
-                                    if (tab[1] == "L") //checking if its an product line
+                                    foreach (string ligneDuFichier in lines) //read lines by line
                                     {
-                                        Stock stock_info = new Stock("", tab[2], tab[3], tab[4], tab[5], "", ""); //creating new object type stock and storing values
-                                        s.Add(stock_info); //adding the object into the list type stock
+
+                                        string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                        if (tab[1] == "HEADER") //checking if its header of file for control
+                                        {
+                                            Desadv desadv_info = new Desadv();
+
+                                            desadv_info.reference = tab[2];
+                                            desadv_info.datelivraison = tab[3];
+                                            desadv_info.datecreation = DateTime.UtcNow.ToString("yyyyMMddHHmmss").ToString();
+                                            desadv_info.poids = tab[4];
+                                            desadv_info.expeditiontype = tab[5];
+                                            desadv_info.referenceclient = tab[6];
+
+                                            d = desadv_info; //adding the object into the list type stock
+                                        }
+
+                                        if (tab[1] == "LINES") //checking if its line of document inside the file for control
+                                        {
+                                            DesadvLine desadvline_info = new DesadvLine();
+
+                                            desadvline_info.position = tab[2];
+                                            desadvline_info.libelle = tab[3];
+                                            desadvline_info.barcode = tab[4];
+                                            desadvline_info.qtecommandee = tab[5];
+                                            desadvline_info.qtyexpediee = tab[6];
+                                            desadvline_info.poidproduit = tab[7];
+                                            desadvline_info.volumeproduit = tab[8];
+
+                                            dl.Add(desadvline_info);
+                                        }
+
                                         i++;
                                     }
 
-                                    if (tab[1] == "F") //checking if its end of file for control
+                                    // *once list is filled with values, start executing queries for each line - one by one.*
+
+                                    if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
                                     {
-                                        totallines = tab[2];
-                                    }
-                                }
-
-                                if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer
-                                {
-                                    Console.WriteLine("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
-
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-
-
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_me_doc + " | " + reference_ms_doc, "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
-                                    goto goErrorLoop;
-                                }
-                                else
-                                {
-                                    //MessageBox.Show("INSERTSTOCK BEING CALLED");
-                                    //insert or update the database with the values obtained from the document
-                                    if (insertStock(s, reference_ms_doc, reference_me_doc, filename.Name, logFileWriter_import) != null)
-                                    {
-                                        Console.WriteLine("Le stock est importe avec succès");
-                                        logFileWriter_general.WriteLine("");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information Fatale *********************");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Le stock est importe avec succès");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import succès");
-                                        logFileWriter_general.WriteLine("");
-                                        logFileWriter_general.WriteLine("");
-
-                                        //deplacer les fichiers csv
-                                        string theFileName = filename.FullName;
-                                        string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}__", DateTime.Now) + "__" + System.IO.Path.GetFileName(theFileName);
-                                        File.Move(theFileName, newFileLocation);
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+                                        Console.WriteLine("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
 
                                         logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine("");
-                                        SaveSuccess++;
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                                        logFileWriter_import.Flush();
+                                        tabCommandeError.Add(filename.Name);
+                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
+                                        goto goErrorLoop;
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Nous n'avons pas pu importer le stock");
-                                        logFileWriter_general.WriteLine("");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                        logFileWriter_general.WriteLine("");
-                                        logFileWriter_general.WriteLine("");
-                                        tabCommandeError.Add(filename.Name);
-                                        goto goErrorLoop;
+                                        //insertDesadv(d, dl);//insert or update the database with the values obtained from the document
+                                        SaveSuccess++;
                                     }
+
                                 }
-
-
-                            }
-                            else
-                            {
-                                Console.WriteLine("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
-
-                                logFileWriter_general.WriteLine("");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-
-                                logFileWriter_import.WriteLine("");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-
-                            }
-                        }
-                        else if (lines[0].Split(';')[0] == "L") //Import Veolog Stock doc
-                        {
-                            /*
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Stock Trouvé");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                            logFileWriter_general.WriteLine("");
-
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog Stock Inventaire.");
-
-                            bool stockVeologCheck = false;
-                            int lineCount = 0;
-                            string totallines = "";
-                            string[,] valid_info_stock_line = new string[lines.Length, 4];
-
-                            //Loop the documment lines
-                            for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
-                            {
-                                //Check if the document line is correct at each line
-                                if (lines[lineIndex].Split(';').Length == 6)
+                                else
                                 {
+                                    Console.WriteLine("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
+
                                     logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Verification Des Lignes Du Documment *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+                                }
+                            }
+                            else if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP51") || filename.Name.Contains("TWP51")) //Import Veolog DESADV doc
+                            {
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Trouvé");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                logFileWriter_general.WriteLine("");
 
-                                    //  info_stock[0] == Type Ligne
-                                    //  info_stock[1] == Code Article (reference)
-                                    //  info_stock[2] == EAN (barcode)
-                                    //  info_stock[3] == Stock
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog DESADV Inventaire.");
 
-                                    string[] info_stock = lines[lineIndex].Split(';');
+                                if (lines[0].Split(';').Length == 6)
+                                {
+                                    file_doc_reference = lines[0].Split(';')[1];
+                                    string reference_DESADV_doc = get_next_num_piece_commande_v2("BL", logFileWriter_import); //lastNumberReference("BL", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
 
-                                    Console.WriteLine("0: " + info_stock[0] + " | 1: " + info_stock[1] + " | 2: " + info_stock[2] + " | 3: " + info_stock[3] + " | 4: " + info_stock[4] + " | 5: " + info_stock[5]);
+                                    int i = 0;
+                                    string totallines = "";
+                                    Veolog_DESADV dh = new Veolog_DESADV();
+                                    //Veolog_DESADV_Colis dc = new Veolog_DESADV_Colis();
+                                    Veolog_DESADV_Lines dll = new Veolog_DESADV_Lines();
 
-                                    if (info_stock[0] == "L")
+                                    List<String> doubleProductCheck = new List<String>();
+                                    List<Veolog_DESADV_Lines> dl = new List<Veolog_DESADV_Lines>(); //creating new object type desadvline and storing item values
+
+                                    foreach (string ligneDuFichier in lines) //read lines by line
                                     {
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Type ligne => VALIDE ");
+                                        string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
 
-
-                                        try
+                                        if (tab[0] == "E") //checking if its header of file for control
                                         {
-                                            if(info_stock[1] != "" && info_stock[3] != "")
+                                            Veolog_DESADV desadv_info = new Veolog_DESADV();
+                                            desadv_info.Ref_Commande_Donneur_Ordre = tab[1];
+                                            desadv_info.Ref_Commande_Client_Livre = tab[2];
+                                            desadv_info.Date_De_Expedition = tab[3];
+                                            desadv_info.Heure_De_Expedition = tab[4];
+                                            desadv_info.Etat = tab[5];
+
+                                            if (desadv_info.Etat == "X")
                                             {
-                                                logFileWriter_import.WriteLine(DateTime.Now + " :  Code acticle ("+ info_stock[1] + ") => TROUVE ");
-                                                valid_info_stock_line[lineIndex, 0] = info_stock[1];
-
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : EAN (Code Barre) \"" + info_stock[2] + "\" => TROUVE ");
-                                                valid_info_stock_line[lineIndex, 1] = info_stock[2];
-
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Stock actuel ("+ info_stock[3] + ") => TROUVE ");
-                                                valid_info_stock_line[lineIndex, 2] = info_stock[3];
-
-                                                logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de lot (" + info_stock[4] + ")  => TROUVE ");
-                                                valid_info_stock_line[lineIndex, 3] = info_stock[4];
+                                                desadv_info.Etat = "1";
+                                            }
+                                            else if (desadv_info.Etat == "P")
+                                            {
+                                                desadv_info.Etat = "0";
                                             }
                                             else
                                             {
-                                                if (info_stock[1] == "")
-                                                {
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Code acticle => PAS TROUVE ");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
-                                                }
-                                                if (info_stock[3] == "")
-                                                {
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Quantités disponibles (Stock actuel) => PAS TROUVE ");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
-                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
-                                                }
+                                                //deplacer les fichiers csv
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                logFileWriter_import.Flush();
+                                                tabCommandeError.Add(filename.Name);
+                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.", "", filename.Name, logFileName_import));
+                                                goto goErrorLoop;
                                             }
 
+                                            dh = desadv_info;
                                         }
-                                        catch (Exception ex)
+                                        /*
+                                        if (tab[0] == "C") //checking if its colis of file for control
                                         {
-                                            logFileWriter_import.WriteLine("");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Dans le Documment *********************");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1));
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Message |\n" + ex.Message);
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Stack |\n" + ex.StackTrace);
-                                            tabCommandeError.Add(filename.Name);
-                                            importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
+                                            Veolog_DESADV_Colis desadvColis_info = new Veolog_DESADV_Colis();
+                                            desadvColis_info.Numero_Colis = tab[1];
+                                            desadvColis_info.ID_Tracking_Transporteur = tab[2];
+                                            desadvColis_info.URL_Tracking_Transporteur = tab[3];
+
+                                            dc = desadvColis_info; //adding the object into the list type stock
                                         }
-
-                                        lineCount++;
-                                        logFileWriter_import.Flush();
-                                    }
-                                    else
-                                    {
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Type ligne ===> PAS RECONNU / PAS TROUVE");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ n'est pas correct ou vide!!! ");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
-                                        tabCommandeError.Add(filename.Name);
-                                        importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
-                                    }
-                                    
-                                }
-                                else
-                                {
-                                    if (lines[lineIndex].Split(';')[0] == "F" && lines[lineIndex].Split(';').Length == 2)
-                                    {
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Fin de la lecture du documment Veolog Stock.");
-                                        totallines = lines[lineIndex].Split(';')[1];
-                                        stockVeologCheck = true;
-                                        logFileWriter_import.Flush();
-                                        break;
-                                    }
-                                    logFileWriter_import.Flush();
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu. Ligne size == "+ lines[lineIndex].Split(';').Length);
-                                    tabCommandeError.Add(filename.Name);
-                                    importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
-                                    goto goErrorLoop;
-                                }
-                            }
-
-                            //Valid documment END
-                            //Reached to the end of the document
-                            List<Stock> s = new List<Stock>();
-                            if (stockVeologCheck)
-                            {
-                                //  valid_info_stock_line[0,0] == Code Article (reference)
-                                //  valid_info_stock_line[0,1] == EAN (barcode)
-                                //  valid_info_stock_line[0,2] == Stock
-                                //  valid_info_stock_line[0,3] == Numéro de lot 
-
-                                for (int x = 0; x < valid_info_stock_line.GetLength(0); x++)
-                                {
-                                    Stock stock_info = new Stock("", valid_info_stock_line[x, 0], valid_info_stock_line[x, 1], valid_info_stock_line[x, 2], valid_info_stock_line[x, 3], "", "");
-                                    s.Add(stock_info); //adding the object into the list type stock
-                                }
-
-                                if (lineCount != Convert.ToInt16(totallines))
-                                {
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : Erreur du pied de page");
-                                    logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.\nCertain stock ne sera pas mit a jour!!!");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : La taille du Stock liste: " + lineCount + " || Nombre total du stock dans le fihier: " + totallines);
-
-                                    logFileWriter_general.Flush();
-                                    logFileWriter_import.Flush();
-                                    tabCommandeError.Add(filename.Name);
-                                    importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
-                                }
-                                else
-                                {
-                                    logFileWriter_import.Flush();
-                                    if (insertStockVeolog(s, logFileWriter_import) == true)
-                                    {
-                                        logFileWriter_general.Flush();
-                                        logFileWriter_import.Flush();
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès");
-
-                                        //deplacer les fichiers csv
-                                        string theFileName = filename.FullName;
-                                        string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + System.IO.Path.GetFileName(theFileName);
-                                        File.Move(theFileName, newFileLocation);
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine("");
-                                        SaveSuccess++;
-                                    }
-                                    else
-                                    {
-                                        logFileWriter_general.Flush();
-                                        logFileWriter_import.Flush();
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
-
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                        logFileWriter_import.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
-                                        logFileWriter_import.WriteLine("");
-                                        tabCommandeError.Add(filename.Name);
-                                        importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
-                                        goto goErrorLoop;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                logFileWriter_import.WriteLine("");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Fin de la lecture du documment Veolog Stock, non valide.");
-                            }
-                            */
-                        }
-                        else if (lines[0].Split(';')[0] == "DESADV") //check if the document is an desadv stock document to handle further
-                        {
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier DESADV Trouvé");
-                            logFileWriter_general.WriteLine("");
-
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import DESADV.");
-
-                            if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
-                            {
-                                int i = 0;
-                                string totallines = "";
-                                Desadv d = new Desadv(); //creating new object type desadv and storing values
-                                List<DesadvLine> dl = new List<DesadvLine>(); //creating new object type desadvline and storing item values
-
-                                foreach (string ligneDuFichier in lines) //read lines by line
-                                {
-
-                                    string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
-
-                                    if (tab[1] == "HEADER") //checking if its header of file for control
-                                    {
-                                        Desadv desadv_info = new Desadv();
-
-                                        desadv_info.reference = tab[2];
-                                        desadv_info.datelivraison = tab[3];
-                                        desadv_info.datecreation = DateTime.UtcNow.ToString("yyyyMMddHHmmss").ToString();
-                                        desadv_info.poids = tab[4];
-                                        desadv_info.expeditiontype = tab[5];
-                                        desadv_info.referenceclient = tab[6];
-
-                                        d = desadv_info; //adding the object into the list type stock
-                                    }
-
-                                    if (tab[1] == "LINES") //checking if its line of document inside the file for control
-                                    {
-                                        DesadvLine desadvline_info = new DesadvLine();
-
-                                        desadvline_info.position = tab[2];
-                                        desadvline_info.libelle = tab[3];
-                                        desadvline_info.barcode = tab[4];
-                                        desadvline_info.qtecommandee = tab[5];
-                                        desadvline_info.qtyexpediee = tab[6];
-                                        desadvline_info.poidproduit = tab[7];
-                                        desadvline_info.volumeproduit = tab[8];
-
-                                        dl.Add(desadvline_info);
-                                    }
-
-                                    i++;
-                                }
-
-                                // *once list is filled with values, start executing queries for each line - one by one.*
-
-                                if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
-                                {
-                                    Console.WriteLine("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
-
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
-                                    logFileWriter_import.Flush(); 
-                                    tabCommandeError.Add(filename.Name);
-                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
-                                    goto goErrorLoop;
-                                }
-                                else
-                                {
-                                    //insertDesadv(d, dl);//insert or update the database with the values obtained from the document
-                                    SaveSuccess++;
-                                }
-
-                            }
-                            else
-                            {
-                                Console.WriteLine("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
-
-                                logFileWriter_import.WriteLine("");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                                tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
-                                goto goErrorLoop;
-                            }
-                        }
-                        else if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP51") || filename.Name.Contains("TWP51")) //Import Veolog DESADV doc
-                        {
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Trouvé");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                            logFileWriter_general.WriteLine("");
-
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog DESADV Inventaire.");
-
-                            if (lines[0].Split(';').Length == 6)
-                            {
-                                file_doc_reference = lines[0].Split(';')[1];
-                                string reference_DESADV_doc = get_next_num_piece_commande_v2("BL", logFileWriter_import); //lastNumberReference("BL", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
-
-                                int i = 0;
-                                string totallines = "";
-                                Veolog_DESADV dh = new Veolog_DESADV();
-                                //Veolog_DESADV_Colis dc = new Veolog_DESADV_Colis();
-                                Veolog_DESADV_Lines dll = new Veolog_DESADV_Lines();
-
-                                List<String> doubleProductCheck = new List<String>();
-                                List<Veolog_DESADV_Lines> dl = new List<Veolog_DESADV_Lines>(); //creating new object type desadvline and storing item values
-
-                                foreach (string ligneDuFichier in lines) //read lines by line
-                                {
-                                    string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
-
-                                    if (tab[0] == "E") //checking if its header of file for control
-                                    {
-                                        Veolog_DESADV desadv_info = new Veolog_DESADV();
-                                        desadv_info.Ref_Commande_Donneur_Ordre = tab[1];
-                                        desadv_info.Ref_Commande_Client_Livre = tab[2];
-                                        desadv_info.Date_De_Expedition = tab[3];
-                                        desadv_info.Heure_De_Expedition = tab[4];
-                                        desadv_info.Etat = tab[5];
-
-                                        if (desadv_info.Etat == "X")
-                                        {
-                                            desadv_info.Etat = "1";
-                                        }
-                                        else if (desadv_info.Etat == "P")
-                                        {
-                                            desadv_info.Etat = "0";
-                                        }
-                                        else
-                                        {
-                                            //deplacer les fichiers csv
-                                            logFileWriter_import.WriteLine("");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
-
-                                            logFileWriter_import.WriteLine("");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                            logFileWriter_import.Flush();
-                                            tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.", "", filename.Name, logFileName_import));
-                                            goto goErrorLoop;
-                                        }
-
-                                        dh = desadv_info;
-                                    }
-                                    /*
-                                    if (tab[0] == "C") //checking if its colis of file for control
-                                    {
-                                        Veolog_DESADV_Colis desadvColis_info = new Veolog_DESADV_Colis();
-                                        desadvColis_info.Numero_Colis = tab[1];
-                                        desadvColis_info.ID_Tracking_Transporteur = tab[2];
-                                        desadvColis_info.URL_Tracking_Transporteur = tab[3];
-
-                                        dc = desadvColis_info; //adding the object into the list type stock
-                                    }
-                                    */
-                                    if (tab[0] == "L") //checking if its line of document inside the file for control
+                                        */
+                            if (tab[0] == "L") //checking if its line of document inside the file for control
                                     {
                                         //check if an article exist in my check list
                                         if (!doubleProductCheck.Contains(tab[2]))
@@ -1852,7 +2178,7 @@ namespace importPlanifier.Classes
                                         {
                                             logFileWriter_general.WriteLine("");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \""+tab[2]+"\" encore!");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
                                             logFileWriter_general.WriteLine("");
                                         }
                                         i++;
@@ -1898,197 +2224,582 @@ namespace importPlanifier.Classes
                                     }
                                 }
                             }
+                            else if (lines[0].Split(';').Length == 7)   //New BL / BL Relicat
+                            {
+
+                                //Check BL Relicat
+                                if (lines[0].Split(';')[6] == "")        //New BL
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Trouvé");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                    logFileWriter_general.WriteLine("");
+
+
+
+                                }
+                                else if (lines[0].Split(';')[6] == "R")  //BL Relicat
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Relicat Trouvé");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                    logFileWriter_general.WriteLine("");
+
+                                    file_doc_reference = lines[0].Split(';')[1];
+
+                                    //Check if the BL existe ... and if so, return a list of all article codeBarres and the document number
+                                    string DESADV_doc_reference = null;
+                                    List<string> current_DESADV_articles_list = new List<string>();
+                                    List<string> current_DESADV_articles = get_DESADV_Document(logFileWriter_import, lines[0].Split(';')[1], lines[0].Split(';')[2]);
+
+                                    if (current_DESADV_articles != null)
+                                    {
+                                        //unsplit the article codeBarres and the document number
+                                        foreach (string listLine in current_DESADV_articles)
+                                        {
+                                            string[] x = listLine.Split(new String[] { "__" }, StringSplitOptions.None);
+                                            DESADV_doc_reference = x[0];
+                                            current_DESADV_articles_list.Add(x[1]);
+                                        }
+
+                                        int i = 0;
+                                        string totallines = "";
+                                        Veolog_DESADV dh = new Veolog_DESADV();
+                                        Veolog_DESADV_Lines dll = new Veolog_DESADV_Lines();
+
+                                        List<String> doubleProductCheck = new List<String>();
+                                        List<Veolog_DESADV_Lines> dl = new List<Veolog_DESADV_Lines>(); //creating new object type desadvline and storing item values
+
+                                        foreach (string ligneDuFichier in lines) //read lines by line
+                                        {
+                                            string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                            if (tab[0] == "E") //checking if its header of file for control
+                                            {
+                                                Veolog_DESADV desadv_info = new Veolog_DESADV();
+                                                desadv_info.Ref_Commande_Donneur_Ordre = tab[1];
+                                                desadv_info.Ref_Commande_Client_Livre = tab[2];
+                                                desadv_info.Date_De_Expedition = tab[3];
+                                                desadv_info.Heure_De_Expedition = tab[4];
+                                                desadv_info.Etat = tab[5];
+                                                desadv_info.Relicat = tab[6];
+
+                                                if (desadv_info.Etat == "X")
+                                                {
+                                                    desadv_info.Etat = "1";
+                                                }
+                                                else if (desadv_info.Etat == "P")
+                                                {
+                                                    desadv_info.Etat = "0";
+                                                }
+                                                else
+                                                {
+                                                    //deplacer les fichiers csv
+                                                    logFileWriter_import.WriteLine("");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
+
+                                                    logFileWriter_import.WriteLine("");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                                    logFileWriter_import.Flush();
+                                                    tabCommandeError.Add(filename.Name);
+                                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Relicat : " + DESADV_doc_reference, "L'import du Bon de Livraison Relicat est annulée, erreur dans le fichier EDI.\nCe problème sera vérifié et résolu entre une à quatre heures ouvrables.", "L'import du Bon de Livraison est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.", "", filename.Name, logFileName_import));
+                                                    goto goErrorLoop;
+                                                }
+
+                                                dh = desadv_info;
+                                            }
+                                            /*
+                                            if (tab[0] == "C") //checking if its colis of file for control
+                                            {
+                                                Veolog_DESADV_Colis desadvColis_info = new Veolog_DESADV_Colis();
+                                                desadvColis_info.Numero_Colis = tab[1];
+                                                desadvColis_info.ID_Tracking_Transporteur = tab[2];
+                                                desadvColis_info.URL_Tracking_Transporteur = tab[3];
+
+                                                dc = desadvColis_info; //adding the object into the list type stock
+                                            }
+                                            */
+                                            if (tab[0] == "L") //checking if its line of document inside the file for control
+                                            {
+                                                //check if an article does not exist in my check list
+                                                if (!doubleProductCheck.Contains(tab[2]))
+                                                {
+                                                    //check if the article does not exist in the current BL
+                                                    if (!current_DESADV_articles_list.Contains(tab[2]))
+                                                    {
+                                                        Veolog_DESADV_Lines desadvLine_info = new Veolog_DESADV_Lines();
+
+                                                        desadvLine_info.Numero_Ligne_Order = tab[1];
+                                                        desadvLine_info.Code_Article = tab[2];
+                                                        desadvLine_info.Quantite_Colis = tab[3];
+                                                        desadvLine_info.Numero_Lot = tab[4];
+
+                                                        dl.Add(desadvLine_info);
+                                                        doubleProductCheck.Add(desadvLine_info.Code_Article);
+                                                    }
+                                                    else
+                                                    {
+                                                        logFileWriter_general.WriteLine("");
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" dans le BL Relicat de Sage. Donc je ne vais pas l'intégrer!");
+                                                        logFileWriter_general.WriteLine("");
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    logFileWriter_general.WriteLine("");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
+                                                    logFileWriter_general.WriteLine("");
+                                                }
+                                                i++;
+                                            }
+
+                                            if (tab[0] == "F") //checking if its end of file for control
+                                            {
+                                                totallines = tab[1];
+                                            }
+                                        }
+
+                                        // *once list is filled with values, start executing queries for each line - one by one.*
+
+                                        if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                                        }
+                                        else
+                                        {
+                                            if (insertDesadv_Relicat_Veolog(DESADV_doc_reference, current_DESADV_articles_list, dh, dl, filename.Name, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
+                                            {
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
+
+                                                //deplacer les fichiers csv
+                                                string theFileName = filename.FullName;
+                                                string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + DESADV_doc_reference + "R__" + System.IO.Path.GetFileName(theFileName);
+                                                File.Move(theFileName, newFileLocation);
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_import.WriteLine("");
+                                                SaveSuccess++;
+                                            }
+                                            else
+                                            {
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV Relicat");
+                                                tabCommandeError.Add(filename.Name);
+                                                goto goErrorLoop;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Relicat non trouvé.");
+                                    }
+
+                                }
+                                else    //Unknown BL...
+                                {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Un Fichier DESADV bizzare.");
+                                }
+                            }
                             else
                             {
                                 logFileWriter_import.WriteLine("");
                                 logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import du Bon de Livraison Relicat est annulée, erreur dans le fichier EDI.\nCe problème sera vérifié et résolu entre une à quatre heures ouvrables.", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 tabCommandeError.Add(filename.Name);
                                 goto goErrorLoop;
                             }
-                        }
-                        else if (lines[0].Split(';')[0] == "E" && filename.Name.Contains("CFP41") || filename.Name.Contains("TWP41")) //Import Veolog BLF doc
-                        {
-                            /*
-                            tabCommandeError.Add(filename.Name);
-                            recapLinesList_new.Add(new CustomMailRecapLines("", "L'import de la commande est annulée. Erreur dans le fichier EDI", "L'import du BLF est désactivé !", "", filename.Name, logFileName_import));
-                            goto goErrorLoop;
-                            */
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Bon de Livraison Fournisseur BLF Trouvé");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                            logFileWriter_general.WriteLine("");
-
-                            logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog Bon de Livraison Fournisseur BLF Inventaire.");
-
-                            file_doc_reference = lines[0].Split(';')[1];
-                            if (lines[0].Split(';').Length == 8)
-                            {
-                                Connexion.ConnexionSaveLoad connexionSaveLoad = new ConnexionSaveLoad();
-                                connexionSaveLoad.Load();
-
-                                string mask = "";
-                                string prefix = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
-                                if(prefix == "CFCI")
-                                {
-                                    mask = "BLF";
-                                }
-                                else if (prefix == "TABLEWEAR")
-                                {
-                                    mask = "LF";
-                                }
-                                else
-                                {
-                                    mask = "BLF";
-                                }
-
-                                string reference_BLF_doc = get_next_num_piece_commande_v2(mask, logFileWriter_import); // lastNumberReference(mask, logFileWriter_import);
-
-                                int i = 0;
-                                string totallines = "";
-                                Veolog_BCF dh = new Veolog_BCF();
-                                Veolog_BCF_Lines dll = new Veolog_BCF_Lines();
-
-                                List<String> doubleProductCheck = new List<String>();
-                                List<Veolog_BCF_Lines> dl = new List<Veolog_BCF_Lines>(); //creating new object type BCF line and store item values
-
-                                foreach (string ligneDuFichier in lines) //read lines by line
-                                {
-                                    string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
-
-                                    if (tab[0] == "E") //checking if its header of file for control
-                                    {
-                                        Veolog_BCF bcf_info = new Veolog_BCF();
-                                        bcf_info.Ref_Commande_Donneur_Ordre = tab[1];
-                                        bcf_info.Ref_Commande_Fournisseur = tab[2];
-                                        bcf_info.Origine_Commande = tab[3];
-                                        bcf_info.Code_Fournisseur = tab[4];
-                                        bcf_info.Date_De_Reception = tab[5];
-                                        bcf_info.Heure_De_Reception = tab[6];
-                                        bcf_info.Etat = tab[7];
-
-                                        if (bcf_info.Etat == "S") // S : Stocké
-                                        {
-                                            bcf_info.Etat = "1";
-                                        }
-                                        else if (bcf_info.Etat == "C") // C : Cloturé
-                                        {
-                                            bcf_info.Etat = "0";
-                                        }
-                                        else if(bcf_info.Etat == "")
-                                        {
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : Le "+ mask + " " + reference_BLF_doc + " n'a pas d'Etat ou Option. Les options depuis le cahier des charges sont : S => Stocké ou C => Cloturé");
-                                        }
-                                        else
-                                        {
-                                            //deplacer les fichiers csv
-                                            logFileWriter_import.WriteLine("");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le "+ mask);
-
-                                            logFileWriter_import.WriteLine("");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit S : Stocké ou C : Cloturé.");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                            logFileWriter_import.Flush();
-                                            tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit S : Stocké ou C : Cloturé.", "", filename.Name, logFileName_import));
-                                            goto goErrorLoop;
-                                        }
-
-                                        dh = bcf_info;
-                                    }
-                                    if (tab[0] == "L") //checking if its line of document inside the file for control
-                                    {
-                                        //check if an article exist in my check list
-                                        if (!doubleProductCheck.Contains(tab[2]))
-                                        {
-                                            Veolog_BCF_Lines bcfLine_info = new Veolog_BCF_Lines();
-
-                                            bcfLine_info.Type_Ligne = tab[0];
-                                            bcfLine_info.Numero_Ligne_Donneur_Ordre = tab[1];
-                                            bcfLine_info.Code_Article = tab[2];
-                                            bcfLine_info.Libelle_Article = tab[3];
-                                            bcfLine_info.Quantite = tab[4];
-                                            bcfLine_info.Numero_Lot = tab[5];
-
-                                            dl.Add(bcfLine_info);
-                                            doubleProductCheck.Add(bcfLine_info.Code_Article);
-                                        }
-                                        else
-                                        {
-                                            logFileWriter_general.WriteLine("");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
-                                            logFileWriter_general.WriteLine("");
-                                        }
-                                        i++;
-                                    }
-
-                                    if (tab[0] == "F") //checking if its end of file for control
-                                    {
-                                        totallines = tab[1];
-                                    }
-                                }
-
-
-                                if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
-                                {
-                                    logFileWriter_import.WriteLine("");
-                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
-                                }
-                                else
-                                {
-                                    if (insertSupplierOrder(reference_BLF_doc, dh, dl, filename.Name, logFileWriter_import) != null) //insert the database with the values obtained from the document
-                                    {
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : importe du "+ mask + " avec succès");
-
-                                        //deplacer les fichiers csv
-                                        string theFileName = filename.FullName;
-                                        string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "__" + System.IO.Path.GetFileName(theFileName);
-                                        File.Move(theFileName, newFileLocation);
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_import.WriteLine("");
-                                        SaveSuccess++;
-                                    }
-                                    else
-                                    {
-                                        logFileWriter_import.WriteLine("");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le "+ mask);
-                                        tabCommandeError.Add(filename.Name);
-                                        goto goErrorLoop;
-                                    }
-                                }
                             }
                             else
                             {
+
+                                //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
                                 logFileWriter_import.WriteLine("");
-                                logFileWriter_import.WriteLine(DateTime.Now + " : La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
                                 logFileWriter_import.Flush();
                                 tabCommandeError.Add(filename.Name);
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", null, "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
                                 goto goErrorLoop;
                             }
-                            
-                            //END   BLF/LF
                         }
                         else
                         {
-
-                            //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
-                            logFileWriter_import.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
-                            logFileWriter_import.Flush();
-                            tabCommandeError.Add(filename.Name);
-                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
-                            goto goErrorLoop;
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des bons de livraison désactivé.");
+                            logFileWriter_general.WriteLine("");
                         }
+
+                        // Facture
+                        if (Boolean.Parse(importSetting.configurationImport.Doc_Ventes.Facture.Activate))
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des factures activé.");
+
+
+                        }
+                        else
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des factures désactivé.");
+                            logFileWriter_general.WriteLine("");
+                        }
+                        #endregion
+
+                        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        /// Document Stock
+                        ///
+                        #region Document_Stock
+                        if (Boolean.Parse(importSetting.configurationImport.Doc_Stock.Stock.Activate))
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des stocks activé.");
+
+                            if (lines[0].Split(';')[0] == "INVPRT") //check if the document is an inventory stock document to handle further
+                            {
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Stock Trouvé");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                logFileWriter_general.WriteLine("");
+
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import Stock Inventaire.");
+
+                                if (lines[0].Split(';').Length == 9) //check size of array to check if file format is correct
+                                {
+                                    string reference_me_doc = get_next_num_piece_commande_v2("ME", logFileWriter_import); //lastNumberReference("ME", logFileWriter_import);    //"ME00004";//get last reference number for entry STOCK document MEXXXXX and increment it
+                                    string reference_ms_doc = get_next_num_piece_commande_v2("MS", logFileWriter_import); //lastNumberReference("MS", logFileWriter_import);    //"MS00007";//get last reference number for removal STOCK document MSXXXXX and increment it
+
+                                    int i = 0;
+                                    string totallines = "";
+                                    List<Stock> s = new List<Stock>();
+
+                                    foreach (string ligneDuFichier in lines) //read lines by line
+                                    {
+                                        //MessageBox.Show("READING IMPORTED FILE");
+
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Lecture du fichier d'importation.");
+
+                                        string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
+
+                                        if (tab[1] == "L") //checking if its an product line
+                                        {
+                                            Stock stock_info = new Stock("", tab[2], tab[3], tab[4], tab[5], "", ""); //creating new object type stock and storing values
+                                            s.Add(stock_info); //adding the object into the list type stock
+                                            i++;
+                                        }
+
+                                        if (tab[1] == "F") //checking if its end of file for control
+                                        {
+                                            totallines = tab[2];
+                                        }
+                                    }
+
+                                    if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer
+                                    {
+                                        Console.WriteLine("Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page."); //display messagebox with error.
+
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+
+
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_me_doc + " | " + reference_ms_doc, "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.", "", filename.Name, logFileName_import));
+                                        goto goErrorLoop;
+                                    }
+                                    else
+                                    {
+                                        //MessageBox.Show("INSERTSTOCK BEING CALLED");
+                                        //insert or update the database with the values obtained from the document
+                                        if (insertStock(s, reference_ms_doc, reference_me_doc, filename.Name, logFileWriter_import) != null)
+                                        {
+                                            Console.WriteLine("Le stock est importe avec succès");
+                                            logFileWriter_general.WriteLine("");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information Fatale *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Le stock est importe avec succès");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Import succès");
+                                            logFileWriter_general.WriteLine("");
+                                            logFileWriter_general.WriteLine("");
+
+                                            //deplacer les fichiers csv
+                                            string theFileName = filename.FullName;
+                                            string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}__", DateTime.Now) + "__" + System.IO.Path.GetFileName(theFileName);
+                                            File.Move(theFileName, newFileLocation);
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine("");
+                                            SaveSuccess++;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Nous n'avons pas pu importer le stock");
+                                            logFileWriter_general.WriteLine("");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                                            logFileWriter_general.WriteLine("");
+                                            logFileWriter_general.WriteLine("");
+                                            tabCommandeError.Add(filename.Name);
+                                            goto goErrorLoop;
+                                        }
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Le fichier n'est pas en bonne forme, merci de regarder son contenu."); //show error : content issue
+
+                                    logFileWriter_general.WriteLine("");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu.");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
+                                    tabCommandeError.Add(filename.Name);
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée. Erreur dans le fichier EDI", "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                    goto goErrorLoop;
+
+                                }
+                            }
+                            else if (lines[0].Split(';')[0] == "L") //Import Veolog Stock doc
+                            {
+                                /*
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog Stock Trouvé");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
+                                logFileWriter_general.WriteLine("");
+
+                                logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog Stock Inventaire.");
+
+                                bool stockVeologCheck = false;
+                                int lineCount = 0;
+                                string totallines = "";
+                                string[,] valid_info_stock_line = new string[lines.Length, 4];
+
+                                //Loop the documment lines
+                                for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+                                {
+                                    //Check if the document line is correct at each line
+                                    if (lines[lineIndex].Split(';').Length == 6)
+                                    {
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Verification Des Lignes Du Documment *********************");
+
+                                        //  info_stock[0] == Type Ligne
+                                        //  info_stock[1] == Code Article (reference)
+                                        //  info_stock[2] == EAN (barcode)
+                                        //  info_stock[3] == Stock
+
+                                        string[] info_stock = lines[lineIndex].Split(';');
+
+                                        Console.WriteLine("0: " + info_stock[0] + " | 1: " + info_stock[1] + " | 2: " + info_stock[2] + " | 3: " + info_stock[3] + " | 4: " + info_stock[4] + " | 5: " + info_stock[5]);
+
+                                        if (info_stock[0] == "L")
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Type ligne => VALIDE ");
+
+
+                                            try
+                                            {
+                                                if(info_stock[1] != "" && info_stock[3] != "")
+                                                {
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " :  Code acticle ("+ info_stock[1] + ") => TROUVE ");
+                                                    valid_info_stock_line[lineIndex, 0] = info_stock[1];
+
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : EAN (Code Barre) \"" + info_stock[2] + "\" => TROUVE ");
+                                                    valid_info_stock_line[lineIndex, 1] = info_stock[2];
+
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Stock actuel ("+ info_stock[3] + ") => TROUVE ");
+                                                    valid_info_stock_line[lineIndex, 2] = info_stock[3];
+
+                                                    logFileWriter_import.WriteLine(DateTime.Now + " : Numéro de lot (" + info_stock[4] + ")  => TROUVE ");
+                                                    valid_info_stock_line[lineIndex, 3] = info_stock[4];
+                                                }
+                                                else
+                                                {
+                                                    if (info_stock[1] == "")
+                                                    {
+                                                        logFileWriter_import.WriteLine("");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Code acticle => PAS TROUVE ");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                                    }
+                                                    if (info_stock[3] == "")
+                                                    {
+                                                        logFileWriter_import.WriteLine("");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Quantités disponibles (Stock actuel) => PAS TROUVE ");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ est vide!!! ");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                                    }
+                                                }
+
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                logFileWriter_import.WriteLine("");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Dans le Documment *********************");
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1));
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Message |\n" + ex.Message);
+                                                logFileWriter_import.WriteLine(DateTime.Now + " : Stack |\n" + ex.StackTrace);
+                                                tabCommandeError.Add(filename.Name);
+                                                importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
+                                            }
+
+                                            lineCount++;
+                                            logFileWriter_import.Flush();
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** ERREUR Du Documment *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Ligne " + (lineIndex + 1) + " | Type ligne ===> PAS RECONNU / PAS TROUVE");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Le champ n'est pas correct ou vide!!! ");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Cet article ne sera pas mis à jour dans la base de données");
+                                            tabCommandeError.Add(filename.Name);
+                                            importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if (lines[lineIndex].Split(';')[0] == "F" && lines[lineIndex].Split(';').Length == 2)
+                                        {
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Fin de la lecture du documment Veolog Stock.");
+                                            totallines = lines[lineIndex].Split(';')[1];
+                                            stockVeologCheck = true;
+                                            logFileWriter_import.Flush();
+                                            break;
+                                        }
+                                        logFileWriter_import.Flush();
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le fichier n'est pas en bonne forme, merci de regarder son contenu. Ligne size == "+ lines[lineIndex].Split(';').Length);
+                                        tabCommandeError.Add(filename.Name);
+                                        importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
+                                        goto goErrorLoop;
+                                    }
+                                }
+
+                                //Valid documment END
+                                //Reached to the end of the document
+                                List<Stock> s = new List<Stock>();
+                                if (stockVeologCheck)
+                                {
+                                    //  valid_info_stock_line[0,0] == Code Article (reference)
+                                    //  valid_info_stock_line[0,1] == EAN (barcode)
+                                    //  valid_info_stock_line[0,2] == Stock
+                                    //  valid_info_stock_line[0,3] == Numéro de lot 
+
+                                    for (int x = 0; x < valid_info_stock_line.GetLength(0); x++)
+                                    {
+                                        Stock stock_info = new Stock("", valid_info_stock_line[x, 0], valid_info_stock_line[x, 1], valid_info_stock_line[x, 2], valid_info_stock_line[x, 3], "", "");
+                                        s.Add(stock_info); //adding the object into the list type stock
+                                    }
+
+                                    if (lineCount != Convert.ToInt16(totallines))
+                                    {
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : Erreur du pied de page");
+                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
+
+                                        logFileWriter_import.WriteLine("");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte.\r\nLa valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.\nCertain stock ne sera pas mit a jour!!!");
+                                        logFileWriter_import.WriteLine(DateTime.Now + " : La taille du Stock liste: " + lineCount + " || Nombre total du stock dans le fihier: " + totallines);
+
+                                        logFileWriter_general.Flush();
+                                        logFileWriter_import.Flush();
+                                        tabCommandeError.Add(filename.Name);
+                                        importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
+                                    }
+                                    else
+                                    {
+                                        logFileWriter_import.Flush();
+                                        if (insertStockVeolog(s, logFileWriter_import) == true)
+                                        {
+                                            logFileWriter_general.Flush();
+                                            logFileWriter_import.Flush();
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : importe avec succès");
+
+                                            //deplacer les fichiers csv
+                                            string theFileName = filename.FullName;
+                                            string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + System.IO.Path.GetFileName(theFileName);
+                                            File.Move(theFileName, newFileLocation);
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
+
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine("");
+                                            SaveSuccess++;
+                                        }
+                                        else
+                                        {
+                                            logFileWriter_general.Flush();
+                                            logFileWriter_import.Flush();
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Information *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le stock");
+                                            logFileWriter_import.WriteLine("");
+                                            tabCommandeError.Add(filename.Name);
+                                            importErrorList.Add(new string[3] { filename.Name, "Le fichier n'est pas en bonne forme, merci de regarder son contenu.", logFileName_import });
+                                            goto goErrorLoop;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    logFileWriter_import.WriteLine("");
+                                    logFileWriter_import.WriteLine(DateTime.Now + " : Fin de la lecture du documment Veolog Stock, non valide.");
+                                }
+                                */
+                            }
+                            else
+                            {
+
+                                //Console.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
+                                logFileWriter_import.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Erreur[15] - Erreur dans la première ligne du fichier.");
+                                logFileWriter_import.Flush();
+                                tabCommandeError.Add(filename.Name);
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", null, "La premier ligne du fichier n'est pas en bonne forme, merci de regarder son contenu.", "", filename.Name, logFileName_import));
+                                goto goErrorLoop;
+                            }
+                        }
+                        else
+                        {
+                            logFileWriter_general.WriteLine("");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Import des stocks désactivé.");
+                            logFileWriter_general.WriteLine("");
+                        }
+                        #endregion
+
+                        
+                        
                     }
                     catch (Exception e)
                     {
@@ -2142,6 +2853,8 @@ namespace importPlanifier.Classes
                 logFileWriter_import.Flush();
                 logFileWriter_import.Close();
             }   //End of StreamWriter logFileWriter_import
+
+            goAlertMail:;
 
             try 
             {
@@ -2369,9 +3082,10 @@ namespace importPlanifier.Classes
                 logFileWriter_general.WriteLine("");
                 logFileWriter_general.WriteLine(DateTime.Now + " : Fin de l'execution");
                 logFileWriter_general.WriteLine("");
-                logFileWriter_general.WriteLine("Nombre de fichier scanner : " + nbr);
-                logFileWriter_general.WriteLine("Nombre de commandes validées : " + SaveSuccess);
-                logFileWriter_general.WriteLine("Nombre de commandes echouées : " + (nbr - SaveSuccess));
+                logFileWriter_general.WriteLine("Nombre de fichier scannés : " + nbr);
+                logFileWriter_general.WriteLine("Nombre de documents validées : " + SaveSuccess);
+                logFileWriter_general.WriteLine("Nombre de documents echouées : " + (nbr - SaveSuccess));
+                logFileWriter_general.WriteLine("Nombre de documents déjà existants : " + existAlreadyList.Count);
             }
 
             goError:;
@@ -2380,7 +3094,7 @@ namespace importPlanifier.Classes
             //logFileWriter_general.Close();
         }
 
-        public Boolean insertCommande(Client client, Order order, StreamWriter writer, string filename)
+        public Boolean insertCommande(Client client, Order order, string statut, StreamWriter writer, string filename)
         {
             writer.WriteLine(DateTime.Now + " | insertCommande() : Called!");
             using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
@@ -2388,8 +3102,8 @@ namespace importPlanifier.Classes
                 try
                 {
                     connection.Open();
-                    writer.WriteLine(DateTime.Now + " | insertCommande() : SQL ===> " + QueryHelper.insertCommande(false, client, order));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(false, client, order), connection);
+                    writer.WriteLine(DateTime.Now + " | insertCommande() : SQL ===> " + QueryHelper.insertCommande(false, client, order, statut));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.insertCommande(false, client, order, statut), connection);
                     
                     command.ExecuteReader();
                     connection.Close();
@@ -4456,6 +5170,681 @@ namespace importPlanifier.Classes
             return list_of_cmd_lines;
         }
 
+        public static string[,] insertDesadv_Relicat_Veolog(string reference_DESADV_doc, List<string> articleBarreCodeList, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter)
+        {
+            string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
+            string[] list_of_client_info = null;
+
+            int position_item = 0;
+            DateTime d = DateTime.Now;
+            string curr_date = d.ToString("yyyy-MM-dd");
+            string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
+
+
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
+            {
+                try
+                {
+                    connexion.Open();
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Connexion ouverte.");
+
+                    //Get the list of all Taxes (TVA)
+                    //So i can calculate the ttc later
+                    List<TVA> tvaList = null;
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Récupére tous les tva");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getAllTVA(true));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connexion))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                tvaList = new List<TVA>();
+                                tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                while (reader.Read())
+                                {
+                                    tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                }
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                tvaList = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse. ");
+                            }
+                        }
+                    }
+
+
+                    //Get the last ligne number
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Récupére le numéro de la dernière ligne");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getLastLigneDocligne(true, reference_DESADV_doc));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getLastLigneDocligne(true, reference_DESADV_doc), connexion))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Dernière ligne du BL " + reader[0].ToString());
+                                position_item = Convert.ToInt32(reader[0].ToString());
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse. Ce BL " + reference_DESADV_doc + " n'existe pas!");
+                            }
+                        }
+                    }
+
+                    //get veolog delivery date and time
+                    string veologDeliveryDateTime = "";
+                    try
+                    {
+                        string year = dh.Date_De_Expedition.Substring(0, 4);
+                        string month = dh.Date_De_Expedition.Substring(4, 2);
+                        string day = dh.Date_De_Expedition.Substring(6, 2);
+
+                        string hour = "00";
+                        string mins = "00";
+                        if (dh.Heure_De_Expedition != "" && dh.Heure_De_Expedition.Length == 4)
+                        {
+                            hour = dh.Heure_De_Expedition.Substring(0, 2);
+                            mins = dh.Heure_De_Expedition.Substring(2, 2);
+                        }
+                        string veologDeliveryDate = year + "-" + month + "-" + day;
+                        string veologDeliveryTime = hour + ":" + mins + ":00";
+                        veologDeliveryDateTime = veologDeliveryDate + " " + veologDeliveryTime;
+                    }
+                    catch (Exception e)
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ******************** Erreur Date/Heure de livraison ********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Message: " + e.Message);
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace: " + e.StackTrace);
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée. Erreur lors la création de la date de livraison.\nCe problème sera vérifié et résolu entre une à quatre heures ouvrables.", e.Message, e.StackTrace, fileName, logFileName_import));
+                        return null;
+                    }
+
+                    int counter = 0;
+
+                    foreach (Veolog_DESADV_Lines line in dl) //read item by item
+                    {
+                        string ref_client = "";
+                        string ref_article = "";
+                        string name_article = "";
+                        string DL_PoidsNet = "0";
+                        string DL_PoidsBrut = "0";
+                        string DL_PrixUnitaire_salePriceHT = "0";
+                        string DL_PUTTC = "0";
+                        string COLIS_article = "";
+                        string PCB_article = "";
+                        string COMPLEMENT_article = "";
+                        string DL_Taxe1 = "";
+                        string DL_CodeTaxe1 = "";
+                        string DL_PieceBC = "";
+                        string DL_DateBC = "";
+                        string DL_QteBC = "";
+                        string CO_No = "";
+
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Lire la ligne de l'article.");
+
+                        Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+                        connexionSaveLoad.Load();
+
+                        if ((connexionSaveLoad.configurationConnexion.SQL.PREFIX.Equals("CFCI") ||
+                            connexionSaveLoad.configurationConnexion.SQL.PREFIX.Equals("TABLEWEAR")) &&
+                            line.Quantite_Colis.Equals("0"))
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : L'article " + line.Code_Article + " est retiré de la commande " + dh.Ref_Commande_Donneur_Ordre + ", alors on intègre pas. ");
+                            break;
+                        }
+
+                        //get Product Name By Reference
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getProductNameByReference_DESADV(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_DESADV(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    ref_article = (reader[0].ToString());                   // get product ref
+                                    name_article = (reader[1].ToString());                  // sum up the total_negative variable. - check query
+                                    DL_PoidsNet = (reader[2].ToString());                   // get unit weight NET - check query
+                                    DL_PoidsBrut = (reader[3].ToString());                  // get unit weight BRUT - check query
+                                    DL_PrixUnitaire_salePriceHT = (reader[4].ToString());   // get (Prix de vente) unit price ht - check query
+                                    COLIS_article = reader[5].ToString();
+                                    PCB_article = reader[6].ToString();
+                                    COMPLEMENT_article = reader[7].ToString();
+                                    DL_Taxe1 = reader[8].ToString();
+                                    DL_CodeTaxe1 = reader[9].ToString();
+                                    DL_PieceBC = reader[10].ToString();
+                                    DL_DateBC = reader[11].ToString();
+                                    DL_QteBC = reader[12].ToString().Replace(",", ".");
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la commande " + dh.Ref_Commande_Donneur_Ordre + ".");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée. L'article \"" + line.Code_Article + "\" n'est pas trouvé dans le champ CodeBare ou dans la base Sage", "L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la BDD.", "", fileName, logFileName_import));
+                                    return null;
+                                }
+                            }
+                        }
+
+                        //get Client Reference From CMD Ref
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Obtenir la référence client depuis le BC.");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceFromCMD_DESADV(true, dh.Ref_Commande_Donneur_Ordre), connexion))
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    ref_client = reader[0].ToString();
+                                    CO_No = reader[1].ToString();
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Une reponse. Ref Client ===> " + ref_client);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Une reponse. CO_No ===> " + CO_No);
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée. Le client n'est pas trouvé dans la commande " + dh.Ref_Commande_Donneur_Ordre, "Le client n'est pas trouvé dans la commande " + dh.Ref_Commande_Donneur_Ordre, "", fileName, logFileName_import));
+                                    return null;
+                                }
+                            }
+                        }
+
+                        //get Client info by Reference
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Obtenir la référence client par référence.");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_client));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_client), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    list_of_client_info = new string[15];
+                                    list_of_client_info[0] = reader[0].ToString();      // CT_Num
+                                    list_of_client_info[1] = reader[1].ToString();      // CA_Num 
+                                    list_of_client_info[2] = reader[2].ToString();      // CG_NumPrinc
+                                    list_of_client_info[3] = reader[3].ToString();      // CT_NumPayeur
+                                    list_of_client_info[4] = reader[4].ToString();      // N_Condition
+                                    list_of_client_info[5] = reader[5].ToString();      // N_Devise
+                                    list_of_client_info[6] = reader[6].ToString();      // CT_Langue
+                                    list_of_client_info[7] = reader[7].ToString();      // DO_NbFacture = CT_Facture
+                                    list_of_client_info[8] = reader[8].ToString().Replace(',', '.');      // DO_TxEscompte = CT_Taux02
+                                    list_of_client_info[9] = reader[9].ToString();      // N_CatCompta
+                                    list_of_client_info[10] = reader[10].ToString();    // CO_No
+                                    list_of_client_info[11] = reader[11].ToString();    //  DO_Tarif = N_CatTarif
+                                    list_of_client_info[12] = reader[12].ToString();    //  DO_Expedit = N_Expedition du tier
+                                    list_of_client_info[13] = reader[13].ToString();    //  CT_Intitule
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse. list_of_client_info est null");
+                                }
+                            }
+                        }
+
+                        //get client delivery adress
+                        if (list_of_client_info != null)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getClientDeliveryAddress_DESADV(true, ref_client));
+                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientDeliveryAddress_DESADV(true, ref_client), connexion))
+                            {
+                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                {
+                                    if (reader.Read()) // If any rows returned
+                                    {
+                                        list_of_client_info[14] = reader[0].ToString();    // LI_No
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Adresse de livraison (" + reader[0].ToString() + ") trouvé!");
+                                    }
+                                    else// If no rows returned
+                                    {
+                                        //do nothing.
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse. list_of_client_info est null");
+                                        logFileWriter.Flush();
+                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée. L'adresse de livraison du client " + ref_client + " n'est pas trouvé dans Sage", "L'adresse de livraison du client " + ref_client + " n'est pas trouvé dans Sage", "Aucune reponse. list_of_client_info est null", fileName, logFileName_import));
+                                        return null;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ******************** Erreur ********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucun client trouver.");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Import annulée");
+                            logFileWriter.Flush();
+                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée. Le client " + ref_client + " n'existe pas dans Sage", "Le client " + ref_client + " n'existe pas dans la BDD", "Aucune reponse. list_of_client_info est null", fileName, logFileName_import));
+                            return null;
+                        }
+
+
+                        if (ref_article != "" && name_article != "" && list_of_client_info != null)
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Article trouvé.");
+                            logFileWriter.WriteLine("");
+
+                            try
+                            {
+                                //DL_Ligne
+                                position_item += 1000;
+
+                                //calculate product ttc
+                                double product_ttc = 0.0;
+                                try
+                                {
+                                    logFileWriter.WriteLine("");
+                                    if (tvaList != null)
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : List des TVA trouvé");
+                                        TVA tva = null;
+                                        bool tva_error = false;
+                                        foreach (TVA tva_ in tvaList)
+                                        {
+                                            if (DL_CodeTaxe1 != null && DL_CodeTaxe1 != "" && tva_.TA_Code == DL_CodeTaxe1)
+                                            {
+                                                tva = tva_;
+                                                tva_error = true;
+                                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : TVA " + tva.TA_Code + " trouvé \"" + tva.TA_Taux + "\"");
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                if (DL_CodeTaxe1 == null)
+                                                {
+                                                    //tva = tva_;
+                                                    tva_error = false;
+                                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : TVA NULL trouvé, alors TVA mis à 0");
+                                                    break;
+                                                }
+                                                else if (DL_CodeTaxe1 == "")
+                                                {
+                                                    //tva = tva_;
+                                                    tva_error = false;
+                                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : TVA VIDE trouvé, alors TVA mis à 0");
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        string endTVA = null;
+                                        if (tva_error)
+                                        {
+                                            endTVA = tva.TA_Taux;
+                                        }
+                                        else
+                                        {
+                                            DL_CodeTaxe1 = "C00";
+                                            endTVA = "0,000000";
+                                        }
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : endTVA = " + endTVA);
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * Convert.ToDouble(endTVA)) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Prix TTC créé");
+                                    }
+                                    else
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ******************** Warning TVA ********************");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BL seront 0");
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * 0.0) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Prix TTC créé");
+                                    }
+                                    logFileWriter.Flush();
+                                }
+                                catch (Exception ex)
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ******************** Exception TVA ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Import annulée");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée.\nErreur lors du calcule du prix d'article (" + ref_article + ") TTC", "Erreur lors du calcule du prix d'article TTC, message : " + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    return null;
+                                }
+
+                                // input DL_DateBC: 03 - 01 - 2020 00:00:00;
+                                string original_date = DL_DateBC;
+                                string date = original_date.Split(' ')[0];
+                                string time = original_date.Split(' ')[1];
+                                DL_DateBC = date.Split('/')[2] + "-" + date.Split('/')[1] + "-" + date.Split('/')[0] + " " + time;
+                                // ouput DL_DateBC: 2020-01-03 00:00:00;
+
+                                // DESADV prefix will be used to create document
+                                list_of_cmd_lines[counter, 0] = "0"; // DO_Domaine
+                                list_of_cmd_lines[counter, 1] = "3"; //DO_Type
+                                list_of_cmd_lines[counter, 2] = "3"; //DO_DocType
+                                list_of_cmd_lines[counter, 3] = list_of_client_info[0]; //CT_NUM
+                                list_of_cmd_lines[counter, 4] = reference_DESADV_doc; //DO_Piece
+                                list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
+                                list_of_cmd_lines[counter, 6] = DL_DateBC; //DL_DateBC
+                                list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
+                                list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Client_Livre; // DO_Ref
+                                list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
+                                list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
+                                list_of_cmd_lines[counter, 11] = "1"; //DE_NO
+                                list_of_cmd_lines[counter, 12] = name_article.Replace("'", "''"); // DL_Design
+                                list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
+                                list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
+                                if (list_of_cmd_lines[counter, 14].Equals("0")) { list_of_cmd_lines[counter, 14] = "0.000000"; } else if (!list_of_cmd_lines[counter, 14].Contains(".")) { list_of_cmd_lines[counter, 14] = list_of_cmd_lines[counter, 14] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 15] = Convert.ToDouble(DL_PoidsBrut).ToString().Replace(",", "."); // DL_PoidsBrut
+                                if (list_of_cmd_lines[counter, 15].Equals("0")) { list_of_cmd_lines[counter, 15] = "0.000000"; } else if (!list_of_cmd_lines[counter, 15].Contains(".")) { list_of_cmd_lines[counter, 15] = list_of_cmd_lines[counter, 15] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                if (list_of_cmd_lines[counter, 16].Equals("0")) { list_of_cmd_lines[counter, 16] = "0.000000"; } else if (!list_of_cmd_lines[counter, 16].Contains(".")) { list_of_cmd_lines[counter, 16] = list_of_cmd_lines[counter, 16] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixRU
+                                if (list_of_cmd_lines[counter, 17].Equals("0")) { list_of_cmd_lines[counter, 17] = "0.000000"; } else if (!list_of_cmd_lines[counter, 17].Contains(".")) { list_of_cmd_lines[counter, 17] = list_of_cmd_lines[counter, 17] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_CMUP
+                                list_of_cmd_lines[counter, 19] = "Heure";    //DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                list_of_cmd_lines[counter, 20] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
+                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite_Colis) * Convert.ToDouble(DL_PrixUnitaire_salePriceHT)).ToString().Replace(",", "."); //DL_MontantHT
+                                list_of_cmd_lines[counter, 22] = (Convert.ToDouble(line.Quantite_Colis) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
+                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+                                if (list_of_cmd_lines[counter, 21].Equals("0")) { list_of_cmd_lines[counter, 21] = "0.000000"; } else if (!list_of_cmd_lines[counter, 21].Contains(".")) { list_of_cmd_lines[counter, 21] = list_of_cmd_lines[counter, 21] + ".0"; }
+                                if (list_of_cmd_lines[counter, 22].Equals("0")) { list_of_cmd_lines[counter, 22] = "0.000000"; } else if (!list_of_cmd_lines[counter, 22].Contains(".")) { list_of_cmd_lines[counter, 22] = list_of_cmd_lines[counter, 22] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 23] = ""; //PF_Num
+                                list_of_cmd_lines[counter, 24] = "0"; //DL_No
+                                list_of_cmd_lines[counter, 25] = "0"; //DL_FactPoids
+                                list_of_cmd_lines[counter, 26] = "0"; //DL_Escompte
+                                list_of_cmd_lines[counter, 27] = DL_PUTTC; //DL_PUTTC
+                                list_of_cmd_lines[counter, 28] = "0";   //DL_TTC
+
+                                list_of_cmd_lines[counter, 29] = DL_PieceBC;   //DL_PieceBC
+                                list_of_cmd_lines[counter, 30] = reference_DESADV_doc;   //DL_PieceBL
+                                list_of_cmd_lines[counter, 31] = curr_date;   // DL_DateBL
+                                list_of_cmd_lines[counter, 32] = "0";   //DL_TNomencl
+                                list_of_cmd_lines[counter, 33] = "0";   //DL_TRemPied
+                                list_of_cmd_lines[counter, 34] = "0";   //DL_TRemExep
+                                list_of_cmd_lines[counter, 35] = DL_QteBC.Replace(",", ".");   //DL_QteBC
+                                list_of_cmd_lines[counter, 36] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");   //DL_QteBL
+                                list_of_cmd_lines[counter, 37] = "0.000000";    //DL_Remise01REM_Valeur
+                                list_of_cmd_lines[counter, 38] = "0";           //DL_Remise01REM_Type
+                                list_of_cmd_lines[counter, 39] = "0.000000";    //DL_Remise02REM_Valeur
+                                list_of_cmd_lines[counter, 40] = "0";           //DL_Remise02REM_Type
+                                list_of_cmd_lines[counter, 41] = "0.000000";    //DL_Remise03REM_Valeur
+                                list_of_cmd_lines[counter, 42] = "0";           //DL_Remise03REM_Type
+                                list_of_cmd_lines[counter, 43] = "1";                   //DL_NoRef
+                                list_of_cmd_lines[counter, 44] = "0";                   //DL_TypePL
+                                list_of_cmd_lines[counter, 45] = "0.000000";            //DL_PUDevise
+                                list_of_cmd_lines[counter, 46] = "";                    //CA_Num
+                                list_of_cmd_lines[counter, 47] = "0.000000";            //DL_Frais
+                                list_of_cmd_lines[counter, 48] = "";                    //AC_RefClient
+                                list_of_cmd_lines[counter, 49] = "";                   //DL_PiecePL
+                                list_of_cmd_lines[counter, 50] = "NULL"; //curr_date;                    //DL_DatePL
+                                list_of_cmd_lines[counter, 51] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                   //DL_QtePL
+                                list_of_cmd_lines[counter, 52] = "";                    //DL_NoColis
+                                list_of_cmd_lines[counter, 53] = "0";                   //DL_NoLink
+                                list_of_cmd_lines[counter, 54] = CO_No;                    //CO_No
+                                list_of_cmd_lines[counter, 55] = "0";                //DT_No
+                                list_of_cmd_lines[counter, 56] = "";                    //DL_PieceDE
+                                list_of_cmd_lines[counter, 57] = "NULL";                   //DL_DateDe
+                                list_of_cmd_lines[counter, 58] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                    //DL_QteDE
+                                list_of_cmd_lines[counter, 59] = "0";                  //DL_NoSousTotal
+                                list_of_cmd_lines[counter, 60] = "0";                //CA_No
+                                list_of_cmd_lines[counter, 61] = "0.000000";            // DL_PUBC
+                                list_of_cmd_lines[counter, 62] = DL_CodeTaxe1;                  // DL_CodeTaxe1
+                                list_of_cmd_lines[counter, 63] = DL_Taxe1.ToString().Replace(",", ".");         // DL_Taxe1
+                                list_of_cmd_lines[counter, 64] = "0.000000";            // DL_Taxe2
+                                list_of_cmd_lines[counter, 65] = "0.000000";            // DL_Taxe3
+                                list_of_cmd_lines[counter, 66] = "0";                   // DL_TypeTaux1
+                                list_of_cmd_lines[counter, 67] = "0";                   // DL_TypeTaxe1
+                                list_of_cmd_lines[counter, 68] = "0";                   // DL_TypeTaux2
+                                list_of_cmd_lines[counter, 69] = "0";                   // DL_TypeTaxe2
+                                list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
+                                list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
+
+                                list_of_cmd_lines[counter, 72] = "3";                                           // DL_MvtStock
+                                list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
+                                list_of_cmd_lines[counter, 74] = ((COLIS_article == null || COLIS_article == "") ? "0.0" : COLIS_article).ToString().Replace(",", ".");    // COLIS
+                                list_of_cmd_lines[counter, 75] = ((PCB_article == null || PCB_article == "") ? "0.0" : PCB_article).ToString().Replace(",", ".");      // PCB
+                                list_of_cmd_lines[counter, 76] = COMPLEMENT_article;                            // COMPLEMENT
+                                list_of_cmd_lines[counter, 77] = "";                                            // PourVeolog
+                                list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
+                                list_of_cmd_lines[counter, 79] = "";                                            // DL_Operation
+                                list_of_cmd_lines[counter, 80] = veologDeliveryDateTime;    //DO_DateLivr
+                                list_of_cmd_lines[counter, 81] = "0";    //DL_NonLivre
+
+                            }
+                            catch (Exception ex)
+                            {
+                                //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ******************** Exception ********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Import annulée");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", "Le tableau 'BL' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                return null;
+                            }
+                            counter++;
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Compter => " + counter);
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine("");
+                        }
+                        else
+                        {
+                            counter--;
+                            logFileWriter.WriteLine("Aucun article trouvé ou Aucun information client trouvé !");
+                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Compter => " + counter);
+                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée.\nLes informations de l'aticle " + line.Code_Article + " ne sont pas trouvé dans Sage et/ou " + dh.Ref_Commande_Donneur_Ordre, "Aucun article trouvé ou Aucun information client trouvé !", "", fileName, logFileName_import));
+                            return null;
+                        }
+
+                        logFileWriter.Flush();
+                    }
+                    // ===== End Foreach =====      \nCe problème sera vérifié et résolu entre une à quatre heures ouvrables.
+
+
+                    string[,] products_DESADV = new string[position_item / 1000, 82]; // create array with enough space
+
+                    //insert documentline into the database with articles having 20 as value @index 2
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : insert documentline into the database with articles having 3 as value @index 2");
+
+                    for (int x = 0; x < list_of_cmd_lines.GetLength(0); x++)
+                    {
+                        if (list_of_cmd_lines[x, 1] == "3")
+                        {
+                            logFileWriter.WriteLine("");
+                            for (int y = 0; y < list_of_cmd_lines.GetLength(1); y++)
+                            {
+                                products_DESADV[x, y] = list_of_cmd_lines[x, y];
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : products_BL_L[" + x + "," + y + "] = " + products_DESADV[x, y]);
+                            }
+
+                            //insert the article to documentline in the database
+                            try
+                            {
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : insert the article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") to documentline in the database");
+
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : requette sql ===> " + QueryHelper.insertDesadvDocumentLine_Veolog(true, products_DESADV, x));
+
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocumentLine_Veolog(true, products_DESADV, x), connexion);
+                                command.ExecuteReader();
+                            }
+                            catch (OdbcException ex)
+                            {
+                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter);
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ********************** OdbcException *********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Import annulée");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                return null;
+                            }
+
+
+                            //Update docline artile stock
+                            try
+                            {
+                                bool found_stock = false;
+                                double AS_StockReel = 0.0;
+                                double AS_StockReserve = 0.0;
+                                double AS_StockMontant = 0.0;
+                                double productPrixUnite = Convert.ToDouble(products_DESADV[x, 16].Replace('.', ','));
+
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : get current stock in F_ARTSTOCK table in the database");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9]));
+                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9]), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                {
+                                    using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                                    {
+                                        if (reader.Read()) // If any rows returned
+                                        {
+                                            found_stock = true;
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Stock trouvé : AS_StockReel (" + reader[0].ToString() + "), AS_StockReserve (" + reader[1].ToString() + "), AS_StockMontant (" + reader[2].ToString() + ").");
+                                            AS_StockReel = Convert.ToDouble(reader[0].ToString().Replace(".", ","));
+                                            AS_StockReserve = Convert.ToDouble(reader[1].ToString().Replace(".", ","));
+                                            AS_StockMontant = Convert.ToDouble(reader[2].ToString().Replace(".", ","));
+                                        }
+                                        else// If no rows returned
+                                        {
+                                            //do nothing.
+                                            found_stock = false;
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse.");
+                                            logFileWriter.WriteLine("");
+                                            deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter);
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.Flush();
+                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", "Echec à la récupértion du stock de l'article " + products_DESADV[x, 9], "", fileName, logFileName_import));
+                                            return null;
+                                        }
+                                    }
+                                }
+
+
+                                if (found_stock)
+                                {
+                                    //Calculate stock info
+                                    //double AS_CMUP = AS_StockMontant / AS_StockReel;
+                                    double new_AS_StockReel = AS_StockReel - Convert.ToDouble(products_DESADV[x, 13].Replace('.', ','));
+                                    double new_AS_StockReserve = AS_StockReserve - Convert.ToDouble(products_DESADV[x, 13].Replace('.', ','));
+                                    double new_AS_StockMontant = new_AS_StockReel * productPrixUnite;
+                                    double new_AS_CMUP = new_AS_StockMontant / new_AS_StockReel;
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockReel: " + new_AS_StockReel + " = AS_StockReel: " + AS_StockReel + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_DESADV[x, 13].Replace('.', ',')));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockReserve: " + new_AS_StockReserve + " = AS_StockReserve: " + AS_StockReserve + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_DESADV[x, 13].Replace('.', ',')));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockMontant: " + new_AS_StockMontant + " = new_AS_StockReel: " + new_AS_StockReel + " * productPrixUnite: " + productPrixUnite);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_CMUP: " + new_AS_CMUP + " = new_AS_StockMontant: " + new_AS_StockMontant + " / new_AS_StockReel: " + new_AS_StockReel);
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : update article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") stock in F_ARTSTOCK table in the database");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
+
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connexion);
+                                    command.ExecuteReader();
+                                }
+                            }
+                            catch (OdbcException ex)
+                            {
+                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException Update F_ARTSTOCK table *********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                logFileWriter.Flush();
+
+                                logFileWriter.WriteLine("");
+                                if (!deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter))
+                                {
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                                }
+                                logFileWriter.WriteLine("");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                return null;
+                            }
+                        }
+                    }
+
+                    //set Veolog date time import
+                    try
+                    {
+                        string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog au DESADV \"" + reference_DESADV_doc + "\".");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre), connexion);
+                        {
+                            using (IDataReader reader = command.ExecuteReader())
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Date de livraison veolog à jour !");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                        logFileWriter.Flush();
+
+                        logFileWriter.WriteLine("");
+                        if (!deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter))
+                        {
+                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                        }
+                        logFileWriter.WriteLine("");
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                        return null;
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ********************** Relicat Erreur[1] *********************");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Message :: " + ex.Message);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace :: " + ex.StackTrace);
+                    connexion.Close(); //disconnect from database
+                    logFileWriter.Flush();
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                    return null;
+                }
+            }
+
+            return list_of_cmd_lines;
+        }
+
         private static string[,] insertSupplierOrder(string reference_BLF_doc, Veolog_BCF dh, List<Veolog_BCF_Lines> dl, string fileName, StreamWriter logFileWriter)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
@@ -5097,738 +6486,685 @@ namespace importPlanifier.Classes
 
             return list_of_cmd_lines;
         }
-        public static string lastNumberReference(string mask, StreamWriter logFileWriter)
+
+        /*
+        public static string[,] insertSupplierOrder_Relicat(string reference_BLF_doc, List<string> articleBarreCodeList, Veolog_BCF dh, List<Veolog_BCF_Lines> dl, string fileName, StreamWriter logFileWriter)
         {
-
-            string db_result = "";
-            string result = "";
-
-            if (mask == "ME") // Mouvement Entree
-            {
-                logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask ME");
-
-                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                {
-                    try
-                    {
-                        connexion.Open();
-
-                        //check if DOC_Numerotation existe
-                        //And get the last saved doc reference if differente from factory init mask
-                        bool DOC_Numerotation_exist = false;
-                        if(checkDOC_Numerotation(logFileWriter) == 1)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "STK_ME"));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "STK_ME"), connexion);
-                            using (IDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    if (reader[0].ToString() != "ME200000")
-                                    {
-                                        DOC_Numerotation_exist = true;
-                                        db_result = reader[0].ToString();
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask ME : " + db_result);
-                                    }
-                                    else
-                                    {
-                                        DOC_Numerotation_exist = false;
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
-                                    }
-                                }
-                            }
-                        }
-                        
-                        //Get the last doc reference in from the ME list 
-                        if (!DOC_Numerotation_exist)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
-                            OdbcCommand command1 = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
-                            using (IDataReader reader = command1.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    db_result = reader[0].ToString();
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask ME : " + db_result);
-                                }
-                                else
-                                {
-                                    db_result = "ME00000";
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask ME : " + db_result);
-                                }
-                            }
-                        }
-                    }
-                    catch (OdbcException ex)
-                    {
-                        Console.WriteLine("Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() |  Import annulée");
-                        return null;
-                    }
-
-                    try
-                    {
-                        //ME00001
-                        int chiffreTotal = 7;
-                        int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                        int newMaskID = lastMaskID + 1;
-
-                        result = mask; // put ME before adding '0'
-                        string zeros = "";
-                        string result_ = result + "" + newMaskID;
-
-                        for (int i = result_.Length; i < chiffreTotal; i++)
-                        {
-                            zeros += "0";
-                        }
-                        result += zeros + "" + newMaskID;
-
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask ME : " + result);
-                    }
-                    catch (Exception ex)
-                    {
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Exception *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Nouveau mask ME ne peut pas etre cree");
-                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        return null;
-                    }
-
-                    
-                }
-                logFileWriter.WriteLine("");
-                return result;
-            }
-            else if (mask == "MS") // Mouvement Sortie
-            {
-                logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask MS");
-
-                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                {
-                    try
-                    {
-                        connexion.Open();
-
-                        //check if DOC_Numerotation existe
-                        //And get the last saved doc reference if differente from factory init mask
-                        bool DOC_Numerotation_exist = false;
-                        if (checkDOC_Numerotation(logFileWriter) == 1)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "STK_MS"));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "STK_MS"), connexion);
-                            using (IDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    if (reader[0].ToString() != "MS200000")
-                                    {
-                                        DOC_Numerotation_exist = true;
-                                        db_result = reader[0].ToString();
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask MS : " + db_result);
-                                    }
-                                    else
-                                    {
-                                        DOC_Numerotation_exist = false;
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
-                                    }
-                                }
-                            }
-                        }
-
-                        //Get the last doc reference in from the ME list 
-                        if (!DOC_Numerotation_exist)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion); 
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    db_result = reader[0].ToString();
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask MS : " + db_result);
-                                }
-                                else
-                                {
-                                    db_result = "MS00000";
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask MS : " + db_result);
-                                }
-                            }
-                        }
-                    }
-                    catch (OdbcException ex)
-                    {
-                        Console.WriteLine("Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(false, mask));
-                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        return null;
-                    }
+            string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
+            string[] list_of_supplier_info = null;
+            int position_item = 0;
+            DateTime d = DateTime.Now;
+            string curr_date = d.ToString("yyyy-MM-dd");
+            string curr_date_seconds = d.Year + "" + d.Month + "" + d.Day + "" + d.Hour + "" + d.Minute + "" + d.Second;
 
 
-                    try
-                    {
-                        //MS00001
-                        int chiffreTotal = 7;
-                        int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                        int newMaskID = lastMaskID + 1;
-
-                        result = mask; // put ME before adding '0'
-                        string zeros = "";
-                        string result_ = result + "" + newMaskID;
-
-                        for (int i = result_.Length; i < chiffreTotal; i++)
-                        {
-                            zeros += "0";
-                        }
-                        result += zeros + "" + newMaskID;
-
-                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask MS : " + result);
-                    }
-                    catch(Exception ex)
-                    {
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** Exception *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : Nouveau mask ME ne peut pas etre cree");
-                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        return null;
-                    }
-                }
-                logFileWriter.WriteLine("");
-                return result;
-            }
-            else if (mask == "BL") // Bonn de Livraison
-            {
-                logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BL");
-
-                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                {
-                    try
-                    {
-                        connexion.Open();
-
-                        //check if DOC_Numerotation existe
-                        //And get the last saved doc reference if differente from factory init mask
-                        bool DOC_Numerotation_exist = false;
-                        if (checkDOC_Numerotation(logFileWriter) == 1)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BL"));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BL"), connexion);
-                            using (IDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    if (reader[0].ToString() != "BL200000")
-                                    {
-                                        DOC_Numerotation_exist = true;
-                                        db_result = reader[0].ToString();
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BL : " + db_result);
-                                    }
-                                    else
-                                    {
-                                        DOC_Numerotation_exist = false;
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
-                                    }
-                                }
-                            }
-                        }
-
-                        //Get the last doc reference in from the ME list 
-                        if (!DOC_Numerotation_exist)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    db_result = reader[0].ToString();
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BL : " + db_result);
-                                }
-                                else
-                                {
-                                    db_result = "BL00000";
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BL : " + db_result);
-                                }
-                            }
-                        }
-
-                    }
-                    catch (OdbcException ex)
-                    {
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
-                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        return null;
-                    }
-
-                    //ME00001
-                    int chiffreTotal = 7;
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
-                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
-
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
-                    {
-                        zeros += "0";
-                    }
-                    result += zeros + "" + newMaskID;
-
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BL : " + result);
-                }
-                logFileWriter.WriteLine("");
-                return result;
-            }
-            else if (mask == "BC") // Bon de Commande
-            {
-                logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Recuperer le dernier mask BC");
-
-                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                {
-                    try
-                    {
-                        connexion.Open();
-
-                        //check if DOC_Numerotation existe
-                        //And get the last saved doc reference if differente from factory init mask
-                        bool DOC_Numerotation_exist = false;
-                        if (checkDOC_Numerotation(logFileWriter) == 1)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BC"));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BC"), connexion);
-                            using (IDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    if (reader[0].ToString() != "BC200000")
-                                    {
-                                        DOC_Numerotation_exist = true;
-                                        db_result = reader[0].ToString();
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BC : " + db_result);
-                                    }
-                                    else
-                                    {
-                                        DOC_Numerotation_exist = false;
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
-                                    }
-                                }
-                            }
-                        }
-
-                        //Get the last doc reference in from the ME list 
-                        if (!DOC_Numerotation_exist)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    db_result = reader[0].ToString();
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BC : " + db_result);
-                                }
-                                else
-                                {
-                                    db_result = "BC00000";
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BC : " + db_result);
-                                }
-                            }
-                        }
-
-                    }
-                    catch (OdbcException ex)
-                    {
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
-                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        return null;
-                    }
-
-                    //ME00001
-                    int chiffreTotal = 7;
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
-                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
-
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
-                    {
-                        zeros += "0";
-                    }
-                    result += zeros + "" + newMaskID;
-
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BC : " + result);
-                }
-                logFileWriter.WriteLine("");
-                return result;
-            }
-            else if (mask == "BLF") // Bon de Commande Fournisseur
-            {
-                logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask BLF");
-
-                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                {
-                    try
-                    {
-                        connexion.Open();
-
-                        //check if DOC_Numerotation existe
-                        //And get the last saved doc reference if differente from factory init mask
-                        bool DOC_Numerotation_exist = false;
-                        if (checkDOC_Numerotation(logFileWriter) == 1)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BLF"));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BLF"), connexion);
-                            using (IDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    if (reader[0].ToString() != "BLF200000")
-                                    {
-                                        DOC_Numerotation_exist = true;
-                                        db_result = reader[0].ToString();
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BLF : " + db_result);
-                                    }
-                                    else
-                                    {
-                                        DOC_Numerotation_exist = false;
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
-                                    }
-                                }
-                            }
-                        }
-
-                        //Get the last doc reference in from the BCF list 
-                        if (!DOC_Numerotation_exist)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    db_result = reader[0].ToString();
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask BLF : " + db_result);
-                                }
-                                else
-                                {
-                                    db_result = "BLF000000";
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask BLF : " + db_result);
-                                }
-                            }
-                        }
-
-                    }
-                    catch (OdbcException ex)
-                    {
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
-                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        return null;
-                    }
-
-                    int chiffreTotal = 7;
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
-                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
-
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
-                    {
-                        zeros += "0";
-                    }
-                    result += zeros + "" + newMaskID;
-
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask BLF : " + result);
-                }
-                logFileWriter.WriteLine("");
-                return result;
-            }
-            else if (mask == "LF") // Bon de Commande Fournisseur
-            {
-                logFileWriter.WriteLine("");
-                logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Récupérer le dernier mask LF");
-
-                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                {
-                    try
-                    {
-                        connexion.Open();
-
-                        //check if DOC_Numerotation existe
-                        //And get the last saved doc reference if differente from factory init mask
-                        bool DOC_Numerotation_exist = false;
-                        if (checkDOC_Numerotation(logFileWriter) == 1)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getDOC_NumerotationTable(true, "BLF"));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getDOC_NumerotationTable(true, "BLF"), connexion);
-                            using (IDataReader reader = command.ExecuteReader())
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    if (reader[0].ToString() != "LF200000")
-                                    {
-                                        DOC_Numerotation_exist = true;
-                                        db_result = reader[0].ToString();
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial est changé, alors j'utilise le mask dans l'argument.");
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask LF : " + db_result);
-                                    }
-                                    else
-                                    {
-                                        DOC_Numerotation_exist = false;
-                                        logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Le mask initial n'est pas changé, alors c'est la première utilisation.");
-                                    }
-                                }
-                            }
-                        }
-
-                        //Get the last doc reference in from the BCF list 
-                        if (!DOC_Numerotation_exist)
-                        {
-                            logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | SQL => " + QueryHelper.getLastPieceNumberReference(true, mask));
-                            OdbcCommand command = new OdbcCommand(QueryHelper.getLastPieceNumberReference(true, mask), connexion);
-                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                            {
-                                if (reader.Read()) // reads lines/rows from the query
-                                {
-                                    db_result = reader[0].ToString();
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Mask LF : " + db_result);
-                                }
-                                else
-                                {
-                                    db_result = "LF000000";
-                                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Premiere Mask LF : " + db_result);
-                                }
-                            }
-                        }
-
-                    }
-                    catch (OdbcException ex)
-                    {
-                        logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " : ********************** OdbcException *********************");
-                        logFileWriter.WriteLine(DateTime.Now + " : SQL ===> " + QueryHelper.getLastPieceNumberReference(true, mask));
-                        logFileWriter.WriteLine(DateTime.Now + " : Message : " + ex.Message + ".");
-                        logFileWriter.WriteLine(DateTime.Now + " : Import annulée");
-                        return null;
-                    }
-
-                    int chiffreTotal = 7;
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | db_result.Replace(mask, '') == " + db_result.Replace(mask, ""));
-                    int lastMaskID = Convert.ToInt32(db_result.Replace(mask, ""));
-                    int newMaskID = lastMaskID + 1;
-
-                    result = mask; // put ME before adding '0'
-                    string zeros = "";
-                    string result_ = result + "" + newMaskID;
-
-                    for (int i = result_.Length; i < chiffreTotal; i++)
-                    {
-                        zeros += "0";
-                    }
-                    result += zeros + "" + newMaskID;
-
-                    logFileWriter.WriteLine(DateTime.Now + " : lastNumberReference() | Nouveau mask LF : " + result);
-                }
-                logFileWriter.WriteLine("");
-                return result;
-            }
-            return null;
-        }
-
-        public static int checkDOC_Numerotation(StreamWriter writer)
-        {
-            int result = -1;
-            writer.WriteLine("");
-            writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : Vérifier si la table de numérotation existe");
-
-            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL()) //connecting to database as handler
             {
                 try
                 {
                     connexion.Open();
-                    writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : SQL => " + QueryHelper.checkDOC_NumerotationTable(true));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.checkDOC_NumerotationTable(true), connexion);
-                    using (IDataReader reader = command.ExecuteReader())
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : Connexion ouverte.");
+
+                    //Get the list of all Taxes (TVA)
+                    //So i can calculate the ttc later
+                    List<TVA> tvaList = null;
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : Récupére tous les tva");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : SQL ===> " + QueryHelper.getAllTVA(true));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getAllTVA(true), connexion))
                     {
-                        if (reader.Read())
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                         {
-                            if (reader[0].ToString() == "1")
+                            if (reader.Read()) // If any rows returned
                             {
-                                result = 1;
-                                writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : La table de numérotation existe avec des données");
+                                tvaList = new List<TVA>();
+                                tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                while (reader.Read())
+                                {
+                                    tvaList.Add(new TVA(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString()));
+                                }
                             }
-                            else
+                            else// If no rows returned
                             {
-                                result = 0;
-                                writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : La table de numérotation existe sans des données");
+                                //do nothing.
+                                tvaList = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse. ");
                             }
-                        }
-                        else
-                        {
-                            result = 0;
-                            writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : Aucune donnée n'existe pour la ligne/colonne.");
                         }
                     }
-                    connexion.Close();
-                }
-                catch (Exception ex)
-                {
-                    writer.WriteLine(DateTime.Now + " | checkDOC_Numerotation() : ******************** Erreur ********************");
-                    writer.WriteLine(DateTime.Now + " : Erreur[201]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    result = -1;
-                    connexion.Close();
-                }
-            }
-            writer.WriteLine("");
-            return result;
-        }
 
-        public static bool initDOC_Numerotation(StreamWriter writer)
-        {
-            writer.WriteLine("");
-            writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Init");
-            bool result = false;
-            int check = checkDOC_Numerotation(writer);
 
-            if (check == 1)   //if the DOC_Numerotation do nothing
-            {
-                result = true;
-                writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation existe!");
-            }
-            else if (check == 0 || check == -1)      //if the tDOC_Numerotation doesn't exist then create it 
-            {
-                writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation does not existe, so create the table!");
-                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                {
+                    //Get the last ligne number
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Récupére le numéro de la dernière ligne");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getLastLigneDocligne(true, reference_BLF_doc));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getLastLigneDocligne(true, reference_BLF_doc), connexion))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Dernière ligne du BLF " + reader[0].ToString());
+                                position_item = Convert.ToInt32(reader[0].ToString());
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse. Ce BLF " + reference_BLF_doc + " n'existe pas!");
+                            }
+                        }
+                    }
+
+                    //Get ref client CMD, nature_OP_P && total ht
+                    string nature_op_p_ = "";
+                    string do_totalHT_ = "";
+                    string do_totalHTNet_ = "";
+                    string do_totalTTC_ = "";
+                    string do_NetAPayer_ = "";
+                    string do_MontantRegle_ = "";
+                    string ref_supplier = null;
+
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Récupérer les infos du Bon de Livraison Fournisseur " + reference_BLF_doc);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getCMDSupplierByRef(true, reference_BLF_doc));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getCMDSupplierByRef(true, reference_BLF_doc), connexion)) 
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                dh.Ref_Commande_Fournisseur = reader[0].ToString();
+                                nature_op_p_ = reader[1].ToString();
+                                do_totalHT_ = reader[2].ToString().Replace(",", ".");
+                                do_totalHTNet_ = reader[3].ToString().Replace(",", ".");
+                                do_totalTTC_ = reader[4].ToString().Replace(",", ".");
+                                do_NetAPayer_ = reader[5].ToString().Replace(",", ".");
+                                do_MontantRegle_ = reader[6].ToString().Replace(",", ".");
+                                ref_supplier = reader[7].ToString();
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : Aucune reponse. ");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur relicat est annulée.", "Le BLF n'est pas trouvé dans la BDD", "insertSupplierOrder_Relicat() : Aucune reponse", fileName, logFileName_import));
+                                return null;
+                            }
+                        }
+                    }
+
+                    //get Client Reference by Ref
+                    logFileWriter.WriteLine("");
+                    if (ref_supplier != null)
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_supplier));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_supplier), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    list_of_supplier_info = new string[16];
+                                    list_of_supplier_info[0] = reader[0].ToString();      // CT_Num
+                                    list_of_supplier_info[1] = reader[1].ToString();      // CA_Num 
+                                    list_of_supplier_info[2] = reader[2].ToString();      // CG_NumPrinc
+                                    list_of_supplier_info[3] = reader[3].ToString();      // CT_NumPayeur
+                                    list_of_supplier_info[4] = reader[4].ToString();      // N_Condition
+                                    list_of_supplier_info[5] = reader[5].ToString();      // N_Devise
+                                    list_of_supplier_info[6] = reader[6].ToString();      // CT_Langue
+                                    list_of_supplier_info[7] = reader[7].ToString();      // DO_NbFacture = CT_Facture
+                                    list_of_supplier_info[8] = reader[8].ToString().Replace(',', '.');      // DO_TxEscompte = CT_Taux02
+                                    list_of_supplier_info[9] = reader[9].ToString();      // N_CatCompta
+                                    list_of_supplier_info[10] = reader[10].ToString();    // CO_No
+                                    list_of_supplier_info[11] = reader[11].ToString();    //  DO_Tarif = N_CatTarif
+                                    list_of_supplier_info[12] = reader[12].ToString();    //  DO_Expedit = N_Expedition du tier
+                                    list_of_supplier_info[13] = reader[13].ToString();    //  CT_Intitule
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : Aucune reponse. list_of_fournisseur_info est null");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur est annulée. Le fournisseur \"" + ref_supplier + "\" n'existe pas dans Sage", "Le fournisseur \"" + ref_supplier + "\" n'existe pas dans Sage", "insertSupplierOrder() : Aucune reponse", fileName, logFileName_import));
+                                    return null;
+                                }
+                            }
+                        }
+
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : SQL ===> " + QueryHelper.getClientDeliveryAddress_DESADV(true, ref_supplier));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientDeliveryAddress_DESADV(true, ref_supplier), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    list_of_supplier_info[14] = reader[0].ToString();    // LI_No
+                                    list_of_supplier_info[15] = reader[0].ToString();    // cbLI_No
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : Adresse de livraison (" + reader[0].ToString() + ") trouvé!");
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    list_of_supplier_info[14] = "0";    // LI_No
+                                    list_of_supplier_info[15] = "NULL";    // cbLI_No
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : Aucune reponse. ( list_of_supplier_info[14] = 0 && list_of_supplier_info[15] = NULL ) est null");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : ********************** Exception Supplier *********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : Le fournisseur : " + ref_supplier + " n'existe pas dans la base!");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder_Relicat() : import annulé!");
+                        logFileWriter.Flush();
+                        connexion.Close(); //disconnect from database
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur relicat est annulée. Le fournisseur : " + ref_supplier + " n'existe pas dans Sage!", "Le fournisseur : " + ref_supplier + " n'existe pas dans la BDD", "insertSupplierOrder() : ref_supplier == null", fileName, logFileName_import));
+                        return null;
+                    }
+
+
+                    //get veolog delivery date and time
+                    string veologDeliveryDateTime = null;
                     try
                     {
-                        connexion.Open();
+                        //get veolog delivery date and time
+                        string year = dh.Date_De_Reception.Substring(0, 4);
+                        string month = dh.Date_De_Reception.Substring(4, 2);
+                        string day = dh.Date_De_Reception.Substring(6, 2);
+                        string hour = dh.Heure_De_Reception.Substring(0, 2);
+                        string mins = dh.Heure_De_Reception.Substring(2, 2);
+                        string veologDeliveryDate = year + "-" + month + "-" + day;
+                        string veologDeliveryTime = hour + ":" + mins + ":00";
+                        veologDeliveryDateTime = veologDeliveryDate + " " + veologDeliveryTime;
+                    }
+                    catch (Exception e)
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ******************** Erreur Date/Heure de livraison ********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Message: " + e.Message);
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace: " + e.StackTrace);
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur relicat est annulée. Erreur lors la création de la date de livraison.\nCe problème sera vérifié et résolu entre une à quatre heures ouvrables.", e.Message, e.StackTrace, fileName, logFileName_import));
+                        return null;
+                    }
 
-                        //Create DOC_Numerotation Table
-                        writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : SQL => "+ QueryHelper.createDOC_NumerotationTable(true));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.createDOC_NumerotationTable(true), connexion))
+                    int counter = 0;
+
+                    foreach (Veolog_BCF_Lines line in dl) //read item by item
+                    {
+                        string ref_article = "";
+                        string name_article = "";
+                        string DL_PoidsNet = "0";
+                        string DL_PoidsBrut = "0";
+                        //string DL_PrixUnitaire_buyPrice = "0";
+                        string DL_PrixUnitaire_salePriceHT = "0";
+                        string DL_PUTTC = "0";
+                        string COLIS_article = "";
+                        string PCB_article = "";
+                        string COMPLEMENT_article = "";
+                        string DL_Taxe1 = "";
+                        string DL_CodeTaxe1 = "";
+                        string DL_PieceBCF = "";
+                        string DL_DateBCF = "";
+                        string DL_QteBCF = "";
+
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Lire la ligne de l'article.");
+
+                        //get Product Name By Reference
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : SQL ===> " + QueryHelper.getProductNameByReference_BLF(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getProductNameByReference_BLF(true, dh.Ref_Commande_Donneur_Ordre, line.Code_Article), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
-                            using (IDataReader reader = command.ExecuteReader())
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
-                                writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation created!");
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    ref_article = (reader[0].ToString());                   // get product ref
+                                    name_article = (reader[1].ToString());                  // sum up the total_negative variable. - check query
+                                    DL_PoidsNet = (reader[2].ToString());                   // get unit weight NET - check query
+                                    DL_PoidsBrut = (reader[3].ToString());                  // get unit weight BRUT - check query
+                                    DL_PrixUnitaire_salePriceHT = (reader[4].ToString());   // get (Prix de vente) unit price ht - check query
+                                    COLIS_article = reader[5].ToString();
+                                    PCB_article = reader[6].ToString();
+                                    COMPLEMENT_article = reader[7].ToString();
+                                    DL_Taxe1 = reader[8].ToString();
+                                    DL_CodeTaxe1 = reader[9].ToString();
+                                    DL_PieceBCF = reader[10].ToString();
+                                    DL_DateBCF = reader[11].ToString();
+                                    DL_QteBCF = reader[12].ToString().Replace(",", ".");
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Aucune reponse. ");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur est annulée. L'article \"" + line.Code_Article + "\" n'existe pas dans le BCF " + dh.Ref_Commande_Donneur_Ordre, "L'article \"" + line.Code_Article + "\" n'existe pas dans la commande " + dh.Ref_Commande_Donneur_Ordre, "", fileName, logFileName_import));
+                                    return null;
+                                }
                             }
                         }
 
-                        Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
-                        connexionSaveLoad.Load();
 
-                        string initMask = "";
-                        if(connexionSaveLoad.configurationConnexion.SQL.PREFIX == "CFCI")
+                        if (ref_article != "" && name_article != "" && list_of_supplier_info != null)
                         {
-                            initMask = "BLF200000";
-                        }
-                        else if (connexionSaveLoad.configurationConnexion.SQL.PREFIX == "TABLEWEAR")
-                        {
-                            initMask = "LF200000";
-                        }
-                        else
-                        {
-                            initMask = "BLF200000";
+                            logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Article trouvé.");
+                            logFileWriter.WriteLine("");
+
+                            try
+                            {
+                                //DL_Ligne
+                                position_item += 1000;
+
+                                //calculate product ttc
+                                double product_ttc = 0.0;
+                                try
+                                {
+                                    logFileWriter.WriteLine("");
+                                    if (tvaList != null)
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : List des TVA trouvé");
+                                        TVA tva = null;
+                                        foreach (TVA tva_ in tvaList)
+                                        {
+                                            if (tva_.TA_Code == DL_CodeTaxe1)
+                                            {
+                                                tva = tva_;
+                                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                break;
+                                            }
+                                        }
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * Convert.ToDouble(tva.TA_Taux)) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Prix TTC créé");
+                                    }
+                                    else
+                                    {
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ******************** Warning TVA ********************");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Liste des tva non trouvée, tous les tva et prix ttc de chaque produit dans ce BL seront 0");
+
+                                        double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
+                                        double product_20_P = (product_ht * 0.0) / 100;
+                                        product_ttc = product_ht + product_20_P;
+                                        DL_PUTTC = ("" + product_ttc).Replace(",", ".");
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Prix TTC créé");
+                                    }
+                                    logFileWriter.Flush();
+                                }
+                                catch (Exception ex)
+                                {
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ******************** Exception TVA ********************");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                    return null;
+                                }
+
+                                // input DL_DateBC: 03 - 01 - 2020 00:00:00;
+                                string original_date = DL_DateBCF;
+                                string date = original_date.Split(' ')[0];
+                                string time = original_date.Split(' ')[1];
+                                DL_DateBCF = date.Split('/')[2] + "-" + date.Split('/')[1] + "-" + date.Split('/')[0] + " " + time;
+                                // ouput DL_DateBC: 2020-01-03 00:00:00;
+
+                                // DESADV prefix will be used to create document
+                                list_of_cmd_lines[counter, 0] = "1"; // DO_Domaine
+                                list_of_cmd_lines[counter, 1] = "13"; //DO_Type
+                                list_of_cmd_lines[counter, 2] = "13"; //DO_DocType
+                                list_of_cmd_lines[counter, 3] = list_of_supplier_info[0]; //CT_NUM
+                                list_of_cmd_lines[counter, 4] = reference_BLF_doc; //DO_Piece
+                                list_of_cmd_lines[counter, 5] = curr_date; //DO_Date
+                                list_of_cmd_lines[counter, 6] = DL_DateBCF; //DL_DateBC
+                                list_of_cmd_lines[counter, 7] = (position_item).ToString(); // DL_Ligne line number 1000,2000
+                                list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Fournisseur; // DO_Ref
+                                list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
+                                list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
+                                list_of_cmd_lines[counter, 11] = "1"; //DE_NO
+                                list_of_cmd_lines[counter, 12] = name_article.Replace("'", "''"); // DL_Design
+                                list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
+                                list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
+                                if (list_of_cmd_lines[counter, 14].Equals("0")) { list_of_cmd_lines[counter, 14] = "0.000000"; } else if (!list_of_cmd_lines[counter, 14].Contains(".")) { list_of_cmd_lines[counter, 14] = list_of_cmd_lines[counter, 14] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 15] = Convert.ToDouble(DL_PoidsBrut).ToString().Replace(",", "."); // DL_PoidsBrut
+                                if (list_of_cmd_lines[counter, 15].Equals("0")) { list_of_cmd_lines[counter, 15] = "0.000000"; } else if (!list_of_cmd_lines[counter, 15].Contains(".")) { list_of_cmd_lines[counter, 15] = list_of_cmd_lines[counter, 15] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 16] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixUnitaire
+                                if (list_of_cmd_lines[counter, 16].Equals("0")) { list_of_cmd_lines[counter, 16] = "0.000000"; } else if (!list_of_cmd_lines[counter, 16].Contains(".")) { list_of_cmd_lines[counter, 16] = list_of_cmd_lines[counter, 16] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 17] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_PrixRU
+                                if (list_of_cmd_lines[counter, 17].Equals("0")) { list_of_cmd_lines[counter, 17] = "0.000000"; } else if (!list_of_cmd_lines[counter, 17].Contains(".")) { list_of_cmd_lines[counter, 17] = list_of_cmd_lines[counter, 17] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 18] = DL_PrixUnitaire_salePriceHT.ToString().Replace(",", "."); // DL_CMUP
+                                list_of_cmd_lines[counter, 19] = "Heure";    //DL_PrixUnitaire.ToString().Replace(",", "."); // EU_Enumere
+                                list_of_cmd_lines[counter, 20] = Convert.ToInt16(line.Quantite).ToString().Replace(",", "."); // EU_Qte; // EU_Qte
+                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 21] = (Convert.ToDouble(line.Quantite) * Convert.ToDouble(DL_PrixUnitaire_salePriceHT)).ToString().Replace(",", "."); //DL_MontantHT
+                                list_of_cmd_lines[counter, 22] = (Convert.ToDouble(line.Quantite) * product_ttc).ToString().Replace(",", "."); //DL_MontantTTC
+                                if (list_of_cmd_lines[counter, 20].Equals("0")) { list_of_cmd_lines[counter, 20] = "0.000000"; } else if (!list_of_cmd_lines[counter, 20].Contains(".")) { list_of_cmd_lines[counter, 20] = list_of_cmd_lines[counter, 20] + ".000000"; }
+                                if (list_of_cmd_lines[counter, 21].Equals("0")) { list_of_cmd_lines[counter, 21] = "0.000000"; } else if (!list_of_cmd_lines[counter, 21].Contains(".")) { list_of_cmd_lines[counter, 21] = list_of_cmd_lines[counter, 21] + ".0"; }
+                                if (list_of_cmd_lines[counter, 22].Equals("0")) { list_of_cmd_lines[counter, 22] = "0.000000"; } else if (!list_of_cmd_lines[counter, 22].Contains(".")) { list_of_cmd_lines[counter, 22] = list_of_cmd_lines[counter, 22] + ".000000"; }
+
+                                list_of_cmd_lines[counter, 23] = ""; //PF_Num
+                                list_of_cmd_lines[counter, 24] = "0"; //DL_No
+                                list_of_cmd_lines[counter, 25] = "0"; //DL_FactPoids
+                                list_of_cmd_lines[counter, 26] = "0"; //DL_Escompte
+                                list_of_cmd_lines[counter, 27] = DL_PUTTC; //DL_PUTTC
+                                list_of_cmd_lines[counter, 28] = "0";   //DL_TTC
+
+                                list_of_cmd_lines[counter, 29] = DL_PieceBCF;   //DL_PieceBC
+                                list_of_cmd_lines[counter, 30] = reference_BLF_doc;   //DL_PieceBL
+                                list_of_cmd_lines[counter, 31] = curr_date;   // DL_DateBL
+                                list_of_cmd_lines[counter, 32] = "0";   //DL_TNomencl
+                                list_of_cmd_lines[counter, 33] = "0";   //DL_TRemPied
+                                list_of_cmd_lines[counter, 34] = "0";   //DL_TRemExep
+                                list_of_cmd_lines[counter, 35] = DL_QteBCF.Replace(",", ".");   //DL_QteBC
+                                list_of_cmd_lines[counter, 36] = Convert.ToInt16(line.Quantite).ToString().Replace(",", ".");   //DL_QteBL
+                                list_of_cmd_lines[counter, 37] = "0.000000";    //DL_Remise01REM_Valeur
+                                list_of_cmd_lines[counter, 38] = "0";           //DL_Remise01REM_Type
+                                list_of_cmd_lines[counter, 39] = "0.000000";    //DL_Remise02REM_Valeur
+                                list_of_cmd_lines[counter, 40] = "0";           //DL_Remise02REM_Type
+                                list_of_cmd_lines[counter, 41] = "0.000000";    //DL_Remise03REM_Valeur
+                                list_of_cmd_lines[counter, 42] = "0";           //DL_Remise03REM_Type
+                                list_of_cmd_lines[counter, 43] = "1";                   //DL_NoRef
+                                list_of_cmd_lines[counter, 44] = "0";                   //DL_TypePL
+                                list_of_cmd_lines[counter, 45] = "0.000000";            //DL_PUDevise
+                                list_of_cmd_lines[counter, 46] = "";                    //CA_Num
+                                list_of_cmd_lines[counter, 47] = "0.000000";            //DL_Frais
+                                list_of_cmd_lines[counter, 48] = "";                    //AC_RefClient
+                                list_of_cmd_lines[counter, 49] = "";                   //DL_PiecePL
+                                list_of_cmd_lines[counter, 50] = "NULL"; //curr_date;                    //DL_DatePL
+                                list_of_cmd_lines[counter, 51] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                   //DL_QtePL
+                                list_of_cmd_lines[counter, 52] = "";                    //DL_NoColis
+                                list_of_cmd_lines[counter, 53] = "0";                   //DL_NoLink
+                                list_of_cmd_lines[counter, 54] = "0";                    //CO_No
+                                list_of_cmd_lines[counter, 55] = "0";                //DT_No
+                                list_of_cmd_lines[counter, 56] = "";                    //DL_PieceDE
+                                list_of_cmd_lines[counter, 57] = "NULL";                   //DL_DateDe
+                                list_of_cmd_lines[counter, 58] = "0.000000"; //Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");                    //DL_QteDE
+                                list_of_cmd_lines[counter, 59] = "0";                  //DL_NoSousTotal
+                                list_of_cmd_lines[counter, 60] = "0";                //CA_No
+                                list_of_cmd_lines[counter, 61] = "0.000000";            // DL_PUBC
+                                list_of_cmd_lines[counter, 62] = DL_CodeTaxe1;                  // DL_CodeTaxe1
+                                list_of_cmd_lines[counter, 63] = DL_Taxe1.ToString().Replace(",", ".");         // DL_Taxe1
+                                list_of_cmd_lines[counter, 64] = "0.000000";            // DL_Taxe2
+                                list_of_cmd_lines[counter, 65] = "0.000000";            // DL_Taxe3
+                                list_of_cmd_lines[counter, 66] = "0";                   // DL_TypeTaux1
+                                list_of_cmd_lines[counter, 67] = "0";                   // DL_TypeTaxe1
+                                list_of_cmd_lines[counter, 68] = "0";                   // DL_TypeTaux2
+                                list_of_cmd_lines[counter, 69] = "0";                   // DL_TypeTaxe2
+                                list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
+                                list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
+
+                                list_of_cmd_lines[counter, 72] = "1";                                           // DL_MvtStock
+                                list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
+                                list_of_cmd_lines[counter, 74] = ((COLIS_article == null || COLIS_article == "") ? "0.0" : COLIS_article).ToString().Replace(",", ".");    // COLIS
+                                list_of_cmd_lines[counter, 75] = ((PCB_article == null || PCB_article == "") ? "0.0" : PCB_article).ToString().Replace(",", ".");      // PCB
+                                list_of_cmd_lines[counter, 76] = COMPLEMENT_article;                            // COMPLEMENT
+                                list_of_cmd_lines[counter, 77] = "";                                            // PourVeolog
+                                list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
+                                list_of_cmd_lines[counter, 79] = "";                                            // DL_Operation
+                                list_of_cmd_lines[counter, 80] = veologDeliveryDateTime;    //DO_DateLivr
+                                list_of_cmd_lines[counter, 81] = "0";    //DL_NonLivre
+
+                            }
+                            catch (Exception ex)
+                            {
+                                //MessageBox.Show("Exception : 2D table not working properly.\r\n" + ex.Message);
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ******************** Exception Line ********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Le tableau 'BLF' à 2 dimensions ne fonctionne pas correctement, message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur est annulée.", "Le tableau 'BLF' à 2 dimensions ne fonctionne pas correctement, message: " + ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                return null;
+                            }
                         }
 
-                        //Set up the first init Numérotation
-                        writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : SQL => " + QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", "BLF200000", "ME200000", "MS200000"));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.insertDOC_NumerotationTable(true, "BC200000", "BL200000", initMask, "ME200000", "MS200000"), connexion))
+                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Compter => " + counter);
+                        counter++;
+
+                    }
+                    // ===== End Foreach =====      \nCe problème sera vérifié et résolu entre une à quatre heures ouvrables.
+
+
+                    string[,] products_DESADV = new string[position_item / 1000, 82]; // create array with enough space
+
+                    //insert documentline into the database with articles having 20 as value @index 2
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : insert documentline into the database with articles having 3 as value @index 2");
+
+                    for (int x = 0; x < list_of_cmd_lines.GetLength(0); x++)
+                    {
+                        if (list_of_cmd_lines[x, 1] == "3")
+                        {
+                            logFileWriter.WriteLine("");
+                            for (int y = 0; y < list_of_cmd_lines.GetLength(1); y++)
+                            {
+                                products_DESADV[x, y] = list_of_cmd_lines[x, y];
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : products_BL_L[" + x + "," + y + "] = " + products_DESADV[x, y]);
+                            }
+
+                            //insert the article to documentline in the database
+                            try
+                            {
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : insert the article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") to documentline in the database");
+
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : requette sql ===> " + QueryHelper.insertDesadvDocumentLine_Veolog(true, products_DESADV, x));
+
+                                OdbcCommand command = new OdbcCommand(QueryHelper.insertDesadvDocumentLine_Veolog(true, products_DESADV, x), connexion);
+                                command.ExecuteReader();
+                            }
+                            catch (OdbcException ex)
+                            {
+                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter);
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ********************** OdbcException *********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Import annulée");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                return null;
+                            }
+
+
+                            //Update docline artile stock
+                            try
+                            {
+                                bool found_stock = false;
+                                double AS_StockReel = 0.0;
+                                double AS_StockReserve = 0.0;
+                                double AS_StockMontant = 0.0;
+                                double productPrixUnite = Convert.ToDouble(products_DESADV[x, 16].Replace('.', ','));
+
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : get current stock in F_ARTSTOCK table in the database");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9]));
+                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9]), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                {
+                                    using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                                    {
+                                        if (reader.Read()) // If any rows returned
+                                        {
+                                            found_stock = true;
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Stock trouvé : AS_StockReel (" + reader[0].ToString() + "), AS_StockReserve (" + reader[1].ToString() + "), AS_StockMontant (" + reader[2].ToString() + ").");
+                                            AS_StockReel = Convert.ToDouble(reader[0].ToString().Replace(".", ","));
+                                            AS_StockReserve = Convert.ToDouble(reader[1].ToString().Replace(".", ","));
+                                            AS_StockMontant = Convert.ToDouble(reader[2].ToString().Replace(".", ","));
+                                        }
+                                        else// If no rows returned
+                                        {
+                                            //do nothing.
+                                            found_stock = false;
+                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Aucune reponse.");
+                                            logFileWriter.WriteLine("");
+                                            deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter);
+                                            logFileWriter.WriteLine("");
+                                            logFileWriter.Flush();
+                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", "Echec à la récupértion du stock de l'article " + products_DESADV[x, 9], "", fileName, logFileName_import));
+                                            return null;
+                                        }
+                                    }
+                                }
+
+
+                                if (found_stock)
+                                {
+                                    //Calculate stock info
+                                    //double AS_CMUP = AS_StockMontant / AS_StockReel;
+                                    double new_AS_StockReel = AS_StockReel - Convert.ToDouble(products_DESADV[x, 13].Replace('.', ','));
+                                    double new_AS_StockReserve = AS_StockReserve - Convert.ToDouble(products_DESADV[x, 13].Replace('.', ','));
+                                    double new_AS_StockMontant = new_AS_StockReel * productPrixUnite;
+                                    double new_AS_CMUP = new_AS_StockMontant / new_AS_StockReel;
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockReel: " + new_AS_StockReel + " = AS_StockReel: " + AS_StockReel + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_DESADV[x, 13].Replace('.', ',')));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockReserve: " + new_AS_StockReserve + " = AS_StockReserve: " + AS_StockReserve + " - products_DESADV[x, 13]: " + Convert.ToDouble(products_DESADV[x, 13].Replace('.', ',')));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_StockMontant: " + new_AS_StockMontant + " = new_AS_StockReel: " + new_AS_StockReel + " * productPrixUnite: " + productPrixUnite);
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : new_AS_CMUP: " + new_AS_CMUP + " = new_AS_StockMontant: " + new_AS_StockMontant + " / new_AS_StockReel: " + new_AS_StockReel);
+
+                                    logFileWriter.WriteLine("");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : update article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") stock in F_ARTSTOCK table in the database");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
+
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connexion);
+                                    command.ExecuteReader();
+                                }
+                            }
+                            catch (OdbcException ex)
+                            {
+                                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : ********************** OdbcException Update F_ARTSTOCK table *********************");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Message :" + ex.Message);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : StackTrace :" + ex.StackTrace);
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Import annulée");
+                                logFileWriter.Flush();
+
+                                logFileWriter.WriteLine("");
+                                if (!deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter))
+                                {
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                                }
+                                logFileWriter.WriteLine("");
+                                logFileWriter.Flush();
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                                return null;
+                            }
+                        }
+                    }
+
+                    //set Veolog date time import
+                    try
+                    {
+                        string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog au DESADV \"" + reference_DESADV_doc + "\".");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre), connexion);
                         {
                             using (IDataReader reader = command.ExecuteReader())
                             {
-                                result = true;
-                                writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : Table DOC_Numerotation created!");
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Date de livraison veolog à jour !");
                             }
                         }
-                        connexion.Close();
                     }
                     catch (Exception ex)
                     {
-                        result = false;
-                        writer.WriteLine(DateTime.Now + " | initDOC_Numerotation() : ******************** Erreur ********************");
-                        writer.WriteLine(DateTime.Now + " : Erreur[200]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
+                        logFileWriter.Flush();
+
+                        logFileWriter.WriteLine("");
+                        if (!deleteLineOfDocument(true, reference_DESADV_doc, connexion, logFileWriter))
+                        {
+                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "", "Erreur lors de la suppression du document " + reference_DESADV_doc, "", fileName, logFileName_import));
+                        }
+                        logFileWriter.WriteLine("");
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                        return null;
                     }
+
+
+                }
+                catch (Exception ex)
+                {
+                    logFileWriter.WriteLine("");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : ********************** Relicat Erreur[1] *********************");
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : Message :: " + ex.Message);
+                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Relicat_Veolog() : StackTrace :: " + ex.StackTrace);
+                    connexion.Close(); //disconnect from database
+                    logFileWriter.Flush();
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison relicat est annulée.", ex.Message, ex.StackTrace, fileName, logFileName_import));
+                    return null;
                 }
             }
-            return result;
-        }
 
-        public static Client getClient(string id, StreamWriter writer)
+            return list_of_cmd_lines;
+        }
+        */
+
+        private static List<string> get_DESADV_Document(StreamWriter writer, string DL_PieceBC, string DO_Tiere)
         {
-            // Insertion dans la base sage : cbase
-            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
+            List<string> ligneArticl = null;
+            writer.WriteLine(DateTime.Now + " | get_DESADV_Document() : DL_PieceBC => " + DL_PieceBC + " | DO_Tiere => " + DO_Tiere);
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
                     connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(false, id), connection))
+                    writer.WriteLine(DateTime.Now + " | get_DESADV_Document() : SQL ===> " + QueryHelper.get_DESADV_Document(true, DL_PieceBC, DO_Tiere));
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.get_DESADV_Document(true, DL_PieceBC, DO_Tiere), connection))
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString(), reader[13].ToString());
-                                connection.Close();
-                                return cli;
+                                ligneArticl = new List<string>();
+                                ligneArticl.Add(reader[0].ToString());
+
+                                while (reader.Read())
+                                {
+                                    ligneArticl.Add(reader[0].ToString());
+                                }
+
+                                writer.WriteLine(DateTime.Now + " | get_DESADV_Document() : BL " + DL_PieceBC + " trouvé! Avec "+ ligneArticl.Count+ " article(s).");
+                                writer.WriteLine("");
+                                return ligneArticl;
                             }
                             else
                             {
-                                //Console.WriteLine(DateTime.Now + " : Erreur - Code Client " + id + " n'existe pas dans la base sage.");
-                                writer.WriteLine(DateTime.Now + " : Erreur - Code Client " + id + " n'existe pas dans la base sage.");
-
+                                writer.WriteLine(DateTime.Now + " | get_DESADV_Document() : Erreur - BL "+ DL_PieceBC + " n'est trouvé pas!");
+                                writer.WriteLine("");
                                 return null;
                             }
                         }
-
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    //Console.WriteLine(DateTime.Now + " : Erreur[6]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    writer.WriteLine(DateTime.Now + " : SQL ===> "+ QueryHelper.getClient(false, id));
-                    writer.WriteLine(DateTime.Now + " : Erreur[6]" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
-                    //Console.Read();
+                    writer.WriteLine(DateTime.Now + " | get_DESADV_Document() : ############################ Erreur BL Relicat ############################");
+                    writer.WriteLine(DateTime.Now + " | get_DESADV_Document() :: Message :" + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", "").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", "").Replace("ERROR", ""));
+                    writer.WriteLine(DateTime.Now + " | get_DESADV_Document() :: StackTrace : \n"+ex.StackTrace);
+                    writer.WriteLine("");
                     return null;
                 }
             }
-
         }
 
         public static string getStockId(StreamWriter writer)
@@ -6753,7 +8089,7 @@ namespace importPlanifier.Classes
                         {
                             if (reader.Read())
                             {
-                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString(), reader[13].ToString());
+                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString());
                                 connection.Close();
                                 return cli;
                             }
@@ -6801,7 +8137,7 @@ namespace importPlanifier.Classes
                         {
                             if (reader.Read())
                             {
-                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString(), reader[13].ToString());
+                                Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString());
                                 writer.WriteLine(DateTime.Now + " | getClient_v2() : Client trouvé!");
                                 connection.Close();
                                 return cli;
@@ -6917,7 +8253,7 @@ namespace importPlanifier.Classes
                 //Create log directory
                 Directory.CreateDirectory(logDirectoryName_general);
             }
-            var logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG_General_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG_General_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
             var logFile_general = File.Create(logFileName_general);
             logFileWriter_general = new StreamWriter(logFile_general);
 
@@ -7284,6 +8620,26 @@ namespace importPlanifier.Classes
                 writer.WriteLine(DateTime.Now + " | deleteLineAndHeaderOfDocument() : ******************** OdbcException Delete Document ********************");
                 writer.WriteLine(DateTime.Now + " | deleteLineAndHeaderOfDocument() : Message :" + ex.Message);
                 writer.WriteLine(DateTime.Now + " | deleteLineAndHeaderOfDocument() : StackTrace :" + ex.StackTrace);
+                writer.WriteLine("");
+                return false;
+            }
+        }
+
+        public static bool deleteLineOfDocument(bool SqlConnexion, string reference, OdbcConnection connexion, StreamWriter writer)
+        {
+            try
+            {
+                writer.WriteLine(DateTime.Now + " | deleteLineOfDocument() : SQL ===> " + QueryHelper.deleteLigneDocument(SqlConnexion, reference));
+                OdbcCommand command = new OdbcCommand(QueryHelper.deleteLigneDocument(SqlConnexion, reference), connexion);
+                command.ExecuteReader();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                writer.WriteLine("");
+                writer.WriteLine(DateTime.Now + " | deleteLineOfDocument() : ******************** OdbcException Delete Document ********************");
+                writer.WriteLine(DateTime.Now + " | deleteLineOfDocument() : Message :" + ex.Message);
+                writer.WriteLine(DateTime.Now + " | deleteLineOfDocument() : StackTrace :" + ex.StackTrace);
                 writer.WriteLine("");
                 return false;
             }

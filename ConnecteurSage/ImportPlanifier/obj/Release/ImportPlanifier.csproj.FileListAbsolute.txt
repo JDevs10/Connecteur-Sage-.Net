@@ -22,3 +22,5 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Con
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Config-Export.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Alert-Mail.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Alert-Mail.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Config-Import.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Config-Import.pdb

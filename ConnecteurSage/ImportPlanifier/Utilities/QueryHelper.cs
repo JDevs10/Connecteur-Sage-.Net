@@ -33,11 +33,11 @@ namespace importPlanifier.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule FROM " + getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule, CT_EdiCode CO_No, CT_EdiCode FROM " + getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             else
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule, CT_EdiCode CO_No, CT_EdiCode FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             
         }
@@ -73,12 +73,14 @@ namespace importPlanifier.Utilities
                 if (CT_NumCentrale != null && CT_NumCentrale != "")
                 {
                     //return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc where ar.AR_CODEBARRE='" + id + "' and arc.CT_Num ='" + CT_Num + "'";
-                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc, " + getPrefix() + "f_comptetg as CG where ar.AR_Ref = arc.AR_Ref and arc.CT_Num = CG.CT_Num and ar.AR_CODEBARRE='" + id+"' and CG.CT_Num = '"+ CT_NumCentrale + "'";
+                    //return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc, " + getPrefix() + "f_comptetg as CG where ar.AR_Ref = arc.AR_Ref and arc.CT_Num = CG.CT_Num and ar.AR_CODEBARRE='" + id+"' and CG.CT_Num = '"+ CT_NumCentrale + "'";
+                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, ar.AR_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar where ar.AR_CODEBARRE='" + id + "'";
                 }
                 else
                 {
                     //DL_CodeTaxe1, DL_Taxe1, DL_PrixUnitaire_salePriceHT, DL_PUTTC
-                    return "SELECT AR_REF, AR_CodeBarre, AR_SuiviStock, AR_Gamme1, AR_Gamme2, AR_Nomencl, RP_CODEDEFAUT, AR_PRIXVEN, AR_POIDSBRUT, AR_POIDSNET, AR_UnitePoids, AR_DESIGN, AR_PrixAch from " + getPrefix() + "F_ARTICLE where AR_CODEBARRE='" + id + "'";
+                    //return "SELECT AR_REF, AR_CodeBarre, AR_SuiviStock, AR_Gamme1, AR_Gamme2, AR_Nomencl, RP_CODEDEFAUT, AR_PRIXVEN, AR_POIDSBRUT, AR_POIDSNET, AR_UnitePoids, AR_DESIGN, AR_PrixAch from " + getPrefix() + "F_ARTICLE where AR_CODEBARRE='" + id + "'";
+                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, ar.AR_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from F_ARTICLE as ar where ar.AR_CODEBARRE='" + id + "'";
                 }
             }
             else 
@@ -94,6 +96,7 @@ namespace importPlanifier.Utilities
                 }
             }
         }
+
         public static string getArticleTaxe(bool sqlConnexion, string id, string ACP_ComptaCPT_CompteG)
         {
             if (sqlConnexion)
@@ -144,6 +147,18 @@ namespace importPlanifier.Utilities
             }
         }
 
+        public static string get_DESADV_Document(bool sqlConnexion, string DL_PieceBC, string DO_Tiere)
+        {
+            if (sqlConnexion)
+            {
+                //return "SELECT * from " + getPrefix() + "F_DOCENTETE as doc, " + getPrefix() + "F_DOCLIGNE as ligne where doc.DO_Piece = ligne.DO_Piece AND ligne.DL_PieceBC = '"+ DL_PieceBC + "' AND ligne.CT_Num = '"+ DO_Tiere + "'";
+                return "SELECT CONCAT(doc.DO_Piece, '__', art.AR_CodeBarre) from BATIMEX.dbo.F_DOCENTETE as doc, BATIMEX.dbo.F_DOCLIGNE as ligne, BATIMEX.dbo.F_ARTICLE as art where ligne.AR_Ref = art.AR_Ref AND doc.DO_Piece = ligne.DO_Piece AND ligne.DL_PieceBC = '" + DL_PieceBC + "' AND ligne.CT_Num = '" + DO_Tiere + "'";
+            }
+            else
+            {
+                return "SELECT * from F_DOCENTETE as doc, F_DOCLIGNE as ligne where doc.DO_Piece = ligne.DO_Piece AND ligne.DL_PieceBC = '"+ DL_PieceBC + "' AND ligne.CT_Num = '"+ DO_Tiere + "'";
+            }
+        }
         public static string getNumLivraison(bool sqlConnexion, string ct_num)
         {
             if (sqlConnexion)
@@ -204,42 +219,43 @@ namespace importPlanifier.Utilities
             }
         }
 
-        public static string insertCommande(bool sqlConnexion, Client client, Order order)
+        public static string insertCommande(bool sqlConnexion, Client client, Order order, string statut)
         {
             if (sqlConnexion)
             {
                 return "Insert into " +
-                    "" + getPrefix() + "F_DOCENTETE(CG_NUM,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
+                    "" + getPrefix() + "F_DOCENTETE(CO_No, CG_NUM,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
                     "DO_CONDITION,DO_DATE,DO_DATELIVR,DO_DEVISE,DO_DOMAINE," +
                     "DO_EXPEDIT,DO_LANGUE,DO_NBFACTURE,DO_PERIOD,DO_PIECE,DO_REF," +
                     "DO_REGIME,DO_STATUT,DO_TARIF,DO_TIERS,DO_TRANSACTION," +
                     "DO_TXESCOMPTE,DO_TYPE,DO_TYPECOLIS,DO_VENTILE," +
                     "LI_NO,N_CATCOMPTA,DO_MOTIF,DO_COORD01,DO_TAXE1,DO_TypeTaux1,DO_TypeTaxe1) " +
                     "values" +
-                    "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
+                    "("+ client .CO_No+ ",'" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
                     "" + order.conditionLivraison + ",{d '" + order.DateCommande + "'},{d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21,"+statut+"," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
             else
             {
                 return "Insert into " +
-                    "F_DOCENTETE(CG_NUM,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
+                    "F_DOCENTETE(CO_No, CG_NUM,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
                     "DO_CONDITION,DO_DATE,DO_DATELIVR,DO_DEVISE,DO_DOMAINE," +
                     "DO_EXPEDIT,DO_LANGUE,DO_NBFACTURE,DO_PERIOD,DO_PIECE,DO_REF," +
                     "DO_REGIME,DO_STATUT,DO_TARIF,DO_TIERS,DO_TRANSACTION," +
                     "DO_TXESCOMPTE,DO_TYPE,DO_TYPECOLIS,DO_VENTILE," +
                     "LI_NO,N_CATCOMPTA,DO_MOTIF,DO_COORD01,DO_TAXE1,DO_TypeTaux1,DO_TypeTaxe1) " +
                     "values" +
-                    "('" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
+                    "(" + client.CO_No + ",'" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
                     "" + order.conditionLivraison + ", {d '" + order.DateCommande + "'}, {d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
-                    "21,0," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
+                    "21," + statut + "," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
                     "" + client.CT_Taux02 + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
+
         }
 
         public static string insertLigneCommande(bool sqlConnexion, Client client, Order order, OrderLine line)
@@ -421,6 +437,42 @@ namespace importPlanifier.Utilities
             else
             {
                 return "Select li_no,li_contact,Li_adresse,li_codepostal,li_ville,li_pays from f_livraison where li_pays='" + adresse.pays + "' and li_codepostal='" + adresse.codePostale + "' and li_ville='" + adresse.ville + "' and Li_adresse='" + adresse.adresse + "' and li_contact='" + adresse.Nom_contact + "' and CT_NUM='" + adresse.CT_NUM + "'";
+            }
+        }
+
+        public static string getArticlePrix(bool sqlConnexion, string codebare)
+        {
+            if (sqlConnexion)
+            {
+                return "select AR_PrixAch, AR_PrixVen from " + getPrefix() + "F_ARTICLE where AR_CodeBarre = '" + codebare+"'";
+            }
+            else
+            {
+                return "select AR_PrixAch, AR_PrixVen from F_ARTICLE where AR_CodeBarre = '" + codebare + "'";
+            }
+        }
+
+        public static string getArticleCategoryPrice(bool sqlConnexion, string ct_num, string codebare)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT cli.N_CatTarif, arc.AC_PrixVen, ar.AR_PrixVen FROM " + getPrefix() + "F_COMPTET as cli, " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc, " + getPrefix() + "P_CATTARIF as cat WHERE ar.AR_Ref = arc.AR_Ref and ar.AR_CodeBarre = '" + codebare + "' and cli.CT_EdiCode = '"+ ct_num + "' and cat.cbIndice = cli.N_CatTarif and cli.N_CatTarif = arc.AC_Categorie";
+            }
+            else
+            {
+                return "SELECT cli.N_CatTarif, arc.AC_PrixVen, ar.AR_PrixVen FROM F_COMPTET as cli, F_ARTICLE as ar, F_ARTCLIENT as arc, P_CATTARIF as cat WHERE ar.AR_Ref = arc.AR_Ref and ar.AR_CodeBarre = '" + codebare + "' and cli.CT_EdiCode = '" + ct_num + "' and cat.cbIndice = cli.N_CatTarif and cli.N_CatTarif = arc.AC_Categorie";
+            }
+        }
+
+        public static string getArticleClientPrice(bool sqlConnexion, string ct_num, string codebare)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT cli.N_CatTarif, arc.AC_PrixVen, ar.AR_PrixVen FROM " + getPrefix() + "F_COMPTET as cli, " + getPrefix() + "F_COMPTETG as cg, " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc WHERE ar.AR_Ref = arc.AR_Ref and ar.AR_CodeBarre = '"+ codebare + "' and cg.CT_Num = cli.CT_NumCentrale and cli.CT_NumCentrale = arc.CT_Num and cli.CT_EdiCode = '" + ct_num + "'";
+            }
+            else
+            {
+                return "SELECT cli.N_CatTarif, arc.AC_PrixVen, ar.AR_PrixVen FROM F_COMPTET as cli, F_COMPTETG as cg, F_ARTICLE as ar, F_ARTCLIENT as arc WHERE ar.AR_Ref = arc.AR_Ref and ar.AR_CodeBarre = '" + codebare + "' and cg.CT_Num = cli.CT_NumCentrale and cli.CT_NumCentrale = arc.CT_Num and cli.CT_EdiCode = '" + ct_num + "'";
             }
         }
 
@@ -732,11 +784,11 @@ namespace importPlanifier.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT DO_TIERS FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece IN('" + reference_cmd + "') ";
+                return "SELECT DO_TIERS, CO_No FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece IN('" + reference_cmd + "') ";
             }
             else
             {
-                return "SELECT DO_TIERS FROM F_DOCENTETE WHERE DO_Piece IN('" + reference_cmd + "') ";
+                return "SELECT DO_TIERS, CO_No FROM F_DOCENTETE WHERE DO_Piece IN('" + reference_cmd + "') ";
             }
         }
 
@@ -1092,80 +1144,18 @@ namespace importPlanifier.Utilities
             }
         }
 
-        public static string createDOC_NumerotationTable(bool sqlConnexion)
+        public static string getLastLigneDocligne(bool sqlConnexion, string reference)
         {
             if (sqlConnexion)
             {
-                return "CREATE TABLE " + getPrefix() + "DOC_Numerotation(" +
-                    "ID INT PRIMARY KEY NOT NULL, " +
-                    "BC VARCHAR(255)," +
-                    "BL VARCHAR(255), " +
-                    "BLF VARCHAR(255)," +
-                    "STK_ME VARCHAR(255), " +
-                    "STK_MS VARCHAR(255) " +
-                    ")";
+                return "SELECT DL_Ligne FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '"+ reference + "' ORDER BY DL_Ligne DESC";
             }
             else
             {
-                return "CREATE TABLE DOC_Numerotation{" +
-                    "ID INT PRIMARY KEY NOT NULL, " +
-                    "BC VARCHAR(255)," +
-                    "BL VARCHAR(255)," +
-                    "BLF VARCHAR(255)," +
-                    "STK_ME VARCHAR(255), " +
-                    "STK_MS VARCHAR(255) " +
-                    ")";
+                return "SELECT DL_Ligne FROM F_DOCLIGNE WHERE DO_Piece = '" + reference + "' ORDER BY DL_Ligne DESC";
             }
         }
 
-        public static string insertDOC_NumerotationTable(bool sqlConnexion, string BC, string BL, string BLF, string STK_ME, string STK_MS)
-        {
-            if (sqlConnexion)
-            {
-                return "INSERT INTO " + getPrefix() + "DOC_Numerotation (ID, BC, BL, BLF, STK_ME, STK_MS) VALUES (1, '" + BC + "', '" + BL + "', '" + BLF + "', '" + STK_ME + "', '" + STK_MS + "')";
-            }
-            else
-            {
-                return "INSERT INTO DOC_Numerotation (ID, BC, BL, BLF, STK_ME, STK_MS) VALUES (1, " + BC + ", '" + BL + "', " + BLF + ", '" + STK_ME + "', '" + STK_MS + "')";
-            }
-        }
-
-        public static string checkDOC_NumerotationTable(bool sqlConnexion)
-        {
-            if (sqlConnexion)
-            {
-                string prefix = getPrefix().Split('.')[0];
-                return "IF (EXISTS ("+
-                            "SELECT * "+
-                            "FROM "+ prefix + ".INFORMATION_SCHEMA.TABLES "+
-                            "WHERE TABLE_NAME = 'DOC_Numerotation' " +
-		                    ") "+
-	                    ") " +
-                        "BEGIN "+
-                            "SELECT 1 as result " +
-                        "END "+
-                    "ELSE "+
-                        "BEGIN "+
-                            "SELECT 0 as result " +
-                        "END";
-            }
-            else
-            {
-                return "Nothing...";
-            }
-        }
-
-        public static string getDOC_NumerotationTable(bool sqlConnexion, string mask)
-        {
-            if (sqlConnexion)
-            {
-                return "SELECT " + mask + " FROM " + getPrefix() + "DOC_Numerotation WHERE ID = 1";
-            }
-            else
-            {
-                return "SELECT " + mask + " FROM " + getPrefix() + "DOC_Numerotation WHERE ID = 1";
-            }
-        }
 
         public static string updateDOC_NumerotationTable(bool sqlConnexion, string DOC_Mask, string DOC_Reference)
         {

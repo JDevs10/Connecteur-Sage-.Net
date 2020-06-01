@@ -12,7 +12,7 @@ namespace Reprocess_Error_Files.Classes
     public class SaveLoadReprocess
     {
         public List<ReprocessFiles> reprocessFilesList;
-        private string fileName = "reprocessFiles.json";
+        public string fileName = "reprocessFiles.json";
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
         public SaveLoadReprocess() { }

@@ -128,6 +128,12 @@
     <Compile Include="Forms\ConfigEmail.Designer.cs">
       <DependentUpon>ConfigEmail.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ConfigImport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ConfigImport.Designer.cs">
+      <DependentUpon>ConfigImport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ExportBonLivraison.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -231,6 +237,9 @@
     <EmbeddedResource Include="Forms\ConfigEmail.resx">
       <DependentUpon>ConfigEmail.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ConfigImport.resx">
+      <DependentUpon>ConfigImport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExportBonLivraison.resx">
       <DependentUpon>ExportBonLivraison.cs</DependentUpon>
     </EmbeddedResource>
@@ -289,6 +298,10 @@
       <Project>{938d2d68-fbac-4ec4-a96b-bd754f0f59a2}</Project>
       <Name>Config-Export</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Config-Import\Config-Import.csproj">
+      <Project>{af89695c-a092-42cb-915b-27101839ad57}</Project>
+      <Name>Config-Import</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Connexion\Connexion.csproj">
       <Project>{5d4414bd-f65b-4891-bae5-6a5d767a0fd0}</Project>
       <Name>Connexion</Name>
@@ -296,6 +309,10 @@
     <ProjectReference Include="..\Init\Init.csproj">
       <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
       <Name>Init</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Reprocess\Reprocess-Error-Files.csproj">
+      <Project>{ada83e63-ca51-4e6e-b500-d08b92916807}</Project>
+      <Name>Reprocess-Error-Files</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

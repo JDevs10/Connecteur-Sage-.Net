@@ -102,6 +102,10 @@
       <Project>{938d2d68-fbac-4ec4-a96b-bd754f0f59a2}</Project>
       <Name>Config-Export</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Config-Import\Config-Import.csproj">
+      <Project>{af89695c-a092-42cb-915b-27101839ad57}</Project>
+      <Name>Config-Import</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Connecteur-Info\Connecteur-Info.csproj">
       <Project>{151fabb0-d64f-42ea-ab2a-aea6ebc854c2}</Project>
       <Name>Connecteur-Info</Name>

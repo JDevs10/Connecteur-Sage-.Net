@@ -37,11 +37,13 @@ namespace importPlanifier.Classes
 
         public string N_CatCompta { get; set; }
         public string CT_Intitule { get; set; }
+        public string CO_No { get; set; }
+        public string CT_EdiCode { get; set; }
 
         #endregion
 
 
-        public Client(string CT_Num, string CG_NumPrinc, string CT_NumPayeur, string N_Condition, string N_Devise, string N_Expedition, string CT_Langue, string CT_Facture, string N_Period, string N_CatTarif, string CT_Taux02, string N_CatCompta, string CT_NumCentrale, string CT_Intitule)
+        public Client(string CT_Num, string CG_NumPrinc, string CT_NumPayeur, string N_Condition, string N_Devise, string N_Expedition, string CT_Langue, string CT_Facture, string N_Period, string N_CatTarif, string CT_Taux02, string N_CatCompta, string CT_NumCentrale, string CT_Intitule, string CO_No, string CT_EdiCode)
         {
             this.CT_Num=CT_Num;
             this.CG_NumPrinc = CG_NumPrinc;
@@ -58,6 +60,8 @@ namespace importPlanifier.Classes
             this.N_CatCompta = N_CatCompta;
             this.CT_NumCentrale = CT_NumCentrale;
             this.CT_Intitule = CT_Intitule;
+            this.CO_No = CO_No;
+            this.CT_EdiCode = CT_EdiCode;
         }
 
     }

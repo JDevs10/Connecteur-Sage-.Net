@@ -36,3 +36,8 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Conn
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Connexion.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Config-Export.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Config-Export.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Reprocess-Error-Files.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Reprocess-Error-Files.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.Forms.ConfigImport.resources
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Config-Import.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Config-Import.pdb

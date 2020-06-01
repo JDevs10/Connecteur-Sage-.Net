@@ -751,7 +751,7 @@ namespace Alert_Mail
                     }
 
 
-                    msg.Subject = "TEST : " + subject;
+                    msg.Subject = subject;
 
                     Console.WriteLine("Suject : " + subject);
                     // Texte du mail (facultatif)
