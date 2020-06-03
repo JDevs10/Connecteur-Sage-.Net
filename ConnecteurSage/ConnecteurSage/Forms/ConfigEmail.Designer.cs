@@ -77,7 +77,11 @@
             this.label_team_email_list = new System.Windows.Forms.Label();
             this.checkBox_activate_send_team_emails = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
@@ -85,10 +89,6 @@
             this.save_config = new System.Windows.Forms.Button();
             this.pictureBox_logo = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
@@ -499,7 +499,7 @@
             this.groupBox2.Location = new System.Drawing.Point(3, 179);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 10, 5, 10);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(306, 200);
+            this.groupBox2.Size = new System.Drawing.Size(197, 190);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Liste des e-mails destinataires";
@@ -513,7 +513,7 @@
             this.flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(6, 21);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(294, 158);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(185, 148);
             this.flowLayoutPanel2.TabIndex = 23;
             // 
             // panel1
@@ -525,7 +525,7 @@
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(5);
-            this.panel1.Size = new System.Drawing.Size(288, 68);
+            this.panel1.Size = new System.Drawing.Size(179, 68);
             this.panel1.TabIndex = 21;
             // 
             // label_clients
@@ -551,7 +551,7 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(267, 28);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(83, 28);
             this.tableLayoutPanel2.TabIndex = 17;
             // 
             // label_client_email_list
@@ -561,15 +561,14 @@
             this.label_client_email_list.Location = new System.Drawing.Point(5, 5);
             this.label_client_email_list.Margin = new System.Windows.Forms.Padding(5);
             this.label_client_email_list.Name = "label_client_email_list";
-            this.label_client_email_list.Size = new System.Drawing.Size(184, 14);
+            this.label_client_email_list.Size = new System.Drawing.Size(0, 14);
             this.label_client_email_list.TabIndex = 22;
-            this.label_client_email_list.Text = "xxme.me-you-arevjsvc@test-test.fr";
             // 
             // checkBox_activate_send_client_emails
             // 
             this.checkBox_activate_send_client_emails.AutoSize = true;
             this.checkBox_activate_send_client_emails.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox_activate_send_client_emails.Location = new System.Drawing.Point(199, 5);
+            this.checkBox_activate_send_client_emails.Location = new System.Drawing.Point(15, 5);
             this.checkBox_activate_send_client_emails.Margin = new System.Windows.Forms.Padding(5);
             this.checkBox_activate_send_client_emails.Name = "checkBox_activate_send_client_emails";
             this.checkBox_activate_send_client_emails.Size = new System.Drawing.Size(63, 18);
@@ -597,7 +596,7 @@
             this.panel2.Location = new System.Drawing.Point(3, 77);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(5);
-            this.panel2.Size = new System.Drawing.Size(244, 78);
+            this.panel2.Size = new System.Drawing.Size(179, 68);
             this.panel2.TabIndex = 22;
             // 
             // label_team
@@ -624,7 +623,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(223, 38);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(83, 28);
             this.tableLayoutPanel1.TabIndex = 17;
             // 
             // label_team_email_list
@@ -634,15 +633,14 @@
             this.label_team_email_list.Location = new System.Drawing.Point(5, 5);
             this.label_team_email_list.Margin = new System.Windows.Forms.Padding(5);
             this.label_team_email_list.Name = "label_team_email_list";
-            this.label_team_email_list.Size = new System.Drawing.Size(140, 28);
+            this.label_team_email_list.Size = new System.Drawing.Size(0, 14);
             this.label_team_email_list.TabIndex = 22;
-            this.label_team_email_list.Text = "xxme.me-you@test-test.fr\r\nxxme.me-you@test-test.fr";
             // 
             // checkBox_activate_send_team_emails
             // 
             this.checkBox_activate_send_team_emails.AutoSize = true;
             this.checkBox_activate_send_team_emails.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox_activate_send_team_emails.Location = new System.Drawing.Point(155, 5);
+            this.checkBox_activate_send_team_emails.Location = new System.Drawing.Point(15, 5);
             this.checkBox_activate_send_team_emails.Margin = new System.Windows.Forms.Padding(5);
             this.checkBox_activate_send_team_emails.Name = "checkBox_activate_send_team_emails";
             this.checkBox_activate_send_team_emails.Size = new System.Drawing.Size(63, 18);
@@ -661,13 +659,37 @@
             this.groupBox3.Controls.Add(this.checkBox4);
             this.groupBox3.Enabled = false;
             this.groupBox3.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(3, 399);
+            this.groupBox3.Location = new System.Drawing.Point(3, 389);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(3, 10, 5, 10);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(372, 156);
             this.groupBox3.TabIndex = 8;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Paramétre d\'e-mail Import";
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Enabled = false;
+            this.radioButton2.Location = new System.Drawing.Point(177, 118);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(123, 18);
+            this.radioButton2.TabIndex = 16;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "A la fin de l\'import";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Enabled = false;
+            this.radioButton1.Location = new System.Drawing.Point(177, 95);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(148, 18);
+            this.radioButton1.TabIndex = 15;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "Pour Chaque Document";
+            this.radioButton1.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
@@ -680,13 +702,37 @@
             this.groupBox4.Controls.Add(this.checkBox9);
             this.groupBox4.Enabled = false;
             this.groupBox4.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox4.Location = new System.Drawing.Point(3, 575);
+            this.groupBox4.Location = new System.Drawing.Point(3, 565);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(3, 10, 5, 10);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(372, 156);
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Paramétre d\'e-mail Export";
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Enabled = false;
+            this.radioButton4.Location = new System.Drawing.Point(177, 118);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(122, 18);
+            this.radioButton4.TabIndex = 18;
+            this.radioButton4.TabStop = true;
+            this.radioButton4.Text = "A la fin de l\'export";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Enabled = false;
+            this.radioButton3.Location = new System.Drawing.Point(177, 95);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(148, 18);
+            this.radioButton3.TabIndex = 17;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "Pour Chaque Document";
+            this.radioButton3.UseVisualStyleBackColor = true;
             // 
             // groupBox5
             // 
@@ -697,7 +743,7 @@
             this.groupBox5.Controls.Add(this.checkBox12);
             this.groupBox5.Enabled = false;
             this.groupBox5.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox5.Location = new System.Drawing.Point(3, 751);
+            this.groupBox5.Location = new System.Drawing.Point(3, 741);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(3, 10, 5, 10);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(366, 156);
@@ -715,7 +761,7 @@
             this.groupBox6.Controls.Add(this.checkBox15);
             this.groupBox6.Enabled = false;
             this.groupBox6.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox6.Location = new System.Drawing.Point(3, 927);
+            this.groupBox6.Location = new System.Drawing.Point(3, 917);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(3, 10, 5, 10);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(366, 120);
@@ -734,7 +780,7 @@
             this.groupBox7.Enabled = false;
             this.groupBox7.Font = new System.Drawing.Font("Candara", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox7.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.groupBox7.Location = new System.Drawing.Point(3, 1067);
+            this.groupBox7.Location = new System.Drawing.Point(3, 1057);
             this.groupBox7.Margin = new System.Windows.Forms.Padding(3, 10, 5, 15);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(366, 152);
@@ -784,54 +830,6 @@
             this.label1.TabIndex = 26;
             this.label1.Text = "Veuillez completer les informations \r\nafin de reçevoir les notifications par mail" +
     ".";
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Enabled = false;
-            this.radioButton1.Location = new System.Drawing.Point(177, 95);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(148, 18);
-            this.radioButton1.TabIndex = 15;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Pour Chaque Document";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Enabled = false;
-            this.radioButton2.Location = new System.Drawing.Point(177, 118);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(123, 18);
-            this.radioButton2.TabIndex = 16;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "A la fin de l\'import";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            // 
-            // radioButton3
-            // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Enabled = false;
-            this.radioButton3.Location = new System.Drawing.Point(177, 95);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(148, 18);
-            this.radioButton3.TabIndex = 17;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "Pour Chaque Document";
-            this.radioButton3.UseVisualStyleBackColor = true;
-            // 
-            // radioButton4
-            // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Enabled = false;
-            this.radioButton4.Location = new System.Drawing.Point(177, 118);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(122, 18);
-            this.radioButton4.TabIndex = 18;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "A la fin de l\'export";
-            this.radioButton4.UseVisualStyleBackColor = true;
             // 
             // ConfigEmail
             // 

@@ -21,6 +21,13 @@ namespace ConnecteurSage
 {
     public partial class Main : Form
     {
+        private bool isDocAchatCommande = false;
+        private bool isDocAchatDESADV = false;
+        private bool isDocAchatFacture = false;
+        private bool isDocVenteCommande = false;
+        private bool isDocVenteDESADV = false;
+        private bool isDocVenteFacture = false;
+        private bool isDocStock = false;
         private const string taskName = "importCommandeSage";
 
         protected override void OnShown(EventArgs e)
@@ -59,6 +66,7 @@ namespace ConnecteurSage
             Thread backgroundThread = new Thread(
             new ThreadStart(() =>
             {
+                //Loading General Settings
                 progressDialog.Text = "Loading General Settings....";
                 for (int n = 0; n < 10; n++)
                 {
@@ -67,7 +75,16 @@ namespace ConnecteurSage
                 }
 
                 Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-                if (!settings.isSettings())
+                if (settings.isSettings())
+                {
+                    settings.Load();
+
+                    //settings.configurationGeneral.general.showWindow == 5  ---> show software
+                    label_debugMode.Text = ((settings.configurationGeneral.general.showWindow == 5) ? "Mode Débugage : Activé" : "Mode Débugage : Désactivé");
+                    label_tarifaire.Text = ((settings.configurationGeneral.priceType.activate) ? "Configuration Tarifaire : Activé" : "Config Tarifaire : Désactivé");
+                    label_retraitement.Text = ((settings.configurationGeneral.reprocess.activate) ? "Retraitement : Activé" : "Retraitement : Désactivé");
+                }
+                else
                 {
                     try
                     {
@@ -119,9 +136,73 @@ namespace ConnecteurSage
                     }
                 }
 
-                //Loading Export Settings
-                progressDialog.Text = "Loading Export Settings....";
+                //Loading Import Settings
+                progressDialog.Text = "Loading Import Settings....";
                 for (int n = 20; n < 40; n++)
+                {
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
+                }
+                Config_Import.ConfigurationSaveLoad import_Settings = new Config_Import.ConfigurationSaveLoad();
+
+                if (import_Settings.isSettings())
+                {
+                    import_Settings.Load();
+
+                    int cpt = 0;
+                    int count = -1;
+
+                    //Doc Export Achat 
+                    //no config yet, so show désactivated only
+                    cpt = 0;
+                    count = 3;
+                    cpt += ((import_Settings.configurationImport.Doc_Achat.Commande.Activate == "true") ? 1 : 0);
+                    isDocAchatCommande = ((import_Settings.configurationImport.Doc_Achat.Commande.Activate == "true") ? true : false);
+                    cpt += ((import_Settings.configurationImport.Doc_Achat.DSADV.Activate == "true") ? 1 : 0);
+                    isDocAchatDESADV = ((import_Settings.configurationImport.Doc_Achat.DSADV.Activate == "true") ? true : false);
+                    cpt += ((import_Settings.configurationImport.Doc_Achat.Facture.Activate == "true") ? 1 : 0);
+                    isDocAchatFacture = ((import_Settings.configurationImport.Doc_Achat.Facture.Activate == "true") ? true : false);
+                    label2.Text = ((cpt == 0) ? "Document Achat d'import : désactivé" : "Document Achat d'import : " + cpt + "/" + count + " activé");
+
+                    //Doc Export Vente
+                    cpt = 0;
+                    count = 3;
+                    cpt += ((import_Settings.configurationImport.Doc_Ventes.Commande.Activate == "true") ? 1 : 0);
+                    isDocVenteCommande = ((import_Settings.configurationImport.Doc_Ventes.Commande.Activate == "true") ? true : false);
+                    cpt += ((import_Settings.configurationImport.Doc_Ventes.DSADV.Activate == "true") ? 1 : 0);
+                    isDocVenteDESADV = ((import_Settings.configurationImport.Doc_Ventes.DSADV.Activate == "true") ? true : false);
+                    cpt += ((import_Settings.configurationImport.Doc_Ventes.Facture.Activate == "true") ? 1 : 0);
+                    isDocVenteFacture = ((import_Settings.configurationImport.Doc_Ventes.Facture.Activate == "true") ? true : false);
+                    label9.Text = ((cpt == 0) ? "Document Vente d'import : désactivé" : "Document Vente d'import : " + cpt + "/" + count + " activé");
+
+                    // Stock
+                    cpt = 0;
+                    count = 1;
+                    cpt += ((import_Settings.configurationImport.Doc_Stock.Stock.Activate == "true") ? 1 : 0);
+                    isDocStock = ((import_Settings.configurationImport.Doc_Stock.Stock.Activate == "true") ? true : false);
+                    label11.Text = ((cpt == 0) ? "Document de stock import : désactivé" : "Document de stock import : " + cpt + "/" + count + " activé");
+
+                }
+                else
+                {
+                    try
+                    {
+                        using (ConfigImport form = new ConfigImport())
+                        {
+                            form.ShowDialog(progressDialog);
+                        }
+                    }
+                    // Récupération d'une possible SDKException
+                    catch (SDKException ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+
+
+                // Loading Export Settings
+                progressDialog.Text = "Loading Export Settings....";
+                for (int n = 40; n < 60; n++)
                 {
                     Thread.Sleep(1);
                     progressDialog.UpdateProgress(n);
@@ -133,10 +214,34 @@ namespace ConnecteurSage
                 {
                     export_Settings.Load();
 
-                    label6.Text = "Statut d'Export Commande : " + ((export_Settings.configurationExport.Commande.Activate) ? "Activer" : "Désactiver");
-                    label7.Text = "Statut d'Export Livraision : " + ((export_Settings.configurationExport.DSADV.Activate) ? "Activer" : "Désactiver");
-                    label8.Text = "Statut d'Export Facture : " + ((export_Settings.configurationExport.Facture.Activate) ? "Activer" : "Désactiver");
-                    label10.Text = "Statut Export Stock : " + ((export_Settings.configurationExport.Stock.Activate) ? "Activer" : "Désactiver");
+                    int cpt = 0;
+                    int count = -1;
+
+                    //Doc Export Achat 
+                    //no config yet, so show désactivated only
+                    cpt = 0;
+                    count = 3;
+                    label7.Text = ((cpt == 0) ? "Document Achat d'Export : désactivé" : "Document Achat d'Export : " + cpt + "/" + count + " activé");
+                    groupBox_export_doc_achat.Enabled = ((cpt == 0) ? false : true);
+                    label_export_doc_achat.Text = ((cpt == 0) ? "Ces fonctionnalité ne sont pas accessible..." : ".....");
+
+                    //Doc Export Vente   
+                    cpt = 0;
+                    count = 3;
+                    cpt += ((export_Settings.configurationExport.Commande.Activate) ? 1 : 0);
+                    cpt += ((export_Settings.configurationExport.DSADV.Activate) ? 1 : 0);
+                    cpt += ((export_Settings.configurationExport.Facture.Activate) ? 1 : 0);
+                    label8.Text = ((cpt == 0) ? "Document Vente d'Export : désactivé" : "Document Vente d'Export : " + cpt + "/" + count + " activé");
+                    groupBox_export_doc_vente.Enabled = ((cpt == 0) ? false : true);
+                    label_groupBox_export_doc_vente.Text = ((cpt == 0) ? "la configuration est nécessaire. Veuillez vous rendre dans la configuration d'export et la remplir, merci..." : "");
+
+                    // Stock
+                    cpt = 0;
+                    count = 1;
+                    cpt += ((export_Settings.configurationExport.Stock.Activate) ? 1 : 0);
+                    label10.Text = ((cpt == 0) ? "Document stock d'Export : désactivé" : "Document stock d'Export : " + cpt+"/"+count+" activé");
+                    groupBox_export_doc_stock.Enabled = ((cpt == 0) ? false : true);
+                    label_export_doc_stock.Text = ((cpt == 0) ? "Veuillez vous rendre dans la configuration d'export et la remplir, merci..." : "");
                 }
                 else
                 {
@@ -152,12 +257,6 @@ namespace ConnecteurSage
                     {
                         MessageBox.Show(ex.Message);
                     }
-                }
-
-                for (int n = 40; n < 60; n++)
-                {
-                    Thread.Sleep(1);
-                    progressDialog.UpdateProgress(n);
                 }
 
                 //Loading Backup Settings
@@ -209,7 +308,20 @@ namespace ConnecteurSage
 
                 // Close the dialog if it hasn't been already
                 if (ok && progressDialog.InvokeRequired)
+                {
                     progressDialog.BeginInvoke(new System.Action(() => progressDialog.Close()));
+                    string msg = "Vous pouvez réaliser l'import des documents commerciaux suivantes :\n\n";
+                    msg += "Import des bons de commandes d'achat : " + ((isDocAchatCommande) ? "activé" : "désactivé") + "\n";
+                    msg += "Import des bons de livraison d'achat : " + ((isDocAchatDESADV) ? "activé" : "désactivé") + "\n";
+                    msg += "Import des factures d'achat : " + ((isDocAchatFacture) ? "activé" : "désactivé") + "\n\n";
+                    msg += "Import des bons de commandes vente : " + ((isDocVenteCommande) ? "activé" : "désactivé") + "\n";
+                    msg += "Import des bons de livraison vente : " + ((isDocVenteDESADV) ? "activé" : "désactivé") + "\n";
+                    msg += "Import des factures vente : " + ((isDocVenteFacture) ? "activé" : "désactivé") + "\n\n";
+                    msg += "Import des stock : " + ((isDocStock) ? "activé" : "désactivé") + "\n";
+
+                    label4.Text = msg;
+                }
+                    
             }
             ));
 
@@ -248,29 +360,6 @@ namespace ConnecteurSage
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
-            /*
-            Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
-            Alert_Mail.Classes.Custom.CustomMailRecap customMailRecap = new Alert_Mail.Classes.Custom.CustomMailRecap(
-                "Mail_IMP",
-                "CFCI",
-                "Test from PC",
-                DateTime.Now + "",
-                DateTime.Now + "",
-                new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>() 
-                {
-                    new Alert_Mail.Classes.Custom.CustomMailRecapLines("DOC_Ref 1", "NumC_MD 1", "Error msg", "Error Debug msg", "Error Debug StackTrace", "File Name", "File Path"),
-                    new Alert_Mail.Classes.Custom.CustomMailRecapLines("DOC_Ref 2", "NumC_MD 2", "Error msg", "Error Debug msg", "Error Debug StackTrace", "File Name", "File Path"),
-                    new Alert_Mail.Classes.Custom.CustomMailRecapLines("DOC_Ref 3", "NumC_MD 3", "Error msg", "Error Debug msg", "Error Debug StackTrace", "File Name", "File Path")
-                },
-                new List<string>()
-                {
-                    "File Name 1", "File name 2", "File name 3"
-                }
-            );
-
-            configurationCustomMailSaveLoad.customMailRecap = customMailRecap;
-            configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_Imp);
-            */
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -356,23 +445,28 @@ namespace ConnecteurSage
         private void button2_MouseHover(object sender, EventArgs e)
         {
 
-            label4.Text = "Vous pouvez planifier l'import \nde commandes pour une heure \nqui vous convient.";
+            label4.Text = "Vous pouvez planifier l'import \ndes documents pour une heure \nqui vous convient.";
 
         }
 
         private void button1_MouseHover(object sender, EventArgs e)
         {
 
-            label4.Text = "Vous pouvez réaliser l'import de \ncommandes d'une façon manuelle.";
+            label4.Text = "Vous pouvez réaliser l'import des \ndocuments d'une façon manuelle.";
         }
 
         private void button_MouseLeave(object sender, EventArgs e)
         {
+            string msg = "Vous pouvez réaliser l'import des documents commerciaux suivantes :\n\n";
+            msg += "Import des bons de commandes d'achat : " + ((isDocAchatCommande) ? "activé" : "désactivé") + "\n";
+            msg += "Import des bons de livraison d'achat : " + ((isDocAchatDESADV) ? "activé" : "désactivé") + "\n";
+            msg += "Import des factures d'achat : " + ((isDocAchatFacture) ? "activé" : "désactivé") + "\n\n";
+            msg += "Import des bons de commandes vente : " + ((isDocVenteCommande) ? "activé" : "désactivé") + "\n";
+            msg += "Import des bons de livraison vente : " + ((isDocVenteDESADV) ? "activé" : "désactivé") + "\n";
+            msg += "Import des factures vente : " + ((isDocVenteFacture) ? "activé" : "désactivé") + "\n\n";
+            msg += "Import des stock : " + ((isDocStock) ? "activé" : "désactivé") + "\n";
 
-            label4.Text = "Vous pouvez réaliser l'import et\n" +
-                    "l'export de documents commerciaux. \n" +
-                    "Aussi bien en manuel qu'en \n" +
-                    "automatique.";
+            label4.Text = msg;
         }
 
         private void button4_Click(object sender, EventArgs e)

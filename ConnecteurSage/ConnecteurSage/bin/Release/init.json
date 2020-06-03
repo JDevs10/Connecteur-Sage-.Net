@@ -3,21 +3,21 @@
     "showWindow": 5,
     "isAppOpen": false,
     "isACP_ComptaCPT_CompteG": true,
-    "ACP_ComptaCPT_CompteG": 757100
+    "ACP_ComptaCPT_CompteG": 411000
   },
   "paths": {
-    "EDI_Folder": "C:\\Users\\Anexys\\Documents"
+    "EDI_Folder": "C:\\WorkPlace\\Connecteur-Sage-.Net\\Application\\CSV"
   },
   "priceType": {
-    "activate": false,
+    "activate": true,
     "cmdEDIPrice": false,
     "productPrice": false,
     "categoryPrice": false,
-    "clientPrice": false
+    "clientPrice": true
   },
   "reprocess": {
     "activate": true,
-    "hour": 1.5,
-    "countDown": 7
+    "hour": 1.0,
+    "countDown": 3
   }
 }

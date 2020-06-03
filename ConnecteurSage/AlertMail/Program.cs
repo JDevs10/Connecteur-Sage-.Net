@@ -454,13 +454,13 @@ namespace AlertMail
                 {
                     Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
 
-                    string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
-                    if (!Directory.Exists(directoryName_ErrorFile))
+                    string directoryName_tmpFile = Directory.GetCurrentDirectory() + @"\" + "tmp";
+                    if (!Directory.Exists(directoryName_tmpFile))
                     {
-                        Directory.CreateDirectory(directoryName_ErrorFile);
+                        Directory.CreateDirectory(directoryName_tmpFile);
                     }
 
-                    DirectoryInfo fileListing1 = new DirectoryInfo(directoryName_ErrorFile);
+                    DirectoryInfo fileListing1 = new DirectoryInfo(directoryName_tmpFile);
                     FileInfo[] allFiles_error = fileListing1.GetFiles("*.csv");
 
                     string[,] errorFilesFileNameList_ = new string[allFiles_error.Length, 2];
@@ -589,7 +589,7 @@ namespace AlertMail
                             //import file error
                             if (allFiles_error.Length > 0)
                             {
-                                infoBody = "Il y a " + allFiles_error.Length + " fichier(s) qui sont dans le le répertoire erreur '" + directoryName_ErrorFile + "' :\n";
+                                infoBody = "Il y a " + allFiles_error.Length + " fichier(s) qui sont dans le répertoire erreur '" + directoryName_tmpFile + "' :\n";
 
                                 for (int x = 0; x < allFiles_error.Length; x++)
                                 {
@@ -598,34 +598,36 @@ namespace AlertMail
                                     if (!attachements.Contains(allFiles_error[x].FullName))
                                     {
                                         attachements.Add(allFiles_error[x].FullName);
+
                                     }
                                 }
+
+                                if (allFiles_error.Length > 0)
+                                {
+                                    emailManagement.EnvoiMail(settings, "log", "Résumer [" + dns + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE [" + dns + "].", attachements);
+                                }
+
+                                Console.WriteLine("No Mail_Recap.ml File!");
+
+                                // the DateTime
+                                settings.emailSummary.lastActivated = DateTime.Now;
+                                file.configurationEmail = settings;
+                                file.saveInfo();
                             }
+                            //cMail.remaningTicks = cMail.totalTicks;
+                            //cMail.password = Utils.Encrypt(cMail.password);
+                            //new ConfSendMail().saveInfo(cMail);
 
-                            if (allFiles_error.Length > 0)
-                            {
-                                emailManagement.EnvoiMail(settings, "log", "Résumer [" + dns + "]", "Bonjour Team BDC,\n\n" + infoBody + "\n\nCordialement,\nConnecteur SAGE [" + dns + "].", attachements);
-                            }
-
-                            Console.WriteLine("No Mail_Recap.ml File!");
-
-                            // the DateTime
-                            settings.emailSummary.lastActivated = DateTime.Now;
-                            file.configurationEmail = settings;
-                            file.saveInfo();
                         }
-                        //cMail.remaningTicks = cMail.totalTicks;
-                        //cMail.password = Utils.Encrypt(cMail.password);
-                        //new ConfSendMail().saveInfo(cMail);
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Envoi des mails de résumer sont désactivé!");
-                }
+                    else
+                    {
+                        Console.WriteLine("Envoi des mails de résumer sont désactivé!");
+                    }
 
-                //stop at the end of the program
-                //Console.ReadLine();
+                    //stop at the end of the program
+
+                }//Console.ReadLine();
             }
             catch (Exception ex)
             {

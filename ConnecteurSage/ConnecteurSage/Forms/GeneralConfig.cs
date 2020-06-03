@@ -63,6 +63,38 @@ namespace ConnecteurSage.Forms
                 textBox2.Text = configurationGeneral.paths.EDI_Folder;
 
                 ////////////////////////////////////////////////////////////////////////////////////
+                /// Tarifaire
+                /// 
+                if (configurationGeneral.priceType.activate)
+                {
+                    checkBox_activer_tarif.Text = "Activer";
+                    checkBox_activer_tarif.Checked = true;
+
+                    radioButton_tarif_cmd_EDI.Enabled = true;
+                    radioButton_tarif_cmd_EDI.Checked = configurationGeneral.priceType.cmdEDIPrice;
+                    radioButton_tarif_produit.Enabled = true;
+                    radioButton_tarif_produit.Checked = configurationGeneral.priceType.productPrice;
+                    radioButton_tarif_categorie.Enabled = true;
+                    radioButton_tarif_categorie.Checked = configurationGeneral.priceType.categoryPrice;
+                    radioButton_tarif_client.Enabled = true;
+                    radioButton_tarif_client.Checked = configurationGeneral.priceType.clientPrice;
+                }
+                else
+                {
+                    checkBox_activer_tarif.Text = "Désactiver";
+                    checkBox_activer_tarif.Checked = false;
+
+                    radioButton_tarif_cmd_EDI.Enabled = false;
+                    radioButton_tarif_cmd_EDI.Checked = configurationGeneral.priceType.cmdEDIPrice;
+                    radioButton_tarif_produit.Enabled = false;
+                    radioButton_tarif_produit.Checked = configurationGeneral.priceType.productPrice;
+                    radioButton_tarif_categorie.Enabled = false;
+                    radioButton_tarif_categorie.Checked = configurationGeneral.priceType.categoryPrice;
+                    radioButton_tarif_client.Enabled = false;
+                    radioButton_tarif_client.Checked = configurationGeneral.priceType.clientPrice;
+                }
+
+                ////////////////////////////////////////////////////////////////////////////////////
                 /// Reprocess
                 /// 
                 if (configurationGeneral.reprocess.activate)
@@ -126,7 +158,7 @@ namespace ConnecteurSage.Forms
                     return;
                 }
 
-                if (checkBox_reprocess_activate.Checked == true && Convert.ToInt32(numericUpDown_hour.Value) == 0)
+                if (checkBox_reprocess_activate.Checked == true && Convert.ToDouble(numericUpDown_hour.Value) == 0.0)
                 {
                     MessageBox.Show("Heure de retraitement n'est pas configuré !", "Retraitement", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
@@ -213,6 +245,7 @@ namespace ConnecteurSage.Forms
         {
             if (checkBox_reprocess_activate.Checked)
             {
+                checkBox_reprocess_activate.Text = "Activer";
                 numericUpDown_hour.Enabled = true;
                 label7_reprocess_hour.Enabled = true;
                 numericUpDown1_reprocess_cd.Enabled = true;
@@ -222,6 +255,7 @@ namespace ConnecteurSage.Forms
             }
             else
             {
+                checkBox_reprocess_activate.Text = "Désactiver";
                 numericUpDown_hour.Enabled = false;
                 label7_reprocess_hour.Enabled = false;
                 numericUpDown1_reprocess_cd.Enabled = false;
@@ -248,8 +282,8 @@ namespace ConnecteurSage.Forms
 
         private void numericUpDown_hour_ValueChanged(object sender, EventArgs e)
         {
-            int count = Convert.ToInt32(numericUpDown_hour.Value);
-            if (count == 0)
+            double count = Convert.ToDouble(numericUpDown_hour.Value);
+            if (count == 0.0)
             {
                 label7_reprocess_hour.Text = "Ce paramètre est obligatoire\nSi activé !!!.";
             }
@@ -263,6 +297,7 @@ namespace ConnecteurSage.Forms
         {
             if (checkBox_activer_tarif.Checked)
             {
+                checkBox_activer_tarif.Text = "Activer";
                 radioButton_tarif_cmd_EDI.Enabled = true;
                 radioButton_tarif_produit.Enabled = true;
                 radioButton_tarif_categorie.Enabled = true;
@@ -270,6 +305,7 @@ namespace ConnecteurSage.Forms
             }
             else
             {
+                checkBox_activer_tarif.Text = "Désactiver";
                 radioButton_tarif_cmd_EDI.Enabled = false;
                 radioButton_tarif_cmd_EDI.Checked = false;
 

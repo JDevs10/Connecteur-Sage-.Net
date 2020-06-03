@@ -6,4 +6,3 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Confi
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Json.Net.dll
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csprojAssemblyReference.cache

@@ -45,6 +45,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button_tmp = new System.Windows.Forms.Button();
             this.button_reprocess = new System.Windows.Forms.Button();
             this.label7_reprocess_hour = new System.Windows.Forms.Label();
             this.numericUpDown_hour = new System.Windows.Forms.NumericUpDown();
@@ -53,13 +54,12 @@
             this.label6 = new System.Windows.Forms.Label();
             this.checkBox_reprocess_activate = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.radioButton_tarif_produit = new System.Windows.Forms.RadioButton();
             this.radioButton_tarif_cmd_EDI = new System.Windows.Forms.RadioButton();
             this.radioButton_tarif_client = new System.Windows.Forms.RadioButton();
             this.label7 = new System.Windows.Forms.Label();
             this.radioButton_tarif_categorie = new System.Windows.Forms.RadioButton();
             this.checkBox_activer_tarif = new System.Windows.Forms.CheckBox();
-            this.radioButton_tarif_produit = new System.Windows.Forms.RadioButton();
-            this.button_tmp = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -108,8 +108,6 @@
             // checkBox_activate_compt_g_taxe
             // 
             this.checkBox_activate_compt_g_taxe.AutoSize = true;
-            this.checkBox_activate_compt_g_taxe.Checked = true;
-            this.checkBox_activate_compt_g_taxe.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_activate_compt_g_taxe.Location = new System.Drawing.Point(112, 86);
             this.checkBox_activate_compt_g_taxe.Name = "checkBox_activate_compt_g_taxe";
             this.checkBox_activate_compt_g_taxe.Size = new System.Drawing.Size(77, 17);
@@ -240,6 +238,17 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Retraitement des fichiers en erreur";
             // 
+            // button_tmp
+            // 
+            this.button_tmp.Enabled = false;
+            this.button_tmp.Location = new System.Drawing.Point(142, 130);
+            this.button_tmp.Name = "button_tmp";
+            this.button_tmp.Size = new System.Drawing.Size(111, 23);
+            this.button_tmp.TabIndex = 25;
+            this.button_tmp.Text = "Retraitement tmp";
+            this.button_tmp.UseVisualStyleBackColor = true;
+            this.button_tmp.Click += new System.EventHandler(this.button_tmp_Click);
+            // 
             // button_reprocess
             // 
             this.button_reprocess.Enabled = false;
@@ -333,6 +342,18 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Paramétrage Tarif :";
             // 
+            // radioButton_tarif_produit
+            // 
+            this.radioButton_tarif_produit.AutoSize = true;
+            this.radioButton_tarif_produit.Enabled = false;
+            this.radioButton_tarif_produit.Location = new System.Drawing.Point(19, 104);
+            this.radioButton_tarif_produit.Name = "radioButton_tarif_produit";
+            this.radioButton_tarif_produit.Size = new System.Drawing.Size(111, 17);
+            this.radioButton_tarif_produit.TabIndex = 28;
+            this.radioButton_tarif_produit.TabStop = true;
+            this.radioButton_tarif_produit.Text = "Tarif Fiche Produit";
+            this.radioButton_tarif_produit.UseVisualStyleBackColor = true;
+            // 
             // radioButton_tarif_cmd_EDI
             // 
             this.radioButton_tarif_cmd_EDI.AutoSize = true;
@@ -390,29 +411,6 @@
             this.checkBox_activer_tarif.Text = "Activer";
             this.checkBox_activer_tarif.UseVisualStyleBackColor = true;
             this.checkBox_activer_tarif.CheckedChanged += new System.EventHandler(this.checkBox_activer_tarif_CheckedChanged);
-            // 
-            // radioButton_tarif_produit
-            // 
-            this.radioButton_tarif_produit.AutoSize = true;
-            this.radioButton_tarif_produit.Enabled = false;
-            this.radioButton_tarif_produit.Location = new System.Drawing.Point(19, 104);
-            this.radioButton_tarif_produit.Name = "radioButton_tarif_produit";
-            this.radioButton_tarif_produit.Size = new System.Drawing.Size(111, 17);
-            this.radioButton_tarif_produit.TabIndex = 28;
-            this.radioButton_tarif_produit.TabStop = true;
-            this.radioButton_tarif_produit.Text = "Tarif Fiche Produit";
-            this.radioButton_tarif_produit.UseVisualStyleBackColor = true;
-            // 
-            // button_tmp
-            // 
-            this.button_tmp.Enabled = false;
-            this.button_tmp.Location = new System.Drawing.Point(142, 130);
-            this.button_tmp.Name = "button_tmp";
-            this.button_tmp.Size = new System.Drawing.Size(111, 23);
-            this.button_tmp.TabIndex = 25;
-            this.button_tmp.Text = "Retraitement tmp";
-            this.button_tmp.UseVisualStyleBackColor = true;
-            this.button_tmp.Click += new System.EventHandler(this.button_tmp_Click);
             // 
             // GeneralConfig
             // 
