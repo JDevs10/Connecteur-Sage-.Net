@@ -2,8 +2,8 @@
   "general": {
     "showWindow": 5,
     "isAppOpen": false,
-    "isACP_ComptaCPT_CompteG": true,
-    "ACP_ComptaCPT_CompteG": 411000
+    "isACP_ComptaCPT_CompteG": false,
+    "ACP_ComptaCPT_CompteG": -1
   },
   "paths": {
     "EDI_Folder": "C:\\WorkPlace\\Connecteur-Sage-.Net\\Application\\CSV"
@@ -17,7 +17,7 @@
   },
   "reprocess": {
     "activate": true,
-    "hour": 1.0,
+    "hour": 0.5,
     "countDown": 3
   }
 }

@@ -74,11 +74,11 @@ namespace importPlanifier.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule, CT_EdiCode CO_No, CT_EdiCode FROM " + getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule, CO_No, CT_EdiCode FROM " + getPrefix()+ "F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             else
             {
-                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule, CT_EdiCode CO_No, CT_EdiCode FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
+                return "SELECT CT_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise,  N_Expedition, CT_Langue, CT_Facture, N_Period, N_CatTarif, CT_Taux02, N_CatCompta, CT_NumCentrale, CT_Intitule, CO_No, CT_EdiCode FROM F_COMPTET where CT_EdiCode='" + id + "' and CT_Type=0";
             }
             
         }

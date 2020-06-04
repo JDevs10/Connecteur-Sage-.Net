@@ -164,7 +164,17 @@ namespace ConnecteurSage.Forms
                     return;
                 }
 
-                configurationGeneral.general = new Init.Classes.Configuration.General(show, false, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(textBox1.Text.Trim()));
+                string compt_g_taxe = "";
+                if (textBox1.Enabled)
+                {
+                    compt_g_taxe = textBox1.Text.ToString();
+                }
+                else
+                {
+                    compt_g_taxe = "-1";
+                }
+
+                configurationGeneral.general = new Init.Classes.Configuration.General(show, false, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(compt_g_taxe.Trim()));
                 configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
                 configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
                 configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
@@ -194,13 +204,23 @@ namespace ConnecteurSage.Forms
                     return;
                 }
 
-                if (checkBox_reprocess_activate.Checked == true && Convert.ToInt32(numericUpDown_hour.Value) == 0)
+                if (checkBox_reprocess_activate.Checked == true && Convert.ToDouble(numericUpDown_hour.Value) == 0.0)
                 {
                     MessageBox.Show("Heure de retraitement n'est pas configuré !", "Retraitement", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
-                configurationGeneral.general = new Init.Classes.Configuration.General(show, configurationGeneral_2.general.isAppOpen, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(textBox1.Text.Trim()));
+                string compt_g_taxe = "";
+                if (textBox1.Enabled)
+                {
+                    compt_g_taxe = textBox1.Text.ToString();
+                }
+                else
+                {
+                    compt_g_taxe = "-1";
+                }
+
+                configurationGeneral.general = new Init.Classes.Configuration.General(show, configurationGeneral_2.general.isAppOpen, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(compt_g_taxe.Trim()));
                 configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
                 configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
                 configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
@@ -322,7 +342,15 @@ namespace ConnecteurSage.Forms
 
         private void button_reprocess_Click(object sender, EventArgs e)
         {
-            DirectoryInfo fileListing = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\" + "Error File");
+            string directory = Directory.GetCurrentDirectory() + @"\" + "Error File";
+            DirectoryInfo fileListing = new DirectoryInfo(directory);
+
+            if (!Directory.Exists(directory))
+            {
+                //Create log directory
+                Directory.CreateDirectory(directory);
+            }
+
             FileInfo[] allFiles = fileListing.GetFiles("*.csv");
 
             if(allFiles.Length > 0)
@@ -354,7 +382,15 @@ namespace ConnecteurSage.Forms
 
         private void button_tmp_Click(object sender, EventArgs e)
         {
-            DirectoryInfo fileListing = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\" + "tmp");
+            string directory = Directory.GetCurrentDirectory() + @"\" + "tmp";
+            DirectoryInfo fileListing = new DirectoryInfo(directory);
+
+            if (!Directory.Exists(directory))
+            {
+                //Create log directory
+                Directory.CreateDirectory(directory);
+            }
+
             FileInfo[] allFiles = fileListing.GetFiles("*.csv");
 
             if (allFiles.Length > 0)

@@ -43,6 +43,7 @@ namespace importPlanifier.Classes
         #endregion
 
 
+
         public Client(string CT_Num, string CG_NumPrinc, string CT_NumPayeur, string N_Condition, string N_Devise, string N_Expedition, string CT_Langue, string CT_Facture, string N_Period, string N_CatTarif, string CT_Taux02, string N_CatCompta, string CT_NumCentrale, string CT_Intitule, string CO_No, string CT_EdiCode)
         {
             this.CT_Num=CT_Num;
