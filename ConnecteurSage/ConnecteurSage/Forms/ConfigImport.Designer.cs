@@ -320,9 +320,9 @@
             this.label_import_notif.AutoSize = true;
             this.label_import_notif.Location = new System.Drawing.Point(108, 16);
             this.label_import_notif.Name = "label_import_notif";
-            this.label_import_notif.Size = new System.Drawing.Size(271, 13);
+            this.label_import_notif.Size = new System.Drawing.Size(276, 13);
             this.label_import_notif.TabIndex = 8;
-            this.label_import_notif.Text = " Voici les configurations d\'import des document different.";
+            this.label_import_notif.Text = " Voici les configurations d\'import des documents different.";
             // 
             // label6
             // 

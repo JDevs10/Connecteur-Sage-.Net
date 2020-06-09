@@ -40,7 +40,7 @@ namespace ImportPlanifier
         {
             newThread.Abort();
 
-            Connecteur_Info.Batch_Interrup interrup = new Connecteur_Info.Batch_Interrup();
+            Connecteur_Info.Custom.Batch_Interrup interrup = new Connecteur_Info.Custom.Batch_Interrup();
             interrup.interruption();
 
             //do your cleanup here

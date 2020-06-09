@@ -156,7 +156,7 @@ namespace Reprocess
 
                                     try
                                     {
-                                        //////////////////////////////
+                                        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                         /// new feature
                                         /// 
                                         if (settings.configurationGeneral.reprocess.countDown == 0)
@@ -185,7 +185,7 @@ namespace Reprocess
                                                 List<ReprocessFiles> reprocessFiles = reprocess_setting.reprocessFilesList;
 
                                                 // check a specific string in a list of objects
-                                                if (reprocessFiles.Any(item => Convert.ToInt32(newFileName.Split('.')[1]) == item.ediFileId))
+                                                if (reprocessFiles.Any(item => Convert.ToInt32(newFileName.Split('.')[1]) == item.ediFileId) || reprocessFiles.Any(item => Convert.ToInt32(((newFileName.Contains("CFP41") || newFileName.Contains("CFP51") || newFileName.Contains("TWP41") || newFileName.Contains("TWP51")) ? newFileName.Split('_')[1].Replace(".csv", "") : "99999999")) == item.ediFileId))
                                                 {
                                                     // the file in the obj list was found
                                                     // check count down
@@ -241,7 +241,10 @@ namespace Reprocess
                                                 reprocessFiles.fileName = newFileName;
                                                 reprocessFiles.filePath = file.FullName;
                                                 reprocessFiles.fileReprocessCount = 1;
-                                                reprocessFiles.ediFileId = Convert.ToInt32(newFileName.Split('.')[1]);
+
+                                                string xxx = (newFileName.Contains("EDI_ORDERS") ? newFileName.Split('.')[1] : ((newFileName.Contains("CFP41") || newFileName.Contains("CFP51") || newFileName.Contains("TWP41") || newFileName.Contains("TWP51")) ? newFileName.Split('_')[1].Replace(".csv", "")  : "999") );
+
+                                                reprocessFiles.ediFileId = Convert.ToInt32(xxx);
                                                 reprocessFilesList.Add(reprocessFiles);
 
                                                 reprocess_setting.reprocessFilesList = reprocessFilesList;

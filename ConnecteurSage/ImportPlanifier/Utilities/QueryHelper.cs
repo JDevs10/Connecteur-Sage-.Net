@@ -36,11 +36,23 @@ namespace importPlanifier.Utilities
         {
             if (sqlConnexion)
             {
-                return "Select * " + getPrefix() + "F_COMPTET where CT_Num = 'CL99999999'";
+                return "select * FROM " + getPrefix() + "F_COMPTET where CT_Num = 'CL99999999'";
             }
             else
             {
-                return "Select * F_COMPTET where CT_Num = 'CL99999999'";
+                return "select * FROM F_COMPTET where CT_Num = 'CL99999999'";
+            }
+        }
+
+        public static string insertTrashGeneralCompte(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                return "Insert Into " + getPrefix() + "F_COMPTEG (CG_Num, CG_Type, CG_Intitule, CG_Classement, TA_Code, CG_Datecreate, CG_Analytique, N_Nature, CG_Saut, CG_Tiers, CG_Devise, N_Devise, CG_Report, CG_Regroup) Values ('99999999', 0, 'Compte Anexys', 'Compte Anexys', 'C00', {d'" + string.Format("{0:yyyy-MM-dd}", DateTime.Now) + "'}, 1, 1, 1, 0, 0, 0, 0, 0)";
+            }
+            else
+            {
+                return "Insert Into F_COMPTEG (CG_Num, CG_Type, CG_Intitule, CG_Classement, TA_Code, CG_Datecreate, CG_Analytique, N_Nature, CG_Saut, CG_Tiers, CG_Devise, N_Devise, CG_Report, CG_Regroup) Values ('99999999', 0, 'Compte Anexys', 'Compte Anexys', 'C00', {d'" + string.Format("{0:yyyy-MM-dd}", DateTime.Now) + "'}, 1, 1, 1, 0, 0, 0, 0, 0)";
             }
         }
 
@@ -48,11 +60,23 @@ namespace importPlanifier.Utilities
         {
             if (sqlConnexion)
             {
-                return "Insert Into " + getPrefix() + "F_COMPTET(CT_Num, CT_EdiCode, CT_Intitule, CT_Type, CG_NumPrinc, N_Risque, N_CatTarif, N_CatCompta, N_Period, N_Expedition, N_Condition, CT_NumPayeur, CT_Qualite, CT_Classement, CT_Contact, CT_Adresse, CT_Complement, CT_CodePostal, CT_CodeRegion, CT_Raccourci, CO_No, CT_Encours, CT_Assurance, CT_Taux01, CT_Taux02, CT_Taux03, CT_Taux04, CT_Facture, CT_BLFact, CT_Langue, CT_Saut, CT_Lettrage, CT_ValidEch, CT_Sommeil, DE_No, CT_ControlEnc, CT_NotRappel, N_Analytique) Values('CL99999999', '9999999999999','Connecteur Anexys', 0, '4110000', 1, 1, 1, 1, 1, 1,'CL99999999', '', 'Connecteur Anexys', '', '', '', '', '', '', 0, 0.000000, 0.000000 ,0.000000, 0.000000, 0.000000, 0.000000, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0)";
+                return "Insert Into " + getPrefix() + "F_COMPTET(CT_Num, CG_NumPrinc, CT_DateCreate, CT_EdiCode, CT_Intitule, CT_Type, N_Risque, N_CatTarif, N_CatCompta, N_Period, N_Expedition, N_Condition, CT_NumPayeur, CT_Qualite, CT_Classement, CT_Contact, CT_Adresse, CT_Complement, CT_CodePostal, CT_CodeRegion, CT_Raccourci, CO_No, CT_Encours, CT_Assurance, CT_Taux01, CT_Taux02, CT_Taux03, CT_Taux04, CT_Facture, CT_BLFact, CT_Langue, CT_Saut, CT_Lettrage, CT_ValidEch, CT_Sommeil, DE_No, CT_ControlEnc, CT_NotRappel, N_Analytique, N_Devise) Values('CL99999999', 99999999, {d'" + string.Format("{0:yyyy-MM-dd}", DateTime.Now) + "'}, '9999999999999','Connecteur Anexys', 0, 1, 1, 1, 1, 1, 1,'CL99999999', '', 'Connecteur Anexys', '', '', '', '', '', '', 0, 0.000000, 0.000000 ,0.000000, 0.000000, 0.000000, 0.000000, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0)";
             }
             else
             {
-                return "Insert Into F_COMPTET(CT_Num, CT_EdiCode, CT_Intitule, CT_Type, CG_NumPrinc, N_Risque, N_CatTarif, N_CatCompta, N_Period, N_Expedition, N_Condition, CT_NumPayeur, CT_Qualite, CT_Classement, CT_Contact, CT_Adresse, CT_Complement, CT_CodePostal, CT_CodeRegion, CT_Raccourci, CO_No, CT_Encours, CT_Assurance, CT_Taux01, CT_Taux02, CT_Taux03, CT_Taux04, CT_Facture, CT_BLFact, CT_Langue, CT_Saut, CT_Lettrage, CT_ValidEch, CT_Sommeil, DE_No, CT_ControlEnc, CT_NotRappel, N_Analytique) Values('CL99999999', '9999999999999','Connecteur Anexys', 0, '4110000', 1, 1, 1, 1, 1, 1,'CL99999999', '', 'Connecteur Anexys', '', '', '', '', '', '', 0, 0.000000, 0.000000 ,0.000000, 0.000000, 0.000000, 0.000000, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0)";
+                return "Insert Into F_COMPTET(CT_Num, CG_NumPrinc, CT_DateCreate, CT_EdiCode, CT_Intitule, CT_Type, N_Risque, N_CatTarif, N_CatCompta, N_Period, N_Expedition, N_Condition, CT_NumPayeur, CT_Qualite, CT_Classement, CT_Contact, CT_Adresse, CT_Complement, CT_CodePostal, CT_CodeRegion, CT_Raccourci, CO_No, CT_Encours, CT_Assurance, CT_Taux01, CT_Taux02, CT_Taux03, CT_Taux04, CT_Facture, CT_BLFact, CT_Langue, CT_Saut, CT_Lettrage, CT_ValidEch, CT_Sommeil, DE_No, CT_ControlEnc, CT_NotRappel, N_Analytique, N_Devise) Values('CL99999999', 99999999, {d'" + string.Format("{0:yyyy-MM-dd}", DateTime.Now) + "'}, '9999999999999','Connecteur Anexys', 0, 1, 1, 1, 1, 1, 1,'CL99999999', '', 'Connecteur Anexys', '', '', '', '', '', '', 0, 0.000000, 0.000000 ,0.000000, 0.000000, 0.000000, 0.000000, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0)";
+            }
+        }
+
+        public static string insertTrashClientDeliveryAddress(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                return "Insert Into " + getPrefix() + "F_LIVRAISON (LI_No, CT_Num, LI_Intitule, N_Expedition, N_Condition, LI_Principal, LI_Adresse, LI_CodePostal, LI_Ville, LI_Contact) Values(0, 'CL99999999', 'Connecteur Anexys', 1, 1, 1, 'xxxx', '00000', 'xxx', 'xx xxxx')";
+            }
+            else
+            {
+                return "Insert Into F_LIVRAISON (LI_No, CT_Num, LI_Intitule, N_Expedition, N_Condition, LI_Principal, LI_Adresse, LI_CodePostal, LI_Ville, LI_Contact) Values(0, 'CL99999999', 'Connecteur Anexys', 1, 1, 1, 'xxxx', '00000', 'xxx', 'xx xxxx')";
             }
         }
 
@@ -115,13 +139,13 @@ namespace importPlanifier.Utilities
                 {
                     //return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc where ar.AR_CODEBARRE='" + id + "' and arc.CT_Num ='" + CT_Num + "'";
                     //return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, arc.AC_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar, " + getPrefix() + "F_ARTCLIENT as arc, " + getPrefix() + "f_comptetg as CG where ar.AR_Ref = arc.AR_Ref and arc.CT_Num = CG.CT_Num and ar.AR_CODEBARRE='" + id+"' and CG.CT_Num = '"+ CT_NumCentrale + "'";
-                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, ar.AR_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar where ar.AR_CODEBARRE='" + id + "'";
+                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, ar.AR_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar where ar.AR_CODEBARRE='" + id + "' and CG.CT_Num = '" + CT_NumCentrale + "'";
                 }
                 else
                 {
                     //DL_CodeTaxe1, DL_Taxe1, DL_PrixUnitaire_salePriceHT, DL_PUTTC
                     //return "SELECT AR_REF, AR_CodeBarre, AR_SuiviStock, AR_Gamme1, AR_Gamme2, AR_Nomencl, RP_CODEDEFAUT, AR_PRIXVEN, AR_POIDSBRUT, AR_POIDSNET, AR_UnitePoids, AR_DESIGN, AR_PrixAch from " + getPrefix() + "F_ARTICLE where AR_CODEBARRE='" + id + "'";
-                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, ar.AR_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from F_ARTICLE as ar where ar.AR_CODEBARRE='" + id + "'";
+                    return "SELECT ar.AR_REF, ar.AR_CodeBarre, ar.AR_SuiviStock, ar.AR_Gamme1, ar.AR_Gamme2, ar.AR_Nomencl, ar.RP_CODEDEFAUT, ar.AR_PrixVen, ar.AR_POIDSBRUT, ar.AR_POIDSNET, ar.AR_UnitePoids, ar.AR_DESIGN, ar.AR_PrixAch from " + getPrefix() + "F_ARTICLE as ar where ar.AR_CODEBARRE='" + id + "'";
                 }
             }
             else 
@@ -263,40 +287,39 @@ namespace importPlanifier.Utilities
         public static string insertCommande(bool sqlConnexion, Client client, Order order, string statut)
         {
             if (sqlConnexion)
-            {
+            { //CG_NUM  ;; '" + client.CG_NumPrinc + "'
                 return "Insert into " +
-                    "" + getPrefix() + "F_DOCENTETE(CO_No, CG_NUM,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
+                    "" + getPrefix() + "F_DOCENTETE(CG_NUM,CO_No,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
                     "DO_CONDITION,DO_DATE,DO_DATELIVR,DO_DEVISE,DO_DOMAINE," +
                     "DO_EXPEDIT,DO_LANGUE,DO_NBFACTURE,DO_PERIOD,DO_PIECE,DO_REF," +
                     "DO_REGIME,DO_STATUT,DO_TARIF,DO_TIERS,DO_TRANSACTION," +
                     "DO_TXESCOMPTE,DO_TYPE,DO_TYPECOLIS,DO_VENTILE," +
                     "LI_NO,N_CATCOMPTA,DO_MOTIF,DO_COORD01,DO_TAXE1,DO_TypeTaux1,DO_TypeTaxe1) " +
                     "values" +
-                    "("+ client .CO_No+ ",'" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
-                    "" + order.conditionLivraison + ",{d '" + order.DateCommande + "'},{d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
+                    "('" + client.CG_NumPrinc + "'," + client .CO_No+ ",'" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
+                    "" + order.conditionLivraison + ",{d '" + order.DateCommande + "'}, {d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
                     "21,"+statut+"," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
-                    "" + client.CT_Taux02 + ",1,1,0," +
+                    "" + client.CT_Taux02.Replace(',', '.').Split('.')[0] + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
             else
             {
                 return "Insert into " +
-                    "F_DOCENTETE(CO_No, CG_NUM,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
+                    "F_DOCENTETE(CG_NUM,CO_No,CT_NUMPAYEUR,DE_NO,DO_ATTENTE,DO_BLFACT,DO_CLOTURE,DO_COLISAGE," +
                     "DO_CONDITION,DO_DATE,DO_DATELIVR,DO_DEVISE,DO_DOMAINE," +
                     "DO_EXPEDIT,DO_LANGUE,DO_NBFACTURE,DO_PERIOD,DO_PIECE,DO_REF," +
                     "DO_REGIME,DO_STATUT,DO_TARIF,DO_TIERS,DO_TRANSACTION," +
                     "DO_TXESCOMPTE,DO_TYPE,DO_TYPECOLIS,DO_VENTILE," +
                     "LI_NO,N_CATCOMPTA,DO_MOTIF,DO_COORD01,DO_TAXE1,DO_TypeTaux1,DO_TypeTaxe1) " +
                     "values" +
-                    "(" + client.CO_No + ",'" + client.CG_NumPrinc + "','" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
+                    "('" + client.CG_NumPrinc + "'," + client.CO_No + ",'" + client.CT_NumPayeur + "'," + order.StockId + ",0,0,0,1," +
                     "" + order.conditionLivraison + ", {d '" + order.DateCommande + "'}, {d '" + order.DateLivraison + "'}," + client.N_Devise + ",0," +
                     "" + client.N_Expedition + "," + client.CT_Langue + "," + client.CT_Facture + "," + client.N_Period + ",'" + order.Id + "','" + order.Reference + "'," +
                     "21," + statut + "," + client.N_CatTarif + ",'" + client.CT_Num + "',11," +
-                    "" + client.CT_Taux02 + ",1,1,0," +
+                    "" + client.CT_Taux02.Replace(',', '.').Split('.')[0] + ",1,1,0," +
                     "" + order.adresseLivraison + "," + client.N_CatCompta + ",'" + order.codeAcheteur + ";" + order.codeFournisseur + "','" + order.NumCommande + "',20,0,0)";
             }
-
         }
 
         public static string insertLigneCommande(bool sqlConnexion, Client client, Order order, OrderLine line)

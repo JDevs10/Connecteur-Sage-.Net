@@ -3,31 +3,35 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Connecteur_Info
+namespace Connecteur_Info.Custom
 {
-    public class Batch_Ending
+    public class Batch_Intro
     {
-        public void ending()
+        private ConnecteurInfo mConnecteurInfo()
         {
-            Console.WriteLine("##############################################################################################################################");
-            Console.WriteLine("#################################################### L'import planifier ######################################################");
-            Console.WriteLine("##############################################################################################################################");
-            Console.WriteLine("");
-            Thread.Sleep(2000);
+            return new Connecteur_Info.ConnecteurInfo();
         }
 
-        public void ending(StreamWriter writer)
+        public void intro()
+        {
+            Console.WriteLine("Execution en cours...");
+            Console.WriteLine("##############################################################################################################################");
+            Console.WriteLine("#################################################### L'import planifier ######################################################");
+            Console.WriteLine("##### Version "+ mConnecteurInfo().Version+ " ############################################################################################ " + mConnecteurInfo().Developper + " #####");
+            Console.WriteLine("");
+        }
+
+        public void intro(StreamWriter writer)
         {
             writer.Flush();
             writer.WriteLine("##############################################################################################################################");
             writer.WriteLine("#################################################### L'import planifier ######################################################");
-            writer.WriteLine("##### Version 1.12.11 ############################################################################################ Jdevs #####");
-            writer.WriteLine("##############################################################################################################################");
+            writer.WriteLine("##### Version " + mConnecteurInfo().Version + " ############################################################################################ " + mConnecteurInfo().Developper + " #####");
             writer.WriteLine("");
             writer.Flush();
         }
+
     }
 }

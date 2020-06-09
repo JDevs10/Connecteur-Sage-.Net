@@ -34,9 +34,13 @@ namespace Init
                 General newGeneral = new General(mGeneral.showWindow, show, mGeneral.isACP_ComptaCPT_CompteG, mGeneral.ACP_ComptaCPT_CompteG);
 
                 writer.WriteLine("");
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() | showWindow : " + newGeneral.showWindow);
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() | isAppOpen : " + newGeneral.isAppOpen);
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() | ACP_ComptaCPT_CompteG : " + newGeneral.ACP_ComptaCPT_CompteG);
+                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |Before| showWindow : " + mGeneral.showWindow);
+                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |Before| isAppOpen : "+ mGeneral.isAppOpen);
+                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |Before| ACP_ComptaCPT_CompteG : "+ mGeneral.ACP_ComptaCPT_CompteG);
+                writer.WriteLine("");
+                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |After| showWindow : " + newGeneral.showWindow);
+                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |After| isAppOpen : " + newGeneral.isAppOpen);
+                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |After| ACP_ComptaCPT_CompteG : " + newGeneral.ACP_ComptaCPT_CompteG);
 
                 settings.configurationGeneral.general = newGeneral;
                 settings.saveInfo();

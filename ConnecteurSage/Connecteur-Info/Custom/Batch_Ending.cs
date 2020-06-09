@@ -3,30 +3,36 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Connecteur_Info
+namespace Connecteur_Info.Custom
 {
-    public class Batch_Intro
+    public class Batch_Ending
     {
-        public void intro()
+        private ConnecteurInfo mConnecteurInfo()
         {
-            Console.WriteLine("Execution en cours...");
-            Console.WriteLine("##############################################################################################################################");
-            Console.WriteLine("#################################################### L'import planifier ######################################################");
-            Console.WriteLine("##### Version 1.12.11 ############################################################################################ Jdevs #####");
-            Console.WriteLine("");
+            return new Connecteur_Info.ConnecteurInfo();
         }
 
-        public void intro(StreamWriter writer)
+        public void ending()
+        {
+            Console.WriteLine("##############################################################################################################################");
+            Console.WriteLine("#################################################### L'import planifier ######################################################");
+            Console.WriteLine("##############################################################################################################################");
+            Console.WriteLine("");
+            Thread.Sleep(2000);
+        }
+
+        public void ending(StreamWriter writer)
         {
             writer.Flush();
             writer.WriteLine("##############################################################################################################################");
             writer.WriteLine("#################################################### L'import planifier ######################################################");
-            writer.WriteLine("##### Version 1.12.11 ############################################################################################ Jdevs #####");
+            writer.WriteLine("##### Version " + mConnecteurInfo().Version + " ############################################################################################ " + mConnecteurInfo().Developper + " #####");
+            writer.WriteLine("##############################################################################################################################");
             writer.WriteLine("");
             writer.Flush();
         }
-
     }
 }

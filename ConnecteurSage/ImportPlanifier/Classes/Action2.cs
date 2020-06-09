@@ -72,7 +72,7 @@ namespace importPlanifier.Classes
             dir = path;
 
             // Load intro
-            Connecteur_Info.Batch_Intro intro = new Connecteur_Info.Batch_Intro();
+            Connecteur_Info.Custom.Batch_Intro intro = new Connecteur_Info.Custom.Batch_Intro();
             intro.intro();
 
             if (dir == null)
@@ -143,7 +143,7 @@ namespace importPlanifier.Classes
             using (StreamWriter logFileWriter_import = new StreamWriter(logFile_import))
             {
                 // Load intro
-                Connecteur_Info.Batch_Intro intro_ = new Connecteur_Info.Batch_Intro();
+                Connecteur_Info.Custom.Batch_Intro intro_ = new Connecteur_Info.Custom.Batch_Intro();
                 intro_.intro(logFileWriter_import);
 
 
@@ -785,31 +785,35 @@ namespace importPlanifier.Classes
                                         Client client2 = getClient(order.codeAcheteur, 2, logFileWriter_import);
                                         if (client2 == null)
                                         {
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
 
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null, verifier le code Acheteur.");
+                                            order.codeAcheteur = "xxxxxxxxxxxxx";
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Acheteur trouvé est null. Vérifier le code acheteur, en attendant il sera " + order.codeAcheteur);
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                            tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. L'acheteur (" + order.codeAcheteur + ") n'est pas trouvé dans Sage !", "Acheteur trouvé est null, verifier le code Acheteur (" + order.codeAcheteur + ").", "", filename.Name, logFileName_import));
-                                            goto goErrorLoop;
+                                            //tabCommandeError.Add(filename.Name);
+                                            //recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. L'acheteur (" + order.codeAcheteur + ") n'est pas trouvé dans Sage !", "Acheteur trouvé est null, verifier le code Acheteur (" + order.codeAcheteur + ").", "", filename.Name, logFileName_import));
+                                            //goto goErrorLoop;
                                         }
 
 
                                         if (existeFourniseur(order.codeFournisseur, logFileWriter_import) == null)
                                         {
-                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
+                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
                                             logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
 
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                            logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null, verifier le code Fournisseur.");
+                                            order.codeFournisseur = "9999999999999";
+                                            logFileWriter_import.WriteLine("");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Warning *********************");
+                                            logFileWriter_import.WriteLine(DateTime.Now + " : Fournisseur trouvé est null. Vérifier le code fournisseur, en attendant il sera " + order.codeFournisseur);
                                             logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                            tabCommandeError.Add(filename.Name);
-                                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. Le fournisseur (" + order.codeFournisseur + ") n'est pas trouvé dans Sage !", "Fournisseur trouvé est null, verifier le code Fournisseur (" + order.codeFournisseur + ").", "", filename.Name, logFileName_import));
-                                            goto goErrorLoop;
+                                            //tabCommandeError.Add(filename.Name);
+                                            //recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. Le fournisseur (" + order.codeFournisseur + ") n'est pas trouvé dans Sage !", "Fournisseur trouvé est null, verifier le code Fournisseur (" + order.codeFournisseur + ").", "", filename.Name, logFileName_import));
+                                            //goto goErrorLoop;
                                         }
 
 
@@ -910,7 +914,8 @@ namespace importPlanifier.Classes
                                                                 {
                                                                     OrderLine line = new OrderLine();
                                                                     line.NumLigne = tab[1];
-                                                                    line.article = getArticle(tab[2], client.CT_NumCentrale, logFileWriter_import);
+                                                                    //line.article = getArticle(tab[2], client.CT_NumCentrale, logFileWriter_import);
+                                                                    line.article = getArticle(tab[2], null, logFileWriter_import);
 
                                                                     if (line.article == null)
                                                                     {
@@ -4825,7 +4830,7 @@ namespace importPlanifier.Classes
                                     name_article = (reader[1].ToString());                  // sum up the total_negative variable. - check query
                                     DL_PoidsNet = (reader[2].ToString());                   // get unit weight NET - check query
                                     DL_PoidsBrut = (reader[3].ToString());                  // get unit weight BRUT - check query  
-                                    //DL_PrixUnitaire_buyPrice = (reader[4].ToString());      // get (Prix d'achat) unit price - check query 
+                                    //DL_PrixUnitaire_buyPrice = (reader[4].ToString());    // get (Prix d'achat) unit price - check query 
                                     DL_PrixUnitaire_salePriceHT = (reader[4].ToString());   // get (Prix de vente) unit price ht - check query
                                     COLIS_article = reader[5].ToString();
                                     PCB_article = reader[6].ToString();
@@ -4835,6 +4840,8 @@ namespace importPlanifier.Classes
                                     DL_PieceBC = reader[10].ToString();
                                     DL_DateBC = reader[11].ToString();
                                     DL_QteBC = reader[12].ToString().Replace(",", ".");
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Info du produit " + line.Code_Article + " trouvé");
+
                                 }
                                 else// If no rows returned
                                 {
@@ -4873,7 +4880,7 @@ namespace importPlanifier.Classes
 
                         //get Client Reference by Ref
                         logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Obtenir la référence client par référence.");
+                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Obtenir les infos client par la référence.");
                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_client));
                         using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
@@ -4896,6 +4903,7 @@ namespace importPlanifier.Classes
                                     list_of_client_info[11] = reader[11].ToString();    //  DO_Tarif = N_CatTarif
                                     list_of_client_info[12] = reader[12].ToString();    //  DO_Expedit = N_Expedition du tier
                                     list_of_client_info[13] = reader[13].ToString();    //  CT_Intitule
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Client trouvé.");
                                 }
                                 else// If no rows returned
                                 {
@@ -8341,6 +8349,8 @@ namespace importPlanifier.Classes
         public static Client getClient(string id, int flag, StreamWriter writer)
         {
             // Insertion dans la base sage : cbase
+            writer.WriteLine("");
+            writer.WriteLine(DateTime.Now + " | getClient(id : " + id + ", flag : " + flag + "");
             using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
             {
                 try
@@ -8400,7 +8410,7 @@ namespace importPlanifier.Classes
             writer.WriteLine("");
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | getTrashClient() Called!");
-            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
             {
                 try
                 {
@@ -8430,8 +8440,8 @@ namespace importPlanifier.Classes
                     if (isTrashClient)
                     {
                         writer.WriteLine(DateTime.Now + " | getTrashClient() : Récupérer le client poubelle");
-                        writer.WriteLine(DateTime.Now + " | getTrashClient() :  SQL => "+ QueryHelper.getClient(true, "9999999999"));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(true, "9999999999"), connection))
+                        writer.WriteLine(DateTime.Now + " | getTrashClient() :  SQL => "+ QueryHelper.getClient(true, "9999999999999"));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(true, "9999999999999"), connection))
                         {
                             using (IDataReader reader = command.ExecuteReader())
                             {
@@ -8453,11 +8463,23 @@ namespace importPlanifier.Classes
                     {
                         writer.WriteLine(DateTime.Now + " | getTrashClient() : Créer et obtenir les informations requises du client poubelle");
                         writer.WriteLine(DateTime.Now + " | getTrashClient() :  SQL => " + QueryHelper.insertTrashClient(true));
-                        OdbcCommand command_1 = new OdbcCommand(QueryHelper.insertTrashClient(true), connection);
+                        OdbcCommand command_1 = new OdbcCommand(QueryHelper.insertTrashGeneralCompte(true), connection);
                         command_1.ExecuteReader();
 
-                        writer.WriteLine(DateTime.Now + " | getTrashClient() :  SQL => " + QueryHelper.getClient(true, "9999999999"));
-                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(true, "9999999999"), connection))
+                        writer.WriteLine("");
+                        writer.WriteLine(DateTime.Now + " | getTrashClient() :  SQL => " + QueryHelper.insertTrashClient(true));
+                        command_1 = new OdbcCommand(QueryHelper.insertTrashClient(true), connection);
+                        command_1.ExecuteReader();
+
+                        writer.WriteLine("");
+                        writer.WriteLine(DateTime.Now + " | getTrashClient() : Client créer");
+                        command_1 = new OdbcCommand(QueryHelper.insertTrashClientDeliveryAddress(true), connection);
+                        command_1.ExecuteReader();
+
+                        writer.WriteLine("");
+                        writer.WriteLine(DateTime.Now + " | getTrashClient() : Address de livraison créer");
+                        writer.WriteLine(DateTime.Now + " | getTrashClient() :  SQL => " + QueryHelper.getClient(true, "9999999999999"));
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getClient(true, "9999999999999"), connection))
                         {
                             using (IDataReader reader = command.ExecuteReader())
                             {
@@ -8465,18 +8487,19 @@ namespace importPlanifier.Classes
                                 {
                                     Client cli = new Client(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString());
                                     writer.WriteLine(DateTime.Now + " | getTrashClient() : Client poubelle trouvé!");
+                                    writer.WriteLine(""); 
                                     connection.Close();
                                     return cli;
                                 }
                                 else
                                 {
                                     writer.WriteLine(DateTime.Now + " | getTrashClient() : Client poubelle n'est pas trouvé");
+                                    writer.WriteLine(""); 
                                     return null;
                                 }
                             }
                         }
                     }
-                    writer.WriteLine("");
                 }
                 catch (Exception ex)
                 {
@@ -8578,9 +8601,8 @@ namespace importPlanifier.Classes
             var logFile_general = File.Create(logFileName_general);
             logFileWriter_general = new StreamWriter(logFile_general);
 
-
             // Load intro
-            Connecteur_Info.Batch_Intro intro_B = new Connecteur_Info.Batch_Intro();
+            Connecteur_Info.Custom.Batch_Intro intro_B = new Connecteur_Info.Custom.Batch_Intro();
             intro_B.intro(logFileWriter_general);
 
             //Reprocess
@@ -8722,70 +8744,85 @@ namespace importPlanifier.Classes
             logFileWriter_general.WriteLine("");
             logFileWriter_general.WriteLine(DateTime.Now + " : ################################ Alert Mail MAIL_EXP ###############################");
             logFileWriter_general.WriteLine("");
+            logFileWriter_general.Flush();
             // check if any errors for export documents
-            if (recapLinesList_new.Count != 0)
+
+            try
             {
-                Alert_Mail.Classes.ConfigurationSaveLoad configurationSaveLoad1 = new Alert_Mail.Classes.ConfigurationSaveLoad();
-                if (configurationSaveLoad1.isSettings())
+                if (recapLinesList_new.Count != 0)
                 {
-                    configurationSaveLoad1.Load();
-
-                    if (configurationSaveLoad1.configurationEmail.active)
+                    Alert_Mail.Classes.ConfigurationSaveLoad configurationSaveLoad1 = new Alert_Mail.Classes.ConfigurationSaveLoad();
+                    if (configurationSaveLoad1.isSettings())
                     {
-                        if (configurationSaveLoad1.configurationEmail.emailError.active)
+                        configurationSaveLoad1.Load();
+
+                        if (configurationSaveLoad1.configurationEmail.active)
                         {
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : ################################ Alert Mail Export ###############################");
-                            logFileWriter_general.WriteLine("");
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Il y a " + recapLinesList_new.Count + " erreurs trouvé pendant l'export des documents.");
-
-                            List<string> attchmentsList = new List<string>();
-                            Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
-                            connexionSaveLoad.Load();
-
-                            Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
-                            configurationCustomMailSaveLoad.customMailRecap.MailType = "Mail_EXP";
-                            configurationCustomMailSaveLoad.customMailRecap.Client = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
-                            configurationCustomMailSaveLoad.customMailRecap.Subject = "Erreur d'export des documents";
-                            configurationCustomMailSaveLoad.customMailRecap.DateTimeCreated = string.Format("{0:dd-MM-yyyy HH:mm}", DateTime.Now);
-                            configurationCustomMailSaveLoad.customMailRecap.DateTimeModified = "";
-
-                            configurationCustomMailSaveLoad.customMailRecap.Lines = new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>();
-                            for (int i = 0; i < recapLinesList_new.Count; i++)
+                            if (configurationSaveLoad1.configurationEmail.emailError.active)
                             {
-                                if (attchmentsList.Contains(recapLinesList_new[i].FilePath))
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : ################################ Alert Mail Export ###############################");
+                                logFileWriter_general.WriteLine("");
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Il y a " + recapLinesList_new.Count + " erreurs trouvé pendant l'export des documents.");
+
+                                List<string> attchmentsList = new List<string>();
+                                Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+                                connexionSaveLoad.Load();
+
+                                Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
+                                configurationCustomMailSaveLoad.customMailRecap.MailType = "Mail_EXP";
+                                configurationCustomMailSaveLoad.customMailRecap.Client = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
+                                configurationCustomMailSaveLoad.customMailRecap.Subject = "Erreur d'export des documents";
+                                configurationCustomMailSaveLoad.customMailRecap.DateTimeCreated = string.Format("{0:dd-MM-yyyy HH:mm}", DateTime.Now);
+                                configurationCustomMailSaveLoad.customMailRecap.DateTimeModified = "";
+
+                                configurationCustomMailSaveLoad.customMailRecap.Lines = new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>();
+                                for (int i = 0; i < recapLinesList_new.Count; i++)
                                 {
-                                    attchmentsList.Add(recapLinesList_new[i].FilePath);
+                                    if (attchmentsList.Contains(recapLinesList_new[i].FilePath))
+                                    {
+                                        attchmentsList.Add(recapLinesList_new[i].FilePath);
+                                    }
+                                    recapLinesList_new[i].Increment += 1;
+                                    configurationCustomMailSaveLoad.customMailRecap.Lines.Add(recapLinesList_new[i]);
                                 }
-                                recapLinesList_new[i].Increment += 1;
-                                configurationCustomMailSaveLoad.customMailRecap.Lines.Add(recapLinesList_new[i]);
+                                configurationCustomMailSaveLoad.customMailRecap.Attachments = attchmentsList;
+                                configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_ERR_Exp, configurationCustomMailSaveLoad.customMailRecap);
                             }
-                            configurationCustomMailSaveLoad.customMailRecap.Attachments = attchmentsList;
-                            configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_ERR_Exp, configurationCustomMailSaveLoad.customMailRecap);
+                            else
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Notification mail error est désactivé!");
+                                logFileWriter_general.WriteLine("");
+                            }
                         }
                         else
                         {
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Notification mail error est désactivé!");
+                            logFileWriter_general.WriteLine(DateTime.Now + " : AlertMail est désactivé!");
                             logFileWriter_general.WriteLine("");
                         }
                     }
                     else
                     {
-                        logFileWriter_general.WriteLine(DateTime.Now + " : AlertMail est désactivé!");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Aucune configuration d'AlertMail trouvé!");
                         logFileWriter_general.WriteLine("");
                     }
                 }
                 else
                 {
-                    logFileWriter_general.WriteLine(DateTime.Now + " : Aucune configuration d'AlertMail trouvé!");
-                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.WriteLine(DateTime.Now + " : Il y a 0 erreur trouvé pendant l'export des documents.");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                logFileWriter_general.WriteLine(DateTime.Now + " : Il y a 0 erreur trouvé pendant l'export des documents.");
+                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                Console.WriteLine(ex.Message);
+                logFileWriter_general.WriteLine("*************************************************");
+                logFileWriter_general.WriteLine("********************* Erreur ********************");
+                logFileWriter_general.WriteLine("Message : \n" + ex.Message);
+                logFileWriter_general.WriteLine("StackTrace : " + ex.StackTrace);
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.Flush();
             }
-
 
             recapLinesList_new.Clear();
 
@@ -8886,7 +8923,7 @@ namespace importPlanifier.Classes
             init.setDisplay(logFileWriter_general, false);
 
             // Load intro
-            Connecteur_Info.Batch_Ending intro_E = new Connecteur_Info.Batch_Ending();
+            Connecteur_Info.Custom.Batch_Ending intro_E = new Connecteur_Info.Custom.Batch_Ending();
             intro_E.ending(logFileWriter_general);
 
             logFileWriter_general.Flush();

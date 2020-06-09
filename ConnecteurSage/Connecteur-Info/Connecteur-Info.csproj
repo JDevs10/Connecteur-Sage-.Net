@@ -41,9 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Batch_Ending.cs" />
-    <Compile Include="Batch_Interrup.cs" />
-    <Compile Include="Batch_Intro.cs" />
+    <Compile Include="ConnecteurInfo.cs" />
+    <Compile Include="Custom\Batch_Ending.cs" />
+    <Compile Include="Custom\Batch_Interrup.cs" />
+    <Compile Include="Custom\Batch_Intro.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

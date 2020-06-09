@@ -327,9 +327,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(101, 9);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(13, 13);
+            this.label4.Size = new System.Drawing.Size(277, 13);
             this.label4.TabIndex = 3;
-            this.label4.Text = " .";
+            this.label4.Text = " Voici les configurations d\'export des documents different.";
             // 
             // pictureBox1
             // 
