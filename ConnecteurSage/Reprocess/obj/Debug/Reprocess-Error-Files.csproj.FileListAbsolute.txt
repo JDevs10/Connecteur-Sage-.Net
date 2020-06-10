@@ -1,0 +1,11 @@
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Debug\Reprocess-Error-Files.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Debug\Reprocess-Error-Files.pdb
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Debug\Init.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Debug\Newtonsoft.Json.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Debug\Init.pdb
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Debug\Newtonsoft.Json.xml
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Debug\Reprocess-Error-Files.csprojAssemblyReference.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Debug\Reprocess-Error-Files.csproj.CoreCompileInputs.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Debug\Reprocess-Error-Files.csproj.CopyComplete
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Debug\Reprocess-Error-Files.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Debug\Reprocess-Error-Files.pdb

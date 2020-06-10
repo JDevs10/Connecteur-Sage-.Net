@@ -67,7 +67,8 @@ namespace ConnecteurSage
             new ThreadStart(() =>
             {
                 //Loading General Settings
-                progressDialog.Text = "Loading General Settings....";
+                if (progressDialog.InvokeRequired)
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Text = "Loading General Settings...."));
                 for (int n = 0; n < 10; n++)
                 {
                     Thread.Sleep(1);
@@ -90,7 +91,7 @@ namespace ConnecteurSage
                     {
                         using (Forms.GeneralConfig form = new Forms.GeneralConfig())
                         {
-                            form.ShowDialog(progressDialog);
+                            form.ShowDialog();
                         }
                     }
                     // Récupération d'une possible SDKException
@@ -102,7 +103,8 @@ namespace ConnecteurSage
 
 
                 //Loading Connexion Settings
-                progressDialog.Text = "Loading Connexion Settings....";
+                if (progressDialog.InvokeRequired)
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Text = "Loading Connexion Settings...."));
                 for (int n = 10; n < 20; n++)
                 {
                     Thread.Sleep(1);
@@ -126,7 +128,7 @@ namespace ConnecteurSage
                     {
                         using (Forms.ConfigConnexion form = new Forms.ConfigConnexion())
                         {
-                            form.ShowDialog(progressDialog);
+                            form.ShowDialog();
                         }
                     }
                     // Récupération d'une possible SDKException
@@ -137,7 +139,8 @@ namespace ConnecteurSage
                 }
 
                 //Loading Import Settings
-                progressDialog.Text = "Loading Import Settings....";
+                if (progressDialog.InvokeRequired)
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Text = "Loading Import Settings...."));
                 for (int n = 20; n < 40; n++)
                 {
                     Thread.Sleep(1);
@@ -189,7 +192,7 @@ namespace ConnecteurSage
                     {
                         using (ConfigImport form = new ConfigImport())
                         {
-                            form.ShowDialog(progressDialog);
+                            form.ShowDialog();
                         }
                     }
                     // Récupération d'une possible SDKException
@@ -201,7 +204,8 @@ namespace ConnecteurSage
 
 
                 // Loading Export Settings
-                progressDialog.Text = "Loading Export Settings....";
+                if (progressDialog.InvokeRequired)
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Text = "Loading Export Settings...."));
                 for (int n = 40; n < 60; n++)
                 {
                     Thread.Sleep(1);
@@ -249,7 +253,7 @@ namespace ConnecteurSage
                     {
                         using (ConfExport form = new ConfExport())
                         {
-                            form.ShowDialog(progressDialog);
+                            form.ShowDialog();
                         }
                     }
                     // Récupération d'une possible SDKException
@@ -260,7 +264,8 @@ namespace ConnecteurSage
                 }
 
                 //Loading Backup Settings
-                progressDialog.Text = "Loading Backup Settings....";
+                if (progressDialog.InvokeRequired)
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Text = "Loading Backup Settings...."));
                 for (int n = 60; n < 80; n++)
                 {
                     Thread.Sleep(1);
@@ -288,7 +293,7 @@ namespace ConnecteurSage
                     {
                         using (Forms.ConfigBackup form = new Forms.ConfigBackup())
                         {
-                            form.ShowDialog(progressDialog);
+                            form.ShowDialog();
                         }
                     }
                     // Récupération d'une possible SDKException

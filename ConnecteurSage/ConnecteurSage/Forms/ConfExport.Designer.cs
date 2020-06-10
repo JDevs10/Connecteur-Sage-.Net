@@ -339,7 +339,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ConfExport";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configuration Export";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
