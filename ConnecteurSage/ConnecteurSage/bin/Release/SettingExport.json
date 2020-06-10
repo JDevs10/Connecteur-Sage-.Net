@@ -5,7 +5,7 @@
     "Status": "1"
   },
   "DSADV": {
-    "Activate": false,
+    "Activate": true,
     "Format": "",
     "Status": ""
   },
@@ -16,7 +16,6 @@
   },
   "Stock": {
     "Activate": false,
-    "Format": "",
-    "Status": ""
+    "Format": ""
   }
 }

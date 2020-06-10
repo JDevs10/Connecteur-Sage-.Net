@@ -41,25 +41,25 @@ namespace ConnecteurSage.Forms
 
         #region Intéractions avec l'application
 
-        private List<Order> GetCommandesFromDataBase()
+        private List<Order> GetCommandesFromDataBase(string statut)
         {
             try
             {
-            //DocumentVente Facture = new DocumentVente();
-            List<Order> listCommande = new List<Order>();
-             using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
-            {
-               
+                //DocumentVente Facture = new DocumentVente();
+                List<Order> listCommande = new List<Order>();
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
+                {
+
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false), connection);
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListCommandes(false, statut), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
-                           while(reader.Read())
-                           {
-                                Order order = new Order(reader[0].ToString(), reader[1].ToString(), 
-                                    reader[2].ToString()+","+reader[3].ToString()+","+reader[6].ToString()+","+reader[7].ToString(),
+                            while (reader.Read())
+                            {
+                                Order order = new Order(reader[0].ToString(), reader[1].ToString(),
+                                    reader[2].ToString() + "," + reader[3].ToString() + "," + reader[6].ToString() + "," + reader[7].ToString(),
                                     reader[8].ToString(), reader[9].ToString(),
                                     reader[10].ToString(), reader[11].ToString(),
                                     reader[12].ToString(), reader[13].ToString(), reader[15].ToString(),
@@ -73,22 +73,20 @@ namespace ConnecteurSage.Forms
                                 //order.commentaires = "";
                                 //order.Transporteur = "";
                                 listCommande.Add(order);
-                                
-                           }
+                            }
                         }
                     }
                     return listCommande;
+                }
 
             }
 
-                                 }
-
-                catch (Exception e)
-                {
-                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
-                    MessageBox.Show("ERREUR [100] :: "+e.Message);
-                    return null;
-                }
+            catch (Exception e)
+            {
+                //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                MessageBox.Show("ERREUR [100] :: " + e.Message);
+                return null;
+            }
         }
 
 
@@ -99,10 +97,24 @@ namespace ConnecteurSage.Forms
         private void ExportFacture(StreamWriter logFileWriter)
         {
             Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+            if (!settings.isSettings())
+            {
+                MessageBox.Show("La configuration générale n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
             settings.Load();
 
             string path = settings.configurationGeneral.paths.EDI_Folder;
             string exportTo = "";
+
+            Config_Export.ConfigurationSaveLoad exportSettings = new Config_Export.ConfigurationSaveLoad();
+            if (!exportSettings.isSettings())
+            {
+                MessageBox.Show("La configuration d'export d'un document n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            exportSettings.Load();
+
 
             //if (check_cmd_VeologPendingTable && cmd_VeologPendingTable_ref != "")
             //{
@@ -613,6 +625,32 @@ namespace ConnecteurSage.Forms
 
             try
             {
+                Config_Export.ConfigurationSaveLoad exportSettings = new Config_Export.ConfigurationSaveLoad();
+                try
+                {
+                    if (!exportSettings.isSettings())
+                    {
+                        MessageBox.Show("La configuration d'export d'un document n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return;
+                    }
+                    exportSettings.Load();
+
+                    if (!exportSettings.configurationExport.Commande.Activate)
+                    {
+                        MessageBox.Show("L'export des commandes sont désactivé.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return;
+                    }
+                    if (exportSettings.configurationExport.Commande.Status != null || !int.TryParse(exportSettings.configurationExport.Commande.Status, out int _))
+                    {
+                        MessageBox.Show("Le statut d'export des commandes n'est pas correcte.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Message : " + ex.Message + "\nStacktrace : \n" + ex.StackTrace, " ***** Erreur Config Export *****", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
 
                 textBox1.Text = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 // Initialize the dialog that will contain the progress bar
@@ -635,7 +673,7 @@ namespace ConnecteurSage.Forms
                         {
                             customersDataGridView.Invoke(new MethodInvoker(delegate
                             {
-                                customersDataGridView.DataSource = GetCommandesFromDataBase();
+                                customersDataGridView.DataSource = GetCommandesFromDataBase(exportSettings.configurationExport.Commande.Status);
                                 for (int n = 26; n < 45; n++)
                                 {
                                     Thread.Sleep(1);

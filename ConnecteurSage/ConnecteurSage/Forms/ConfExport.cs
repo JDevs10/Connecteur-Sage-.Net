@@ -32,11 +32,26 @@ namespace ConnecteurSage.Forms
             list2[1] = "Plat";
             list2[2] = "Véolog";
 
-            string[] list3 = new string[4];     //List des statuts
+            string[] list3 = new string[4];     //List des statuts commande
             list3[0] = "";
             list3[1] = "Saisie";
             list3[2] = "Confirmé";
             list3[3] = "A Préparé";
+
+            string[] list4 = new string[4];     //List des statuts DSADV
+            list4[0] = "";
+            list4[1] = "Saisie";
+            list4[2] = "Confirmé";
+            list4[3] = "A Facturer";
+
+            string[] list5 = new string[4];     //List des statuts Facture
+            list5[0] = "";
+            list5[1] = "Saisie";
+            list5[2] = "Confirmé";
+            list5[3] = "A comptabiliser";
+
+            string[] list6 = new string[1];     //List des statuts stock
+            list6[0] = "";
 
 
             // Init les comboBoxs
@@ -57,9 +72,8 @@ namespace ConnecteurSage.Forms
             for (int i = 0; i < getStatutExport().GetLength(0); i++)
             {
                 comboBox12.Items.Add(list3[i]);
-                comboBox9.Items.Add(list3[i]);
-                comboBox10.Items.Add(list3[i]);
-                comboBox11.Items.Add(list3[i]);
+                comboBox9.Items.Add(list4[i]);
+                comboBox10.Items.Add(list5[i]);
             }
 
             Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
@@ -81,7 +95,6 @@ namespace ConnecteurSage.Forms
                 comboBox12.Text = getStatutName(configurationExport.Commande.Status);
                 comboBox9.Text = getStatutName(configurationExport.DSADV.Status);
                 comboBox10.Text = getStatutName(configurationExport.Facture.Status);
-                comboBox11.Text = getStatutName(configurationExport.Stock.Status);
             }
 
         }
@@ -147,14 +160,14 @@ namespace ConnecteurSage.Forms
         {
             if (!string.IsNullOrEmpty(comboBox1.Text) || !string.IsNullOrEmpty(comboBox2.Text) || !string.IsNullOrEmpty(comboBox3.Text) || !string.IsNullOrEmpty(comboBox4.Text) ||
                 !string.IsNullOrEmpty(comboBox5.Text) || !string.IsNullOrEmpty(comboBox8.Text) || !string.IsNullOrEmpty(comboBox7.Text) || !string.IsNullOrEmpty(comboBox6.Text) ||
-                !string.IsNullOrEmpty(comboBox12.Text) || !string.IsNullOrEmpty(comboBox9.Text) || !string.IsNullOrEmpty(comboBox10.Text) || !string.IsNullOrEmpty(comboBox11.Text))
+                !string.IsNullOrEmpty(comboBox12.Text) || !string.IsNullOrEmpty(comboBox9.Text) || !string.IsNullOrEmpty(comboBox10.Text))
             {
                 Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
                 Config_Export.Classes.ConfigurationExport configurationExport = new Config_Export.Classes.ConfigurationExport(
                     new Config_Export.Classes.Custom.Commande(((comboBox1.Text == "Activer") ? true : false), comboBox5.Text, getStatutValue(comboBox12.Text)),
                     new Config_Export.Classes.Custom.DSADV(((comboBox2.Text == "Activer") ? true : false), comboBox8.Text, getStatutValue(comboBox9.Text)),
                     new Config_Export.Classes.Custom.Facture(((comboBox3.Text == "Activer") ? true : false), comboBox7.Text, getStatutValue(comboBox10.Text)),
-                    new Config_Export.Classes.Custom.Stock(((comboBox4.Text == "Activer") ? true : false), comboBox6.Text, getStatutValue(comboBox11.Text))
+                    new Config_Export.Classes.Custom.Stock(((comboBox4.Text == "Activer") ? true : false), comboBox6.Text)
                 );
 
                 settings.configurationExport = configurationExport;
@@ -209,10 +222,60 @@ namespace ConnecteurSage.Forms
                 {
                     MessageBox.Show("Le Statut d'Export Facture est obligatoire !!");
                 }
-                if (!string.IsNullOrEmpty(comboBox11.Text))
-                {
-                    MessageBox.Show("Le Statut d'Export Stock est obligatoire !!");
-                }
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.Text == "Activer")
+            {
+                comboBox5.Enabled = true;
+                comboBox12.Enabled = true;
+            }
+            else
+            {
+                comboBox5.Enabled = false;
+                comboBox12.Enabled = false;
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox2.Text == "Activer")
+            {
+                comboBox8.Enabled = true;
+                comboBox9.Enabled = true;
+            }
+            else
+            {
+                comboBox8.Enabled = false;
+                comboBox9.Enabled = false;
+            }
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox3.Text == "Activer")
+            {
+                comboBox7.Enabled = true;
+                comboBox10.Enabled = true;
+            }
+            else
+            {
+                comboBox7.Enabled = false;
+                comboBox10.Enabled = false;
+            }
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox4.Text == "Activer")
+            {
+                comboBox6.Enabled = true;
+            }
+            else
+            {
+                comboBox6.Enabled = false;
             }
         }
     }

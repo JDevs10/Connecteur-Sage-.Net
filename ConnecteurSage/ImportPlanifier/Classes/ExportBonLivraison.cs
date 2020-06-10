@@ -25,7 +25,7 @@ namespace importPlanifier.Classes
             this.pathExport = path;
         }
 
-        private List<DocumentVente> GetBonLivraisonFromDataBase(StreamWriter writer, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
+        private List<DocumentVente> GetBonLivraisonFromDataBase(StreamWriter writer, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new, string statut)
         {
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Called!");
@@ -34,19 +34,15 @@ namespace importPlanifier.Classes
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVente> listDocumentVente = new List<DocumentVente>();
 
-                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
-                settings.Load();
-
-
-                writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Répurère le statut dans la config export.");
+                
 
                 using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     DocumentVente documentVente;
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : SQL ===> " + QueryHelper.getListDocumentVente(false, 3, settings.configurationExport.DSADV.Status));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3, settings.configurationExport.DSADV.Status), connection);
+                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : SQL ===> " + QueryHelper.getListDocumentVente(false, 3, statut));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3, statut), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -225,7 +221,11 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine("#####################################################################################");
                 logFileWriter_export.WriteLine("");
 
-                List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase(logFileWriter_export, recapLinesList_new);
+                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                settings.Load();
+                logFileWriter_export.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Répurère le statut dans la config export.");
+
+                List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase(logFileWriter_export, recapLinesList_new, settings.configurationExport.DSADV.Status);
 
                  if (BonLivrasonAExporter != null)
                  {
@@ -236,8 +236,6 @@ namespace importPlanifier.Classes
                          System.IO.Directory.CreateDirectory(outputFile);
                      }
 
-                    Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
-                    settings.Load();
                     logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le format du fichier dans la config export.");
 
                     for (int i = 0; i < BonLivrasonAExporter.Count; i++)
@@ -304,7 +302,7 @@ namespace importPlanifier.Classes
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!");
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                             logFileWriter_export.Flush();
-                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.", "Le format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
+                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.\nLe format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!", "Le format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
                             return recapLinesList_new;
                         }
 

@@ -105,102 +105,118 @@ namespace importPlanifier.Classes
             logFileWriter_export.WriteLine("#####################################################################################");
             logFileWriter_export.WriteLine("");
 
-            string exportTo = "";
-            string exportStockPath = pathExport + @"\Export_Veolog";
+            Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+            settings.Load();
+            logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le statut dans la config export.");
 
-            if (!Directory.Exists(exportStockPath))
+            if (settings.configurationExport.Stock.Format.Equals("Véolog"))
             {
-                Directory.CreateDirectory(exportStockPath);
-            }
+                string exportTo = "";
+                string exportStockPath = pathExport + @"\Export_Veolog";
 
-            logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Path Export ==> "+ exportStockPath);
-
-            try
-            {
-                logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Export Stock.");
-
-                if (string.IsNullOrEmpty(exportStockPath)) //check if the seleted path is empty
+                if (!Directory.Exists(exportStockPath))
                 {
-                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le chemin pour l'export du fichier stock liste doit être renseigné !");
+                    Directory.CreateDirectory(exportStockPath);
+                }
+
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Path Export ==> " + exportStockPath);
+
+                try
+                {
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Export Stock.");
+
+                    if (string.IsNullOrEmpty(exportStockPath)) //check if the seleted path is empty
+                    {
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le chemin pour l'export du fichier stock liste doit être renseigné !");
+                        logFileWriter_export.Flush();
+                        logFileWriter_export.Close();
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", "Le chemin pour l'export du fichier stock liste doit être renseigné !", "", "", logFileName_export));
+                        return recapLinesList_new;
+                    }
+
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Récupérer le stock de tous les produits et leur stock.");
+
+                    List<Stock> s = new List<Stock>(); //creating list type stock
+                    s = GetStockArticle(logFileWriter_export, recapLinesList_new); //call function GetStockArticle to get all the products and their stock
+
+                    //testing purpose only :begin
+                    /*Stock s1 = new Stock("product 1", "PROD1", "1234567891234", "59", "LOT-BDF9411123", "5.00000", "0");
+                    Stock s2 = new Stock("product 2", "PROD2", "4321987654321", "15", "MV32", "1.0000", "1");
+                    s.Add(s1);
+                    s.Add(s2);*/
+                    //testing purpose only :end
+
+                    if (s == null) //check if the list is empty or not
+                    {
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Failed to obtain value from database : (Maybe failed to connect with database) ");
+                    }
+                    else
+                    {
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Nombre de Stock récupéré : " + s.Count);
+
+                        string[] stocklines = new string[s.Count]; //creating array to add output lines for file
+                        int i = 0;
+                        foreach (Stock stockline in s) //reading line per line from the list
+                        {
+                            stocklines[i] = "L;" + stockline.reference + ";" + stockline.codebarre + ";" + stockline.stock + ";" + stockline.numerolot + ";" + stockline.lotqty + ";" + stockline.lotepuise + ";" + (i + 1); //adding lines into array for file
+                            i++; //increment for further adding/reading into the array
+                        }
+
+                        string fileName_ = string.Format("stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //file.
+                        string fileName = exportStockPath + @"\" + fileName_; //creating the file.
+
+                        if (File.Exists(fileName)) //verifying if the file exists else delete and recreate
+                        {
+                            File.Delete(fileName); //delete file.
+                        }
+
+                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName)) // streaming the file 
+                        {
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Écrire dans le fichier à : " + fileName);
+
+                            foreach (string line in stocklines) //reading line per line from array
+                            {
+                                file.WriteLine(line); //writing inside the file
+                            }
+                            file.WriteLine("F" + ";" + i); //writing at the end of file
+
+                            //export veolog
+                            exportTo = @"Export\Veolog_Stock";
+                        }
+
+                        // *file has been generated at the end of the method using @fileName*
+
+                        /*string myFileData = File.ReadAllText(fileName); //get all content of the created file (need to fix)
+                        if (myFileData.EndsWith(Environment.NewLine)) //check if at the end of the has empty return/jump character
+                        {
+                            File.WriteAllText(@"D:\test_backup.csv", myFileData.TrimEnd(Environment.NewLine.ToCharArray()) ); //remove jump at the end of the file
+                        }*/
+
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
+
+                        //add to backup folder
+                        addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName_, logFileWriter_export);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     logFileWriter_export.Flush();
                     logFileWriter_export.Close();
-                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", "Le chemin pour l'export du fichier stock liste doit être renseigné !", "", "", logFileName_export));
-                    return recapLinesList_new;
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
                 }
-
-                logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Récupérer le stock de tous les produits et leur stock.");
-
-                List<Stock> s = new List<Stock>(); //creating list type stock
-                s = GetStockArticle(logFileWriter_export, recapLinesList_new); //call function GetStockArticle to get all the products and their stock
-
-                //testing purpose only :begin
-                /*Stock s1 = new Stock("product 1", "PROD1", "1234567891234", "59", "LOT-BDF9411123", "5.00000", "0");
-                Stock s2 = new Stock("product 2", "PROD2", "4321987654321", "15", "MV32", "1.0000", "1");
-                s.Add(s1);
-                s.Add(s2);*/
-                //testing purpose only :end
-
-                if (s == null) //check if the list is empty or not
-                {
-                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Failed to obtain value from database : (Maybe failed to connect with database) ");
-                }
-                else
-                {
-                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Nombre de Stock récupéré : " + s.Count);
-
-                    string[] stocklines = new string[s.Count]; //creating array to add output lines for file
-                    int i = 0;
-                    foreach (Stock stockline in s) //reading line per line from the list
-                    {
-                        stocklines[i] = "L;" + stockline.reference + ";" + stockline.codebarre + ";" + stockline.stock + ";" + stockline.numerolot + ";" + stockline.lotqty + ";" + stockline.lotepuise + ";" + (i + 1); //adding lines into array for file
-                        i++; //increment for further adding/reading into the array
-                    }
-
-                    string fileName_ = string.Format("stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //file.
-                    string fileName = exportStockPath + @"\" + fileName_; //creating the file.
-
-                    if (File.Exists(fileName)) //verifying if the file exists else delete and recreate
-                    {
-                        File.Delete(fileName); //delete file.
-                    }
-
-                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName)) // streaming the file 
-                    {
-                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Écrire dans le fichier à : " + fileName);
-
-                        foreach (string line in stocklines) //reading line per line from array
-                        {
-                            file.WriteLine(line); //writing inside the file
-                        }
-                        file.WriteLine("F" + ";" + i); //writing at the end of file
-
-                        //export veolog
-                        exportTo = @"Export\Veolog_Stock";
-                    }
-
-                    // *file has been generated at the end of the method using @fileName*
-
-                    /*string myFileData = File.ReadAllText(fileName); //get all content of the created file (need to fix)
-                    if (myFileData.EndsWith(Environment.NewLine)) //check if at the end of the has empty return/jump character
-                    {
-                        File.WriteAllText(@"D:\test_backup.csv", myFileData.TrimEnd(Environment.NewLine.ToCharArray()) ); //remove jump at the end of the file
-                    }*/
-
-                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
-
-                    //add to backup folder
-                    addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName_, logFileWriter_export);
-                }
-
             }
-            catch (Exception ex)
+            else
             {
-                //Exception pouvant survenir si lorsque l'accès au disque dur est refusé
-                logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : ERREUR :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Format Fichier ********************");
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!");
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                 logFileWriter_export.Flush();
-                logFileWriter_export.Close();
-                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du stock est annulée.\nLe format \"" + settings.configurationExport.Stock.Format + "\" n'existe pas dans le connecteur!", "Le format \"" + settings.configurationExport.Stock.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
             }
+            
 
             logFileWriter_export.Flush();
             logFileWriter_export.Close();

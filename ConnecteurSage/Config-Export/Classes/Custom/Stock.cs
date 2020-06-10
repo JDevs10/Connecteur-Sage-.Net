@@ -10,14 +10,12 @@ namespace Config_Export.Classes.Custom
     {
         public Boolean Activate;
         public string Format;
-        public string Status;
 
         public Stock() { }
-        public Stock(Boolean Activate_, string Format_, string Status_)
+        public Stock(Boolean Activate_, string Format_)
         {
             this.Activate = Activate_;
             this.Format = Format_;
-            this.Status = Status_;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace ConnecteurSage.Forms
             base.OnLoad(e);
         }
 
-        private void ExportStock(StreamWriter logFileWriter)
+        private void ExportStock(StreamWriter logFileWriter, Config_Export.ConfigurationSaveLoad exportSettings)
         {
             string exportPath = textBox1.Text;
 
@@ -79,35 +79,50 @@ namespace ConnecteurSage.Forms
                         i++; //increment for further adding/reading into the array
                     }
 
-                    string fileName = string.Format(exportPath + @"\" + "stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //creating the file.
-
-                    if (File.Exists(fileName)) //verifying if the file exists else delete and recreate
+                    if (exportSettings.configurationExport.Stock.Format.Equals("Plat"))
                     {
-                        File.Delete(fileName); //delete file.
-                    }
+                        string fileName = string.Format(exportPath + @"\" + "stock_{0:yyMMddHHmmss}.csv", DateTime.Now); //creating the file.
 
-                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName)) // streaming the file 
-                    {
-                        logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Écrire dans le fichier à : " + fileName);
-
-                        foreach (string line in stocklines) //reading line per line from array
+                        if (File.Exists(fileName)) //verifying if the file exists else delete and recreate
                         {
-                            file.WriteLine(line); //writing inside the file
+                            File.Delete(fileName); //delete file.
                         }
-                        file.WriteLine("F" + ";" + i); //writing at the end of file
+
+                        using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName)) // streaming the file 
+                        {
+                            logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Écrire dans le fichier à : " + fileName);
+
+                            foreach (string line in stocklines) //reading line per line from array
+                            {
+                                file.WriteLine(line); //writing inside the file
+                            }
+                            file.WriteLine("F" + ";" + i); //writing at the end of file
+                        }
+
+                        // *file has been generated at the end of the method using @fileName*
+
+                        /*string myFileData = File.ReadAllText(fileName); //get all content of the created file (need to fix)
+                        if (myFileData.EndsWith(Environment.NewLine)) //check if at the end of the has empty return/jump character
+                        {
+                            File.WriteAllText(@"D:\test_backup.csv", myFileData.TrimEnd(Environment.NewLine.ToCharArray()) ); //remove jump at the end of the file
+                        }*/
+
+                        MessageBox.Show("File has been generated at : " + fileName); //show message file has been generated
+
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
                     }
-                    
-                    // *file has been generated at the end of the method using @fileName*
-                    
-                    /*string myFileData = File.ReadAllText(fileName); //get all content of the created file (need to fix)
-                    if (myFileData.EndsWith(Environment.NewLine)) //check if at the end of the has empty return/jump character
+                    else
                     {
-                        File.WriteAllText(@"D:\test_backup.csv", myFileData.TrimEnd(Environment.NewLine.ToCharArray()) ); //remove jump at the end of the file
-                    }*/
+                        MessageBox.Show("Le format \"" + exportSettings.configurationExport.DSADV.Format + "\" d'export n'existe pas dans le connecteur!", "Erreur Format Fichier", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        logFileWriter.WriteLine(DateTime.Now + "******************** Erreur Format Fichier ********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + exportSettings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!");
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument Facture => Format.");
+                        logFileWriter.Flush();
+                        logFileWriter.Close();
+                        return;
+                    }
 
-                    MessageBox.Show("File has been generated at : "+fileName); //show message file has been generated
-
-                    logFileWriter.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
+                    logFileWriter.Flush();
                     logFileWriter.Close();
                 }
 
@@ -289,7 +304,30 @@ namespace ConnecteurSage.Forms
             logFileWriter_export.WriteLine("#####################################################################################");
             logFileWriter_export.WriteLine("");
 
-            ExportStock(logFileWriter_export); //calling this class' function to export list of stock
+            Config_Export.ConfigurationSaveLoad exportSettings = new Config_Export.ConfigurationSaveLoad();
+            try
+            {
+                if (!exportSettings.isSettings())
+                {
+                    MessageBox.Show("La configuration d'export d'un document n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    logFileWriter_export.WriteLine(DateTime.Now + " | export_stockliste_Click() : La configuration d'export d'un document n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.");
+                    logFileWriter_export.Flush();
+                    logFileWriter_export.Close();
+                    return;
+                }
+                exportSettings.Load();
+            }
+            catch (Exception ex)
+            {
+                logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Config Export ********************");
+                logFileWriter_export.WriteLine(DateTime.Now + " | Exporexport_stockliste_ClicktFacture() : Message : " + ex.Message);
+                logFileWriter_export.WriteLine(DateTime.Now + " | export_stockliste_Click() : Stacktrace : \n" + ex.StackTrace);
+                logFileWriter_export.Flush();
+                logFileWriter_export.Close();
+                return;
+            }
+
+            ExportStock(logFileWriter_export, exportSettings); //calling this class' function to export list of stock
 
             //logFileWriter_export.Close();
             Close();

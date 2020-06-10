@@ -33,7 +33,7 @@ namespace importPlanifier.Classes
             this.pathExport = path;
         }
 
-        private List<DocumentVente> GetFacturesFromDataBase(StreamWriter writer)
+        private List<DocumentVente> GetFacturesFromDataBase(StreamWriter writer, string statut)
         {
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Called!");
@@ -42,15 +42,11 @@ namespace importPlanifier.Classes
                 //DocumentVente Facture = new DocumentVente();
                 List<DocumentVente> listDocumentVente = new List<DocumentVente>();
 
-                Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
-                settings.Load();
-                writer.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le statut dans la config export.");
-
                 using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
                     connection.Open();
-                    writer.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : SQL ===> "+ QueryHelper.getListDocumentVente(false, 67, settings.configurationExport.Facture.Status));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 67, settings.configurationExport.Facture.Status), connection);
+                    writer.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : SQL ===> "+ QueryHelper.getListDocumentVente(false, 67, statut));
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 67, statut), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -597,10 +593,14 @@ namespace importPlanifier.Classes
                     logFileWriter_export.WriteLine("#####################################################################################");
                     logFileWriter_export.WriteLine("");
 
+                    Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
+                    settings.Load();
+                    logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le statut dans la config export.");
+
                     //get all tva from database 
                     List<TVA> tvaList = getTVA(logFileWriter_export);
 
-                    List<DocumentVente> FacturesAExporter = GetFacturesFromDataBase(logFileWriter_export);
+                    List<DocumentVente> FacturesAExporter = GetFacturesFromDataBase(logFileWriter_export, settings.configurationExport.Facture.Status);
 
                     if (tvaList != null && FacturesAExporter != null)
                     {
@@ -638,9 +638,6 @@ namespace importPlanifier.Classes
                                 System.IO.Directory.CreateDirectory(outputFile);
                             }
 
-                            Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
-                            settings.Load();
-                            logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le format du fichier dans la config export.");
 
                             if(settings.configurationExport.Facture.Format == "Plat")
                             {
@@ -957,7 +954,7 @@ namespace importPlanifier.Classes
                                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!");
                                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \""+Directory.GetCurrentDirectory() +@"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
                                 logFileWriter_export.Flush();
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.", "Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
+                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la facture est annulée.\nLe format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!", "Le format \"" + settings.configurationExport.Facture.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
                             }
                             
 
