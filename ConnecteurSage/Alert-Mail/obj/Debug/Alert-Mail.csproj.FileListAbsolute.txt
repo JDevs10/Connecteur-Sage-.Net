@@ -1,0 +1,11 @@
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Debug\Alert-Mail.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Debug\Alert-Mail.pdb
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Debug\Connexion.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Debug\Newtonsoft.Json.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Debug\Connexion.pdb
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Debug\Newtonsoft.Json.xml
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Debug\Alert-Mail.csprojAssemblyReference.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Debug\Alert-Mail.csproj.CoreCompileInputs.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Debug\Alert-Mail.csproj.CopyComplete
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Debug\Alert-Mail.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Debug\Alert-Mail.pdb

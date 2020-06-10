@@ -1,0 +1,9 @@
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Debug\Connexion.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Debug\Connexion.pdb
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Debug\Newtonsoft.Json.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Debug\Newtonsoft.Json.xml
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Debug\Connexion.csprojAssemblyReference.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Debug\Connexion.csproj.CoreCompileInputs.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Debug\Connexion.csproj.CopyComplete
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Debug\Connexion.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Debug\Connexion.pdb

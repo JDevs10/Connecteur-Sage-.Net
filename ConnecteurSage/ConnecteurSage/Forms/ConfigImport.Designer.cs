@@ -600,6 +600,7 @@
             this.Controls.Add(this.label_import_notif);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ConfigImport";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Configuration Import";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

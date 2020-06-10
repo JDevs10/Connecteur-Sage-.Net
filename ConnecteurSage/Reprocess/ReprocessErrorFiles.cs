@@ -16,7 +16,7 @@ namespace Reprocess
         private string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
         private static string localPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        private double inputHour = 1.0; // 1 hours
+        //private double inputHour = 1.0; // 1 hours
 
         private bool getEDI_CSV_Folder(StreamWriter writer)
         {

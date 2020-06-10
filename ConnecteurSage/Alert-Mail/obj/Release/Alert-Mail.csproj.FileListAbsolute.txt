@@ -8,3 +8,14 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Ma
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Connexion.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Connexion.pdb
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Alert-Mail.dll
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Alert-Mail.pdb
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Connexion.dll
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Newtonsoft.Json.dll
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Connexion.pdb
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Newtonsoft.Json.xml
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csprojAssemblyReference.cache
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csproj.CoreCompileInputs.cache
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csproj.CopyComplete
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.dll
+C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.pdb

@@ -1,0 +1,10 @@
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Debug\Config-Import.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Debug\Config-Import.pdb
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Debug\Json.Net.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Debug\Newtonsoft.Json.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Debug\Newtonsoft.Json.xml
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Debug\Config-Import.csprojAssemblyReference.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Debug\Config-Import.csproj.CoreCompileInputs.cache
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Debug\Config-Import.csproj.CopyComplete
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Debug\Config-Import.dll
+C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Debug\Config-Import.pdb
