@@ -14,3 +14,4 @@ C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\ob
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.csproj.CopyComplete
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.csprojAssemblyReference.cache
