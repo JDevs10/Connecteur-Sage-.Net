@@ -176,6 +176,7 @@ namespace ConnecteurSage.Forms
 
                 configurationGeneral.general = new Init.Classes.Configuration.General(show, false, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(compt_g_taxe.Trim()));
                 configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
+                configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
                 configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
                 configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
                 settings.configurationGeneral = configurationGeneral;
@@ -222,6 +223,7 @@ namespace ConnecteurSage.Forms
 
                 configurationGeneral.general = new Init.Classes.Configuration.General(show, configurationGeneral_2.general.isAppOpen, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(compt_g_taxe.Trim()));
                 configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
+                configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
                 configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
                 configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
                 settings.configurationGeneral = configurationGeneral;

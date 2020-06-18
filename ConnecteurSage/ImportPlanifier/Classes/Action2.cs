@@ -68,6 +68,20 @@ namespace importPlanifier.Classes
             List<string> tabCommandeError = new List<string>();
             List<Order> ordersList = new List<Order>();
 
+            //###################################################################################################
+            //####################################### Get Tache Planifier #######################################
+            string infoPlan = InfoTachePlanifier(logFileWriter_general);
+            //string infoPlan = null;
+            if (infoPlan == null)
+            {
+                infoPlan = "Tache Manuel";
+                Console.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
+                Console.WriteLine(DateTime.Now + " : Import annulée");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé!");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Probablement executé manuellement ???");
+            }
+            //###################################################################################################
+
             string path = getPath();
             dir = path;
 
@@ -121,17 +135,6 @@ namespace importPlanifier.Classes
             DirectoryInfo fileListing = new DirectoryInfo(dir);
             FileInfo[] allFiles = fileListing.GetFiles("*.csv");
             // string[,] importErrorTable = new string[allFiles.Length, 3];
-
-            //Get Tache Planifier
-            string infoPlan = InfoTachePlanifier(logFileWriter_general);
-            if (infoPlan == null)
-            {
-                infoPlan = "Tache Manuel";
-                Console.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
-                Console.WriteLine(DateTime.Now + " : Import annulée");
-                logFileWriter_general.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé!");
-                logFileWriter_general.WriteLine(DateTime.Now + " : Probablement executé manuellement ???");
-            }
 
             logFileWriter_general.Flush();
 
@@ -965,11 +968,13 @@ namespace importPlanifier.Classes
                                                                         line.Calcule_conditionnement = quantite_Conditionnement.ToString();
                                                                     }
 
+                                                                    /*
                                                                     line.PrixNetHT = tab[14].Replace(",", ".");
                                                                     if (line.PrixNetHT == "")
                                                                     {
                                                                         line.PrixNetHT = "0.0";
                                                                     }
+                                                                    */
 
                                                                     line.MontantLigne = tab[11];
                                                                     line.DateLivraison = ConvertDate(tab[21]);
@@ -1095,42 +1100,8 @@ namespace importPlanifier.Classes
                                                                         logFileWriter_import.WriteLine("");
 
                                                                         line.PrixNetHT = line.article.AR_PRIXVEN;
-
-                                                                        /*
-                                                                        using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
-                                                                        {
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Récupère le prix fiche produit");
-                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : SQL => " + QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre));
-                                                                            using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticlePrix(true, line.article.AR_CodeBarre), connexion))
-                                                                            {
-                                                                                using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                                                                                {
-                                                                                    if (reader.Read()) // If any rows returned
-                                                                                    {
-                                                                                        line.PrixNetHT = tab[1].Replace(",", ".");
-                                                                                    }
-                                                                                    else // If no rows returned
-                                                                                    {
-                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
-
-                                                                                        logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
-                                                                                        logFileWriter_general.WriteLine(DateTime.Now + " : A voir dans le fichier : " + logFileName_import);
-
-                                                                                        logFileWriter_import.WriteLine("");
-                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
-                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!");
-                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                                                        tabCommandeError.Add(filename.Name);
-                                                                                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée. La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "La récupération prix vente de l'article (" + line.article.AR_CodeBarre + ") n'exizste pas!", "", filename.Name, logFileName_import));
-                                                                                        goto goErrorLoop;
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                            connexion.Close();
-                                                                        }
-                                                                        */
                                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Utilise le prix de la fiche article : " + line.PrixNetHT);
+                                                                        logFileWriter_import.WriteLine("");
                                                                     }
 
                                                                     //Category Price
@@ -1169,7 +1140,7 @@ namespace importPlanifier.Classes
                                                                                         else // If no rows returned
                                                                                         {
                                                                                             categoryPriceFound = false;
-                                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Aucune reponse. ");
                                                                                         }
                                                                                     }
                                                                                 }
@@ -1203,11 +1174,12 @@ namespace importPlanifier.Classes
                                                                                         {
                                                                                             if (reader.Read()) // If any rows returned
                                                                                             {
-                                                                                                line.PrixNetHT = tab[1].Replace(",", ".");
+                                                                                                line.PrixNetHT = reader[1].ToString().Replace(",", ".");
+                                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Trouvé => " + line.PrixNetHT);
                                                                                             }
                                                                                             else // If no rows returned
                                                                                             {
-                                                                                                logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Aucune reponse. ");
 
                                                                                                 logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                                                                                 logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
@@ -1242,7 +1214,7 @@ namespace importPlanifier.Classes
                                                                             recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(order.Id, order.NumCommande, "L'import de la commande est annulée.", ex.Message, ex.StackTrace, filename.Name, logFileName_import));
                                                                             goto goErrorLoop;
                                                                         }
-
+                                                                        logFileWriter_import.WriteLine("");
                                                                     }
 
                                                                     //Client Price
@@ -1275,7 +1247,7 @@ namespace importPlanifier.Classes
                                                                                     else // If no rows returned
                                                                                     {
                                                                                         clientPriceFound = false;
-                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Aucune reponse. ");
                                                                                     }
                                                                                 }
                                                                             }
@@ -1309,11 +1281,12 @@ namespace importPlanifier.Classes
                                                                                     {
                                                                                         if (reader.Read()) // If any rows returned
                                                                                         {
-                                                                                            line.PrixNetHT = tab[1].Replace(",", ".");
+                                                                                            line.PrixNetHT = reader[1].ToString().Replace(",", ".");
+                                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Trouvé => " + line.PrixNetHT);
                                                                                         }
                                                                                         else // If no rows returned
                                                                                         {
-                                                                                            logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : Aucune reponse. ");
+                                                                                            logFileWriter_import.WriteLine(DateTime.Now + " : Aucune reponse. ");
 
                                                                                             logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Erreur *********************");
                                                                                             logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
@@ -1332,6 +1305,7 @@ namespace importPlanifier.Classes
                                                                             }
                                                                             connexion.Close();
                                                                         }
+                                                                        logFileWriter_import.WriteLine("");
                                                                     }
 
                                                                     /*
@@ -7652,36 +7626,38 @@ namespace importPlanifier.Classes
             try
             {
                 writer.WriteLine("");
-                string taskName = "importCommandeSage";
 
-                Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
-                connexionSaveLoad.Load();
+                Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+                if (settings.isSettings())
+                {
+                    settings.Load();
+                    string taskName = settings.configurationGeneral.plannerTask.Name;
 
-                if (connexionSaveLoad.configurationConnexion.SQL.PREFIX == "CFCI")
-                {
-                    taskName = "importCommandeSage_CFCI";
-                }
-                else if (connexionSaveLoad.configurationConnexion.SQL.PREFIX == "TABLEWEAR")
-                {
-                    taskName = "importCommandeSage_TW";
-                }
-                writer.WriteLine(DateTime.Now + " | InfoTachePlanifier() : Trouver le nom de la tache = " + taskName);
+                    Connexion.ConnexionSaveLoad connexionSaveLoad = new Connexion.ConnexionSaveLoad();
+                    connexionSaveLoad.Load();
 
-                TaskService ts = new TaskService();
-                if (ts.FindTask(taskName, true) != null)
-                {
-                    Task t = ts.GetTask(taskName);
-                    TaskDefinition td = t.Definition;
-                    writer.WriteLine(DateTime.Now + " | InfoTachePlanifier() : taskName trigger[0] = "+ td.Triggers[0]);
-                    writer.WriteLine("");
-                    writer.WriteLine("");
-                    return "" + td.Triggers[0];
+                    writer.WriteLine(DateTime.Now + " | InfoTachePlanifier() : Trouver le nom de la tache = " + taskName);
+
+                    TaskService ts = new TaskService();
+                    if (ts.FindTask(taskName, true) != null)
+                    {
+                        Task t = ts.GetTask(taskName);
+                        TaskDefinition td = t.Definition;
+                        writer.WriteLine(DateTime.Now + " | InfoTachePlanifier() : taskName trigger[0] = " + td.Triggers[0]);
+                        writer.WriteLine("");
+                        writer.WriteLine("");
+                        return "" + td.Triggers[0];
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
-                    //Console.WriteLine("Il n'y a pas d'import planifiée enregistré.");
                     return null;
                 }
+
             }
             catch (Exception e)
             {

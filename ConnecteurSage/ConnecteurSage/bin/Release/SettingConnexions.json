@@ -1,13 +1,13 @@
 {
   "ODBC": {
-    "DNS": "Excel Files",
-    "USER": "test 1",
-    "PWD": "j7IF5yHYSfjdyB9P0gt8ow=="
+    "DNS": "MS Access Database",
+    "USER": "",
+    "PWD": "wbVpi9zQjCU="
   },
   "SQL": {
-    "PREFIX": "dBASE Files",
-    "DNS": "dBASE Files",
-    "USER": "test 2",
-    "PWD": "ao8bnf+E6AHp9/mM95sLRA=="
+    "PREFIX": "MS Access Database",
+    "DNS": "MS Access Database",
+    "USER": "",
+    "PWD": "wbVpi9zQjCU="
   }
 }

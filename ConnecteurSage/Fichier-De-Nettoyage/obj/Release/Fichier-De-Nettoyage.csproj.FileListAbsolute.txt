@@ -2,10 +2,10 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Releas
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Fichier-De-Nettoyage.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Fichier-De-Nettoyage.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Fichier-De-Nettoyage.pdb
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csproj.CoreCompileInputs.cache
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache

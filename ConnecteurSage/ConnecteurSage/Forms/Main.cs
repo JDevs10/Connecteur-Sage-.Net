@@ -55,7 +55,7 @@ namespace ConnecteurSage
         public Main()
         {
             InitializeComponent();
-            string version = Application.ProductVersion;
+            string version = new Connecteur_Info.ConnecteurInfo().Version;
             label3.Text = "Connecteur Sage v" + version + " \nImport et export de documents commerciaux.";
             labelVersion.Text = "Version : " + version;
             labelCopyright.Text = "Copyright © 2013 - 2020";
@@ -424,13 +424,13 @@ namespace ConnecteurSage
         {
             try
             {
-                /*
                 using (Forms.Planifier form = new Forms.Planifier())
                 {
                     form.ShowDialog();
-                }*/
+                }
 
                 //Open Z-Cron
+                /*
                 if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Z-Cron\z-cron.exe"))
                 {
                     MessageBox.Show("Ne peut pas ouvrir Z-Cron à : " + Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Z-Cron\z-cron.exe", "Z-Cron", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -438,6 +438,7 @@ namespace ConnecteurSage
                 }
                 Process emailExe = Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Z-Cron\z-cron.exe");
                 emailExe.WaitForExit();
+                */
 
             }
             // Récupération d'une possible SDKException
