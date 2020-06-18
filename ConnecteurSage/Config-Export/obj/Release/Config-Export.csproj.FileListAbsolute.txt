@@ -5,7 +5,6 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Newto
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.csprojAssemblyReference.cache
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Config-Export.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Config-Export.pdb
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Newtonsoft.Json.dll

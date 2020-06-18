@@ -85,3 +85,5 @@ C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\o
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.csproj.CopyComplete
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.exe
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\Release\ConnecteurSage.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Connecteur-Info.pdb

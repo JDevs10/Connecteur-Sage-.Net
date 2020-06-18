@@ -39,9 +39,6 @@ namespace ConnecteurSage.Forms
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.enregistrerButton = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -58,7 +55,6 @@ namespace ConnecteurSage.Forms
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
@@ -79,9 +75,9 @@ namespace ConnecteurSage.Forms
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(74, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(221, 13);
+            this.label3.Size = new System.Drawing.Size(266, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Vous pouvez planifier l\'import de commandes ";
+            this.label3.Text = "Vous pouvez planifier l\'import et l\'export des documents";
             // 
             // label1
             // 
@@ -116,7 +112,7 @@ namespace ConnecteurSage.Forms
             this.groupBox1.Size = new System.Drawing.Size(338, 127);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Planifier l\'heure de l\'importation";
+            this.groupBox1.Text = "Planifier l\'heure de l\'execution";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // dateTimePicker2
@@ -161,39 +157,9 @@ namespace ConnecteurSage.Forms
             this.comboBox1.TabIndex = 5;
             this.comboBox1.Text = "Tous les jours";
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(256, 26);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(69, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Parcourir";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.button1);
-            this.groupBox2.Controls.Add(this.textBox1);
-            this.groupBox2.Location = new System.Drawing.Point(14, 380);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(336, 63);
-            this.groupBox2.TabIndex = 3;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Chemin de l\'import :";
-            // 
-            // textBox1
-            // 
-            this.textBox1.BackColor = System.Drawing.Color.White;
-            this.textBox1.Location = new System.Drawing.Point(6, 28);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(244, 20);
-            this.textBox1.TabIndex = 0;
-            // 
             // enregistrerButton
             // 
-            this.enregistrerButton.Location = new System.Drawing.Point(201, 455);
+            this.enregistrerButton.Location = new System.Drawing.Point(203, 393);
             this.enregistrerButton.Name = "enregistrerButton";
             this.enregistrerButton.Size = new System.Drawing.Size(75, 25);
             this.enregistrerButton.TabIndex = 5;
@@ -203,7 +169,7 @@ namespace ConnecteurSage.Forms
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(282, 455);
+            this.button2.Location = new System.Drawing.Point(284, 393);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(66, 25);
             this.button2.TabIndex = 7;
@@ -232,12 +198,13 @@ namespace ConnecteurSage.Forms
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.checkBox2);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.comboBox2);
             this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Location = new System.Drawing.Point(13, 308);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(337, 59);
+            this.groupBox3.Size = new System.Drawing.Size(337, 79);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Répéter la tâche";
@@ -245,7 +212,7 @@ namespace ConnecteurSage.Forms
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(175, 30);
+            this.label9.Location = new System.Drawing.Point(158, 48);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(45, 13);
             this.label9.TabIndex = 8;
@@ -260,7 +227,7 @@ namespace ConnecteurSage.Forms
             "3",
             "4",
             "5"});
-            this.comboBox2.Location = new System.Drawing.Point(110, 26);
+            this.comboBox2.Location = new System.Drawing.Point(93, 44);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(59, 21);
             this.comboBox2.TabIndex = 7;
@@ -269,7 +236,7 @@ namespace ConnecteurSage.Forms
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 29);
+            this.label8.Location = new System.Drawing.Point(6, 47);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(62, 13);
             this.label8.TabIndex = 6;
@@ -278,7 +245,7 @@ namespace ConnecteurSage.Forms
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(13, 281);
+            this.checkBox2.Location = new System.Drawing.Point(9, 24);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(108, 17);
             this.checkBox2.TabIndex = 14;
@@ -336,8 +303,7 @@ namespace ConnecteurSage.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 495);
-            this.Controls.Add(this.checkBox2);
+            this.ClientSize = new System.Drawing.Size(362, 437);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -346,7 +312,6 @@ namespace ConnecteurSage.Forms
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.enregistrerButton);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.checkBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -361,8 +326,6 @@ namespace ConnecteurSage.Forms
             this.Load += new System.EventHandler(this.Planifier_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -378,10 +341,7 @@ namespace ConnecteurSage.Forms
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button enregistrerButton;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label4;
