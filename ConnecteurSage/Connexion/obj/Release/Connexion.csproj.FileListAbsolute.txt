@@ -14,3 +14,4 @@ C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Re
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.csproj.CopyComplete
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.csprojAssemblyReference.cache

@@ -2,20 +2,20 @@
   "Commande": {
     "Activate": true,
     "Format": "Véolog",
-    "Status": "1"
+    "Status": "2"
   },
   "DSADV": {
     "Activate": true,
-    "Format": "",
-    "Status": ""
+    "Format": "Véolog",
+    "Status": "2"
   },
   "Facture": {
-    "Activate": false,
-    "Format": "",
-    "Status": ""
+    "Activate": true,
+    "Format": "Véolog",
+    "Status": "2"
   },
   "Stock": {
-    "Activate": false,
-    "Format": ""
+    "Activate": true,
+    "Format": "Plat"
   }
 }

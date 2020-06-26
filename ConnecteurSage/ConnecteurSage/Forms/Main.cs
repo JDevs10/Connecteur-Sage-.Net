@@ -774,5 +774,10 @@ namespace ConnecteurSage
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

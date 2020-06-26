@@ -70,8 +70,8 @@ namespace importPlanifier.Classes
 
             //###################################################################################################
             //####################################### Get Tache Planifier #######################################
-            string infoPlan = InfoTachePlanifier(logFileWriter_general);
-            //string infoPlan = null;
+            //string infoPlan = InfoTachePlanifier(logFileWriter_general);
+            string infoPlan = null;
             if (infoPlan == null)
             {
                 infoPlan = "Tache Manuel";
@@ -4789,7 +4789,7 @@ namespace importPlanifier.Classes
                             line.Quantite_Colis.Equals("0"))
                         {
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : L'article " + line.Code_Article + " est retiré de la commande "+ dh.Ref_Commande_Donneur_Ordre +", alors on intègre pas. ");
-                            break;
+                            continue;
                         }
 
                         //get Product Name By Reference

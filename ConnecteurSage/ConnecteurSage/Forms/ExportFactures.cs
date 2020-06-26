@@ -227,7 +227,7 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("L'export des Factures sont désactivé.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;
                     }
-                    if (exportSettings.configurationExport.Facture.Status != null || !int.TryParse(exportSettings.configurationExport.Facture.Status, out int _))
+                    if (exportSettings.configurationExport.Facture.Status == null || !int.TryParse(exportSettings.configurationExport.Facture.Status, out int _))
                     {
                         MessageBox.Show("Le statut d'export des Factures n'est pas correcte.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;
@@ -594,7 +594,7 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("L'export des Factures sont désactivé.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;
                     }
-                    if (exportSettings.configurationExport.Facture.Status != null || !int.TryParse(exportSettings.configurationExport.Facture.Status, out int _))
+                    if (exportSettings.configurationExport.Facture.Status == null || !int.TryParse(exportSettings.configurationExport.Facture.Status, out int _))
                     {
                         MessageBox.Show("Le statut d'export des Factures n'est pas correcte.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;

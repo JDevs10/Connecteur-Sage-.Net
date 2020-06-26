@@ -2,10 +2,10 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Con
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Connecteur-Info.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csprojAssemblyReference.cache
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Connecteur-Info.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Connecteur-Info.pdb
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csprojAssemblyReference.cache
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csproj.CoreCompileInputs.cache
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csprojAssemblyReference.cache

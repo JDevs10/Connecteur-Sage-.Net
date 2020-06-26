@@ -199,25 +199,25 @@ namespace ConnecteurSage.Forms
                     if (!exportSettings.isSettings())
                     {
                         MessageBox.Show("La configuration d'export d'un document n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
+                        Close();
                     }
                     exportSettings.Load();
 
                     if (!exportSettings.configurationExport.DSADV.Activate)
                     {
                         MessageBox.Show("L'export des Bons de Livraisons sont désactivé.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
+                        Close();
                     }
-                    if (exportSettings.configurationExport.DSADV.Status != null || !int.TryParse(exportSettings.configurationExport.DSADV.Status, out int _))
+                    if (exportSettings.configurationExport.DSADV.Status == null || !int.TryParse(exportSettings.configurationExport.DSADV.Status, out int _))
                     {
                         MessageBox.Show("Le statut d'export des Bons de Livraisons n'est pas correcte.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
+                        Close();
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Message : " + ex.Message + "\nStacktrace : \n" + ex.StackTrace, " ***** Erreur Config Export *****", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
+                    Close();
                 }
 
                 textBox1.Text = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -489,25 +489,25 @@ namespace ConnecteurSage.Forms
                     if (!exportSettings.isSettings())
                     {
                         MessageBox.Show("La configuration d'export d'un document n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
+                        Close();
                     }
                     exportSettings.Load();
 
                     if (!exportSettings.configurationExport.DSADV.Activate)
                     {
                         MessageBox.Show("L'export des Bons de Livraisons sont désactivé.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
+                        Close();
                     }
-                    if (exportSettings.configurationExport.DSADV.Status != null || !int.TryParse(exportSettings.configurationExport.DSADV.Status, out int _))
+                    if (exportSettings.configurationExport.DSADV.Status == null || !int.TryParse(exportSettings.configurationExport.DSADV.Status, out int _))
                     {
                         MessageBox.Show("Le statut d'export des Bons de Livraisons n'est pas correcte.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return;
+                        Close();
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Message : " + ex.Message + "\nStacktrace : \n" + ex.StackTrace, " ***** Erreur Config Export *****", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return;
+                    Close();
                 }
 
                 if (customersDataGridView.SelectedRows.Count == 0)
@@ -748,6 +748,8 @@ namespace ConnecteurSage.Forms
                             //    BonLivrasonAExporter[i].IntrastatTransportMode = GetModeTransport(BonLivrasonAExporter[i].IntrastatTransportMode);
                             //}
                             writer.WriteLine("DESTRP;;;;;;;;;;");
+                            writer.WriteLine("");
+                            writer.WriteLine("DESREF;;;;"+ BonLivrasonAExporter[i].DO_COORD01 + ";;;;;");
                             writer.WriteLine("");
                             writer.WriteLine("DESLOG;;;;" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                             writer.WriteLine("");

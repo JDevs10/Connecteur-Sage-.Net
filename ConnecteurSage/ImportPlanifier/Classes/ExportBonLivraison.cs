@@ -269,6 +269,9 @@ namespace importPlanifier.Classes
                                 writer.WriteLine("DESTRP;;;;;;;;;;");
                                 writer.WriteLine("");
 
+                                writer.WriteLine("DESREF;;;;" + BonLivrasonAExporter[i].DO_COORD01 + ";;;;;");
+                                writer.WriteLine("");
+
                                 writer.WriteLine("DESLOG;;;;" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                                 writer.WriteLine("");
 

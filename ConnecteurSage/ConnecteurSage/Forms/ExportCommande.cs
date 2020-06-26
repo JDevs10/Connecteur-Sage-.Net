@@ -640,7 +640,7 @@ namespace ConnecteurSage.Forms
                         MessageBox.Show("L'export des commandes sont désactivé.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;
                     }
-                    if (exportSettings.configurationExport.Commande.Status != null || !int.TryParse(exportSettings.configurationExport.Commande.Status, out int _))
+                    if (exportSettings.configurationExport.Commande.Status == null || !int.TryParse(exportSettings.configurationExport.Commande.Status, out int _))
                     {
                         MessageBox.Show("Le statut d'export des commandes n'est pas correcte.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;

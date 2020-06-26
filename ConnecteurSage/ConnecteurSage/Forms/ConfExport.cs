@@ -72,7 +72,13 @@ namespace ConnecteurSage.Forms
             for (int i = 0; i < getStatutExport().GetLength(0); i++)
             {
                 comboBox12.Items.Add(list3[i]);
+            }
+            for (int i = 0; i < getStatutExport_DESADV().GetLength(0); i++)
+            {
                 comboBox9.Items.Add(list4[i]);
+            }
+            for (int i = 0; i < getStatutExport_FACTURE().GetLength(0); i++)
+            {
                 comboBox10.Items.Add(list5[i]);
             }
 
@@ -93,8 +99,8 @@ namespace ConnecteurSage.Forms
                 comboBox6.Text = configurationExport.Stock.Format;
 
                 comboBox12.Text = getStatutName(configurationExport.Commande.Status);
-                comboBox9.Text = getStatutName(configurationExport.DSADV.Status);
-                comboBox10.Text = getStatutName(configurationExport.Facture.Status);
+                comboBox9.Text = getStatutName_DESADV(configurationExport.DSADV.Status);
+                comboBox10.Text = getStatutName_FACTURE(configurationExport.Facture.Status);
             }
 
         }
@@ -124,6 +130,24 @@ namespace ConnecteurSage.Forms
             list[3, 0] = "A Préparé";   list[3, 1] = "2";   // Order send to Veolog
             return list;
         }
+        public static string[,] getStatutExport_DESADV()
+        {
+            string[,] list = new string[4, 2];
+            list[0, 0] = "";            list[0, 1] = "";
+            list[1, 0] = "Saisie";      list[1, 1] = "0";   // Order created
+            list[2, 0] = "Confirmé";    list[2, 1] = "1";   // Order ready to be send in EDI to Veolog
+            list[3, 0] = "A Facturer";  list[3, 1] = "2";   // Order send to Veolog
+            return list;
+        }
+        public static string[,] getStatutExport_FACTURE()
+        {
+            string[,] list = new string[4, 2];
+            list[0, 0] = "";                list[0, 1] = "";
+            list[1, 0] = "Saisie";          list[1, 1] = "0";   // Order created
+            list[2, 0] = "Confirmé";        list[2, 1] = "1";   // Order ready to be send in EDI to Veolog
+            list[3, 0] = "A comptabiliser"; list[3, 1] = "2";   // Order send to Veolog
+            return list;
+        }
         public static string getStatutValue(string value)
         {
             string result = "";
@@ -137,6 +161,32 @@ namespace ConnecteurSage.Forms
             }
             return result;
         }
+        public static string getStatutValue_DESADV(string value)
+        {
+            string result = "";
+            for (int x = 0; x < getStatutExport_DESADV().GetLength(0); x++)
+            {
+                if (value.Equals(getStatutExport_DESADV()[x, 0]))
+                {
+                    result = getStatutExport_DESADV()[x, 1];
+                    break;
+                }
+            }
+            return result;
+        }
+        public static string getStatutValue_FACTURE(string value)
+        {
+            string result = "";
+            for (int x = 0; x < getStatutExport_FACTURE().GetLength(0); x++)
+            {
+                if (value.Equals(getStatutExport_FACTURE()[x, 0]))
+                {
+                    result = getStatutExport_FACTURE()[x, 1];
+                    break;
+                }
+            }
+            return result;
+        }
         public static string getStatutName(string value)
         {
             string result = "";
@@ -145,6 +195,32 @@ namespace ConnecteurSage.Forms
                 if (value.Equals(getStatutExport()[x, 1]))
                 {
                     result = getStatutExport()[x, 0];
+                    break;
+                }
+            }
+            return result;
+        }
+        public static string getStatutName_DESADV(string value)
+        {
+            string result = "";
+            for (int x = 0; x < getStatutExport_DESADV().GetLength(0); x++)
+            {
+                if (value.Equals(getStatutExport_DESADV()[x, 1]))
+                {
+                    result = getStatutExport_DESADV()[x, 0];
+                    break;
+                }
+            }
+            return result;
+        }
+        public static string getStatutName_FACTURE(string value)
+        {
+            string result = "";
+            for (int x = 0; x < getStatutExport_FACTURE().GetLength(0); x++)
+            {
+                if (value.Equals(getStatutExport_FACTURE()[x, 1]))
+                {
+                    result = getStatutExport_FACTURE()[x, 0];
                     break;
                 }
             }
@@ -165,8 +241,8 @@ namespace ConnecteurSage.Forms
                 Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
                 Config_Export.Classes.ConfigurationExport configurationExport = new Config_Export.Classes.ConfigurationExport(
                     new Config_Export.Classes.Custom.Commande(((comboBox1.Text == "Activer") ? true : false), comboBox5.Text, getStatutValue(comboBox12.Text)),
-                    new Config_Export.Classes.Custom.DSADV(((comboBox2.Text == "Activer") ? true : false), comboBox8.Text, getStatutValue(comboBox9.Text)),
-                    new Config_Export.Classes.Custom.Facture(((comboBox3.Text == "Activer") ? true : false), comboBox7.Text, getStatutValue(comboBox10.Text)),
+                    new Config_Export.Classes.Custom.DSADV(((comboBox2.Text == "Activer") ? true : false), comboBox8.Text, getStatutValue_DESADV(comboBox9.Text)),
+                    new Config_Export.Classes.Custom.Facture(((comboBox3.Text == "Activer") ? true : false), comboBox7.Text, getStatutValue_FACTURE(comboBox10.Text)),
                     new Config_Export.Classes.Custom.Stock(((comboBox4.Text == "Activer") ? true : false), comboBox6.Text)
                 );
 
