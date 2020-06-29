@@ -766,16 +766,18 @@ namespace ConnecteurSage.Forms
                             // DL_PrixUNet et non DL_PrixUnitaire
                             //writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[0].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[0].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[0].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[0].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[0].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[0].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[0].DL_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[0].DL_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[0].DL_NoColis + ";;;;;;;;;;;");
 
-
+                            double DL_MontantTotalHT = 0.0;
                             for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
                             {
+                                DL_MontantTotalHT += Convert.ToDouble(BonLivrasonAExporter[i].lines[j].DL_MontantHT.Replace(",", "."));
                                 writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].DL_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].DL_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
                                 writer.Flush();
                                 writer.WriteLine("");
                             }
 
 
-                            writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
+                            //writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
+                            writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + DL_MontantTotalHT.ToString().Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
                             writer.Flush();
                             writer.WriteLine("");
                             writer.WriteLine("");

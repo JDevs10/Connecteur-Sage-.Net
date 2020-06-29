@@ -694,13 +694,13 @@ namespace importPlanifier.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_CodeTaxe1,doc.DL_Taxe1,doc.DL_CodeTaxe2,doc.DL_Taxe2,doc.DL_CodeTaxe3,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE " +
+                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_CodeTaxe1,doc.DL_Taxe1,doc.DL_CodeTaxe2,doc.DL_Taxe2,doc.DL_CodeTaxe3,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE,doc.DL_Package_Ref " +
                     "FROM " + getPrefix() + "F_ARTICLE art, " + getPrefix() + "F_DOCLIGNE doc " +
                     "WHERE doc.AR_REF = art.AR_REF and doc.do_piece='" + codeDocument + "'";
             }
             else
             {
-                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_CodeTaxe1,doc.DL_Taxe1,doc.DL_CodeTaxe2,doc.DL_Taxe2,doc.DL_CodeTaxe3,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE " +
+                return "SELECT doc.DO_Date,doc.DO_DateLivr,doc.DL_Ligne,doc.AR_Ref,doc.DL_Design,doc.DL_Qte,doc.DL_QteBC,doc.DL_QteBL,doc.EU_Qte,doc.DL_PoidsNet,doc.DL_PoidsBrut,doc.DL_Remise01REM_Valeur,doc.DL_Remise01REM_Type,doc.DL_Remise03REM_Valeur,doc.DL_Remise03REM_Type,doc.DL_PrixUnitaire,doc.DL_CodeTaxe1,doc.DL_Taxe1,doc.DL_CodeTaxe2,doc.DL_Taxe2,doc.DL_CodeTaxe3,doc.DL_Taxe3,doc.DL_TypeTaxe1,doc.DL_TypeTaxe2,doc.DL_TypeTaxe3,doc.DL_MontantHT,doc.DL_MontantTTC,doc.DL_NoColis,doc.FNT_MontantHT,doc.FNT_MontantTaxes,doc.FNT_MontantTTC,doc.FNT_PrixUNet,doc.FNT_PrixUNetTTC,doc.FNT_RemiseGlobale,art.AR_CODEBARRE,doc.DL_Package_Ref " +
                      "FROM F_ARTICLE art, F_DOCLIGNE doc " +
                      "WHERE doc.AR_REF = art.AR_REF and doc.do_piece='" + codeDocument + "'";
             }
@@ -1089,9 +1089,9 @@ namespace importPlanifier.Utilities
                 // INSERT INTO BIJOU.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00016', {d '2019-09-19'}, {d '2019-09-19'}, 0, '201991917544', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)
                 //string sql = "INSERT INTO F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte) VALUES (2, 21, 21, '1', 'MS00017', {d '2019-09-23'}, {d '2019-09-23'}, 0, '2019921175800', 'BAAR01', 1, 1, 'Bague Argent', 28, 118.44, 420.000000, 186.000000, 186.000000, 186, '186', 64.000000, 5208.0, 5208.000000, '', 0, 0, 0)";
                 string sql = "INSERT INTO " + getPrefix() + "F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte, DL_PUTTC, DL_TTC, DL_PieceBC, DL_PieceBL, DL_DateBL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_QteBC, DL_QteBL, DL_Remise01REM_Valeur, DL_Remise01REM_Type, DL_Remise02REM_Valeur, DL_Remise02REM_Type, DL_Remise03REM_Valeur, DL_Remise03REM_Type, DL_NoRef, DL_TypePL, DL_PUDevise, CA_Num, DL_Frais, AC_RefClient, DL_PiecePL, DL_DatePL, DL_QtePL, DL_NoColis, DL_NoLink, CO_No, DT_No, DL_PieceDE, DL_DateDe, DL_QteDE, DL_NoSousTotal, CA_No, DL_PUBC, DL_CodeTaxe1, DL_Taxe1, DL_Taxe2, DL_Taxe3, DL_TypeTaux1, DL_TypeTaxe1, DL_TypeTaux2, DL_TypeTaxe2, DL_TypeTaux3, DL_TypeTaxe3, " +
-                        "DL_MvtStock, AF_RefFourniss, COLIS, PCB, COMPLEMENT, PourVeolog, DL_PieceOFProd, DL_Operation, DO_DateLivr, DL_NonLivre, AG_No1, AG_No2) " +
+                        "DL_MvtStock, AF_RefFourniss, COLIS, PCB, COMPLEMENT, PourVeolog, DL_PieceOFProd, DL_Operation, DO_DateLivr, DL_NonLivre, AG_No1, AG_No2, DL_Package_Ref) " +
                                 "VALUES (" + products[x, 0] + ", " + products[x, 1] + ", " + products[x, 2] + ", '" + products[x, 3] + "', '" + products[x, 4] + "', {d '" + products[x, 5] + "'}, {ts '" + products[x, 6] + "'}, " + products[x, 7] + ", '" + products[x, 8] + "', '" + products[x, 9] + "', " + products[x, 10] + ", " + products[x, 11] + ", '" + products[x, 12] + "', " + products[x, 13] + ", " + products[x, 14] + ", " + products[x, 15] + ", " + products[x, 16] + ", " + products[x, 17] + ", " + products[x, 18] + ", '" + products[x, 19] + "', " + products[x, 20] + ", " + products[x, 21] + ", " + products[x, 22] + ", '" + products[x, 23] + "', " + products[x, 24] + ", " + products[x, 25] + ", " + products[x, 26] + ", "+ products[x, 27] + ", " + products[x, 28] + ", '" + products[x, 29] + "', '" + products[x, 30] + "', {d '" + products[x, 31] + "'}, " + products[x, 32] + ", " + products[x, 33] + ", " + products[x, 34] + ", " + products[x, 35] + ", " + products[x, 36] + ", " + products[x, 37] + ", " + products[x, 38] + ", " + products[x, 39] + ", " + products[x, 40] + ", " + products[x, 41] + ", " + products[x, 42] + ", " + products[x, 43] + ", " + products[x, 44] + ", " + products[x, 45] + ", '" + products[x, 46] + "', " + products[x, 47] + ", '" + products[x, 48] + "', '" + products[x, 49] + "', " + ((products[x, 50] == "NULL") ? "NULL" : "{d '" + products[x, 50] + "'}") + ", " + products[x, 51] + ", '" + products[x, 52] + "', " + products[x, 53] + ", " + products[x, 54] + ", " + products[x, 55] + ", '" + products[x, 56] + "', " + ((products[x, 57] == "NULL") ? "NULL" : "{d '" + products[x, 57] + "'}") + ", " + products[x, 58] + ", " + products[x, 59] + ", " + products[x, 60] + ", " + products[x, 61] + ", '" + products[x, 62] + "', " + products[x, 63] + ", " + products[x, 64] + ", " + products[x, 65] + ", " + products[x, 66] + ", " + products[x, 67] + ", " + products[x, 68] + ", " + products[x, 69] + ", " + products[x, 70] + ", " + products[x, 71] + ", " +
-                                "" + products[x, 72] + ", '" + products[x, 73] + "', " + products[x, 74] + ", " + products[x, 75] + ", '" + products[x, 76] + "', '" + products[x, 77] + "', '" + products[x, 78] + "', '" + products[x, 79] + "', {ts '" + products[x, 80] + "'}, " + products[x, 81] + ", 0, 0)";
+                                "" + products[x, 72] + ", '" + products[x, 73] + "', " + products[x, 74] + ", " + products[x, 75] + ", '" + products[x, 76] + "', '" + products[x, 77] + "', '" + products[x, 78] + "', '" + products[x, 79] + "', {ts '" + products[x, 80] + "'}, " + products[x, 81] + ", 0, 0, '" + products[x, 81] + "')";
                 return sql;
 
                 
@@ -1219,6 +1219,36 @@ namespace importPlanifier.Utilities
             else
             {
                 return "SELECT DL_Ligne FROM F_DOCLIGNE WHERE DO_Piece = '" + reference + "' ORDER BY DL_Ligne DESC";
+            }
+        }
+
+        public static string check_DL_Package_Ref__In_DocLigne(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                string prefix = getPrefix().Split('.')[0];
+                return "IF NOT EXISTS(SELECT column_name FROM "+ prefix+".INFORMATION_SCHEMA.columns WHERE table_name = 'F_DOCLIGNE' AND column_name = 'DL_Package_Ref') " +
+                            "BEGIN " +
+                                "ALTER TABLE " + getPrefix() + "F_DOCLIGNE ADD DL_Package_Ref varchar(200) " +
+                                "IF EXISTS(SELECT column_name FROM " + prefix + ".INFORMATION_SCHEMA.columns WHERE table_name = 'F_DOCLIGNE' AND column_name = 'DL_Package_Ref') " +
+                                 "" +
+                                    "BEGIN " +
+                                        "SELECT 'added' as result " +
+                                    "END " +
+                                "ELSE " +
+                                    "BEGIN " +
+                                       " SELECT 'refuse' as result " +
+                                    "END " +
+                            "END " +
+                        "ELSE " +
+                            "BEGIN " +
+                                "SELECT 'true' as result " +
+                            "END " +
+                        "";
+            }
+            else
+            {
+                return "Nothing...";
             }
         }
 

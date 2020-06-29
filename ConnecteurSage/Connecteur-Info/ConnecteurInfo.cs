@@ -13,7 +13,7 @@ namespace Connecteur_Info
     public class ConnecteurInfo
     {
         public string Name = "Connecteur Sage";
-        public string Version = "1.17.5";
+        public string Version = "1.17.6";
         public string Developper = "JDevs";
         public string Author = "Big Data Consulting";
 

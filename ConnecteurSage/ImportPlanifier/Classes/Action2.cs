@@ -186,6 +186,14 @@ namespace importPlanifier.Classes
                     goto goAlertMail;
                 }
 
+                // check All required tables / Columns
+                if (!check_Tables_Columns(logFileWriter_import))
+                {
+                    logFileWriter_import.Flush();
+                    logFileWriter_import.Close();
+                    logFileWriter_general.Flush();
+                }
+
                 logFileWriter_general.Flush();
                 logFileWriter_general.WriteLine("");
                 logFileWriter_general.WriteLine("");
@@ -195,6 +203,7 @@ namespace importPlanifier.Classes
                 logFileWriter_general.WriteLine(DateTime.Now + " : Scan du dossier ...");
                 logFileWriter_general.WriteLine("");
                 logFileWriter_general.Flush();
+
 
                 /* 
                     action : import documents
@@ -2255,10 +2264,11 @@ namespace importPlanifier.Classes
                                             int i = 0;
                                             string totallines = "";
                                             Veolog_DESADV dh = new Veolog_DESADV();
-                                            //Veolog_DESADV_Colis dc = new Veolog_DESADV_Colis();
+                                            Veolog_DESADV_Colis dcc = new Veolog_DESADV_Colis();
                                             Veolog_DESADV_Lines dll = new Veolog_DESADV_Lines();
 
                                             List<String> doubleProductCheck = new List<String>();
+                                            List<Veolog_DESADV_Colis> dc = new List<Veolog_DESADV_Colis>();
                                             List<Veolog_DESADV_Lines> dl = new List<Veolog_DESADV_Lines>(); //creating new object type desadvline and storing item values
 
                                             foreach (string ligneDuFichier in lines) //read lines by line
@@ -2301,7 +2311,6 @@ namespace importPlanifier.Classes
 
                                                     dh = desadv_info;
                                                 }
-                                                /*
                                                 if (tab[0] == "C") //checking if its colis of file for control
                                                 {
                                                     Veolog_DESADV_Colis desadvColis_info = new Veolog_DESADV_Colis();
@@ -2309,9 +2318,8 @@ namespace importPlanifier.Classes
                                                     desadvColis_info.ID_Tracking_Transporteur = tab[2];
                                                     desadvColis_info.URL_Tracking_Transporteur = tab[3];
 
-                                                    dc = desadvColis_info; //adding the object into the list type stock
+                                                    dc.Add(desadvColis_info); //adding the object into the list type stock
                                                 }
-                                                */
                                                 if (tab[0] == "L") //checking if its line of document inside the file for control
                                                 {
                                                     //check if an article exist in my check list
@@ -2352,7 +2360,7 @@ namespace importPlanifier.Classes
                                             }
                                             else
                                             {
-                                                if (insertDesadv_Veolog(reference_DESADV_doc, dh, dl, filename.Name, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
+                                                if (insertDesadv_Veolog(reference_DESADV_doc, dh, dl, dc, filename.Name, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
                                                 {
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
@@ -4640,7 +4648,7 @@ namespace importPlanifier.Classes
             return endResults;
         }
 
-        private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter)
+        private static string[,] insertDesadv_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, List<Veolog_DESADV_Colis> dc, string fileName, StreamWriter logFileWriter)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
             string[] list_of_client_info = null;
@@ -4756,6 +4764,7 @@ namespace importPlanifier.Classes
                         return null;
                     }
 
+                    int dc_counter = 0;
                     int counter = 0;
 
                     foreach (Veolog_DESADV_Lines line in dl) //read item by item
@@ -5109,7 +5118,6 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 69] = "0";                   // DL_TypeTaxe2
                                 list_of_cmd_lines[counter, 70] = "0";                   // DL_TypeTaux3
                                 list_of_cmd_lines[counter, 71] = "0";                   // DL_TypeTaxe3
-
                                 list_of_cmd_lines[counter, 72] = "3";                                           // DL_MvtStock
                                 list_of_cmd_lines[counter, 73] = "";                                            // AF_RefFourniss
                                 list_of_cmd_lines[counter, 74] = ((COLIS_article == null || COLIS_article == "") ? "0.0" : COLIS_article).ToString().Replace(",", ".");    // COLIS
@@ -5119,7 +5127,8 @@ namespace importPlanifier.Classes
                                 list_of_cmd_lines[counter, 78] = "";                                            // DL_PieceOFProd
                                 list_of_cmd_lines[counter, 79] = "";                                            // DL_Operation
                                 list_of_cmd_lines[counter, 80] = veologDeliveryDateTime;    //DO_DateLivr
-                                list_of_cmd_lines[counter, 81] = "0";    //DL_NonLivre
+                                list_of_cmd_lines[counter, 81] = "0";    //DL_NonLivre 
+                                list_of_cmd_lines[counter, 82] = "" + dc[dc_counter];    //DL_Package_Ref 
 
                             }
                             catch (Exception ex)
@@ -8563,6 +8572,65 @@ namespace importPlanifier.Classes
                 }
             }
 
+        }
+
+        public bool check_Tables_Columns(StreamWriter writer)
+        {
+            writer.WriteLine("");
+            writer.WriteLine(DateTime.Now + " | check_Tables_Columns () : #################################### Vérification des Tables/Colonnes ###################################");
+            writer.WriteLine("");
+            writer.Flush();
+            using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
+            {
+                try
+                {
+                    writer.WriteLine("");
+                    connection.Open();
+                    writer.WriteLine(DateTime.Now + " | check_Tables_Columns() : SQL ===> " + QueryHelper.check_DL_Package_Ref__In_DocLigne(true));
+                    writer.WriteLine("");
+
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.check_DL_Package_Ref__In_DocLigne(true), connection))
+                    {
+                        using (IDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                if (reader[0].ToString().Equals("added"))
+                                {
+                                    writer.WriteLine("La colonne 'DL_Package_Ref' est ajouté dans 'F_DocLigne'");
+                                    writer.WriteLine("");
+                                    return true;
+                                }
+                                if (reader[0].ToString().Equals("refuse"))
+                                {
+                                    writer.WriteLine("Pas accès au pas les droits de créer la colonne");
+                                    writer.WriteLine("");
+                                    return false;
+                                }
+                                if (reader[0].ToString().Equals("true"))
+                                {
+                                    writer.WriteLine("La colonne 'DL_Package_Ref' existe bien dans 'F_DocLigne'");
+                                    writer.WriteLine("");
+                                    return true;
+                                }
+                                writer.WriteLine(DateTime.Now + " | check_Tables_Columns() : Erreur dans la requette SQL!");
+                                return false;
+                            }
+                            else
+                            {
+                                writer.WriteLine(DateTime.Now + " | check_Tables_Columns() : Erreur de response de SQL!");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                    writer.WriteLine(DateTime.Now + " | check_Tables_Columns() : Erreur[47] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    return false;
+                }
+            }
         }
 
         public void LancerPlanification()

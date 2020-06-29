@@ -120,7 +120,7 @@ namespace importPlanifier.Classes
                                     reader[20].ToString(), reader[21].ToString(), reader[22].ToString(), reader[23].ToString(),
                                     reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString(),
                                     reader[28].ToString(), reader[29].ToString(), reader[30].ToString(), reader[31].ToString(),
-                                    reader[32].ToString(), reader[33].ToString(), reader[34].ToString()
+                                    reader[32].ToString(), reader[33].ToString(), reader[34].ToString(), reader[35].ToString()
                                     );
                                 lignesDocumentVente.Add(ligne);
                             }

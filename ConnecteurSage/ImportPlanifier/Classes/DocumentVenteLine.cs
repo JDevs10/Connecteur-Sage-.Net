@@ -63,6 +63,7 @@ namespace importPlanifier.Classes
         public string FNT_RemiseGlobale { set; get; } //Montant de la remise
 
         public string AR_CODEBARRE { set; get; } // CODE BARRE
+        public string DL_Package_Ref { set; get; } //DL_Package_Ref
 
         public DocumentVenteLine()
         {
@@ -104,7 +105,8 @@ namespace importPlanifier.Classes
         string FNT_PrixUNet,
         string FNT_PrixUNetTTC,
         string FNT_RemiseGlobale,
-            string AR_CODEBARRE)
+            string AR_CODEBARRE,
+            string DL_Package_Ref)
         {
             this.DO_Date = DO_Date;
             this.DO_DateLivr = DO_DateLivr;
@@ -141,6 +143,7 @@ namespace importPlanifier.Classes
             this.FNT_PrixUNetTTC = FNT_PrixUNetTTC;
             this.FNT_RemiseGlobale = FNT_RemiseGlobale;
             this.AR_CODEBARRE = AR_CODEBARRE;
+            this.DL_Package_Ref = DL_Package_Ref;
 
         }
     }

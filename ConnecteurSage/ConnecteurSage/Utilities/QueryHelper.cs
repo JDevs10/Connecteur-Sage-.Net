@@ -891,6 +891,36 @@ namespace ConnecteurSage.Helpers
             }
         }
 
+        public static string check_DL_Package_Ref__In_DocLigne(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                string prefix = getPrefix().Split('.')[0];
+                return "IF NOT EXISTS(SELECT column_name FROM "+ prefix+".INFORMATION_SCHEMA.columns WHERE table_name = 'F_DOCLIGNE' AND column_name = 'DL_Package_Ref') " +
+                            "BEGIN "+
+                                "ALTER TABLE " + getPrefix() + "F_DOCLIGNE ADD DL_Package_Ref varchar(200) " +
+                                "IF EXISTS(SELECT column_name FROM " + prefix + ".INFORMATION_SCHEMA.columns WHERE table_name = 'F_DOCLIGNE' AND column_name = 'DL_Package_Ref') " +
+                                 ""+
+                                    "BEGIN "+
+                                        "SELECT 'added' as result " +
+                                    "END "+
+                                "ELSE "+
+                                    "BEGIN "+
+                                       " SELECT 'refuse' as result " +
+                                    "END "+
+                            "END "+
+                        "ELSE "+
+                            "BEGIN "+
+                                "SELECT 'true' as result " +
+                            "END "+
+                        "";
+            }
+            else
+            {
+                return "Nothing...";
+            }
+        }
+
         public static string checkDOC_NumerotationTable(bool sqlConnexion)
         {
             if (sqlConnexion)
