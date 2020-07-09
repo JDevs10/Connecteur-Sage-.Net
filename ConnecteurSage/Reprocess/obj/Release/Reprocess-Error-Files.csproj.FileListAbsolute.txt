@@ -19,3 +19,13 @@ C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Re
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.csproj.CopyComplete
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.pdb
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\bin\Release\Reprocess-Error-Files.dll
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\bin\Release\Reprocess-Error-Files.pdb
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.dll
+C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.pdb
