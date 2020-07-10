@@ -1556,8 +1556,10 @@ namespace importPlanifier.Classes
                                                                     }
 
                                                                     // Get article taxes
+                                                                    bool isException = false;
+
                                                                     logFileWriter_import.WriteLine("");
-                                                                    logFileWriter_import.WriteLine("Récupérer les TVA des l'article " + order.Lines[i].article.AR_REF);
+                                                                    logFileWriter_import.WriteLine("Récupérer les TVA d'exception des l'article " + order.Lines[i].article.AR_REF);
                                                                     logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG));
                                                                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticleTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG), connexion))
                                                                     {
@@ -1565,6 +1567,7 @@ namespace importPlanifier.Classes
                                                                         {
                                                                             if (reader.Read()) // If any rows returned
                                                                             {
+                                                                                isException = true;
                                                                                 order.Lines[i].article.DL_CodeTaxe1 = reader[0].ToString();
                                                                                 order.Lines[i].article.DL_CodeTaxe2 = reader[1].ToString();
                                                                                 order.Lines[i].article.DL_CodeTaxe3 = reader[2].ToString();
@@ -1574,15 +1577,44 @@ namespace importPlanifier.Classes
                                                                             else// If no rows returned
                                                                             {
                                                                                 //do nothing.
-                                                                                order.Lines[i].article.DL_CodeTaxe1 = "C00";
-                                                                                order.Lines[i].article.DL_CodeTaxe2 = "C00";
-                                                                                order.Lines[i].article.DL_CodeTaxe3 = "C00";
-                                                                                logFileWriter_import.WriteLine("Aucune reponse.");
-                                                                                logFileWriter_import.WriteLine("DL_CodeTaxe1 : " + order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
-                                                                                logFileWriter_import.WriteLine("");
+                                                                                isException = false;
+                                                                                logFileWriter_import.WriteLine("Aucune response.");
                                                                             }
                                                                         }
                                                                     }
+
+                                                                    //si il n'a pas une tva exception alors cherche la tva famille
+                                                                    if (!isException)
+                                                                    {
+                                                                        logFileWriter_import.WriteLine("");
+                                                                        logFileWriter_import.WriteLine("Il n'a pas de tva exception alors cherche la tva famille");
+                                                                        logFileWriter_import.WriteLine(DateTime.Now + " | insertOrder() : SQL ===> " + QueryHelper.getArticleFamillyTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG));
+                                                                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getArticleFamillyTaxe(true, order.Lines[i].article.AR_REF, ACP_ComptaCPT_CompteG), connexion))
+                                                                        {
+                                                                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                                                                            {
+                                                                                if (reader.Read()) // If any rows returned
+                                                                                {
+                                                                                    order.Lines[i].article.DL_CodeTaxe1 = reader[0].ToString();
+                                                                                    order.Lines[i].article.DL_CodeTaxe2 = reader[1].ToString();
+                                                                                    order.Lines[i].article.DL_CodeTaxe3 = reader[2].ToString();
+                                                                                    logFileWriter_import.WriteLine("DL_CodeTaxe1 : " + order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
+                                                                                    logFileWriter_import.WriteLine("");
+                                                                                }
+                                                                                else// If no rows returned
+                                                                                {
+                                                                                    //do nothing.
+                                                                                    order.Lines[i].article.DL_CodeTaxe1 = "C00";
+                                                                                    order.Lines[i].article.DL_CodeTaxe2 = "C00";
+                                                                                    order.Lines[i].article.DL_CodeTaxe3 = "C00";
+                                                                                    logFileWriter_import.WriteLine("Aucune reponse.");
+                                                                                    logFileWriter_import.WriteLine("DL_CodeTaxe1 : " + order.Lines[i].article.DL_CodeTaxe1 + " || DL_CodeTaxe2 : " + order.Lines[i].article.DL_CodeTaxe2 + " || DL_CodeTaxe3 : " + order.Lines[i].article.DL_CodeTaxe3);
+                                                                                    logFileWriter_import.WriteLine("");
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+
 
 
                                                                     //Add TVA && Calculate product ttc

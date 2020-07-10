@@ -188,6 +188,32 @@ namespace importPlanifier.Utilities
             }
         }
 
+        public static string getArticleFamillyTaxe(bool sqlConnexion, string id, string FCP_ComptaCPT_CompteG)
+        {
+            if (sqlConnexion)
+            {
+                if (FCP_ComptaCPT_CompteG != null && !FCP_ComptaCPT_CompteG.Equals(""))
+                {
+                    return "SELECT famc.FCP_ComptaCPT_Taxe1, famc.FCP_ComptaCPT_Taxe2, famc.FCP_ComptaCPT_Taxe3 from " + getPrefix() + "F_ARTICLE as art, " + getPrefix() + "F_FAMCOMPTA as famc where art.FA_CodeFamille = famc.FA_CodeFamille AND art.AR_Ref='"+id+"' AND famc.FCP_ComptaCPT_CompteG = '"+ FCP_ComptaCPT_CompteG + "'";
+                }
+                else
+                {
+                    return "SELECT famc.FCP_ComptaCPT_Taxe1, famc.FCP_ComptaCPT_Taxe2, famc.FCP_ComptaCPT_Taxe3 from " + getPrefix() + "F_ARTICLE as art, " + getPrefix() + "F_FAMCOMPTA as famc where art.FA_CodeFamille = famc.FA_CodeFamille AND art.AR_Ref='"+id+"'";
+                }
+            }
+            else
+            {
+                if (FCP_ComptaCPT_CompteG != null && !FCP_ComptaCPT_CompteG.Equals(""))
+                {
+                    return "SELECT famc.FCP_ComptaCPT_Taxe1, famc.FCP_ComptaCPT_Taxe2, famc.FCP_ComptaCPT_Taxe3 from F_ARTICLE as art, F_FAMCOMPTA as famc where art.FA_CodeFamille = famc.FA_CodeFamille AND art.AR_Ref='" + id + "' AND famc.FCP_ComptaCPT_CompteG = '" + FCP_ComptaCPT_CompteG + "'";
+                }
+                else
+                {
+                    return "SELECT famc.FCP_ComptaCPT_Taxe1, famc.FCP_ComptaCPT_Taxe2, famc.FCP_ComptaCPT_Taxe3 from F_ARTICLE as art, F_FAMCOMPTA as famc where art.FA_CodeFamille = famc.FA_CodeFamille AND art.AR_Ref='" + id + "'";
+                }
+            }
+        }
+
         public static string getConditionnementArticle(bool sqlConnexion, string refArt)
         {
             if (sqlConnexion)

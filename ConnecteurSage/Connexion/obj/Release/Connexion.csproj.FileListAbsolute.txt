@@ -22,3 +22,11 @@ C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connexion\bin\Release\Ne
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connexion\obj\Release\Connexion.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connexion\obj\Release\Connexion.dll
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connexion\obj\Release\Connexion.pdb
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Connexion.dll
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Connexion.pdb
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.dll
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.pdb

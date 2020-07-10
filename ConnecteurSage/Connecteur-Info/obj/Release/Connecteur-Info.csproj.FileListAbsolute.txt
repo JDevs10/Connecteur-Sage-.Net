@@ -14,3 +14,8 @@ C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connecteur-Info\bin\Rele
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.dll
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.pdb
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Connecteur-Info.pdb
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.pdb
