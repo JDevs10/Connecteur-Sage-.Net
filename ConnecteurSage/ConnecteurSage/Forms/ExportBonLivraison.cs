@@ -116,13 +116,20 @@ namespace ConnecteurSage.Forms
                                 logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : Line troué : " + lines);
                                 logFileWriter.Flush();
 
+                                logFileWriter.WriteLine("");
+                                for (int i =0; i< 27; i++)
+                                {
+                                    logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : reader["+i+"] => " + reader[i]);
+                                }
+                                logFileWriter.WriteLine("");
+
                                 DocumentVenteLine ligne = new DocumentVenteLine(reader[0].ToString().Replace("00:00:00", ""), reader[1].ToString().Replace("00:00:00", ""),
                                     reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(),
                                     reader[8].ToString(), reader[9].ToString(),
                                     reader[10].ToString(), reader[11].ToString(),
                                     reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString(),
                                     reader[16].ToString(), reader[17].ToString(), reader[18].ToString(), reader[19].ToString(),
-                                    reader[20].ToString(), reader[21].ToString(), reader[22].ToString(), reader[23].ToString(),
+                                    (reader[20].ToString() == null || reader[20].ToString() == "" ? "0,000000" : reader[20].ToString()), reader[21].ToString(), reader[22].ToString(), (reader[23].ToString() == null || reader[23].ToString() == "" ? "0": reader[23].ToString()),
                                     reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString()
                                     );
 
@@ -150,7 +157,7 @@ namespace ConnecteurSage.Forms
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 MessageBox.Show("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
-                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 logFileWriter.WriteLine("");
                 logFileWriter.WriteLine("");
