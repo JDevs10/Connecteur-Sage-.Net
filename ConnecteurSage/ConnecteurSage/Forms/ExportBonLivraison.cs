@@ -12,6 +12,8 @@ using ConnecteurSage.Helpers;
 using System.Threading;
 using System.IO;
 using Connexion;
+using Newtonsoft.Json;
+using System.Web.Script.Serialization;
 
 namespace ConnecteurSage.Forms
 {
@@ -106,11 +108,9 @@ namespace ConnecteurSage.Forms
                     logFileWriter.Flush(); 
                     OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(true, codeDocument), connection);
                     {
-                        logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 1");
                         int lines = 1;
                         using (IDataReader reader = command.ExecuteReader())
                         {
-                            logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 2");
                             while (reader.Read())
                             {
                                 logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : Line troué : " + lines);
@@ -125,11 +125,20 @@ namespace ConnecteurSage.Forms
                                     reader[20].ToString(), reader[21].ToString(), reader[22].ToString(), reader[23].ToString(),
                                     reader[24].ToString(), reader[25].ToString(), reader[26].ToString(), reader[27].ToString()
                                     );
+
+
+                                // Calculate the Net Unite Price
+                                double total_remise = Convert.ToDouble(ligne.DL_Remise01REM_Valeur) + Convert.ToDouble(ligne.DL_Remise02REM_Valeur) + Convert.ToDouble(ligne.DL_Remise03REM_Valeur);
+                                double total_remise_Pourcent = total_remise / 100;
+                                double PV_Net = Convert.ToDouble(ligne.DL_PrixUnitaire) * total_remise_Pourcent;     //PV_Net == Prix de Vente Net
+                                ligne.DL_PrixUNet = (Convert.ToDouble(ligne.DL_PrixUnitaire) - PV_Net).ToString();    //Prix Unitaire Net
+
+                                // Calculate DL_MontantTaxes
+                                ligne.DL_MontantTaxes = (Convert.ToDouble(ligne.DL_Taxe1) + Convert.ToDouble(ligne.DL_Taxe2) + Convert.ToDouble(ligne.DL_Taxe3)).ToString();
+
                                 lignesDocumentVente.Add(ligne);
                             }
-                            logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 3");
                         }
-                        logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : SQL 4");
                     }
                     return lignesDocumentVente;
 
@@ -143,6 +152,8 @@ namespace ConnecteurSage.Forms
                 MessageBox.Show("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), "Erreur!!",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
+                logFileWriter.WriteLine("");
+                logFileWriter.WriteLine("");
                 logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : ############################# Erreur #############################");
                 logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : Message : " + "" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 logFileWriter.WriteLine(DateTime.Now + " | getDocumentLine() : Stacktrace : " + e.StackTrace);
@@ -757,11 +768,6 @@ namespace ConnecteurSage.Forms
 
                             BonLivrasonAExporter[i].lines = getDocumentLine(logFileWriter, BonLivrasonAExporter[i].DO_Piece);
 
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : After Lines");
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : BonLivrasonAExporter[i].lines.Count = " + BonLivrasonAExporter[i].lines.Count);
-
-                            Init.Init init = new Init.Init();
-                            logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : JSON : \n" + init.FormatJson(BonLivrasonAExporter[i].lines));
 
                             // DL_PrixUNet et non DL_PrixUnitaire
                             //writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[0].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[0].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[0].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[0].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[0].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[0].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[0].DL_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[0].DL_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[0].DL_NoColis + ";;;;;;;;;;;");
@@ -781,6 +787,13 @@ namespace ConnecteurSage.Forms
                             writer.WriteLine("");
                             writer.Flush();
                         }
+
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : Un export en Json du BL :");
+
+                        Init.Init init = new Init.Init();
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : JSON : \n" + init.FormatJson(BonLivrasonAExporter));
+                        logFileWriter.WriteLine("");
                     }
                 }
                 else
