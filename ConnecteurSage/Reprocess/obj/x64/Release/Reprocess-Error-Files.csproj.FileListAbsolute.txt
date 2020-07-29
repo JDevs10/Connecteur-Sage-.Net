@@ -1,0 +1,7 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Reprocess-Error-Files.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\x64\Release\Reprocess-Error-Files.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\x64\Release\Reprocess-Error-Files.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\x64\Release\Reprocess-Error-Files.dll

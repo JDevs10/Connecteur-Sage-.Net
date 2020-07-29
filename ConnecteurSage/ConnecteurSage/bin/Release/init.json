@@ -9,9 +9,9 @@
     "EDI_Folder": "C:\\Program Files (x86)\\Big Data Consulting\\Connecteur Sage\\CSV"
   },
   "plannerTask": {
-    "Name": "ConnecteurSage_MS Access Database",
-    "UserId": "SYSTEM",
-    "Enabled": true
+    "Name": null,
+    "UserId": null,
+    "Enabled": false
   },
   "priceType": {
     "activate": false,

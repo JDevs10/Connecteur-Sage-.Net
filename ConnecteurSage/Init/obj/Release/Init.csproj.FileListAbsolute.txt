@@ -14,7 +14,6 @@ C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csproj.CopyComplete
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.dll
 C:\Users\harak\Source\Repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Init\bin\Release\Init.dll
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Init\bin\Release\Init.pdb
 C:\WorkPlace\Connecteur-Sage-.Net-master\ConnecteurSage\Init\bin\Release\Newtonsoft.Json.dll
@@ -30,3 +29,4 @@ C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Init\o
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.dll
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.pdb
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache

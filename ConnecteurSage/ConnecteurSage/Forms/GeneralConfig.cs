@@ -129,7 +129,9 @@ namespace ConnecteurSage.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Close();
+            Database.Database db = new Database.Database();
+            db.getConnection();
+            //Close();
         }
 
         private void button2_Click(object sender, EventArgs e)

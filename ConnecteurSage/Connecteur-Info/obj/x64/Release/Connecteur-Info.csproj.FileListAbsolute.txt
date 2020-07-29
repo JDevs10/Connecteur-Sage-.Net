@@ -1,0 +1,3 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\x64\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\x64\Release\Connecteur-Info.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\x64\Release\Connecteur-Info.dll

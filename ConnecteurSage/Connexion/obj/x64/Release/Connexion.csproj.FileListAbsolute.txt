@@ -1,0 +1,5 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\x64\Release\Connexion.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\x64\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\x64\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\x64\Release\Connexion.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\x64\Release\Connexion.dll

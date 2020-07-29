@@ -56,6 +56,14 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Win32.TaskScheduler">
       <HintPath>.\Microsoft.Win32.TaskScheduler.dll</HintPath>
@@ -313,6 +321,10 @@
     <ProjectReference Include="..\Connexion\Connexion.csproj">
       <Project>{5d4414bd-f65b-4891-bae5-6a5d767a0fd0}</Project>
       <Name>Connexion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{43ccd91e-6fe4-4543-a49f-483dc7663e26}</Project>
+      <Name>Database</Name>
     </ProjectReference>
     <ProjectReference Include="..\Init\Init.csproj">
       <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
