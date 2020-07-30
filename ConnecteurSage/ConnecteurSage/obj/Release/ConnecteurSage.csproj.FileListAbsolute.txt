@@ -183,3 +183,5 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Data
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Database.dll.config
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\System.Data.SQLite.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\System.Data.SQLite.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Dapper.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\Dapper.xml

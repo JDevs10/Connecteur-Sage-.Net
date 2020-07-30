@@ -20,13 +20,16 @@ namespace Database.Manager
         private string COLONNE_COUNT = "fileReprocessCount";
         #endregion
 
-        public Reprocess reprocess;
+        //public List<Reprocess> reprocessList;
 
         public ReprocessManager() { }
+
+        /*
         public ReprocessManager(Reprocess reprocess)
         {
             this.reprocess = reprocess;
         }
+        */
 
         // Create Reprocess Table
         public int createTable(SQLiteConnection conn)
@@ -108,7 +111,7 @@ namespace Database.Manager
         }
 
         // Get by ID
-        public Reprocess getList(SQLiteConnection conn, int ediFileID)
+        public Reprocess getById(SQLiteConnection conn, int ediFileID)
         {
             try
             {
@@ -147,6 +150,7 @@ namespace Database.Manager
                 {
                     SQLiteCommand command = new SQLiteCommand(@"UPDATE '" + TABLE_NAME + "' SET '" + COLONNE_FILENAME + "' = " + reprocess.fileName + ", '" + COLONNE_FILEPATH + "' = " + reprocess.filePath + ", '" + COLONNE_COUNT + "' = " + reprocess.fileReprocessCount + " WHERE '" + COLONNE_EDIFILEID + "' = " + reprocess.ediFileID, conn);
                     x = command.ExecuteNonQuery();
+                    Console.WriteLine("ediFileID : " + reprocess.ediFileID + " is Updated !");
                 }
 
                 conn.Close();
@@ -160,58 +164,58 @@ namespace Database.Manager
         }
 
         // Delete ALL
-        public Reprocess deleteAll(SQLiteConnection conn, Reprocess reprocess)
+        public bool deleteAll(SQLiteConnection conn, Reprocess reprocess)
         {
             try
             {
-                Reprocess list = null;
                 conn.Open();
 
                 if (conn.State == System.Data.ConnectionState.Open)
                 {
                     using (IDbConnection db = conn)
                     {
-                        list = db.Query<Reprocess>("DELETE FROM '" + TABLE_NAME + "'").ToList()[0];
-                        Console.WriteLine("Reprocess list size : 1");
-                        return list;
+                        SQLiteCommand command = new SQLiteCommand(@"DELETE FROM '" + TABLE_NAME + "'", conn);
+                        command.ExecuteNonQuery();
+                        Console.WriteLine(TABLE_NAME + " data have been deleted!");
+                        return true;
                     }
                 }
 
                 conn.Close();
-                return null;
+                return false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return null;
+                return false;
             }
         }
 
         // Delete by ID
-        public Reprocess deleteById(SQLiteConnection conn, Reprocess reprocess)
+        public bool deleteById(SQLiteConnection conn, Reprocess reprocess)
         {
             try
             {
-                Reprocess list = null;
                 conn.Open();
 
                 if (conn.State == System.Data.ConnectionState.Open)
                 {
                     using (IDbConnection db = conn)
                     {
-                        list = db.Query<Reprocess>("DELETE FROM '" + TABLE_NAME + "' WHERE '" + COLONNE_EDIFILEID + "' = " + reprocess.ediFileID).ToList()[0];
-                        Console.WriteLine("Reprocess list size : 1");
-                        return list;
+                        SQLiteCommand command = new SQLiteCommand(@"DELETE FROM '" + TABLE_NAME + "' WHERE '" + COLONNE_EDIFILEID + "' = " + reprocess.ediFileID, conn);
+                        command.ExecuteNonQuery();
+                        Console.WriteLine(reprocess.ediFileID + " data have been deleted from " + TABLE_NAME + " !");
+                        return true;
                     }
                 }
 
                 conn.Close();
-                return null;
+                return false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return null;
+                return false;
             }
         }
 

@@ -130,7 +130,7 @@ namespace ConnecteurSage.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             Database.Database db = new Database.Database();
-            db.getConnection();
+            db.initTables();
             //Close();
         }
 
