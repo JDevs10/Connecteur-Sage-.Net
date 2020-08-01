@@ -158,6 +158,12 @@ namespace ConnecteurSage.Forms
                     return;
                 }
 
+                if(textBox2.Text.Trim().Equals("") || textBox2.Text == null)
+                {
+                    MessageBox.Show("Veuillez ajouter le chemin du répertoire CSV.", "Erreur Répertoire", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 if (checkBox_reprocess_activate.Checked == true && Convert.ToDouble(numericUpDown_hour.Value) == 0.0)
                 {
                     MessageBox.Show("Heure de retraitement n'est pas configuré !", "Retraitement", MessageBoxButtons.OK, MessageBoxIcon.Information);

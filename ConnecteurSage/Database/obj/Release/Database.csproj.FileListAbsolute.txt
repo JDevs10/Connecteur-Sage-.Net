@@ -34,6 +34,6 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.c
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csproj.CopyComplete
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.pdb
-C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csprojAssemblyReference.cache
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.xml
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csprojAssemblyReference.cache

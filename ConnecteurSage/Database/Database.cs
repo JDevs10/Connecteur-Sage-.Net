@@ -47,19 +47,20 @@ namespace Database
             }
             */
 
-            reprocessManager = new ReprocessManager();
+            this.reprocessManager = new ReprocessManager();
         }
 
         public void initTables()
         {
             //#####################################################################
             //##### Create all tables #############################################
-            
+
             // Reprocess Table
-            reprocessManager.createTable(connectionString);
+            this.reprocessManager.createTable(connectionString);
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup();
+            
 
             /*
             reprocessManager.insert(connectionString, new Model.Reprocess(1, "ReprocessTest", "FilePathTest", 10));
@@ -86,7 +87,7 @@ namespace Database
             reprocessManager.getById(connectionString, 1);
             */
 
-            Console.WriteLine("Done");
+            
         }
 
 

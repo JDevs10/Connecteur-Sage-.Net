@@ -83,8 +83,23 @@ namespace importPlanifier.Classes
             }
             //###################################################################################################
 
-            string path = getPath();
-            dir = path;
+            try
+            {
+                string path = getPath();
+                dir = path;
+            }
+            catch(Exception ex)
+            {
+                logFileWriter_general.WriteLine(DateTime.Now + " : *********** Erreur Chemin CSV **********");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Le dossier CSV n'est pas trouvé.");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Message :: " + ex.Message);
+                logFileWriter_general.WriteLine(DateTime.Now + " : Import annulée");
+                Console.WriteLine(DateTime.Now + " : *********** Erreur Chemin CSV **********");
+                Console.WriteLine(DateTime.Now + " : Le dossier CSV n'est pas trouvé.");
+                Console.WriteLine(DateTime.Now + " : Message :: " + ex.Message);
+                Console.WriteLine(DateTime.Now + " : Import annulée");
+                goto goError;
+            }
 
             // Load intro
             Connecteur_Info.Custom.Batch_Intro intro = new Connecteur_Info.Custom.Batch_Intro();
@@ -106,9 +121,6 @@ namespace importPlanifier.Classes
                 goto goError;
             }
 
-            //Console.WriteLine("Dossier : " + fileListing);
-            //Console.WriteLine("");
-            //Console.WriteLine(DateTime.Now + " : Scan du dossier ...");
 
             //Check if the Log directory exists
             if (!Directory.Exists(directoryName_csv))
@@ -8620,8 +8632,22 @@ namespace importPlanifier.Classes
             intro_B.intro(logFileWriter_general);
 
             // Init database && tables
-            //Database.Database db = new Database.Database();
-            //db.initTables();
+            try
+            {
+                Database.Database db = new Database.Database();
+                db.initTables();
+            }
+            catch(Exception ex)
+            {
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine("[ERROR] Init Tables");
+                logFileWriter_general.WriteLine("Message : " + ex.Message);
+                logFileWriter_general.WriteLine("StackTrace : " + ex.StackTrace);
+                logFileWriter_general.WriteLine("");
+                Console.WriteLine("[ERROR] Init Tables\n");
+                Console.WriteLine("Message : " + ex.Message);
+                Console.WriteLine("StackTrace : " + ex.StackTrace);
+            }
 
             //Reprocess
             logFileWriter_general.WriteLine("################################ Retraiter les Fichiers ERROR ###############################");

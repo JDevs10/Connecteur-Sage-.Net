@@ -38,4 +38,3 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.csproj.CopyComplete
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.pdb
-C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.csprojAssemblyReference.cache

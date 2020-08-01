@@ -147,7 +147,7 @@ namespace Database.Manager
                     {
                         using (IDbConnection db = conn)
                         {
-                            var xxx = conn.Query<Reprocess>("SELECT " + COLONNE_EDIFILEID + ", " + COLONNE_FILENAME + ", " + COLONNE_FILEPATH + ", " + COLONNE_COUNT + " FROM " + TABLE_NAME);
+                            var xxx = conn.Query<Reprocess>("SELECT " + COLONNE_EDIFILEID + ", " + COLONNE_FILENAME + ", " + COLONNE_FILEPATH + ", " + COLONNE_COUNT + " FROM " + TABLE_NAME + " WHERE " + COLONNE_EDIFILEID + " = " + ediFileID);
                             list = xxx.ToList()[0];
                             //list = ((List<Reprocess>) db.Query<Reprocess>("SELECT " + COLONNE_EDIFILEID + ", " + COLONNE_FILENAME + ", " + COLONNE_FILEPATH + ", " + COLONNE_COUNT + " FROM " + TABLE_NAME + " WHERE " + COLONNE_EDIFILEID + "=" + ediFileID))[0];
                             Console.WriteLine("Reprocess list size : 1");

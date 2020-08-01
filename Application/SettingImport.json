@@ -1,0 +1,43 @@
+{
+  "Doc_Achat": {
+    "Commande": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    },
+    "DSADV": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    },
+    "Facture": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    }
+  },
+  "Doc_Stock": {
+    "Stock": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    }
+  },
+  "Doc_Ventes": {
+    "Commande": {
+      "Activate": "true",
+      "Format": "Plat",
+      "Status": "0"
+    },
+    "DSADV": {
+      "Activate": "false",
+      "Format": "",
+      "Status": ""
+    },
+    "Facture": {
+      "Activate": " false",
+      "Format": "",
+      "Status": ""
+    }
+  }
+}
