@@ -30,3 +30,11 @@ C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Init\o
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.pdb
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Release\Init.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Release\Init.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Release\Newtonsoft.Json.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Release\Newtonsoft.Json.xml
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csproj.CoreCompileInputs.cache
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csproj.CopyComplete
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.pdb

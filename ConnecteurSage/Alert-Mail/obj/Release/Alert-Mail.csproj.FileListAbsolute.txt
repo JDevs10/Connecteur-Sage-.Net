@@ -39,3 +39,14 @@ C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Alert-
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.dll
 C:\WorkPlace\Connecteur-Sage-.Net__v2\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Alert-Mail.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Alert-Mail.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Connexion.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Newtonsoft.Json.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Connexion.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Newtonsoft.Json.xml
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csprojAssemblyReference.cache
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csproj.CoreCompileInputs.cache
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csproj.CopyComplete
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.pdb
