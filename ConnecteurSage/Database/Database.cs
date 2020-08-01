@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Database.Manager;
+using System.ComponentModel;
 
 namespace Database
 {
@@ -19,11 +20,11 @@ namespace Database
         private static string directory_db = Directory.GetCurrentDirectory() + @"\" + DB_DOSSIER;
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         public string connectionString = "Data Source=" + directory_db + @"\" + DB_NAME + "; Version=" + DB_VERSION;
-        SQLiteConnection conn { get; set; }
+        //SQLiteConnection conn { get; set; }
         #endregion
 
         #region Tables Management
-        ReprocessManager reprocessManager { get; set; }
+        public ReprocessManager reprocessManager { get; set; }
         #endregion
 
 
@@ -37,20 +38,30 @@ namespace Database
             {
                 SQLiteConnection.CreateFile(directory_db + @"\" + DB_NAME);
 
-                this.conn = new SQLiteConnection(connectionString);
-            }
+                //this.conn = new SQLiteConnection(connectionString);
+            }/*
             else
             {
                 this.conn = new SQLiteConnection(connectionString);
                 Console.WriteLine("Databse exist so establish sqliteConnection object.");
             }
+            */
+
+            reprocessManager = new ReprocessManager();
         }
 
         public void initTables()
         {
-            reprocessManager = new ReprocessManager();
+            //#####################################################################
+            //##### Create all tables #############################################
+            
+            // Reprocess Table
             reprocessManager.createTable(connectionString);
 
+            // Save a backup of the db in ./Backup/Database_backup.db
+            saveBackup();
+
+            /*
             reprocessManager.insert(connectionString, new Model.Reprocess(1, "ReprocessTest", "FilePathTest", 10));
             reprocessManager.insert(connectionString, new Model.Reprocess(101,"ReprocessTest 11", "FilePathTest 1", 2));
             reprocessManager.insert(connectionString, new Model.Reprocess(102, "ReprocessTest 22", "FilePathTest 2", 1));
@@ -73,8 +84,7 @@ namespace Database
             
 
             reprocessManager.getById(connectionString, 1);
-
-            saveBackup();
+            */
 
             Console.WriteLine("Done");
         }
@@ -82,13 +92,22 @@ namespace Database
 
         public void saveBackup()
         {
-            if(File.Exists(directory_db + @"\" + DB_NAME))
+            try
             {
-                if(!Directory.Exists(directory_db + @"\Backup\"))
+                if (File.Exists(directory_db + @"\" + DB_NAME))
                 {
-                    Directory.CreateDirectory(directory_db + @"\Backup\");
+                    if (!Directory.Exists(directory_db + @"\Backup\"))
+                    {
+                        Directory.CreateDirectory(directory_db + @"\Backup\");
+                    }
+                    File.Copy(directory_db + @"\" + DB_NAME, directory_db + @"\Backup\" + DB_NAME_BACKUP, true);
                 }
-                File.Copy(directory_db + @"\" + DB_NAME, directory_db + @"\Backup\" + DB_NAME_BACKUP, true);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("\n##### [ERROR] Database Backup");
+                Console.WriteLine("Message : " + ex.Message);
+                Console.WriteLine("StackTrace : " + ex.StackTrace);
             }
         }
     }

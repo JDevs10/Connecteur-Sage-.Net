@@ -122,6 +122,10 @@
       <Project>{5d4414bd-f65b-4891-bae5-6a5d767a0fd0}</Project>
       <Name>Connexion</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{43ccd91e-6fe4-4543-a49f-483dc7663e26}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fichier-De-Nettoyage\Fichier-De-Nettoyage.csproj">
       <Project>{a575f215-85ed-44b6-a502-9971f401a116}</Project>
       <Name>Fichier-De-Nettoyage</Name>

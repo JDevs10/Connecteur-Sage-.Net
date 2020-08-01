@@ -38,3 +38,4 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csproj.Co
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csproj.CopyComplete
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache

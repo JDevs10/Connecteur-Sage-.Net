@@ -37,6 +37,7 @@ namespace importPlanifier.Classes
         /* JL LOG */
         private static string logFileName_general;
         private static string logFileName_import;
+        private string directoryName_csv = Directory.GetCurrentDirectory() + @"\" + "CSV";
         private string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
         private string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
         private string directoryName_SuccessFile = Directory.GetCurrentDirectory() + @"\" + "Success File";
@@ -109,7 +110,12 @@ namespace importPlanifier.Classes
             //Console.WriteLine("");
             //Console.WriteLine(DateTime.Now + " : Scan du dossier ...");
 
-             //Check if the Log directory exists
+            //Check if the Log directory exists
+            if (!Directory.Exists(directoryName_csv))
+            {
+                //Create log directory
+                Directory.CreateDirectory(directoryName_csv);
+            }
             if (!Directory.Exists(logDirectoryName_import))
             {
                 //Create log directory
@@ -8598,7 +8604,7 @@ namespace importPlanifier.Classes
         }
 
         public void LancerPlanification()
-        {
+        { 
             //Write in the log file
             if (!Directory.Exists(logDirectoryName_general))
             {
@@ -8612,6 +8618,10 @@ namespace importPlanifier.Classes
             // Load intro
             Connecteur_Info.Custom.Batch_Intro intro_B = new Connecteur_Info.Custom.Batch_Intro();
             intro_B.intro(logFileWriter_general);
+
+            // Init database && tables
+            //Database.Database db = new Database.Database();
+            //db.initTables();
 
             //Reprocess
             logFileWriter_general.WriteLine("################################ Retraiter les Fichiers ERROR ###############################");

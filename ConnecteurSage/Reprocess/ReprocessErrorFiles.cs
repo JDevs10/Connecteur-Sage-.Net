@@ -177,6 +177,60 @@ namespace Reprocess
                                         }
                                         else
                                         {
+                                            Database.Database db = new Database.Database();
+                                            string ediFileId_str = (newFileName.Contains("EDI_ORDERS") ? newFileName.Split('.')[1] : ((newFileName.Contains("CFP41") || newFileName.Contains("CFP51") || newFileName.Contains("TWP41") || newFileName.Contains("TWP51")) ? newFileName.Split('_')[1].Replace(".csv", "") : "999"));
+
+
+                                            //get reprocess obj
+                                            Database.Model.Reprocess reprocess_db = db.reprocessManager.getById(db.connectionString, Convert.ToInt32(ediFileId_str));
+                                            if(reprocess_db != null)
+                                            {
+                                                reprocess_db.ediFileID = Convert.ToInt32(ediFileId_str);
+                                                reprocess_db.fileName = newFileName;
+                                                reprocess_db.filePath = file.FullName;
+                                                reprocess_db.fileReprocessCount = (reprocess_db.fileReprocessCount + 1);
+
+                                                if(reprocess_db.fileReprocessCount >= settings.configurationGeneral.reprocess.countDown)
+                                                {
+                                                    // move the file to tmp
+                                                    writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Le Connecteur a tenté d'importer ce document " + reprocess_db.fileReprocessCount + " fois de suite sans succès, il sera déplacé sur dans le dossier => " + directoryName_tmp);
+                                                    File.Copy(file.FullName, directoryName_tmp + @"\" + file.Name, true);
+                                                    Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Copie : " + file.FullName + "  à :  " + directoryName_tmp + @"\" + file.Name);
+                                                    writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Copie : " + file.FullName + "  à :  " + directoryName_tmp + @"\" + file.Name);
+                                                    writer.Flush();
+
+                                                    if (File.Exists(directoryName_tmp + @"\" + file.Name))
+                                                    {
+                                                        File.Delete(file.FullName);
+                                                        Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Supprimer le fichier : " + file.FullName);
+                                                        writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Supprimer le fichier : " + file.FullName);
+                                                        writer.Flush();
+                                                    }
+
+                                                    db.reprocessManager.deleteById(db.connectionString, reprocess_db.ediFileID);
+                                                }
+                                                else
+                                                {
+                                                    //Update Reprocess row
+                                                    db.reprocessManager.update(db.connectionString, reprocess_db);
+                                                }
+                                                
+                                            }
+                                            else
+                                            {
+                                                Database.Model.Reprocess reprocess = new Database.Model.Reprocess();
+                                                reprocess.ediFileID = Convert.ToInt32(ediFileId_str);
+                                                reprocess.fileName = newFileName;
+                                                reprocess.filePath = file.FullName;
+                                                reprocess.fileReprocessCount = 1;
+
+                                                //Insert Reprocess
+                                                db.reprocessManager.insert(db.connectionString, reprocess);
+                                            }
+
+                                            
+
+                                            /*
                                             Reprocess_Error_Files.Classes.SaveLoadReprocess reprocess_setting = new Reprocess_Error_Files.Classes.SaveLoadReprocess();
                                             if (reprocess_setting.isFile())
                                             {
@@ -250,6 +304,7 @@ namespace Reprocess
                                                 reprocess_setting.reprocessFilesList = reprocessFilesList;
                                                 reprocess_setting.saveInfo();
                                             }
+                                            */
                                         }
                                     }
                                     catch (Exception ex)

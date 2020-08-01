@@ -75,6 +75,11 @@ namespace ConnecteurSage
                     progressDialog.UpdateProgress(n);
                 }
 
+                // Init database && tables
+                Database.Database db = new Database.Database();
+                db.initTables();
+
+
                 Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
                 if (settings.isSettings())
                 {
