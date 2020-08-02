@@ -1,0 +1,281 @@
+##############################################################################################################################
+#################################################### L'import planifier ######################################################
+##### Version 1.17.5 ############################################################################################ JDevs #####
+
+
+02/08/2020 22:54:34 :: Database.dll => Database() | Creation d'une instance
+
+02/08/2020 22:54:34 :: Database.dll => initTables() | Creation d'une instance
+
+02/08/2020 22:54:34 :: ReprocessManager.dll => createTable() | Creation d'une instance
+02/08/2020 22:54:34 :: ReprocessManager.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS 'Reprocess' ('ediFileID' INTEGER UNIQUE, 'fileName' TEXT NOT NULL, 'filePath' TEXT NOT NULL, 'fileReprocessCount' TEXT NOT NULL)
+02/08/2020 22:54:34 :: ReprocessManager.dll => createTable() | Table created
+02/08/2020 22:54:34 :: Database.dll => saveBackup() | Creation d'une instance
+02/08/2020 22:54:34 :: Database.dll => saveBackup() | Le repertoire existe => C:\Workspace\Connecteur-Sage-.Net\Application\db\Database.db
+02/08/2020 22:54:34 :: Database.dll => saveBackup() | Copie la BDD depuis "C:\Workspace\Connecteur-Sage-.Net\Application\db\Database.db" a "C:\Workspace\Connecteur-Sage-.Net\Application\db\Backup\Database_backup.db"
+################################ Retraiter les Fichiers ERROR ###############################
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess()
+
+02/08/2020 22:54:34 :: Reprocess.dll => getEDI_CSV_Folder()
+02/08/2020 22:54:34 :: Reprocess.dll => getEDI_CSV_Folder() | dossier EDI CSV trouvé.
+
+02/08/2020 22:54:34 :: Reprocess.dll => checkFiles()
+02/08/2020 22:54:34 :: Reprocess.dll => checkFiles() | Il y a 5 fichier EDI trouvé.
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Les fichier EDI dans C:\Workspace\Connecteur-Sage-.Net\Application\Error File
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Heure de retraitement trouve.
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Fichier total en erreur => 5
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Index : 1
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Date aujourd'hui : 02-08-2020 22:54, Date de création : 02-08-2020 22:54, TimeSpan : 0.00567081077777778
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Temps d'existence du fichier : 0.00567081077777778 hrs >= Heure de retraitement : 0.005 hrs
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Ancien nom du fichier : 02082020225426____EDI_ORDERS.65684471.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv, Nouveau nom : EDI_ORDERS.65684471.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | settings.configurationGeneral.reprocess.countDown => 10
+
+02/08/2020 22:54:34 :: Database.dll => Database() | Creation d'une instance
+
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684471) | Creation d'un Instance.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684471) | SQL => SELECT ediFileID, fileName, filePath, fileReprocessCount FROM Reprocess WHERE ediFileID = 65684471
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() Reprocess obj recu
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | ##################################################
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | [ERROR] getById
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | StackTrace :    at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+
+02/08/2020 22:54:34 :: ############################### Erreur Retraitement ###############################
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | StackTrace :
+   at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+   at Reprocess.ReprocessErrorFiles.reprocess(StreamWriter writer)
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | End 2...
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Index : 2
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Date aujourd'hui : 02-08-2020 22:54, Date de création : 02-08-2020 22:54, TimeSpan : 0.00573674505555556
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Temps d'existence du fichier : 0.00573674505555556 hrs >= Heure de retraitement : 0.005 hrs
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Ancien nom du fichier : 02082020225426____EDI_ORDERS.65684481.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN .csv, Nouveau nom : EDI_ORDERS.65684481.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN .csv
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | settings.configurationGeneral.reprocess.countDown => 10
+
+02/08/2020 22:54:34 :: Database.dll => Database() | Creation d'une instance
+
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684481) | Creation d'un Instance.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684481) | SQL => SELECT ediFileID, fileName, filePath, fileReprocessCount FROM Reprocess WHERE ediFileID = 65684481
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() Reprocess obj recu
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | ##################################################
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | [ERROR] getById
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | StackTrace :    at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+
+02/08/2020 22:54:34 :: ############################### Erreur Retraitement ###############################
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | StackTrace :
+   at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+   at Reprocess.ReprocessErrorFiles.reprocess(StreamWriter writer)
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | End 2...
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Index : 3
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Date aujourd'hui : 02-08-2020 22:54, Date de création : 02-08-2020 22:54, TimeSpan : 0.00573619102777778
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Temps d'existence du fichier : 0.00573619102777778 hrs >= Heure de retraitement : 0.005 hrs
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Ancien nom du fichier : 02082020225426____EDI_ORDERS.65684491.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv, Nouveau nom : EDI_ORDERS.65684491.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | settings.configurationGeneral.reprocess.countDown => 10
+
+02/08/2020 22:54:34 :: Database.dll => Database() | Creation d'une instance
+
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684491) | Creation d'un Instance.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684491) | SQL => SELECT ediFileID, fileName, filePath, fileReprocessCount FROM Reprocess WHERE ediFileID = 65684491
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() Reprocess obj recu
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | ##################################################
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | [ERROR] getById
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | StackTrace :    at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+
+02/08/2020 22:54:34 :: ############################### Erreur Retraitement ###############################
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | StackTrace :
+   at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+   at Reprocess.ReprocessErrorFiles.reprocess(StreamWriter writer)
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | End 2...
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Index : 4
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Date aujourd'hui : 02-08-2020 22:54, Date de création : 02-08-2020 22:54, TimeSpan : 0.00573342083333333
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Temps d'existence du fichier : 0.00573342083333333 hrs >= Heure de retraitement : 0.005 hrs
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Ancien nom du fichier : 02082020225426____EDI_ORDERS.65684500.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv, Nouveau nom : EDI_ORDERS.65684500.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | settings.configurationGeneral.reprocess.countDown => 10
+
+02/08/2020 22:54:34 :: Database.dll => Database() | Creation d'une instance
+
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684500) | Creation d'un Instance.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684500) | SQL => SELECT ediFileID, fileName, filePath, fileReprocessCount FROM Reprocess WHERE ediFileID = 65684500
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() Reprocess obj recu
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | ##################################################
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | [ERROR] getById
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | StackTrace :    at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+
+02/08/2020 22:54:34 :: ############################### Erreur Retraitement ###############################
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | StackTrace :
+   at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+   at Reprocess.ReprocessErrorFiles.reprocess(StreamWriter writer)
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | End 2...
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Index : 5
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Date aujourd'hui : 02-08-2020 22:54, Date de création : 02-08-2020 22:54, TimeSpan : 0.00578439533333333
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Temps d'existence du fichier : 0.00578439533333333 hrs >= Heure de retraitement : 0.005 hrs
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Ancien nom du fichier : 02082020225426____EDI_ORDERS.65684513.978811.CFCI.3024820132380.20200731.202007311135.RECU.IN.csv, Nouveau nom : EDI_ORDERS.65684513.978811.CFCI.3024820132380.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | settings.configurationGeneral.reprocess.countDown => 10
+
+02/08/2020 22:54:34 :: Database.dll => Database() | Creation d'une instance
+
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684513) | Creation d'un Instance.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById(ediFileID: 65684513) | SQL => SELECT ediFileID, fileName, filePath, fileReprocessCount FROM Reprocess WHERE ediFileID = 65684513
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() Reprocess obj recu
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | ##################################################
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | [ERROR] getById
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: ReprocessManager.dll => getById() | StackTrace :    at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+
+02/08/2020 22:54:34 :: ############################### Erreur Retraitement ###############################
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | Message : Cannot access a disposed object.
+Object name: 'SQLiteConnection'.
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | StackTrace :
+   at System.Data.SQLite.SQLiteConnection.CheckDisposed()
+   at System.Data.SQLite.SQLiteConnection.Close()
+   at Database.Manager.ReprocessManager.getById(String connectionString, Int32 ediFileID, StreamWriter writer)
+   at Reprocess.ReprocessErrorFiles.reprocess(StreamWriter writer)
+
+02/08/2020 22:54:34 :: Reprocess.dll => reprocess() | End 2...
+
+
+#################################### Import des documents ###################################
+
+02/08/2020 22:54:34 : Aucune importation planifiée trouvé!
+02/08/2020 22:54:34 : Probablement executé manuellement ???
+
+
+
+
+02/08/2020 22:54:34 : Tache Manuel
+02/08/2020 22:54:34 : Dossier : C:\Workspace\Connecteur-Sage-.Net\Application\CSV
+
+02/08/2020 22:54:34 : Scan du dossier ...
+
+02/08/2020 22:54:34 : Numbre de fichier ".csv" trouvé : 1
+02/08/2020 22:54:34 : -----> Fichier 0/1 : CFP41_000291.csv
+
+02/08/2020 22:54:34 : Import des commandes fournisseur désactivé.
+
+
+02/08/2020 22:54:34 : Import des bons de livraison fournisseur désactivé.
+
+
+02/08/2020 22:54:34 : Import des factures fournisseur désactivé.
+
+
+02/08/2020 22:54:34 : Import des commandes client activé.
+02/08/2020 22:54:34 : Le nom du fichier "CFP41_000291.csv" n'est pas le fichier attendu EDI_ORDERS.
+
+02/08/2020 22:54:34 : Import des bons de livraison désactivé.
+
+
+02/08/2020 22:54:34 : Import des factures désactivé.
+
+
+02/08/2020 22:54:34 : Import des stocks désactivé.
+
+
+
+02/08/2020 22:54:34 | Aucune erreur trouvé.
+
+
+
+02/08/2020 22:54:34 : Fin de l'execution
+
+Nombre de fichier scannés : 1
+Nombre de documents validées : 0
+Nombre de documents echouées : 1
+Nombre de documents déjà existants : 0
+
+################################ Export des documents ###############################
+
+02/08/2020 22:54:34 : Export des Commandes désactivé !
+
+02/08/2020 22:54:34 : Export des Bons de livraisons désactivé !
+
+02/08/2020 22:54:34 : Export des Factures désactivé !
+
+02/08/2020 22:54:34 : Export du Stock désactivé !
+
+02/08/2020 22:54:34 : Export Terminé !
+
+
+02/08/2020 22:54:34 : ################################ Alert Mail MAIL_EXP ###############################
+
+02/08/2020 22:54:34 : Il y a 0 erreur trouvé pendant l'export des documents.
+
+
+02/08/2020 22:54:34 : ################################ Alert Mail Execution ###############################
+
+
+
+02/08/2020 22:54:34 : ################################ Nettoyage des fichiers ###############################
+
+
+################################ Nettoyage De Fichier ###############################
+
+02/08/2020 22:54:34 :: Fichier-De-Nettoyage.dll => cleanFiles()
+02/08/2020 22:54:35 : cleanFiles() | Paramètres de nettoyage trouvés et chargés.
+
+02/08/2020 22:54:35 :: Fichier-De-Nettoyage.dll => cleanFiles() | Les paramètres de nettoyage sont désactivés !
+
+
+
+#################################### Configuration Général ###################################
+
+
+02/08/2020 22:54:35 : Init.dll => setDisplay(show : False)
+
+02/08/2020 22:54:35 : Init.dll => setDisplay() |Before| showWindow : 5
+02/08/2020 22:54:35 : Init.dll => setDisplay() |Before| isAppOpen : True
+02/08/2020 22:54:35 : Init.dll => setDisplay() |Before| ACP_ComptaCPT_CompteG : -1
+
+02/08/2020 22:54:35 : Init.dll => setDisplay() |After| showWindow : 5
+02/08/2020 22:54:35 : Init.dll => setDisplay() |After| isAppOpen : False
+02/08/2020 22:54:35 : Init.dll => setDisplay() |After| ACP_ComptaCPT_CompteG : -1
+
+##############################################################################################################################
+#################################################### L'import planifier ######################################################
+##### Version 1.17.5 ############################################################################################ JDevs #####
+##############################################################################################################################
+

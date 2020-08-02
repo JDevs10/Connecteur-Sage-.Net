@@ -1,0 +1,67 @@
+##############################################################################################################################
+#################################################### L'import planifier ######################################################
+##### Version 1.17.5 ############################################################################################ JDevs #####
+
+02/08/2020 22:57:51 : -----> Fichier 0/6 : CFP41_000291.csv
+02/08/2020 22:57:51 : Scan fichier...
+
+02/08/2020 22:57:51 : -----> Fichier 1/6 : EDI_ORDERS.65684471.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:57:51 : Scan fichier...
+02/08/2020 22:57:51 : Import Commande Manuel.
+02/08/2020 22:57:51 : Erreur[28] - ERROR [IM002]  [ODBC Driver Manager] Data source name not found and no default driver specified
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : orderId erreur
+02/08/2020 22:57:51 : Import annulée
+
+02/08/2020 22:57:51 : ********************** Fichier *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : Le fichier 'C:\Workspace\Connecteur-Sage-.Net\Application\CSV\EDI_ORDERS.65684471.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv' est déplacé dans ===> C:\Workspace\Connecteur-Sage-.Net\Application\Error File\02082020225751____EDI_ORDERS.65684471.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+
+02/08/2020 22:57:51 : -----> Fichier 2/6 : EDI_ORDERS.65684481.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN .csv
+02/08/2020 22:57:51 : Scan fichier...
+02/08/2020 22:57:51 : Import Commande Manuel.
+02/08/2020 22:57:51 : Erreur[28] - ERROR [IM002]  [ODBC Driver Manager] Data source name not found and no default driver specified
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : orderId erreur
+02/08/2020 22:57:51 : Import annulée
+
+02/08/2020 22:57:51 : ********************** Fichier *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : Le fichier 'C:\Workspace\Connecteur-Sage-.Net\Application\CSV\EDI_ORDERS.65684481.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN .csv' est déplacé dans ===> C:\Workspace\Connecteur-Sage-.Net\Application\Error File\02082020225751____EDI_ORDERS.65684481.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN .csv
+
+02/08/2020 22:57:51 : -----> Fichier 3/6 : EDI_ORDERS.65684491.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:57:51 : Scan fichier...
+02/08/2020 22:57:51 : Import Commande Manuel.
+02/08/2020 22:57:51 : Erreur[28] - ERROR [IM002]  [ODBC Driver Manager] Data source name not found and no default driver specified
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : orderId erreur
+02/08/2020 22:57:51 : Import annulée
+
+02/08/2020 22:57:51 : ********************** Fichier *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : Le fichier 'C:\Workspace\Connecteur-Sage-.Net\Application\CSV\EDI_ORDERS.65684491.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv' est déplacé dans ===> C:\Workspace\Connecteur-Sage-.Net\Application\Error File\02082020225751____EDI_ORDERS.65684491.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+
+02/08/2020 22:57:51 : -----> Fichier 4/6 : EDI_ORDERS.65684500.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:57:51 : Scan fichier...
+02/08/2020 22:57:51 : Import Commande Manuel.
+02/08/2020 22:57:51 : Erreur[28] - ERROR [IM002]  [ODBC Driver Manager] Data source name not found and no default driver specified
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : orderId erreur
+02/08/2020 22:57:51 : Import annulée
+
+02/08/2020 22:57:51 : ********************** Fichier *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : Le fichier 'C:\Workspace\Connecteur-Sage-.Net\Application\CSV\EDI_ORDERS.65684500.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv' est déplacé dans ===> C:\Workspace\Connecteur-Sage-.Net\Application\Error File\02082020225751____EDI_ORDERS.65684500.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+
+02/08/2020 22:57:51 : -----> Fichier 5/6 : EDI_ORDERS.65684513.978811.CFCI.3024820132380.20200731.202007311135.RECU.IN.csv
+02/08/2020 22:57:51 : Scan fichier...
+02/08/2020 22:57:51 : Import Commande Manuel.
+02/08/2020 22:57:51 : Erreur[28] - ERROR [IM002]  [ODBC Driver Manager] Data source name not found and no default driver specified
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : orderId erreur
+02/08/2020 22:57:51 : Import annulée
+
+02/08/2020 22:57:51 : ********************** Fichier *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : Le fichier 'C:\Workspace\Connecteur-Sage-.Net\Application\CSV\EDI_ORDERS.65684513.978811.CFCI.3024820132380.20200731.202007311135.RECU.IN.csv' est déplacé dans ===> C:\Workspace\Connecteur-Sage-.Net\Application\Error File\02082020225751____EDI_ORDERS.65684513.978811.CFCI.3024820132380.20200731.202007311135.RECU.IN.csv
+

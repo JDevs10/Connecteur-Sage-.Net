@@ -8632,22 +8632,8 @@ namespace importPlanifier.Classes
             intro_B.intro(logFileWriter_general);
 
             // Init database && tables
-            try
-            {
-                Database.Database db = new Database.Database();
-                db.initTables();
-            }
-            catch(Exception ex)
-            {
-                logFileWriter_general.WriteLine("");
-                logFileWriter_general.WriteLine("[ERROR] Init Tables");
-                logFileWriter_general.WriteLine("Message : " + ex.Message);
-                logFileWriter_general.WriteLine("StackTrace : " + ex.StackTrace);
-                logFileWriter_general.WriteLine("");
-                Console.WriteLine("[ERROR] Init Tables\n");
-                Console.WriteLine("Message : " + ex.Message);
-                Console.WriteLine("StackTrace : " + ex.StackTrace);
-            }
+            Database.Database db = new Database.Database(logFileWriter_general);
+            db.initTables(logFileWriter_general);
 
             //Reprocess
             logFileWriter_general.WriteLine("################################ Retraiter les Fichiers ERROR ###############################");

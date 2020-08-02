@@ -22,7 +22,7 @@
   },
   "reprocess": {
     "activate": false,
-    "hour": 0.0,
+    "hour": 0.5,
     "countDown": 0
   }
 }

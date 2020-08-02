@@ -37,17 +37,28 @@ namespace Database
             if (!File.Exists(directory_db + @"\" + DB_NAME))
             {
                 SQLiteConnection.CreateFile(directory_db + @"\" + DB_NAME);
-
-                //this.conn = new SQLiteConnection(connectionString);
-            }/*
-            else
-            {
-                this.conn = new SQLiteConnection(connectionString);
-                Console.WriteLine("Databse exist so establish sqliteConnection object.");
             }
-            */
-
             this.reprocessManager = new ReprocessManager();
+        }
+
+        public Database(StreamWriter writer)
+        {
+            writer.WriteLine("");
+            writer.WriteLine(DateTime.Now + " :: Database.dll => Database() | Creation d'une instance");
+            if (!Directory.Exists(directory_db))
+            {
+                Directory.CreateDirectory(directory_db);
+                writer.WriteLine(DateTime.Now + " :: Database.dll => Database() | Creation du repertoire => " + directory_db);
+            }
+            if (!File.Exists(directory_db + @"\" + DB_NAME))
+            {
+                SQLiteConnection.CreateFile(directory_db + @"\" + DB_NAME);
+                writer.WriteLine(DateTime.Now + " :: Database.dll => Database() | Creation de la base de donnee => " + directory_db + @"\" + DB_NAME);
+            }
+            this.reprocessManager = new ReprocessManager();
+
+            writer.WriteLine("");
+            writer.Flush();
         }
 
         public void initTables()
@@ -61,33 +72,20 @@ namespace Database
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup();
             
+        }
 
-            /*
-            reprocessManager.insert(connectionString, new Model.Reprocess(1, "ReprocessTest", "FilePathTest", 10));
-            reprocessManager.insert(connectionString, new Model.Reprocess(101,"ReprocessTest 11", "FilePathTest 1", 2));
-            reprocessManager.insert(connectionString, new Model.Reprocess(102, "ReprocessTest 22", "FilePathTest 2", 1));
-            reprocessManager.insert(connectionString, new Model.Reprocess(103, "ReprocessTest 33", "FilePathTest 3", 5));
+        public void initTables(StreamWriter writer)
+        {
+            writer.WriteLine(DateTime.Now + " :: Database.dll => initTables() | Creation d'une instance");
+            //#####################################################################
+            //##### Create all tables #############################################
 
+            // Reprocess Table
+            this.reprocessManager.createTable(connectionString, writer);
 
-            reprocessManager.update(connectionString, new Model.Reprocess(1, "ReprocessTest", "FilePathTest", 10000));
+            // Save a backup of the db in ./Backup/Database_backup.db
+            saveBackup(writer);
 
-
-            Console.WriteLine("Nub of rows 1st");
-            List<Model.Reprocess> testList = reprocessManager.getList(connectionString);
-            Console.WriteLine("Nub of rows : " + testList.Count);
-
-            reprocessManager.deleteById(connectionString, 103);
-
-            
-            Console.WriteLine("Nub of rows 2nd");
-            List<Model.Reprocess> testList_ = reprocessManager.getList(connectionString);
-            Console.WriteLine("Nub of rows : " + testList_.Count);
-            
-
-            reprocessManager.getById(connectionString, 1);
-            */
-
-            
         }
 
 
@@ -110,6 +108,44 @@ namespace Database
                 Console.WriteLine("Message : " + ex.Message);
                 Console.WriteLine("StackTrace : " + ex.StackTrace);
             }
+        }
+
+        public void saveBackup(StreamWriter writer)
+        {
+            try
+            {
+                writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | Creation d'une instance");
+
+                if (File.Exists(directory_db + @"\" + DB_NAME))
+                {
+                    writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | Le repertoire existe => " + directory_db + @"\" + DB_NAME);
+                    if (!Directory.Exists(directory_db + @"\Backup\"))
+                    {
+                        Directory.CreateDirectory(directory_db + @"\Backup\");
+                        writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | Le repertoire n'existe pas alors creer le => " + directory_db + @"\Backup\");
+                    }
+                    File.Copy(directory_db + @"\" + DB_NAME, directory_db + @"\Backup\" + DB_NAME_BACKUP, true);
+                    writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | Copie la BDD depuis \"" + directory_db + @"\" + DB_NAME + "\" a \"" + directory_db + @"\Backup\" + DB_NAME_BACKUP + "\"");
+                }
+                writer.Flush();
+            }
+            catch (Exception ex)
+            {
+                writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | ##################################################");
+                writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | ##### [ERROR] Database Backup ####################");
+                writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | Message : " + ex.Message);
+                writer.WriteLine(DateTime.Now + " :: Database.dll => saveBackup() | StackTrace : " + ex.StackTrace);
+                writer.Flush();
+            }
+        }
+
+        public string JsonFormat(Object obj)
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(obj, Newtonsoft.Json.Formatting.Indented);
+        }
+        public string JsonFormat(Array array)
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(array, Newtonsoft.Json.Formatting.Indented);
         }
     }
 }

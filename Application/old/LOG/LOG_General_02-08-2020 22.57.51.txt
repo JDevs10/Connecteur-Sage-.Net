@@ -1,0 +1,238 @@
+##############################################################################################################################
+#################################################### L'import planifier ######################################################
+##### Version 1.17.5 ############################################################################################ JDevs #####
+
+
+02/08/2020 22:57:51 :: Database.dll => Database() | Creation d'une instance
+
+02/08/2020 22:57:51 :: Database.dll => initTables() | Creation d'une instance
+
+02/08/2020 22:57:51 :: ReprocessManager.dll => createTable() | Creation d'une instance
+02/08/2020 22:57:51 :: ReprocessManager.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS 'Reprocess' ('ediFileID' INTEGER UNIQUE, 'fileName' TEXT NOT NULL, 'filePath' TEXT NOT NULL, 'fileReprocessCount' TEXT NOT NULL)
+02/08/2020 22:57:51 :: ReprocessManager.dll => createTable() | Table created
+02/08/2020 22:57:51 :: Database.dll => saveBackup() | Creation d'une instance
+02/08/2020 22:57:51 :: Database.dll => saveBackup() | Le repertoire existe => C:\Workspace\Connecteur-Sage-.Net\Application\db\Database.db
+02/08/2020 22:57:51 :: Database.dll => saveBackup() | Copie la BDD depuis "C:\Workspace\Connecteur-Sage-.Net\Application\db\Database.db" a "C:\Workspace\Connecteur-Sage-.Net\Application\db\Backup\Database_backup.db"
+################################ Retraiter les Fichiers ERROR ###############################
+
+02/08/2020 22:57:51 :: Reprocess.dll => reprocess()
+
+02/08/2020 22:57:51 :: Reprocess.dll => getEDI_CSV_Folder()
+02/08/2020 22:57:51 :: Reprocess.dll => getEDI_CSV_Folder() | dossier EDI CSV trouvé.
+
+02/08/2020 22:57:51 :: Reprocess.dll => checkFiles()
+02/08/2020 22:57:51 :: Reprocess.dll => checkFiles() | Aucun fichier EDI dans Error File.
+
+
+#################################### Import des documents ###################################
+
+02/08/2020 22:57:51 : Aucune importation planifiée trouvé!
+02/08/2020 22:57:51 : Probablement executé manuellement ???
+
+
+
+
+02/08/2020 22:57:51 : Tache Manuel
+02/08/2020 22:57:51 : Dossier : C:\Workspace\Connecteur-Sage-.Net\Application\CSV
+
+02/08/2020 22:57:51 : Scan du dossier ...
+
+02/08/2020 22:57:51 : Numbre de fichier ".csv" trouvé : 6
+02/08/2020 22:57:51 : -----> Fichier 0/6 : CFP41_000291.csv
+
+02/08/2020 22:57:51 : Import des commandes fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des bons de livraison fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des factures fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des commandes client activé.
+02/08/2020 22:57:51 : Le nom du fichier "CFP41_000291.csv" n'est pas le fichier attendu EDI_ORDERS.
+
+02/08/2020 22:57:51 : Import des bons de livraison désactivé.
+
+
+02/08/2020 22:57:51 : Import des factures désactivé.
+
+
+02/08/2020 22:57:51 : Import des stocks désactivé.
+
+
+02/08/2020 22:57:51 : -----> Fichier 1/6 : EDI_ORDERS.65684471.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+
+02/08/2020 22:57:51 : Import des commandes fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des bons de livraison fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des factures fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des commandes client activé.
+
+02/08/2020 22:57:51 : ********************** Information *********************
+02/08/2020 22:57:51 : Fichier Orders Test Trouvé
+02/08/2020 22:57:51 : Plus information sur l'import se trouve dans le log : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : A voir dans le fichier : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : -----> Fichier 2/6 : EDI_ORDERS.65684481.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN .csv
+
+02/08/2020 22:57:51 : Import des commandes fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des bons de livraison fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des factures fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des commandes client activé.
+
+02/08/2020 22:57:51 : ********************** Information *********************
+02/08/2020 22:57:51 : Fichier Orders Test Trouvé
+02/08/2020 22:57:51 : Plus information sur l'import se trouve dans le log : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : A voir dans le fichier : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : -----> Fichier 3/6 : EDI_ORDERS.65684491.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+
+02/08/2020 22:57:51 : Import des commandes fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des bons de livraison fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des factures fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des commandes client activé.
+
+02/08/2020 22:57:51 : ********************** Information *********************
+02/08/2020 22:57:51 : Fichier Orders Test Trouvé
+02/08/2020 22:57:51 : Plus information sur l'import se trouve dans le log : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : A voir dans le fichier : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : -----> Fichier 4/6 : EDI_ORDERS.65684500.978810.CFCI.3024820119114.20200731.202007311135.RECU.IN.csv
+
+02/08/2020 22:57:51 : Import des commandes fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des bons de livraison fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des factures fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des commandes client activé.
+
+02/08/2020 22:57:51 : ********************** Information *********************
+02/08/2020 22:57:51 : Fichier Orders Test Trouvé
+02/08/2020 22:57:51 : Plus information sur l'import se trouve dans le log : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : A voir dans le fichier : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : -----> Fichier 5/6 : EDI_ORDERS.65684513.978811.CFCI.3024820132380.20200731.202007311135.RECU.IN.csv
+
+02/08/2020 22:57:51 : Import des commandes fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des bons de livraison fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des factures fournisseur désactivé.
+
+
+02/08/2020 22:57:51 : Import des commandes client activé.
+
+02/08/2020 22:57:51 : ********************** Information *********************
+02/08/2020 22:57:51 : Fichier Orders Test Trouvé
+02/08/2020 22:57:51 : Plus information sur l'import se trouve dans le log : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+02/08/2020 22:57:51 : ********************** Erreur *********************
+02/08/2020 22:57:51 : Import annulée
+02/08/2020 22:57:51 : A voir dans le fichier : C:\Workspace\Connecteur-Sage-.Net\Application\LOG\LOG_Import\LOG_Import_02-08-2020 22.57.51.txt
+
+
+02/08/2020 22:57:51##################################################################################
+02/08/2020 22:57:51################################### Alert Mail ###################################
+
+
+02/08/2020 22:57:51################################### Alert Mail Erreur ###################################
+
+02/08/2020 22:57:51 | Aucun configuration d'AlertMail trouvé!
+
+
+
+02/08/2020 22:57:51 : Fin de l'execution
+
+Nombre de fichier scannés : 6
+Nombre de documents validées : 0
+Nombre de documents echouées : 6
+Nombre de documents déjà existants : 0
+
+################################ Export des documents ###############################
+
+02/08/2020 22:57:51 : Export des Commandes désactivé !
+
+02/08/2020 22:57:51 : Export des Bons de livraisons désactivé !
+
+02/08/2020 22:57:51 : Export des Factures désactivé !
+
+02/08/2020 22:57:51 : Export du Stock désactivé !
+
+02/08/2020 22:57:51 : Export Terminé !
+
+
+02/08/2020 22:57:51 : ################################ Alert Mail MAIL_EXP ###############################
+
+02/08/2020 22:57:51 : Il y a 0 erreur trouvé pendant l'export des documents.
+
+
+02/08/2020 22:57:51 : ################################ Alert Mail Execution ###############################
+
+
+
+02/08/2020 22:57:51 : ################################ Nettoyage des fichiers ###############################
+
+
+################################ Nettoyage De Fichier ###############################
+
+02/08/2020 22:57:51 :: Fichier-De-Nettoyage.dll => cleanFiles()
+02/08/2020 22:57:52 : cleanFiles() | Paramètres de nettoyage trouvés et chargés.
+
+02/08/2020 22:57:52 :: Fichier-De-Nettoyage.dll => cleanFiles() | Les paramètres de nettoyage sont désactivés !
+
+
+
+#################################### Configuration Général ###################################
+
+
+02/08/2020 22:57:52 : Init.dll => setDisplay(show : False)
+
+02/08/2020 22:57:52 : Init.dll => setDisplay() |Before| showWindow : 5
+02/08/2020 22:57:52 : Init.dll => setDisplay() |Before| isAppOpen : True
+02/08/2020 22:57:52 : Init.dll => setDisplay() |Before| ACP_ComptaCPT_CompteG : -1
+
+02/08/2020 22:57:52 : Init.dll => setDisplay() |After| showWindow : 5
+02/08/2020 22:57:52 : Init.dll => setDisplay() |After| isAppOpen : False
+02/08/2020 22:57:52 : Init.dll => setDisplay() |After| ACP_ComptaCPT_CompteG : -1
+
+##############################################################################################################################
+#################################################### L'import planifier ######################################################
+##### Version 1.17.5 ############################################################################################ JDevs #####
+##############################################################################################################################
+

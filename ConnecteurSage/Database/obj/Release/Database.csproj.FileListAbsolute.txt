@@ -36,4 +36,3 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.d
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.pdb
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.xml
-C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csprojAssemblyReference.cache

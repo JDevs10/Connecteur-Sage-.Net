@@ -24,3 +24,4 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Releas
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csproj.CoreCompileInputs.cache
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache
