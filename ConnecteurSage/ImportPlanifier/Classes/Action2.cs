@@ -8877,30 +8877,44 @@ namespace importPlanifier.Classes
 
                     if (configurationSaveLoad.configurationEmail.active)
                     {
-                        Process emailExe = null;
-                        if (configurationSaveLoad.configurationEmail.emailImport.active && configurationSaveLoad.configurationEmail.emailImport.atTheEnd)
+                        //Create log file
+                        if (!Directory.Exists(Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail"))
                         {
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail import.");
-                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Import_Mail_22");
-                            emailExe.WaitForExit();
+                            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail");
                         }
-                        if (configurationSaveLoad.configurationEmail.emailExport.active && configurationSaveLoad.configurationEmail.emailExport.atTheEnd)
+                        string _AlertMailLog_ = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail" + @"\" + string.Format("AlertMail_{0:dd-MM-yyyy_HH.mm.ss}.txt", DateTime.Now);
+                        var logFile_mail = File.Create(_AlertMailLog_);
+                        using (StreamWriter logFileWriter_mail = new StreamWriter(logFile_mail))
                         {
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail export.");
-                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Export_Mail_22");
-                            emailExe.WaitForExit();
-                        }
-                        if (configurationSaveLoad.configurationEmail.emailError.active && configurationSaveLoad.configurationEmail.emailError.active)
-                        {
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail erreur.");
-                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "All_Errors");
-                            emailExe.WaitForExit();
-                        }
-                        if (configurationSaveLoad.configurationEmail.emailSummary.active && configurationSaveLoad.configurationEmail.emailSummary.active)
-                        {
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail résumer.");
-                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Error_Summary");
-                            emailExe.WaitForExit();
+                            logFileWriter_mail.WriteLine("Test from Action2 before");
+                            logFileWriter_mail.Flush();
+                            logFileWriter_mail.Close();
+
+                            Process emailExe = null;
+                            if (configurationSaveLoad.configurationEmail.emailImport.active && configurationSaveLoad.configurationEmail.emailImport.atTheEnd)
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail import.");
+                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Import_Mail_22_AlertMailLog_"+ _AlertMailLog_);
+                                emailExe.WaitForExit();
+                            }
+                            if (configurationSaveLoad.configurationEmail.emailExport.active && configurationSaveLoad.configurationEmail.emailExport.atTheEnd)
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail export.");
+                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Export_Mail_22_AlertMailLog_" + _AlertMailLog_);
+                                emailExe.WaitForExit();
+                            }
+                            if (configurationSaveLoad.configurationEmail.emailError.active && configurationSaveLoad.configurationEmail.emailError.active)
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail erreur.");
+                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "All_Errors_AlertMailLog_" + _AlertMailLog_);
+                                emailExe.WaitForExit();
+                            }
+                            if (configurationSaveLoad.configurationEmail.emailSummary.active && configurationSaveLoad.configurationEmail.emailSummary.active)
+                            {
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail résumer.");
+                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Error_Summary_AlertMailLog_" + _AlertMailLog_);
+                                emailExe.WaitForExit();
+                            }
                         }
                     }
                 }

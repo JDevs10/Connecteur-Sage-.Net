@@ -831,12 +831,11 @@ namespace Alert_Mail
                     writer.Flush();
                     Console.WriteLine("body : " + body);
 
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Nombre Piece Join :\n"+ attachements.Count);
-                    writer.Flush();
-
                     // Fichier joint si besoin (facultatif)
                     if (attachements != null && attachements.Count > 0)
                     {
+                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Nombre Piece Join :\n" + attachements.Count);
+                        writer.Flush();
                         Console.WriteLine("attachements.Count : " + attachements.Count);
                         for (int i = 0; i < attachements.Count; i++)
                         {

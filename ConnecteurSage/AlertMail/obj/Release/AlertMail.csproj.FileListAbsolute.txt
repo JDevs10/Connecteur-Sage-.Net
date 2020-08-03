@@ -58,3 +58,5 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Connecteur-Info.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Connecteur-Info.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Connecteur-Info.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Connecteur-Info.pdb

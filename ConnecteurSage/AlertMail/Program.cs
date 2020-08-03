@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Alert_Mail.Classes;
 using Alert_Mail.Classes.Custom;
+using Init.Classes.Configuration;
 
 namespace AlertMail
 {
@@ -29,9 +30,41 @@ namespace AlertMail
         static void Main(string[] args)
         {
             //Create log file
-            logFileName_mail = logDirectoryName_mail + @"\" + string.Format("LOG_Import_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
+            if (!Directory.Exists(logDirectoryName_mail))
+            {
+                Directory.CreateDirectory(logDirectoryName_mail);
+            }
+            if (args.Length > 0 && args[0].Contains("_AlertMailLog_"))
+            {
+                string yyy = args[0];
+                string xxx = yyy.Split(new String[] { "_AlertMailLog_" }, StringSplitOptions.None)[1];
+                logFileName_mail = logDirectoryName_mail + @"\" + xxx;
+                /*
+                if (File.Exists(xxx))
+                {
+                    using (StreamWriter _int_ = new StreamWriter(xxx, true))
+                    {
+                        _int_.WriteLine("qwertyuiopasdfghjklzxcvbnm");
+                        _int_.WriteLine("qwertyuiopasdfghjklzxcvbnm");
+                        _int_.Flush();
+                        _int_.Close();
+                    }
+                }
+                else
+                {
+                    return;
+                }
+                */
+            }
+            else
+            {
+                Console.WriteLine("");
+                return;
+            }
+
+            //logFileName_mail = logDirectoryName_mail + @"\" + string.Format("LOG_Import_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
             var logFile_mail = File.Create(logFileName_mail);
-            using (StreamWriter logFileWriter_mail = new StreamWriter(logFile_mail))
+            using (StreamWriter logFileWriter_mail = new StreamWriter(logFileName_mail, true))
             {
                 // Load intro
                 Connecteur_Info.Custom.Batch_Intro intro_ = new Connecteur_Info.Custom.Batch_Intro();
