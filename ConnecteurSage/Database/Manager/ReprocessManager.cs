@@ -406,7 +406,7 @@ namespace Database.Manager
                         writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => getList() | Creation d'une instance");
                     }
                     writer.Flush();
-                    conn.Close();
+                    //conn.Close();
                     return list;
                 }
                 catch (Exception ex)
@@ -417,7 +417,7 @@ namespace Database.Manager
                     writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => getList() | StackTrace : " + ex.StackTrace);
                     writer.WriteLine("");
                     writer.Flush();
-                    conn.Close();
+                    //conn.Close();
                     return null;
                 }
             }
@@ -453,7 +453,7 @@ namespace Database.Manager
                         }
                     }
                     writer.Flush();
-                    conn.Close();
+                    //conn.Close();
                     return list;
                 }
                 catch (Exception ex)
@@ -464,7 +464,7 @@ namespace Database.Manager
                     writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => getById() | StackTrace : " + ex.StackTrace);
                     writer.WriteLine("");
                     writer.Flush();
-                    conn.Close();
+                    //conn.Close();
                     return null;
                 }
             }
@@ -479,11 +479,11 @@ namespace Database.Manager
                 {
                     int x = -9;
                     conn.Open();
-                    writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => update() | [ERROR] update");
+                    writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => update() | Creation d'une Instance");
 
                     if (conn.State == System.Data.ConnectionState.Open)
                     {
-                        writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => update() | [ERROR] update");
+                        writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => update() | SQL => UPDATE " + TABLE_NAME + " SET " + COLONNE_FILENAME + " = '" + reprocess.fileName + "', " + COLONNE_FILEPATH + " = '" + reprocess.filePath + "', " + COLONNE_COUNT + " = '" + reprocess.fileReprocessCount + "' WHERE " + COLONNE_EDIFILEID + " = " + reprocess.ediFileID);
                         SQLiteCommand command = new SQLiteCommand(@"UPDATE " + TABLE_NAME + " SET " + COLONNE_FILENAME + " = '" + reprocess.fileName + "', " + COLONNE_FILEPATH + " = '" + reprocess.filePath + "', " + COLONNE_COUNT + " = '" + reprocess.fileReprocessCount + "' WHERE " + COLONNE_EDIFILEID + " = " + reprocess.ediFileID, conn);
                         x = command.ExecuteNonQuery();
                         writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => update() | ediFileID : " + reprocess.ediFileID + " is Updated !");

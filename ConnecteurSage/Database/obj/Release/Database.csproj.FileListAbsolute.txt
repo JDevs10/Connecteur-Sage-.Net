@@ -15,7 +15,6 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\System.Dat
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csprojAssemblyReference.cache
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Database.dll.config
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Database.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Database.pdb
@@ -36,3 +35,6 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.d
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.pdb
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csprojAssemblyReference.cache

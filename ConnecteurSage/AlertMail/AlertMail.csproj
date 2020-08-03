@@ -68,6 +68,10 @@
       <Project>{b5e11fc4-f58c-40b9-99cc-b831ddd17f4a}</Project>
       <Name>Alert-Mail</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Connecteur-Info\Connecteur-Info.csproj">
+      <Project>{151fabb0-d64f-42ea-ab2a-aea6ebc854c2}</Project>
+      <Name>Connecteur-Info</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Init\Init.csproj">
       <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
       <Name>Init</Name>

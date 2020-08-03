@@ -138,3 +138,11 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dat
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\System.Data.SQLite.xml
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\System.Data.SQLite.dll.config
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dapper.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Database.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\System.Data.SQLite.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dapper.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Database.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Database.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\System.Data.SQLite.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\System.Data.SQLite.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ImportPlanifier\bin\Release\Dapper.xml

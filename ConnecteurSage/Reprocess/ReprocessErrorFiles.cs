@@ -232,6 +232,18 @@ namespace Reprocess
                                                     db.reprocessManager.update(db.connectionString, reprocess_db, writer);
                                                     writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | updated");
                                                     writer.Flush();
+
+                                                    File.Copy(file.FullName, directoryName_EDI + @"\" + newFileName, true);
+                                                    Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Copie : " + file.FullName + "  à :  " + directoryName_EDI + @"\" + newFileName);
+                                                    writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Copie : " + file.FullName + "  à :  " + directoryName_EDI + @"\" + newFileName);
+
+                                                    if (File.Exists(directoryName_EDI + @"\" + newFileName))
+                                                    {
+                                                        File.Delete(file.FullName);
+                                                        Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Supprimer le fichier : " + file.FullName);
+                                                        writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Le fichier EDI existe dans le dossier \"" + directoryName_EDI + "\".\nSupprimer le fichier : " + file.FullName);
+                                                    }
+                                                    writer.Flush();
                                                 }
                                                 writer.Flush();
                                             }
@@ -250,6 +262,18 @@ namespace Reprocess
                                                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Json :\n" + db.JsonFormat(reprocess));
                                                 db.reprocessManager.insert(db.connectionString, reprocess);
                                                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | inserted");
+                                                writer.Flush();
+
+                                                File.Copy(file.FullName, directoryName_EDI + @"\" + newFileName, true);
+                                                Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Copie : " + file.FullName + "  à :  " + directoryName_EDI + @"\" + newFileName);
+                                                writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Copie : " + file.FullName + "  à :  " + directoryName_EDI + @"\" + newFileName);
+                                                
+                                                if (File.Exists(directoryName_EDI + @"\" + newFileName))
+                                                {
+                                                    File.Delete(file.FullName);
+                                                    Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Supprimer le fichier : " + file.FullName);
+                                                    writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Le fichier EDI existe dans le dossier \"" + directoryName_EDI + "\".\nSupprimer le fichier : " + file.FullName);
+                                                }
                                                 writer.Flush();
                                             }
                                             

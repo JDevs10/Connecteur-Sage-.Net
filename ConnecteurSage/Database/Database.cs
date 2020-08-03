@@ -85,7 +85,8 @@ namespace Database
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup(writer);
-
+            writer.WriteLine("");
+            writer.WriteLine("");
         }
 
 

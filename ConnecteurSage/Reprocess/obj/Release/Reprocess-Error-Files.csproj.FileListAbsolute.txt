@@ -58,3 +58,11 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Database.
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\System.Data.SQLite.xml
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\System.Data.SQLite.dll.config
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Dapper.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Database.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\System.Data.SQLite.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Dapper.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Database.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Database.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\System.Data.SQLite.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\System.Data.SQLite.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Dapper.xml

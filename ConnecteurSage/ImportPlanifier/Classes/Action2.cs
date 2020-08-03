@@ -3193,7 +3193,8 @@ namespace importPlanifier.Classes
 
                                 recap_new.MailType = "Mail_IMP";
                                 recap_new.Client = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
-
+                                recap_new.Subject = "Connecteur ["+ recap_new.Client + "] ERREUR Import";
+                                /*
                                 if (recapLinesList_new.Count == 1)
                                 {
                                     recap_new.Subject = "Erreur d'import d'un document";
@@ -3202,6 +3203,7 @@ namespace importPlanifier.Classes
                                 {
                                     recap_new.Subject = "Erreur d'import des documents";
                                 }
+                                */
                                 recap_new.DateTimeCreated = string.Format("{0:dd-MM-yyyy HH:mm}", DateTime.Now);
                                 recap_new.DateTimeModified = "";
 
@@ -8802,7 +8804,7 @@ namespace importPlanifier.Classes
                                 Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
                                 configurationCustomMailSaveLoad.customMailRecap.MailType = "Mail_EXP";
                                 configurationCustomMailSaveLoad.customMailRecap.Client = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
-                                configurationCustomMailSaveLoad.customMailRecap.Subject = "Erreur d'export des documents";
+                                configurationCustomMailSaveLoad.customMailRecap.Subject = "Connecteur [" + configurationCustomMailSaveLoad.customMailRecap.Client + "] ERREUR Export";
                                 configurationCustomMailSaveLoad.customMailRecap.DateTimeCreated = string.Format("{0:dd-MM-yyyy HH:mm}", DateTime.Now);
                                 configurationCustomMailSaveLoad.customMailRecap.DateTimeModified = "";
 
@@ -8818,6 +8820,8 @@ namespace importPlanifier.Classes
                                 }
                                 configurationCustomMailSaveLoad.customMailRecap.Attachments = attchmentsList;
                                 configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_ERR_Exp, configurationCustomMailSaveLoad.customMailRecap);
+
+                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier " + configurationCustomMailSaveLoad.fileName_ERR_Exp + " créé.");
                             }
                             else
                             {
