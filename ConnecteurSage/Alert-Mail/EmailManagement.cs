@@ -29,7 +29,7 @@ namespace Alert_Mail
             return settings.configurationConnexion.SQL.PREFIX;
         }
 
-        public void createInportMailFile(StreamWriter writer, List<CustomMailSuccess> successList) 
+        public void createInportMailFile(Database.Database db, List<CustomMailSuccess> successList) 
         {
             if(successList.Count > 0)
             {
@@ -42,10 +42,10 @@ namespace Alert_Mail
                     {
                         if (configurationSaveLoad1.configurationEmail.emailImport.active)
                         {
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | ################################ Alert Mail Import ###############################");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Il y a " + successList.Count + " documents qui sont importé.");
+                            db.alertMailLogManager.insert(db.connectionString, "");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | ################################ Alert Mail Import ###############################");
+                            db.alertMailLogManager.insert(db.connectionString, "");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Il y a " + successList.Count + " documents qui sont importé.");
 
                             if (configurationSaveLoad1.configurationEmail.emailImport.eachDocument)
                             {
@@ -55,7 +55,7 @@ namespace Alert_Mail
                                 // Inform the client
                                 if (configurationSaveLoad1.configurationEmail.emailImport.informClient)
                                 {
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer le client à chaque import de document.");
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer le client à chaque import de document.");
 
                                     string header = "Bonjour, \n";
                                     string body = "La commande : " + successList[0].NumCommande + " de " + successList[0].Client + " est importée.\nLa livraison est prévue pour le " + successList[0].DateTimeDelivery + ".\n";
@@ -67,14 +67,14 @@ namespace Alert_Mail
                                     }
 
                                     // send mail
-                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, writer);
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | email envoyé au client.");
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, db);
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | email envoyé au client.");
                                 }
                                 
                                 // Inform the team
                                 if (configurationSaveLoad1.configurationEmail.emailImport.informTeam)
                                 {
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer l'équipe à chaque import de document.");
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer l'équipe à chaque import de document.");
 
                                     string header = "Bonjour, \n";
                                     string body = "La commande : " + successList[0].NumCommande + " de " + successList[0].Client + " est importée.\nLa livraison est prévue pour le " + successList[0].DateTimeDelivery + ".\n";
@@ -86,8 +86,8 @@ namespace Alert_Mail
                                     }
 
                                     // send mail
-                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, writer);
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | email envoyé à l'équipe.");
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, db);
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | email envoyé à l'équipe.");
                                 }
 
                                 // clear the list after each successful import
@@ -95,41 +95,39 @@ namespace Alert_Mail
                             }
                             else if (configurationSaveLoad1.configurationEmail.emailImport.atTheEnd)
                             {
-                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer le client et ou l'équipe à la fin de l'execution.");
+                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Informer le client et ou l'équipe à la fin de l'execution.");
 
                                 Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
                                 configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_SUC_Imp, successList);
 
-                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Le fichier " + configurationCustomMailSaveLoad.fileName_SUC_Imp + " est créé!");
+                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Le fichier " + configurationCustomMailSaveLoad.fileName_SUC_Imp + " est créé!");
 
                                 // clear the list after each successful import
                                 successList.Clear();
                             }
-                            writer.WriteLine("");
-                            writer.Flush();
+                            db.alertMailLogManager.insert(db.connectionString, "");
                         }
                         else
                         {
-                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Notification mail import est désactivé!");
-                            writer.WriteLine("");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Notification mail import est désactivé!");
+                            db.alertMailLogManager.insert(db.connectionString, "");
                         }
                     }
                     else
                     {
-                        writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | AlertMail est désactivé!");
-                        writer.WriteLine("");
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | AlertMail est désactivé!");
+                        db.alertMailLogManager.insert(db.connectionString, "");
                     }
                 }
                 else
                 {
-                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Aucune configuration d'AlertMail trouvé!");
-                    writer.WriteLine("");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createInportMailFile() | Aucune configuration d'AlertMail trouvé!");
+                    db.alertMailLogManager.insert(db.connectionString, "");
                 }
             }
-            writer.Flush();
         }
 
-        public void createExportMailFile(StreamWriter writer, List<CustomMailRecapLines> successLinesList, List<CustomMailSuccess> successList)
+        public void createExportMailFile(Database.Database db, List<CustomMailRecapLines> successLinesList, List<CustomMailSuccess> successList)
         {
             if(successLinesList.Count > 0)
             {
@@ -142,10 +140,10 @@ namespace Alert_Mail
                     {
                         if (configurationSaveLoad1.configurationEmail.emailExport.active)
                         {
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | ################################ Alert Mail Export ###############################");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Il y a " + successLinesList.Count + " documents qui sont exporté!");
+                            db.alertMailLogManager.insert(db.connectionString, "");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | ################################ Alert Mail Export ###############################");
+                            db.alertMailLogManager.insert(db.connectionString, "");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Il y a " + successLinesList.Count + " documents qui sont exporté!");
 
                             if (configurationSaveLoad1.configurationEmail.emailExport.eachDocument)
                             {
@@ -155,7 +153,7 @@ namespace Alert_Mail
                                 // Inform the client
                                 if (configurationSaveLoad1.configurationEmail.emailExport.informClient)
                                 {
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer le client à chaque export de document.");
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer le client à chaque export de document.");
 
                                     string header = "Bonjour, \n";
                                     string body = "Le document : " + successList[0].NumCommande + " est exportée.\n";
@@ -167,14 +165,14 @@ namespace Alert_Mail
                                     }
 
                                     // send mail
-                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, writer);
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | email envoyé au client.");
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, db);
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | email envoyé au client.");
                                 }
 
                                 // Inform the team
                                 if (configurationSaveLoad1.configurationEmail.emailImport.informTeam)
                                 {
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer l'équipe à chaque export de document.");
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer l'équipe à chaque export de document.");
 
                                     string header = "Bonjour, \n";
                                     string body = "Le document : " + successList[0].NumCommande + " est exportée.\n";
@@ -186,8 +184,8 @@ namespace Alert_Mail
                                     }
 
                                     // send mail
-                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, writer);
-                                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | email envoyé à l'équipe.");
+                                    EnvoiMail(configurationSaveLoad1.configurationEmail, "client", successList[0].Subject, header + body + footer, null, db);
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | email envoyé à l'équipe.");
                                 }
 
                                 // clear the list after each successful import
@@ -195,49 +193,47 @@ namespace Alert_Mail
                             }
                             else if (configurationSaveLoad1.configurationEmail.emailExport.atTheEnd)
                             {
-                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer le client et ou l'équipe à la fin de l'execution.");
+                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Informer le client et ou l'équipe à la fin de l'execution.");
 
                                 Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
                                 configurationCustomMailSaveLoad.saveInfo(configurationCustomMailSaveLoad.fileName_SUC_Exp, successList);
 
-                                writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Le fichier " + configurationCustomMailSaveLoad.fileName_SUC_Exp + " est créé!");
+                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Le fichier " + configurationCustomMailSaveLoad.fileName_SUC_Exp + " est créé!");
 
                             }
-                            writer.WriteLine("");
-                            writer.Flush();
+                            db.alertMailLogManager.insert(db.connectionString, "");
                             successLinesList.Clear();
                         }
                         else
                         {
-                            writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Notification mail export est désactivé!");
-                            writer.WriteLine("");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Notification mail export est désactivé!");
+                            db.alertMailLogManager.insert(db.connectionString, "");
                         }
                     }
                     else
                     {
-                        writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | AlertMail est désactivé!");
-                        writer.WriteLine("");
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | AlertMail est désactivé!");
+                        db.alertMailLogManager.insert(db.connectionString, "");
                     }
                 }
                 else
                 {
-                    writer.WriteLine(DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Aucune configuration d'AlertMail trouvé!");
-                    writer.WriteLine("");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Alert-Mail => EmailManagement => createExportMailFile() | Aucune configuration d'AlertMail trouvé!");
+                    db.alertMailLogManager.insert(db.connectionString, "");
                 }
             }
         }
 
-        public MailCustom generateMailBody(string type, StreamWriter writer)
+        public MailCustom generateMailBody(string type, Database.Database db)
         {
-            writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody(type: " + type + ") | Creation d'une instance.");
+            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody(type: " + type + ") | Creation d'une instance.");
 
             if (type.Equals("client_import"))
             {
                 List<CustomMailSuccess> success_imp_list = null;
                 ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
 
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => client_import");
-                writer.Flush();
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => client_import");
 
                 bool sendMailImp = false;
                 string textImp = "";
@@ -282,8 +278,7 @@ namespace Alert_Mail
                 if (sendMailImp)
                 {
                     MailCustom xxx = new MailCustom("[" + getDNS() + "] " + success_imp_list[0].Subject, "Bonjour, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version client.", null);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else
@@ -297,8 +292,7 @@ namespace Alert_Mail
                 List<CustomMailSuccess> success_imp_list = null;
                 ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
 
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => team_import");
-                writer.Flush();
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => team_import");
 
                 bool sendMailImp = false;
                 string textImp = "";
@@ -343,8 +337,7 @@ namespace Alert_Mail
                 if (sendMailImp)
                 {
                     MailCustom xxx = new MailCustom("[" + getDNS() + "] " + success_imp_list[0].Subject, "Bonjour Team, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version équipe.", null);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else
@@ -358,8 +351,7 @@ namespace Alert_Mail
                 List<CustomMailSuccess> success_exp_list = null;
                 ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
 
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => client_export");
-                writer.Flush();
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => client_export");
 
                 bool sendMailExp = false;
                 string textExp = "";
@@ -404,8 +396,7 @@ namespace Alert_Mail
                 if (sendMailExp)
                 {
                     MailCustom xxx = new MailCustom("[" + getDNS() + "] " + success_exp_list[0].Subject, "Bonjour, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version client.", null);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else
@@ -419,8 +410,7 @@ namespace Alert_Mail
                 List<CustomMailSuccess> success_exp_list = null;
                 ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
 
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => team_export");
-                writer.Flush();
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => team_export");
 
                 bool sendMailExp = false;
                 string textExp = "";
@@ -466,8 +456,7 @@ namespace Alert_Mail
                 if (sendMailExp)
                 {
                     MailCustom xxx = new MailCustom("[" + getDNS() + "] " + success_exp_list[0].Subject, "Bonjour Team, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version équipe.", null);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else
@@ -482,8 +471,7 @@ namespace Alert_Mail
                 CustomMailRecap recap_exp = null;
                 ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
 
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => client_error");
-                writer.Flush();
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => client_error");
 
                 bool sendMailImp = false;
                 string textImp = "";
@@ -581,28 +569,24 @@ namespace Alert_Mail
                 if (sendMailImp & !sendMailExp)
                 {
                     xxx = new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + recap_imp.Client + "]. Version client.", null);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else if (sendMailExp & !sendMailImp)
                 {
                     xxx = new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + recap_exp.Client + "]. Version client.", null);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else if (sendMailImp && sendMailExp)
                 {
                     xxx = new MailCustom("[" + getDNS() + "] " + recap_imp.Subject + " et " + recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version client.", null);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else
                 {
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Nothing");
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Nothing");
                     return xxx;
                 }
 
@@ -613,8 +597,7 @@ namespace Alert_Mail
                 CustomMailRecap recap_exp = null;
                 ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new ConfigurationCustomMailSaveLoad();
 
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => log");
-                writer.Flush();
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | type => log");
 
                 bool sendMailImp = false;
                 string textImp = "";
@@ -691,22 +674,19 @@ namespace Alert_Mail
                 if (sendMailImp & !sendMailExp)
                 {
                     xxx = new MailCustom("[" + recap_imp.Client + "] " + recap_imp.Subject, "Bonjour Team BDC, \n\n" + textImp + "\nCordialement,\nConnecteur SAGE [" + recap_imp.Client + "]. Version équipe", recap_imp.Attachments);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else if (sendMailExp & !sendMailImp)
                 {
                     xxx = new MailCustom("[" + recap_exp.Client + "] " + recap_exp.Subject, "Bonjour Team BDC, \n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + recap_exp.Client + "]. Version équipe", recap_exp.Attachments);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else if (sendMailImp && sendMailExp)
                 {
                     xxx = new MailCustom("[" + getDNS() + "] " + recap_imp.Subject + " et " + recap_exp.Subject, "Bonjour, \n\n" + textImp + "\n\n\n" + textExp + "\nCordialement,\nConnecteur SAGE [" + getDNS() + "]. Version équipe", attachements);
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Json :\n" + Newtonsoft.Json.JsonConvert.SerializeObject(xxx, Newtonsoft.Json.Formatting.Indented));
                     return xxx;
                 }
                 else
@@ -716,8 +696,7 @@ namespace Alert_Mail
             }
             else
             {
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Aucun type trouvé!");
-                writer.Flush();
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => generateMailBody() | Aucun type trouvé!");
                 return null;
             }
         }
@@ -741,11 +720,11 @@ namespace Alert_Mail
             return string.Format("{0:n1}{1}", size, suffixes[cpt]);
         }
 
-        public void EnvoiMail(ConfigurationEmail mConfigurationEmail, string type, string subject, string body, List<string> attachements, StreamWriter writer)
+        public void EnvoiMail(ConfigurationEmail mConfigurationEmail, string type, string subject, string body, List<string> attachements, Database.Database db)
         {
             try
             {
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Creation d'une instance.");
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Creation d'une instance.");
                 if (mConfigurationEmail.active)
                 {
                     // Objet mail
@@ -753,17 +732,17 @@ namespace Alert_Mail
 
                     // Expéditeur (obligatoire). Notez qu'on peut spécifier le nom
                     msg.From = new MailAddress(Utils.Decrypt(mConfigurationEmail.connexion.login), "CONNECTEUR SAGE [" + getDNS() + "]");
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Utiliser l'adresse \"" + mConfigurationEmail.connexion.login + "\" sur le nom de \"CONNECTEUR SAGE [" + getDNS() + "]\" pour l'envoie du mail.");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Utiliser l'adresse \"" + mConfigurationEmail.connexion.login + "\" sur le nom de \"CONNECTEUR SAGE [" + getDNS() + "]\" pour l'envoie du mail.");
 
                     Console.WriteLine("emailClientList : " + mConfigurationEmail.emailLists.emailClientList[0]);
 
                     // Destinataires (il en faut au moins un)
                     if (type.Equals("client"))
                     {
-                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type client.");
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type client.");
                         if (mConfigurationEmail.emailLists.activeClient)
                         {
-                            writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Envoie des mails client activé!");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Envoie des mails client activé!");
                             for (int x = 0; x < mConfigurationEmail.emailLists.emailClientList.Count; x++)
                             {
                                 if (!string.IsNullOrEmpty(mConfigurationEmail.emailLists.emailClientList[x]))
@@ -771,26 +750,24 @@ namespace Alert_Mail
                                     Console.WriteLine("");
                                     Console.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse client \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
                                     msg.To.Add(new MailAddress(mConfigurationEmail.emailLists.emailClientList[x], mConfigurationEmail.emailLists.emailClientList[x]));
-                                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse client \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
-                                    writer.Flush();
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse client \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
                                 }
                             }
                         }
                         else
                         {
                             Console.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | L'envoi des mails client sont désactivé!");
-                            writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | L'envoi des mails client sont désactivé!");
-                            writer.Flush();
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | L'envoi des mails client sont désactivé!");
                             return;
                         }
                         
                     }
                     else if (type.Equals("log"))
                     {
-                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type team.");
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type team.");
                         if (mConfigurationEmail.emailLists.activeTeam)
                         {
-                            writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Envoie des mails team activé!");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Envoie des mails team activé!");
                             for (int x = 0; x < mConfigurationEmail.emailLists.emailTeamList.Count; x++)
                             {
                                 if (!string.IsNullOrEmpty(mConfigurationEmail.emailLists.emailTeamList[x]))
@@ -798,44 +775,38 @@ namespace Alert_Mail
                                     Console.WriteLine("");
                                     Console.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse team \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
                                     msg.To.Add(new MailAddress(mConfigurationEmail.emailLists.emailTeamList[x], mConfigurationEmail.emailLists.emailTeamList[x]));
-                                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse team \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
-                                    writer.Flush();
+                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse team \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
                                 }
                             }
                         }
                         else
                         {
                             Console.WriteLine("L'envoi des mails team sont désactivé!");
-                            writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | L'envoi des mails team sont désactivé!");
-                            writer.Flush();
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | L'envoi des mails team sont désactivé!");
                             return;
                         }
                     }
                     else
                     {
                         Console.WriteLine("Mail type n'est pas client ou log");
-                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
-                        writer.Flush();
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
                         return;
                     }
 
 
                     msg.Subject = subject;
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Subject :\n" + subject);
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Subject :\n" + subject);
 
                     Console.WriteLine("Suject : " + subject);
                     // Texte du mail (facultatif)
                     msg.Body = body;
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Body :\n"+ body);
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Body :\n"+ body);
                     Console.WriteLine("body : " + body);
 
                     // Fichier joint si besoin (facultatif)
                     if (attachements != null && attachements.Count > 0)
                     {
-                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Nombre Piece Join :\n" + attachements.Count);
-                        writer.Flush();
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Nombre Piece Join :\n" + attachements.Count);
                         Console.WriteLine("attachements.Count : " + attachements.Count);
                         for (int i = 0; i < attachements.Count; i++)
                         {
@@ -851,16 +822,14 @@ namespace Alert_Mail
                         // Envoi du message SMTP
                         client = new SmtpClient(Utils.Decrypt(mConfigurationEmail.connexion.smtp), Convert.ToInt32(Utils.Decrypt(mConfigurationEmail.connexion.port)));
                         client.Credentials = new NetworkCredential(Utils.Decrypt(mConfigurationEmail.connexion.login), Utils.Decrypt(mConfigurationEmail.connexion.password));
-                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | smtp : \"" + mConfigurationEmail.connexion.smtp + "\" | Port : \"" + mConfigurationEmail.connexion.port + "\"");
-                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | login : \""+ mConfigurationEmail.connexion.login + "\" | pwd : \""+ mConfigurationEmail.connexion.password + "\"");
-                        writer.Flush();
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | smtp : \"" + mConfigurationEmail.connexion.smtp + "\" | Port : \"" + mConfigurationEmail.connexion.port + "\"");
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | login : \""+ mConfigurationEmail.connexion.login + "\" | pwd : \""+ mConfigurationEmail.connexion.password + "\"");
                     }
                     else
                     {
                         Console.WriteLine("");
                         Console.WriteLine(DateTime.Now + " : Les paramètres de connexion ne sont pas correcte!");
-                        writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
-                        writer.Flush();
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
                         return;
                     }
 
@@ -873,14 +842,12 @@ namespace Alert_Mail
 
                     Console.WriteLine("");
                     Console.WriteLine(DateTime.Now + " : Envoi de Mail..OK");
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
                 }
                 else
                 {
                     Console.WriteLine("La configuration des alert mail sont désactivé !");
-                    writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
-                    writer.Flush();
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n'est pas client ou log");
                 }
             }
             catch (Exception e)
@@ -889,13 +856,13 @@ namespace Alert_Mail
                 Console.WriteLine(DateTime.Now + " | Message : " + e.Message);
                 Console.WriteLine(DateTime.Now + " | StackTrace : " + e.StackTrace);
 
-                writer.WriteLine(DateTime.Now + " :: ############################### Exception EnvoiMail ###############################");
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Message : " + e.Message);
-                writer.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | StackTrace : " + e.StackTrace);
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception EnvoiMail ###############################");
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Message : " + e.Message);
+                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | StackTrace : " + e.StackTrace);
 
 
 
-                writer.WriteLine("");
+                db.alertMailLogManager.insert(db.connectionString, "");
                 //Console.ReadLine();
             }
         }

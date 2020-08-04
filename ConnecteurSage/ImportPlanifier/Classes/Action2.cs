@@ -21,7 +21,7 @@ namespace importPlanifier.Classes
 {
     class Action2
     {
-        //private static string filename = "";
+        private static Database.Database db;
         private string locationPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         private string dir;
         private static int nbr = 0;
@@ -3114,7 +3114,7 @@ namespace importPlanifier.Classes
 
                     //create success mail import to notify the client or team at each import
                     Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
-                    emailManagement.createInportMailFile(logFileWriter_general, successList);
+                    emailManagement.createInportMailFile(db, successList);
 
 
                     //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
@@ -3164,7 +3164,7 @@ namespace importPlanifier.Classes
                 if (successList.Count != 0)
                 {
                     Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
-                    emailManagement.createInportMailFile(logFileWriter_general, successList);
+                    emailManagement.createInportMailFile(db, successList);
                 }
 
                 if (recapLinesList_new.Count != 0)
@@ -8634,7 +8634,7 @@ namespace importPlanifier.Classes
             intro_B.intro(logFileWriter_general);
 
             // Init database && tables
-            Database.Database db = new Database.Database(logFileWriter_general);
+            db = new Database.Database(logFileWriter_general);
             db.initTables(logFileWriter_general);
 
             //Reprocess
@@ -8874,52 +8874,102 @@ namespace importPlanifier.Classes
                 {
                     configurationSaveLoad.Load();
                     logFileWriter_general.WriteLine(DateTime.Now + " : Configuration AlertMail trouvé.");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Configuration AlertMail trouvé.");
 
                     if (configurationSaveLoad.configurationEmail.active)
                     {
-                        //Create log file
+                        Process emailExe = null;
+                        Connecteur_Info.Custom.Batch_Intro intro_B_ = new Connecteur_Info.Custom.Batch_Intro();
+                        db.alertMailLogManager.insert(db.connectionString, intro_B_.intro("String"));
+
+                        if (configurationSaveLoad.configurationEmail.emailImport.active && configurationSaveLoad.configurationEmail.emailImport.atTheEnd)
+                        {
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail import.");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Execution du mail import.");
+                            logFileWriter_general.Flush();
+                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Import_Mail_22");
+                            emailExe.WaitForExit();
+
+                        }
+                        //=============================================================================================================================================
+
+                        if (configurationSaveLoad.configurationEmail.emailExport.active && configurationSaveLoad.configurationEmail.emailExport.atTheEnd)
+                        {
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail export.");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Execution du mail export.");
+                            logFileWriter_general.Flush();
+                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Export_Mail_22");
+                            emailExe.WaitForExit();
+                        }
+
+                        //=============================================================================================================================================
+
+                        if (configurationSaveLoad.configurationEmail.emailError.active && configurationSaveLoad.configurationEmail.emailError.active)
+                        {
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail erreur.");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Execution du mail erreur.");
+                            logFileWriter_general.Flush();
+                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "All_Errors");
+                            emailExe.WaitForExit();
+                        }
+
+                        //===============================================================================================================================================
+
+                        if (configurationSaveLoad.configurationEmail.emailSummary.active && configurationSaveLoad.configurationEmail.emailSummary.active)
+                        {
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail résumer.");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Execution du mail résumer.");
+                            logFileWriter_general.Flush();
+                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Error_Summary");
+                            emailExe.WaitForExit();
+                        }
+
+                        //===============================================================================================================================================
+
+                        Console.WriteLine(DateTime.Now + " : Mails send... Done");
+                    }
+
+                    //Create log file
+                    string _AlertMailLog_ = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail" + @"\" + string.Format("AlertMail_{0:dd-MM-yyyy_HH.mm.ss}.txt", DateTime.Now);
+                    try
+                    {
                         if (!Directory.Exists(Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail"))
                         {
                             Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail");
+                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Créer le répertoire => " + Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail"));
                         }
-                        string _AlertMailLog_ = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_AlertMail" + @"\" + string.Format("AlertMail_{0:dd-MM-yyyy_HH.mm.ss}.txt", DateTime.Now);
-                        var logFile_mail = File.Create(_AlertMailLog_);
-                        using (StreamWriter logFileWriter_mail = new StreamWriter(logFile_mail))
-                        {
-                            logFileWriter_mail.WriteLine("Test from Action2 before");
-                            logFileWriter_mail.Flush();
-                            logFileWriter_mail.Close();
 
-                            Process emailExe = null;
-                            if (configurationSaveLoad.configurationEmail.emailImport.active && configurationSaveLoad.configurationEmail.emailImport.atTheEnd)
+                        var logFile_mail = File.Create(_AlertMailLog_);
+                        using (StreamWriter writer = new StreamWriter(logFile_mail))
+                        {
+                            int cpt = 0;
+                            List<Database.Model.AlertMailLog> listLog = db.alertMailLogManager.getList(db.connectionString, logFileWriter_general);
+                            logFileWriter_general.WriteLine(DateTime.Now + " : " + listLog.Count + " lignes de log trouvé");
+                            for (int x = 0; x < listLog.Count; x++)
                             {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail import.");
-                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Import_Mail_22_AlertMailLog_"+ _AlertMailLog_);
-                                emailExe.WaitForExit();
+                                writer.WriteLine(listLog[x].log);
+                                writer.Flush();
+                                cpt++;
                             }
-                            if (configurationSaveLoad.configurationEmail.emailExport.active && configurationSaveLoad.configurationEmail.emailExport.atTheEnd)
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail export.");
-                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Export_Mail_22_AlertMailLog_" + _AlertMailLog_);
-                                emailExe.WaitForExit();
-                            }
-                            if (configurationSaveLoad.configurationEmail.emailError.active && configurationSaveLoad.configurationEmail.emailError.active)
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail erreur.");
-                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "All_Errors_AlertMailLog_" + _AlertMailLog_);
-                                emailExe.WaitForExit();
-                            }
-                            if (configurationSaveLoad.configurationEmail.emailSummary.active && configurationSaveLoad.configurationEmail.emailSummary.active)
-                            {
-                                logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail résumer.");
-                                emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Error_Summary_AlertMailLog_" + _AlertMailLog_);
-                                emailExe.WaitForExit();
-                            }
+                            writer.Close();
+                            logFileWriter_general.WriteLine(DateTime.Now + " : Ecriture des logs sont terminé. " + cpt + "/" + listLog.Count);
                         }
+
+                        db.alertMailLogManager.deleteAll(db.connectionString, logFileWriter_general);
                     }
+                    catch(Exception ex)
+                    {
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ####################################################");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : ##### [ERROR] AlertMailLog ##########################");
+                        logFileWriter_general.WriteLine(DateTime.Now + " : Message : " + ex.Message);
+                        logFileWriter_general.WriteLine(DateTime.Now + " : StackTrace : " + ex.StackTrace);
+                        logFileWriter_general.WriteLine("");
+                    }
+
+                    logFileWriter_general.WriteLine(DateTime.Now + " : AlertMail log se situe à " + _AlertMailLog_);
+                    logFileWriter_general.WriteLine("");
+                    logFileWriter_general.Flush();
                 }
-                logFileWriter_general.WriteLine("");
-                Console.WriteLine(DateTime.Now + " : Mails send... Done");
             }
             catch (Exception ex)
             {
