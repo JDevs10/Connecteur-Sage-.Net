@@ -12,7 +12,7 @@ namespace Alert_Mail.Classes
     public class ConfigurationSaveLoad
     {
         public ConfigurationEmail configurationEmail { get; set; }
-        private string fileName = "SettingMail.json";
+        public string fileName = "SettingMail.json";
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
         public ConfigurationSaveLoad(){ }

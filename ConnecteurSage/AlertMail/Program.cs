@@ -52,7 +52,7 @@ namespace AlertMail
                 else
                 {
                     SW = 5;
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Fichier init.json n'existe pas.");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Fichier init.json n existe pas.");
                     db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: SW = 5.");
                 }
                 db.alertMailLogManager.insert(db.connectionString, "");
@@ -66,7 +66,7 @@ namespace AlertMail
                 Console.WriteLine("Mode débogage 2 : " + ex.Message);
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: ##### [ERROR] Window Mode ##################################################");
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Message => "+ex.Message);
-                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: StackTrace => " + ex.StackTrace);
+                //db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: StackTrace => " + ex.StackTrace);
                 db.alertMailLogManager.insert(db.connectionString, "");
                 return;
             }
@@ -90,22 +90,6 @@ namespace AlertMail
                 {
                     pendingFilesMail(settings, db); //Send a Mail every x time
                 }
-                else if (args.Length > 0 && args[0] == "Import_Mail_11") //Send a Mail after each document import
-                {
-                    importMail(settings, 11, db);
-                }
-                else if (args.Length > 0 && args[0] == "Import_Mail_22") //Send a Mail after all documents imported 
-                {
-                    importMail(settings, 22, db);
-                }
-                else if (args.Length > 0 && args[0] == "Export_Mail_11") //Send a Mail after each document export
-                {
-                    exportMail(settings, 11, db);
-                }
-                else if (args.Length > 0 && args[0] == "Export_Mail_22") //Send a Mail after all documents exported 
-                {
-                    exportMail(settings, 22, db);
-                }
                 else if (args.Length > 0 && args[0] == "All_Errors") //Send a Mail after the connecteur execution 
                 {
                     errorMail(settings, db);
@@ -128,305 +112,6 @@ namespace AlertMail
             db.alertMailLogManager.insert(db.connectionString, "");
 
             //Console.ReadLine();
-        }
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// _x_ argument (11 or 22) depends, if its after each import "11" or at the end of all import "22"
-        /// 
-        private static void importMail(ConfigurationEmail settings, int _x_, Database.Database db)
-        {
-            if (settings.emailImport.active)
-            {
-                if (settings.emailImport.eachDocument && _x_ == 11)
-                {
-
-                }
-                else if (settings.emailImport.atTheEnd && _x_ == 22)
-                {
-                    Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
-                    try
-                    {
-                        // get and load the file
-                        Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
-                        configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Imp, new List<CustomMailSuccess>());
-
-                        // Mapping
-                        MailCustom mMailCustom_client = null;
-                        MailCustom mMailCustom_team = null;
-                        try
-                        {
-                            mMailCustom_client = emailManagement.generateMailBody("client_import", db);
-                            mMailCustom_team = emailManagement.generateMailBody("team_import", db);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " | Main() : *********** Exception generateMailBody() ***********");
-                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception generateMailBody() ###############################");
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | Message : " + ex.Message);
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | StackTrace : " + ex.StackTrace);
-                            db.alertMailLogManager.insert(db.connectionString, "");
-                            Console.WriteLine("");
-                            mMailCustom_client = null;
-                            mMailCustom_team = null;
-                        }
-
-
-                        if (settings.emailImport.informClient)
-                        {
-                            try
-                            {
-                                Console.WriteLine("Envoi de mail client en cours....");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: Envoi de mail notif client import est annulé. Probablement désactivé!");
-                                if (mMailCustom_team != null)
-                                {
-                                    emailManagement.EnvoiMail(settings, "client", mMailCustom_client.subject, mMailCustom_client.body, null, db);
-                                }
-                                else
-                                {
-                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: Envoi de mail notif client import est annulé. Probablement désactivé!");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail client ***********");
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Envoi Mail client ###############################");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | Message : " + ex.Message);
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | StackTrace : " + ex.StackTrace);
-                                Console.WriteLine("");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Envoyer un mail d'import au client est désactivé");
-                        }
-
-                        if (settings.emailImport.informTeam)
-                        {
-                            try
-                            {
-                                Console.WriteLine("Envoi de mail log en cours....");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: Envoi de mail notif équipe import est annulé. Probablement désactivé!");
-                                if (mMailCustom_team != null)
-                                {
-                                    emailManagement.EnvoiMail(settings, "log", mMailCustom_team.subject, mMailCustom_team.body, null, db);
-                                }
-                                else
-                                {
-                                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: Envoi de mail notif équipe import est annulé. Probablement désactivé!");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail log ***********");
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Envoi Mail log ###############################");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | Message : " + ex.Message);
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | StackTrace : " + ex.StackTrace);
-                                db.alertMailLogManager.insert(db.connectionString, "");
-                                Console.WriteLine("");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Envoyer un mail d'import à l'équipe est désactivé");
-                        }
-
-
-                        ConfigurationCustomMailSaveLoad xxx = new ConfigurationCustomMailSaveLoad();
-
-                        if (File.Exists(xxx.fileName_SUC_Imp))
-                        {
-                            File.Delete(xxx.fileName_SUC_Imp);
-                        }
-
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Main EndSoftwareExe ***********");
-                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Main EndSoftwareExe ###############################");
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | Message : " + ex.Message);
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: importMail() | StackTrace : " + ex.StackTrace);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Argument settings.emailImport.xxxxx n'est pas valide...");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Import mail est désactivé...");
-            }
-        }
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// _x_ argument (11 or 22) depends, if its after each export "11" or at the end of all export "22"
-        /// 
-        private static void exportMail(ConfigurationEmail settings, int _x_, Database.Database db)
-        {
-            Console.WriteLine("Export mail...");
-
-            if (settings.emailExport.active)
-            {
-                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Mail export Activé!");
-                if (settings.emailExport.eachDocument && _x_ == 11)
-                {
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Mail export à chaque fichier n'est pas développé.");
-                    db.alertMailLogManager.insert(db.connectionString, "");
-                }
-                else if (settings.emailExport.atTheEnd && _x_ == 22)
-                {
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Mail export vers la fin du process.");
-                    Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
-                    try
-                    {
-                        // get and load the file
-                        Alert_Mail.Classes.ConfigurationCustomMailSaveLoad configurationCustomMailSaveLoad = new Alert_Mail.Classes.ConfigurationCustomMailSaveLoad();
-                        configurationCustomMailSaveLoad.Load(configurationCustomMailSaveLoad.fileName_SUC_Exp, new List<CustomMailSuccess>());
-
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Chargement du fichier "+configurationCustomMailSaveLoad.fileName_SUC_Exp+" avec sucess.");
-                        db.alertMailLogManager.insert(db.connectionString, "");
-
-                        // Mapping
-                        MailCustom mMailCustom_client = null;
-                        MailCustom mMailCustom_team = null;
-                        try
-                        {
-                            mMailCustom_client = emailManagement.generateMailBody("client_export", db);
-                            mMailCustom_team = emailManagement.generateMailBody("team_export", db);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " | Main() : *********** Exception generateMailBody() ***********");
-                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                            Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception generateMailBody() ###############################");
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Message : " + ex.Message);
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | StackTrace : " + ex.StackTrace);
-                            db.alertMailLogManager.insert(db.connectionString, "");
-                            Console.WriteLine("");
-                            mMailCustom_client = null;
-                            mMailCustom_team = null;
-                        }
-
-
-                        if (settings.emailExport.informClient)
-                        {
-                            try
-                            {
-                                Console.WriteLine("Envoi de mail client en cours....");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Envoi de mail client en cours....");
-                                emailManagement.EnvoiMail(settings, "client", mMailCustom_client.subject, mMailCustom_client.body, null, db);
-                                db.alertMailLogManager.insert(db.connectionString, "");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail Export client ***********");
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Envoi Mail Export client ###############################");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Message : " + ex.Message);
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | StackTrace : " + ex.StackTrace);
-                                db.alertMailLogManager.insert(db.connectionString, "");
-                                Console.WriteLine("");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Envoyer un mail d'import au client est désactivé");
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Envoyer un mail d'import au client est désactivé");
-                            db.alertMailLogManager.insert(db.connectionString, "");
-                        }
-
-                        if (settings.emailExport.informTeam)
-                        {
-                            try
-                            {
-                                Console.WriteLine("Envoi de mail log en cours....");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Envoi de mail log en cours....");
-                                emailManagement.EnvoiMail(settings, "log", mMailCustom_team.subject, mMailCustom_team.body, null, db);
-                                db.alertMailLogManager.insert(db.connectionString, "");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Envoi Mail Export Team log ***********");
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                                Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Envoi Mail Export Team log ###############################");
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Message : " + ex.Message);
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | StackTrace : " + ex.StackTrace);
-                                db.alertMailLogManager.insert(db.connectionString, "");
-                                Console.WriteLine("");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Envoyer un mail d'import à l'équipe est désactivé");
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Envoyer un mail d'import à l'équipe est désactivé");
-                            db.alertMailLogManager.insert(db.connectionString, "");
-                        }
-
-
-                        ConfigurationCustomMailSaveLoad xxx = new ConfigurationCustomMailSaveLoad();
-                        if (File.Exists(xxx.fileName_SUC_Exp))
-                        {
-                            File.Delete(xxx.fileName_SUC_Exp);
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Fichier "+xxx.fileName_SUC_Exp+" est supprimé!");
-                            db.alertMailLogManager.insert(db.connectionString, "");
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(DateTime.Now + " | Main() : *********** Exception Main EndSoftwareExe ***********");
-                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.Message);
-                        Console.WriteLine(DateTime.Now + " | Main() : " + ex.StackTrace);
-
-
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Main EndSoftwareExe ###############################");
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Message : " + ex.Message);
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | StackTrace : " + ex.StackTrace);
-                        db.alertMailLogManager.insert(db.connectionString, "");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine(DateTime.Now + " : AlertMail :: exportMail() | Argument settings.emailExport.xxxxx n'est pas valide...");
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Argument settings.emailExport.xxxxx n'est pas valide...");
-                    db.alertMailLogManager.insert(db.connectionString, "");
-                }
-            }
-            else
-            {
-                Console.WriteLine(DateTime.Now + " : AlertMail :: exportMail() | Export mail est désactivé...");
-                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: exportMail() | Export mail est désactivé...");
-                db.alertMailLogManager.insert(db.connectionString, "");
-            }
         }
 
         private static void errorMail(ConfigurationEmail settings, Database.Database db)
@@ -463,7 +148,7 @@ namespace AlertMail
 
                         db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception generateMailBody() ###############################");
                         db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | Message : " + ex.Message);
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
+                        //db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
                         db.alertMailLogManager.insert(db.connectionString, "");
 
                         Console.WriteLine("");
@@ -491,7 +176,7 @@ namespace AlertMail
 
                                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Envoi Mail Error Client ###############################");
                                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | Message : " + ex.Message);
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
+                                //db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
                                 db.alertMailLogManager.insert(db.connectionString, "");
                                 Console.WriteLine("");
                             }
@@ -510,7 +195,7 @@ namespace AlertMail
 
                     if (settings.emailError.informTeam)
                     {
-                        if (mMailCustom_client != null)
+                        if (mMailCustom_log != null)
                         {
                             try
                             {
@@ -527,7 +212,7 @@ namespace AlertMail
 
                                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Envoi Mail Error Team log ###############################");
                                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | Message : " + ex.Message);
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
+                                //db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
                                 db.alertMailLogManager.insert(db.connectionString, "");
                                 Console.WriteLine("");
                             }
@@ -561,7 +246,7 @@ namespace AlertMail
                 else
                 {
                     Console.WriteLine("Les mails d'erreur sont désactivé!");
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | Les mails d'erreur sont désactivé!");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | Les mails d erreur sont désactivé!");
                 }
 
                 db.alertMailLogManager.insert(db.connectionString, "");
@@ -578,7 +263,7 @@ namespace AlertMail
 
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception Main EndSoftwareExe ###############################");
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | Message : " + ex.Message);
-                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
+               // db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: errorMail() | StackTrace : " + ex.StackTrace);
                 db.alertMailLogManager.insert(db.connectionString, "");
             }
         }
@@ -587,7 +272,7 @@ namespace AlertMail
         {
             Console.WriteLine("Résumer mail...");
             db.alertMailLogManager.insert(db.connectionString, "");
-            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Creation d'une instance.");
+            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Creation d une instance.");
 
             try
             {
@@ -599,7 +284,7 @@ namespace AlertMail
                     if (!Directory.Exists(directoryName_tmpFile))
                     {
                         Directory.CreateDirectory(directoryName_tmpFile);
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Ce répertoire "+ directoryName_tmpFile + " n'existe pas , alors créer le.");
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Ce répertoire "+ directoryName_tmpFile + " n existe pas , alors créer le.");
                     }
 
                     DirectoryInfo fileListing1 = new DirectoryInfo(directoryName_tmpFile);
@@ -619,9 +304,9 @@ namespace AlertMail
                     Console.WriteLine("LastActivated : " + lastActivated);
                     Console.WriteLine("Ago : " + ts);
 
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Date aujourd'hui => " + today);
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Date aujourd hui => " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", today));
                     db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Dernière fois lancé => " + lastActivated);
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Tempsde lancement depuis la dernière fois => "+ts.TotalHours+" heure(s)");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Temps de lancement depuis la dernière fois => "+ts.TotalHours+" heure(s)");
 
                     if (ts.TotalHours >= Convert.ToDouble(settings.emailSummary.hours))
                     {
@@ -764,7 +449,7 @@ namespace AlertMail
                                 settings.emailSummary.lastActivated = DateTime.Now;
                                 file.configurationEmail = settings;
                                 file.saveInfo();
-                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Reset lastActivated to " + settings.emailSummary.lastActivated);
+                                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Reset lastActivated to " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", settings.emailSummary.lastActivated));
                             }
                         }
                     }
@@ -786,7 +471,7 @@ namespace AlertMail
 
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception EnvoiMail ###############################");
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | Message : " + ex.Message);
-                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | StackTrace : " + ex.StackTrace);
+                //db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: summaryMail() | StackTrace : " + ex.StackTrace);
                 db.alertMailLogManager.insert(db.connectionString, "");
             }
         }
@@ -794,7 +479,7 @@ namespace AlertMail
         private static void pendingFilesMail(ConfigurationEmail settings, Database.Database db)
         {
             db.alertMailLogManager.insert(db.connectionString, "");
-            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Creation d'une instance.");
+            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Creation d une instance.");
             if (settings.emailPendingFiles.active)
             {
                 Console.WriteLine("Analyser le dossier CSV....");
@@ -804,7 +489,7 @@ namespace AlertMail
                 if (!Directory.Exists(directoryName_csv))
                 {
                     Directory.CreateDirectory(directoryName_csv);
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Le répertoire " + directoryName_csv + " n'existe pas, alors créer le.");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Le répertoire " + directoryName_csv + " n existe pas, alors créer le.");
                 }
 
                 Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
@@ -829,13 +514,13 @@ namespace AlertMail
                         DateTime fileDateTime = File.GetCreationTime(csv_file.FullName);
                         TimeSpan ts = today - fileDateTime;
 
-                        Console.WriteLine("Today : " + today);
-                        Console.WriteLine("File DateTime : " + fileDateTime);
+                        Console.WriteLine("Today : " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", today));
+                        Console.WriteLine("File DateTime : " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", fileDateTime));
                         Console.WriteLine("Ago : " + ts);
 
                         db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Index " + (x+1)+"/"+allFiles_csv.Length);
                         db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Fichier => " + allFiles_csv[0].Name);
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Fichier DateTime => " + fileDateTime);
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Fichier DateTime => " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", fileDateTime));
                         db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: pendingFilesMail() | Fichier Existance => " + ts.TotalHours + " Heures");
 
                         int lines = 0;

@@ -82,24 +82,6 @@ namespace ConnecteurSage.Forms
                 label_team_email_list.Text = msg;
 
                 ///////////////////////////////////////////////////////////////////////////////////////////////
-                /// Inport mail configuration
-                /// 
-                checkBox4.Checked = settings.configurationEmail.emailImport.active;
-                radioButton1.Checked = settings.configurationEmail.emailImport.eachDocument;
-                radioButton2.Checked = settings.configurationEmail.emailImport.atTheEnd;
-                checkBox5.Checked = settings.configurationEmail.emailImport.informClient;
-                checkBox6.Checked = settings.configurationEmail.emailImport.informTeam;
-
-                ///////////////////////////////////////////////////////////////////////////////////////////////
-                /// Export mail configuration
-                /// 
-                checkBox9.Checked = settings.configurationEmail.emailExport.active;
-                radioButton3.Checked = settings.configurationEmail.emailExport.eachDocument;
-                radioButton4.Checked = settings.configurationEmail.emailExport.atTheEnd;
-                checkBox8.Checked = settings.configurationEmail.emailExport.informClient;
-                checkBox7.Checked = settings.configurationEmail.emailExport.informTeam;
-
-                ///////////////////////////////////////////////////////////////////////////////////////////////
                 /// Error mail configuration
                 /// 
                 checkBox12.Checked = settings.configurationEmail.emailError.active;
@@ -136,8 +118,6 @@ namespace ConnecteurSage.Forms
             {
                 groupBox1.Enabled = true;
                 groupBox2.Enabled = true;
-                groupBox3.Enabled = true;
-                groupBox4.Enabled = true;
                 groupBox5.Enabled = true;
                 groupBox6.Enabled = true;
                 groupBox7.Enabled = true;
@@ -146,47 +126,9 @@ namespace ConnecteurSage.Forms
             {
                 groupBox1.Enabled = false;
                 groupBox2.Enabled = false;
-                groupBox3.Enabled = false;
-                groupBox4.Enabled = false;
                 groupBox5.Enabled = false;
                 groupBox6.Enabled = false;
                 groupBox7.Enabled = false;
-            }
-        }
-
-        private void checkBox4_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox4.Checked)
-            {
-                checkBox5.Enabled = true;
-                checkBox6.Enabled = true;
-                radioButton1.Enabled = true;
-                radioButton2.Enabled = true;
-            }
-            else
-            {
-                checkBox5.Enabled = false;
-                checkBox6.Enabled = false;
-                radioButton1.Enabled = false;
-                radioButton2.Enabled = false;
-            }
-        }
-
-        private void checkBox9_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox9.Checked)
-            {
-                checkBox8.Enabled = true;
-                checkBox7.Enabled = true;
-                radioButton3.Enabled = true;
-                radioButton4.Enabled = true;
-            }
-            else
-            {
-                checkBox8.Enabled = false;
-                checkBox7.Enabled = false;
-                radioButton3.Enabled = false;
-                radioButton4.Enabled = false;
             }
         }
 
@@ -323,18 +265,6 @@ namespace ConnecteurSage.Forms
                     clientEmails,
                     checkBox_activate_send_team_emails.Checked,
                     teamEmails),
-                new Alert_Mail.Classes.Configuration.EmailImport(
-                    checkBox4.Checked,
-                    radioButton1.Checked,
-                    radioButton2.Checked,
-                    checkBox5.Checked,
-                    checkBox6.Checked),
-                new Alert_Mail.Classes.Configuration.EmailExport(
-                    checkBox9.Checked,
-                    radioButton3.Checked,
-                    radioButton4.Checked,
-                    checkBox8.Checked,
-                    checkBox7.Checked),
                 new Alert_Mail.Classes.Configuration.EmailError(
                     checkBox12.Checked,
                     checkBox11.Checked,

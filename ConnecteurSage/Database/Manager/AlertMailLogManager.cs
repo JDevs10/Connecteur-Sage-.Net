@@ -35,9 +35,9 @@ namespace Database.Manager
 
                     if (conn.State == System.Data.ConnectionState.Open)
                     {
-                        SQLiteCommand command = new SQLiteCommand(@"CREATE TABLE '" + TABLE_NAME + "' ('" + COLONNE_ID + "' INTEGER, '" + COLONNE_LOG + "' TEXT NOT NULL, PRIMARY KEY('" + COLONNE_ID + "' AUTOINCREMENT))", conn);
+                        SQLiteCommand command = new SQLiteCommand(@"CREATE TABLE IF NOT EXISTS '" + TABLE_NAME + "' ('" + COLONNE_ID + "' INTEGER, '" + COLONNE_LOG + "' TEXT NOT NULL, PRIMARY KEY('" + COLONNE_ID + "' AUTOINCREMENT))", conn);
                         x = command.ExecuteNonQuery();
-                        Console.WriteLine("Table created");
+                        Console.WriteLine("Table created / Exist");
                     }
 
                     conn.Close();
@@ -97,6 +97,7 @@ namespace Database.Manager
 
                     if (conn.State == System.Data.ConnectionState.Open)
                     {
+                        Console.WriteLine("SQL => INSERT INTO " + TABLE_NAME + "('" + COLONNE_LOG + "') VALUES('" + logText + "')");
                         SQLiteCommand command = new SQLiteCommand(@"INSERT INTO " + TABLE_NAME + " ('" + COLONNE_LOG + "') VALUES('" + logText + "')", conn);
                         x = command.ExecuteNonQuery();
                         Console.WriteLine("Table created");
@@ -338,8 +339,8 @@ namespace Database.Manager
 
                     if (conn.State == System.Data.ConnectionState.Open)
                     {
-                        writer.WriteLine(DateTime.Now + " :: AlertMailLog.dll => createTable() | SQL => CREATE TABLE '" + TABLE_NAME + "' ('" + COLONNE_ID + "' INTEGER, '" + COLONNE_LOG + "' TEXT NOT NULL, PRIMARY KEY('" + COLONNE_ID + "' AUTOINCREMENT))");
-                        SQLiteCommand command = new SQLiteCommand(@"CREATE TABLE '" + TABLE_NAME + "' ('" + COLONNE_ID + "' INTEGER, '" + COLONNE_LOG + "' TEXT NOT NULL, PRIMARY KEY('" + COLONNE_ID + "' AUTOINCREMENT))", conn);
+                        writer.WriteLine(DateTime.Now + " :: AlertMailLog.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS '" + TABLE_NAME + "' ('" + COLONNE_ID + "' INTEGER, '" + COLONNE_LOG + "' TEXT NOT NULL, PRIMARY KEY('" + COLONNE_ID + "' AUTOINCREMENT))");
+                        SQLiteCommand command = new SQLiteCommand(@"CREATE TABLE IF NOT EXISTS '" + TABLE_NAME + "' ('" + COLONNE_ID + "' INTEGER, '" + COLONNE_LOG + "' TEXT NOT NULL, PRIMARY KEY('" + COLONNE_ID + "' AUTOINCREMENT))", conn);
                         x = command.ExecuteNonQuery();
                         Console.WriteLine("Table created");
                         writer.WriteLine(DateTime.Now + " :: AlertMailLog.dll => createTable() | Table created");

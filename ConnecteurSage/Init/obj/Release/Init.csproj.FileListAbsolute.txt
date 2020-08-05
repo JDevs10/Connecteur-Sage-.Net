@@ -39,3 +39,11 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.pdb
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\obj\Release\Init.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\obj\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\obj\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Init\obj\Release\Init.csprojAssemblyReference.cache

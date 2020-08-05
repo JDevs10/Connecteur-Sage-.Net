@@ -33,17 +33,15 @@ namespace Connecteur_Info.Custom
             writer.Flush();
         }
 
-        public string intro(string str)
+        public void intro(Database.Database db, string str)
         {
             if(str == "String")
             {
-                string x = "";
-                x += "##############################################################################################################################\n";
-                x += "#################################################### L'import planifier ######################################################\n";
-                x += "##### Version " + mConnecteurInfo().Version + " ############################################################################################ " + mConnecteurInfo().Developper + " #####\n";
-                return x;
+                db.alertMailLogManager.insert(db.connectionString, "##############################################################################################################################");
+                db.alertMailLogManager.insert(db.connectionString, "#################################################### L import planifier ######################################################");
+                db.alertMailLogManager.insert(db.connectionString, "##### Version " + mConnecteurInfo().Version + " ############################################################################################ " + mConnecteurInfo().Developper + " #####");
             }
-            return null;
+            return;
         }
 
     }

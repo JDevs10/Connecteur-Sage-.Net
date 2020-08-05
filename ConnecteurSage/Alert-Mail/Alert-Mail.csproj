@@ -59,8 +59,6 @@
     <Compile Include="Classes\ConfigurationEmail.cs" />
     <Compile Include="Classes\Configuration\Connexion.cs" />
     <Compile Include="Classes\Configuration\EmailError.cs" />
-    <Compile Include="Classes\Configuration\EmailExport.cs" />
-    <Compile Include="Classes\Configuration\EmailImport.cs" />
     <Compile Include="Classes\Configuration\EmailLists.cs" />
     <Compile Include="Classes\Configuration\EmailPendingFiles.cs" />
     <Compile Include="Classes\Configuration\EmailSummary.cs" />

@@ -3112,11 +3112,6 @@ namespace importPlanifier.Classes
                 goErrorLoop:;
 
 
-                    //create success mail import to notify the client or team at each import
-                    Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
-                    emailManagement.createInportMailFile(db, successList);
-
-
                     //Deplaçer les fichier dans le dossier : Error File SI IL Y A DES ERREUR .....
                     if (File.Exists(dir + @"\" + filename) && tabCommandeError.Count > 0)
                     {
@@ -3160,17 +3155,10 @@ namespace importPlanifier.Classes
 
                 }
 
-                // create success mail import to notify the client or team at the end of imports
-                if (successList.Count != 0)
-                {
-                    Alert_Mail.EmailManagement emailManagement = new Alert_Mail.EmailManagement();
-                    emailManagement.createInportMailFile(db, successList);
-                }
-
                 if (recapLinesList_new.Count != 0)
                 {
                     logFileWriter_general.WriteLine("");
-                    logFileWriter_general.WriteLine(DateTime.Now + "################################### Alert Mail Erreur ###################################");
+                    logFileWriter_general.WriteLine(DateTime.Now + "################################### Alert Mail Erreur Import ###################################");
                     logFileWriter_general.WriteLine("");
 
                     // Create Mail_ERR_IMP.ml file with all documents that are in error and the logs
@@ -8056,6 +8044,7 @@ namespace importPlanifier.Classes
                 {
                     writer.WriteLine(DateTime.Now + " | NextNumPiece_v2() : ********** Erreur NextNumPiece_v2 **********");
                     writer.WriteLine(DateTime.Now + " | NextNumPiece_v2() : Mask number '"+ NumCommande + "' is not a number!!");
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée.", "NextNumPiece_v2() : Mask number '" + NumCommande + "' is not a number!!", "", "", logFileName_import));
                 }
 
                 return null;
@@ -8064,6 +8053,7 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 //Console.WriteLine(DateTime.Now + " : Erreur[25] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Null", "", "L'import de la commande est annulée.", "Erreur[25] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), ex.StackTrace, "", logFileName_import));
                 writer.WriteLine(DateTime.Now + " : Erreur[25] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 return "erreur";
             }
@@ -8162,6 +8152,7 @@ namespace importPlanifier.Classes
                 {
                     //Exceptions pouvant survenir durant l'exécution de la requête SQL
                     //Console.WriteLine(DateTime.Now + " : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Inconnu", "", "L'import est annulée.", "message : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""), ex.StackTrace, null, logFileName_import));
                     writer.WriteLine(DateTime.Now + " : Erreur[28] - " + ex.Message.Replace("[CBase]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                     writer.WriteLine("");
                     return null;
@@ -8811,6 +8802,8 @@ namespace importPlanifier.Classes
                                 configurationCustomMailSaveLoad.customMailRecap.Lines = new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>();
                                 for (int i = 0; i < recapLinesList_new.Count; i++)
                                 {
+                                    logFileWriter_general.WriteLine(DateTime.Now + " : customMailRecap.Lines => " + recapLinesList_new[i]);
+
                                     if (attchmentsList.Contains(recapLinesList_new[i].FilePath))
                                     {
                                         attchmentsList.Add(recapLinesList_new[i].FilePath);
@@ -8870,6 +8863,10 @@ namespace importPlanifier.Classes
                 logFileWriter_general.WriteLine("");
                 Alert_Mail.Classes.ConfigurationSaveLoad configurationSaveLoad = new Alert_Mail.Classes.ConfigurationSaveLoad();
 
+                Connecteur_Info.Custom.Batch_Intro intro_B_ = new Connecteur_Info.Custom.Batch_Intro();
+                intro_B_.intro(db, "String");   //add software intro in AlerMail logs
+                db.alertMailLogManager.insert(db.connectionString, "");
+
                 if (configurationSaveLoad.isSettings())
                 {
                     configurationSaveLoad.Load();
@@ -8879,30 +8876,6 @@ namespace importPlanifier.Classes
                     if (configurationSaveLoad.configurationEmail.active)
                     {
                         Process emailExe = null;
-                        Connecteur_Info.Custom.Batch_Intro intro_B_ = new Connecteur_Info.Custom.Batch_Intro();
-                        db.alertMailLogManager.insert(db.connectionString, intro_B_.intro("String"));
-
-                        if (configurationSaveLoad.configurationEmail.emailImport.active && configurationSaveLoad.configurationEmail.emailImport.atTheEnd)
-                        {
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail import.");
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Execution du mail import.");
-                            logFileWriter_general.Flush();
-                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Import_Mail_22");
-                            emailExe.WaitForExit();
-
-                        }
-                        //=============================================================================================================================================
-
-                        if (configurationSaveLoad.configurationEmail.emailExport.active && configurationSaveLoad.configurationEmail.emailExport.atTheEnd)
-                        {
-                            logFileWriter_general.WriteLine(DateTime.Now + " : Execution du mail export.");
-                            db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : Execution du mail export.");
-                            logFileWriter_general.Flush();
-                            emailExe = Process.Start(locationPath + @"\AlertMail.exe", "Export_Mail_22");
-                            emailExe.WaitForExit();
-                        }
-
-                        //=============================================================================================================================================
 
                         if (configurationSaveLoad.configurationEmail.emailError.active && configurationSaveLoad.configurationEmail.emailError.active)
                         {
@@ -8969,6 +8942,10 @@ namespace importPlanifier.Classes
                     logFileWriter_general.WriteLine(DateTime.Now + " : AlertMail log se situe à " + _AlertMailLog_);
                     logFileWriter_general.WriteLine("");
                     logFileWriter_general.Flush();
+                }
+                else
+                {
+                    db.alertMailLogManager.insert(db.connectionString, "Pas de configuration mail, Fichier => "+ configurationSaveLoad.fileName);
                 }
             }
             catch (Exception ex)
