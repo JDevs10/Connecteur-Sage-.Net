@@ -11,19 +11,19 @@ namespace Connexion
 {
     public class ConnexionSaveLoad
     {
+        public Database.Database db { get; set; }
         public ConfigurationConnexion configurationConnexion { get; set; }
-        private string fileName = "SettingConnexions.json";
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        public ConnexionSaveLoad() { }
-        public ConnexionSaveLoad(ConfigurationConnexion mConfigurationConnexion)
+        public ConnexionSaveLoad() 
         {
-            this.configurationConnexion = mConfigurationConnexion;
+            this.db = new Database.Database();
         }
 
         public Boolean isSettings()
         {
-            if (File.Exists(fileName))
+            List< Database.Model.Connexion> list = this.db.connexionManager.getList(this.db.connectionString);
+            if (list != null && list.Count == 2)
             {
                 return true;
             }
@@ -37,13 +37,19 @@ namespace Connexion
         {
             if (isSettings())
             {
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
-                ConfigurationConnexion deserializedProduct = JsonConvert.DeserializeObject<ConfigurationConnexion>(file.ReadToEnd());
-                deserializedProduct.ODBC.PWD = Utilities.Utils.Decrypt(deserializedProduct.ODBC.PWD);
-                deserializedProduct.SQL.PWD = Utilities.Utils.Decrypt(deserializedProduct.SQL.PWD);
+                Database.Model.Connexion connexion = this.db.connexionManager.getByType(this.db.connectionString, this.db.connexionManager.ODBC);
 
-                this.configurationConnexion = deserializedProduct;
-                file.Close();
+                this.configurationConnexion = new ConfigurationConnexion();
+                this.configurationConnexion.ODBC.ID = connexion.id;
+                this.configurationConnexion.ODBC.DNS = connexion.dns;
+                this.configurationConnexion.ODBC.USER = connexion.name;
+                this.configurationConnexion.ODBC.PWD = connexion.password;
+
+                connexion = this.db.connexionManager.getByType(this.db.connectionString, this.db.connexionManager.SQL);
+                this.configurationConnexion.SQL.ID = connexion.id;
+                this.configurationConnexion.SQL.DNS = connexion.dns;
+                this.configurationConnexion.SQL.USER = connexion.name;
+                this.configurationConnexion.SQL.PWD = connexion.password;
             }
         }
 
@@ -51,19 +57,46 @@ namespace Connexion
         {
             try
             {
-                var myfile = File.Create(pathModule + @"\" + fileName);
-
                 this.configurationConnexion.ODBC.PWD = Utilities.Utils.Encrypt(this.configurationConnexion.ODBC.PWD);
                 this.configurationConnexion.SQL.PWD = Utilities.Utils.Encrypt(this.configurationConnexion.SQL.PWD);
-                string json = JsonConvert.SerializeObject(this.configurationConnexion, Newtonsoft.Json.Formatting.Indented);
 
-                using (StreamWriter writer = new StreamWriter(myfile))
+                Database.Model.Connexion connexion_1 = new Database.Model.Connexion();
+                connexion_1.id = this.configurationConnexion.ODBC.ID;
+                connexion_1.type = this.db.connexionManager.ODBC;
+                connexion_1.dns = this.configurationConnexion.ODBC.DNS;
+                connexion_1.name = this.configurationConnexion.ODBC.USER;
+                connexion_1.password = this.configurationConnexion.ODBC.PWD;
+
+                Database.Model.Connexion connexion_db = this.db.connexionManager.getById(this.db.connectionString, connexion_1.id);
+                if(connexion_db != null)
                 {
-                    writer.Write(json);
-                    writer.Flush();
-                    writer.Close();
+                    //update
+                    this.db.connexionManager.update(this.db.connectionString, connexion_1);
                 }
-                myfile.Close();
+                else
+                {
+                    //insert
+                    this.db.connexionManager.insert(this.db.connectionString, connexion_1);
+                }
+
+                Database.Model.Connexion connexion_2 = new Database.Model.Connexion();
+                connexion_2.id = this.configurationConnexion.SQL.ID;
+                connexion_2.type = this.db.connexionManager.SQL;
+                connexion_2.dns = this.configurationConnexion.SQL.DNS;
+                connexion_2.name = this.configurationConnexion.SQL.USER;
+                connexion_2.password = this.configurationConnexion.SQL.PWD;
+
+                connexion_db = this.db.connexionManager.getById(this.db.connectionString, connexion_2.id);
+                if (connexion_db != null)
+                {
+                    //update
+                    this.db.connexionManager.update(this.db.connectionString, connexion_2);
+                }
+                else
+                {
+                    //insert
+                    this.db.connexionManager.insert(this.db.connectionString, connexion_2);
+                }
             }
             catch (Exception ex)
             {
@@ -71,7 +104,7 @@ namespace Connexion
             }
         }
 
-
+        /*
         public string FormatJson()
         {
             if (isSettings())
@@ -85,5 +118,6 @@ namespace Connexion
                 return "No file \"" + fileName + "\" found!";
             }
         }
+        */
     }
 }

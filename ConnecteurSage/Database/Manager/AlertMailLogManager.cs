@@ -69,7 +69,6 @@ namespace Database.Manager
                     {
                         SQLiteCommand command = new SQLiteCommand(@"INSERT INTO " + TABLE_NAME + " ('" + COLONNE_ID + "', '" + COLONNE_LOG + "') VALUES(" + alertMailLog.id + ",'" + alertMailLog.log + "')", conn);
                         x = command.ExecuteNonQuery();
-                        Console.WriteLine("Table created");
                     }
 
                     conn.Close();
@@ -100,7 +99,6 @@ namespace Database.Manager
                         Console.WriteLine("SQL => INSERT INTO " + TABLE_NAME + "('" + COLONNE_LOG + "') VALUES('" + logText + "')");
                         SQLiteCommand command = new SQLiteCommand(@"INSERT INTO " + TABLE_NAME + " ('" + COLONNE_LOG + "') VALUES('" + logText + "')", conn);
                         x = command.ExecuteNonQuery();
-                        Console.WriteLine("Table created");
                     }
 
                     conn.Close();
@@ -381,7 +379,6 @@ namespace Database.Manager
                         writer.WriteLine(DateTime.Now + " :: AlertMailLog.dll => insert() | Creation d'une instance");
                         SQLiteCommand command = new SQLiteCommand(@"INSERT INTO " + TABLE_NAME + " ('" + COLONNE_ID + "', '" + COLONNE_LOG + "') VALUES(" + alertMailLog.id + ",'" + alertMailLog.log + "')", conn);
                         x = command.ExecuteNonQuery();
-                        Console.WriteLine("Table created");
                         writer.WriteLine(DateTime.Now + " :: AlertMailLog.dll => insert() | Creation d'une instance");
                     }
                     writer.Flush();

@@ -19,8 +19,28 @@ namespace Connexion
             connectionString.Add("Dsn", "");
             connectionString.Add("Driver", "{SAGE Gestion commerciale 100}");
 
+            Database.Database db = new Database.Database();
+            Database.Model.Connexion connexion = db.connexionManager.getByType(db.connectionString, db.connexionManager.ODBC);
+
+            if (connexion != null)
+            {
+                connectionString.Add("Dsn", connexion.dns);
+                connectionString.Add("uid", connexion.name);
+                connectionString.Add("pwd", connexion.password);
+            }
+
+            return new OdbcConnection(connectionString.ConnectionString);
+        }
+
+        /*
+        public static OdbcConnection CreateOdbcConnextion()
+        {
+            DbConnectionStringBuilder connectionString = new DbConnectionStringBuilder();
+            connectionString.Add("Dsn", "");
+            connectionString.Add("Driver", "{SAGE Gestion commerciale 100}");
+
             ConnexionSaveLoad settings = new ConnexionSaveLoad();
-            
+
             if (settings.isSettings())
             {
                 settings.Load();
@@ -32,7 +52,30 @@ namespace Connexion
 
             return new OdbcConnection(connectionString.ConnectionString);
         }
+        */
 
+        public static OdbcConnection CreateOdbcConnexionSQL()
+        {
+            DbConnectionStringBuilder connectionString = new DbConnectionStringBuilder();
+            connectionString.Add("Dsn", "");
+            connectionString.Add("Driver", "{SAGE Gestion commerciale 100}");
+
+            ConnexionSaveLoad settings = new ConnexionSaveLoad();
+
+            Database.Database db = new Database.Database();
+            Database.Model.Connexion connexion = db.connexionManager.getByType(db.connectionString, db.connexionManager.SQL);
+
+            if (connexion != null)
+            {
+                connectionString.Add("Dsn", connexion.dns);
+                connectionString.Add("uid", connexion.name);
+                connectionString.Add("pwd", connexion.password);
+            }
+
+            return new OdbcConnection(connectionString.ConnectionString);
+        }
+
+        /*
         public static OdbcConnection CreateOdbcConnexionSQL()
         {
             DbConnectionStringBuilder connectionString = new DbConnectionStringBuilder();
@@ -52,5 +95,6 @@ namespace Connexion
 
             return new OdbcConnection(connectionString.ConnectionString);
         }
+        */
     }
 }

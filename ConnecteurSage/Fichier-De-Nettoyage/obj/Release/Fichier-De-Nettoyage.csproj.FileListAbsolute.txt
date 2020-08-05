@@ -29,3 +29,4 @@ C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Fichier-De-Nettoyage\bin\Rel
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.dll
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.pdb
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache

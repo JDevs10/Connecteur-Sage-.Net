@@ -26,6 +26,7 @@ namespace Database
         #region Tables Management
         public ReprocessManager reprocessManager { get; set; }
         public AlertMailLogManager alertMailLogManager { get; set; }
+        public ConnexionManager connexionManager { get; set; }
         #endregion
 
 
@@ -41,6 +42,7 @@ namespace Database
             }
             this.reprocessManager = new ReprocessManager();
             this.alertMailLogManager = new AlertMailLogManager();
+            this.connexionManager = new ConnexionManager();
         }
 
         public Database(StreamWriter writer)
@@ -59,6 +61,7 @@ namespace Database
             }
             this.reprocessManager = new ReprocessManager();
             this.alertMailLogManager = new AlertMailLogManager();
+            this.connexionManager = new ConnexionManager();
 
             writer.WriteLine("");
             writer.Flush();
@@ -72,6 +75,7 @@ namespace Database
             // Reprocess Table
             this.reprocessManager.createTable(connectionString);
             this.alertMailLogManager.createTable(connectionString);
+            this.connexionManager.createTable(connectionString);
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup();
@@ -87,6 +91,7 @@ namespace Database
             // Reprocess Table
             this.reprocessManager.createTable(connectionString, writer);
             this.alertMailLogManager.createTable(connectionString, writer);
+            this.connexionManager.createTable(connectionString, writer);
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup(writer);

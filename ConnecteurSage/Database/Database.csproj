@@ -76,8 +76,10 @@
   <ItemGroup>
     <Compile Include="Database.cs" />
     <Compile Include="Manager\AlertMailLogManager.cs" />
+    <Compile Include="Manager\ConnexionManager.cs" />
     <Compile Include="Manager\ReprocessManager.cs" />
     <Compile Include="Model\AlertMailLog.cs" />
+    <Compile Include="Model\Connexion.cs" />
     <Compile Include="Model\Reprocess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
