@@ -41,3 +41,14 @@ C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Connecteur-Info\bin\Release\
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Connecteur-Info\bin\Release\Newtonsoft.Json.xml
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Connecteur-Info\bin\Release\Dapper.xml
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Database.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\System.Data.SQLite.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Dapper.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Database.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Database.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\System.Data.SQLite.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\System.Data.SQLite.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Dapper.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csproj.CopyComplete

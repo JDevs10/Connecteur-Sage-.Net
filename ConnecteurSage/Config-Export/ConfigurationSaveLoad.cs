@@ -21,6 +21,11 @@ namespace Config_Export
             this.configurationExport = mConfigurationExport;
         }
 
+        public string getFilePath()
+        {
+            return pathModule + @"\" + fileName;
+        }
+
         public Boolean isSettings()
         {
             if (File.Exists(fileName))
@@ -38,7 +43,7 @@ namespace Config_Export
             if (isSettings())
             {
                 StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
-                ConfigurationExport deserializedProduct = JsonConvert.DeserializeObject<ConfigurationExport>(file.ReadToEnd());
+                 ConfigurationExport deserializedProduct = JsonConvert.DeserializeObject<ConfigurationExport>(file.ReadToEnd());
                 this.configurationExport = deserializedProduct;
                 file.Close();
             }

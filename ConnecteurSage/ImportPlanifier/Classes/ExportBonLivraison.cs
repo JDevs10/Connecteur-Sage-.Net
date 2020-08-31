@@ -223,11 +223,20 @@ namespace importPlanifier.Classes
 
                 Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
                 settings.Load();
-                logFileWriter_export.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Répurère le statut dans la config export.");
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Répurère le statut dans la config export.");
+
+                if(settings.configurationExport == null)
+                {
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Erreur dans la récupération des configurations.");
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Veuillez vérifier le fichier de configuration \""+settings.getFilePath()+"\".");
+                    logFileWriter_export.Flush();
+                    logFileWriter_export.Close();
+                    return recapLinesList_new;
+                }
 
                 List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase(logFileWriter_export, recapLinesList_new, settings.configurationExport.DSADV.Status);
 
-                 if (BonLivrasonAExporter != null)
+                 if (BonLivrasonAExporter != null && BonLivrasonAExporter.Count > 0)
                  {
                      string outputFile = this.pathExport + @"\Fichier Exporter\Bons de Livraisons\";
 
@@ -236,14 +245,16 @@ namespace importPlanifier.Classes
                          System.IO.Directory.CreateDirectory(outputFile);
                      }
 
-                    logFileWriter_export.WriteLine(DateTime.Now + " | GetFacturesFromDataBase() : Répurère le format du fichier dans la config export.");
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Répurère le format du fichier dans la config export.");
 
-                    for (int i = 0; i < BonLivrasonAExporter.Count; i++)
+                    if (settings.configurationExport.DSADV.Format == "Plat")
                     {
-                        if (settings.configurationExport.DSADV.Format == "Plat")
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Le format du fichier d'export => " + settings.configurationExport.DSADV.Format);
+
+                        for (int i = 0; i < BonLivrasonAExporter.Count; i++)
                         {
                             exportTo = @"Export\Plat_BonLivraison";
-                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Nombre de DESADV à exporter ===> " + i + "/" + BonLivrasonAExporter.Count);
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Nombre de DESADV à exporter ===> " + i + "/" + BonLivrasonAExporter.Count);
 
                             Customer customer = GetClient(BonLivrasonAExporter[i].DO_TIERS);
 
@@ -272,11 +283,13 @@ namespace importPlanifier.Classes
                                 writer.WriteLine("DESREF;;;;" + BonLivrasonAExporter[i].DO_COORD01 + ";;;;;");
                                 writer.WriteLine("");
 
-                                writer.WriteLine("DESLOG;;;;" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
-                                writer.WriteLine("");
-
 
                                 BonLivrasonAExporter[i].lines = getDocumentLine(BonLivrasonAExporter[i].DO_Piece, recapLinesList_new);
+
+
+                                writer.WriteLine("DESLOG;" + BonLivrasonAExporter[i].lines.Count + ";" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+                                writer.WriteLine("");
+
 
                                 for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
                                 {
@@ -289,32 +302,57 @@ namespace importPlanifier.Classes
                                 writer.WriteLine("");
 
                             }
-                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Fichier d'export DESADV généré dans : " + outputFile + @"\" + fileName.Replace("..", "."));
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Fichier d'export DESADV généré dans : " + outputFile + @"\" + fileName.Replace("..", "."));
 
                             //add to backup folder
                             addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName, logFileWriter_export);
 
                             UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece, recapLinesList_new);
 
-                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Mettre à jour le Document de Vente");
-
-                        }
-                        else
-                        {
-                            logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Format Fichier ********************");
-                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Le format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!");
-                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Vérifi le fichier de configuration \"" + Directory.GetCurrentDirectory() + @"\SettingExport.xml" + "\" à l'argument exportFactures_Format.");
-                            logFileWriter_export.Flush();
-                            recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.\nLe format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!", "Le format \"" + settings.configurationExport.DSADV.Format + "\" n'existe pas dans le connecteur!", "", "", logFileName_export));
-                            return recapLinesList_new;
-                        }
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Mettre à jour le Document de Vente");
 
 
-                    }  //END FOR export Bon de livraison
+                        }  //END FOR export Bon de livraison
 
-                     Console.WriteLine(DateTime.Now + " : Nombre bon de livraison : " + BonLivrasonAExporter.Count);
-                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Nombre bon de livraison : " + BonLivrasonAExporter.Count);
-                 }
+
+                        Console.WriteLine(DateTime.Now + " : Nombre bon de livraison : " + BonLivrasonAExporter.Count);
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Nombre bon de livraison : " + BonLivrasonAExporter.Count);
+
+                    }
+                    else if (settings.configurationExport.DSADV.Format == "Véolog")
+                    {
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Le format du fichier d'export => " + settings.configurationExport.DSADV.Format);
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Aucun format développé.");
+
+                    }
+                    else
+                    {
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Le format du fichier d'export => " + settings.configurationExport.DSADV.Format);
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Pas de format disponible. Veuillez vérifier le format dans le fichier de configuration \"" + settings.getFilePath());
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Sous la section \"DSADV\" => Format");
+                    }
+
+                    
+                }
+                else
+                {
+                    if (BonLivrasonAExporter == null)
+                    {
+                        logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Export BL ********************");
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Erreur dans la récupération des BL");
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Export Annulé.");
+                        logFileWriter_export.Flush();
+                    }
+                    else if (BonLivrasonAExporter.Count == 0)
+                    {
+                        logFileWriter_export.WriteLine(DateTime.Now + "******************** Attention BL ********************");
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Aucun BL a exporter.");
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : BonLivrasonAExporter.Count => 0");
+                        logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Export Annulé.");
+                        logFileWriter_export.Flush();
+                    }
+
+                }
 
 
             }
@@ -324,8 +362,8 @@ namespace importPlanifier.Classes
                 Console.WriteLine("" + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
 
                 logFileWriter_export.WriteLine(DateTime.Now + "********************************* Exception *********************************");
-                logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
-                logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraison() : Export annullé");
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Message :: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Export annullé");
                 logFileWriter_export.Close();
                 recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
             }
