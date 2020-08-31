@@ -765,15 +765,18 @@ namespace ConnecteurSage.Forms
                             //{ // Return mode de transport                           
                             //    BonLivrasonAExporter[i].IntrastatTransportMode = GetModeTransport(BonLivrasonAExporter[i].IntrastatTransportMode);
                             //}
+
+
+                            BonLivrasonAExporter[i].lines = getDocumentLine(logFileWriter, BonLivrasonAExporter[i].DO_Piece);
+
+
                             writer.WriteLine("DESTRP;;;;;;;;;;");
                             writer.WriteLine("");
                             writer.WriteLine("DESREF;;;;"+ BonLivrasonAExporter[i].DO_COORD01 + ";;;;;");
                             writer.WriteLine("");
-                            writer.WriteLine("DESLOG;;;;" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+                            writer.WriteLine("DESLOG;" + BonLivrasonAExporter[i].lines.Count + ";" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                             writer.WriteLine("");
                             writer.Flush();
-
-                            BonLivrasonAExporter[i].lines = getDocumentLine(logFileWriter, BonLivrasonAExporter[i].DO_Piece);
 
 
                             // DL_PrixUNet et non DL_PrixUnitaire
