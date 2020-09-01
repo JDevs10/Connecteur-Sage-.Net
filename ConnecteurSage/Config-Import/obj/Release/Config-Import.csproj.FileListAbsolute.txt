@@ -40,7 +40,6 @@ C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Confi
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Json.Net.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Newtonsoft.Json.dll
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Newtonsoft.Json.xml
-C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csprojAssemblyReference.cache
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csproj.CoreCompileInputs.cache
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csproj.CopyComplete
 C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.dll
@@ -54,3 +53,4 @@ C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Import\obj\Release\Co
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Import\obj\Release\Config-Import.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Import\obj\Release\Config-Import.dll
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Import\obj\Release\Config-Import.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csprojAssemblyReference.cache

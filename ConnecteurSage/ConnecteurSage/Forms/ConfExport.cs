@@ -134,18 +134,18 @@ namespace ConnecteurSage.Forms
         {
             string[,] list = new string[4, 2];
             list[0, 0] = "";            list[0, 1] = "";
-            list[1, 0] = "Saisie";      list[1, 1] = "0";   // Order created
-            list[2, 0] = "Confirmé";    list[2, 1] = "1";   // Order ready to be send in EDI to Veolog
-            list[3, 0] = "A Facturer";  list[3, 1] = "2";   // Order send to Veolog
+            list[1, 0] = "Saisie";      list[1, 1] = "0";   // BL created
+            list[2, 0] = "Confirmé";    list[2, 1] = "1";   // BL ready to be send in EDI to Veolog
+            list[3, 0] = "A Facturer";  list[3, 1] = "2";   // BL send to Veolog
             return list;
         }
         public static string[,] getStatutExport_FACTURE()
         {
             string[,] list = new string[4, 2];
             list[0, 0] = "";                list[0, 1] = "";
-            list[1, 0] = "Saisie";          list[1, 1] = "0";   // Order created
-            list[2, 0] = "Confirmé";        list[2, 1] = "1";   // Order ready to be send in EDI to Veolog
-            list[3, 0] = "A comptabiliser"; list[3, 1] = "2";   // Order send to Veolog
+            list[1, 0] = "Saisie";          list[1, 1] = "0";   // FA created
+            list[2, 0] = "Confirmé";        list[2, 1] = "1";   // FA ready to be send in EDI to Veolog
+            list[3, 0] = "A comptabiliser"; list[3, 1] = "2";   // FA send to Veolog
             return list;
         }
         public static string getStatutValue(string value)

@@ -76,3 +76,11 @@ C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Alert-Mail\bin\Release\Syste
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Alert-Mail\bin\Release\Dapper.xml
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Alert-Mail\obj\Release\Alert-Mail.csprojAssemblyReference.cache
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Database.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\System.Data.SQLite.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Dapper.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Database.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Database.dll.config
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\System.Data.SQLite.xml
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\System.Data.SQLite.dll.config
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\Alert-Mail\bin\Release\Dapper.xml

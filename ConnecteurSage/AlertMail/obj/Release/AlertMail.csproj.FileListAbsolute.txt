@@ -92,3 +92,11 @@ C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\AlertMail\obj\Release\AlertM
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\AlertMail\obj\Release\AlertMail.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\AlertMail\obj\Release\AlertMail.exe
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\AlertMail\obj\Release\AlertMail.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Database.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\System.Data.SQLite.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Dapper.dll
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Database.pdb
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Database.dll.config
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\System.Data.SQLite.xml
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\System.Data.SQLite.dll.config
+C:\Workspace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Dapper.xml

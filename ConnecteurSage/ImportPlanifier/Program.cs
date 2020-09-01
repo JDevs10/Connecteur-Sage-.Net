@@ -84,7 +84,6 @@ namespace ImportPlanifier
         {
             // start a thread and start doing some processing
             //Console.WriteLine("Thread started, processing...\n\n");
-
             Launch mLaunch = new Launch();
             newThread = new Thread(new ThreadStart(mLaunch.go));
             newThread.Start();
@@ -116,7 +115,6 @@ namespace ImportPlanifier
                 return;
             }
             ///////////////////////////////////////////
-
 
             // Some biolerplate to react to close window event, CTRL-C, kill, etc
             _handler += new EventHandler(Handler);

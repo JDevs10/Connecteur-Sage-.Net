@@ -8609,30 +8609,34 @@ namespace importPlanifier.Classes
         }
 
         public void LancerPlanification()
-        { 
+        {
             //Write in the log file
             if (!Directory.Exists(logDirectoryName_general))
             {
                 //Create log directory
                 Directory.CreateDirectory(logDirectoryName_general);
             }
+
             logFileName_general = logDirectoryName_general + @"\" + string.Format("LOG_General_{0:dd-MM-yyyy HH.mm.ss}.txt", DateTime.Now);
             var logFile_general = File.Create(logFileName_general);
             logFileWriter_general = new StreamWriter(logFile_general);
 
+
             // Load intro
             Connecteur_Info.Custom.Batch_Intro intro_B = new Connecteur_Info.Custom.Batch_Intro();
             intro_B.intro(logFileWriter_general);
+            logFileWriter_general.Flush();
 
             // Init database && tables
             db = new Database.Database(logFileWriter_general);
             db.initTables(logFileWriter_general);
+            logFileWriter_general.Flush();
 
             //Reprocess
             logFileWriter_general.WriteLine("################################ Retraiter les Fichiers ERROR ###############################");
             Reprocess.ReprocessErrorFiles reprocessErrorFiles = new Reprocess.ReprocessErrorFiles();
             reprocessErrorFiles.reprocess(logFileWriter_general);
-
+            logFileWriter_general.Flush();
 
             logFileWriter_general.WriteLine("");
             logFileWriter_general.WriteLine("#################################### Import des documents ###################################");

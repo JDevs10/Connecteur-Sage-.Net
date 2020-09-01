@@ -222,8 +222,20 @@ namespace importPlanifier.Classes
                 logFileWriter_export.WriteLine("");
 
                 Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
-                settings.Load();
-                logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Répurère le statut dans la config export.");
+                try
+                {
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Répurère le statut dans la config export.");
+                    settings.Load();
+                }
+                catch (Exception ex)
+                {
+                    logFileWriter_export.WriteLine(DateTime.Now + "******************** Erreur Chargement ********************");
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Erreur de chargement du fichier " + settings.getFilePath());
+                    logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Message => "+ex.Message);
+                    logFileWriter_export.WriteLine("");
+                    logFileWriter_export.Flush();
+                }
+                
 
                 if(settings.configurationExport == null)
                 {
@@ -238,7 +250,7 @@ namespace importPlanifier.Classes
 
                  if (BonLivrasonAExporter != null && BonLivrasonAExporter.Count > 0)
                  {
-                     string outputFile = this.pathExport + @"\Fichier Exporter\Bons de Livraisons\";
+                     string outputFile = this.pathExport + @"\Fichier Exporter\Bons de Livraisons\Vente";
 
                      if (!Directory.Exists(outputFile))
                      {
@@ -247,13 +259,13 @@ namespace importPlanifier.Classes
 
                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Répurère le format du fichier dans la config export.");
 
-                    if (settings.configurationExport.DSADV.Format == "Plat")
+                    if (BonLivrasonAExporter.Count > 0 && settings.configurationExport.DSADV.Format == "Plat")
                     {
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Le format du fichier d'export => " + settings.configurationExport.DSADV.Format);
 
                         for (int i = 0; i < BonLivrasonAExporter.Count; i++)
                         {
-                            exportTo = @"Export\Plat_BonLivraison";
+                            exportTo = @"Export\Plat_BonLivraison\Vente";
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Nombre de DESADV à exporter ===> " + i + "/" + BonLivrasonAExporter.Count);
 
                             Customer customer = GetClient(BonLivrasonAExporter[i].DO_TIERS);
@@ -319,7 +331,7 @@ namespace importPlanifier.Classes
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Nombre bon de livraison : " + BonLivrasonAExporter.Count);
 
                     }
-                    else if (settings.configurationExport.DSADV.Format == "Véolog")
+                    else if (BonLivrasonAExporter.Count > 0 && settings.configurationExport.DSADV.Format == "Véolog")
                     {
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Le format du fichier d'export => " + settings.configurationExport.DSADV.Format);
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Aucun format développé.");
@@ -327,9 +339,20 @@ namespace importPlanifier.Classes
                     }
                     else
                     {
+                        logFileWriter_export.Flush();
+
+                        if (BonLivrasonAExporter.Count == 0)
+                        {
+                            logFileWriter_export.WriteLine(DateTime.Now + "******************** Attention BL ********************");
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Aucun BL a exporter.");
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : BonLivrasonAExporter.Count => 0");
+                            logFileWriter_export.WriteLine("");
+                            logFileWriter_export.Flush();
+                        }
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Le format du fichier d'export => " + settings.configurationExport.DSADV.Format);
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Pas de format disponible. Veuillez vérifier le format dans le fichier de configuration \"" + settings.getFilePath());
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Sous la section \"DSADV\" => Format");
+                        logFileWriter_export.Flush();
                     }
 
                     
