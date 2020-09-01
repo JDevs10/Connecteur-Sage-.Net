@@ -1,0 +1,48 @@
+#####################################################################################
+################################ ConnecteurSage Sage ################################
+#####################################################################################
+
+28/08/2020 13:07:07 | ExportCommande() : SQL ===> SELECT cbMarq, DO_Statut FROM CFCI.dbo.F_DOCENTETE WHERE DO_Type = 1 AND DO_Statut = 1 ORDER BY cbMarq DESC
+28/08/2020 13:07:07 | ExportCommande() : result 0 => cbMarq : 64481 | DO_Statut : 1
+
+28/08/2020 13:07:07 | ExportCommande() : SQL ===> SELECT DISTINCT(DO_Piece)as DO_Piece, liv.CT_Num, CONCAT(liv.LI_Adresse,',', liv.LI_Complement,',',liv.LI_CodePostal,',',liv.LI_Ville, ',',liv.LI_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, liv.LI_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, liv.LI_Telephone, liv.LI_EMail FROM CFCI.dbo.F_COMPTET as cli, CFCI.dbo.F_DOCENTETE as cmd, CFCI.dbo.F_livraison liv WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num AND liv.LI_No = cmd.LI_No AND cmd.cbMarq = '64481'
+28/08/2020 13:07:07 | ExportCommande() : Export Commande du client "ITM ALIMENTAIRE INTERNATIONAL"
+28/08/2020 13:07:12 | ExportCommande() : N° de commande non enregistrer, valuer 'BC200811'.
+28/08/2020 13:07:12 | ExportCommande() : Code GNL client n'est pas enregistrer, valeur 'C55073'.
+28/08/2020 13:07:12 | ExportCommande() : N° de commande est mal enregistrer, valeur ''.
+28/08/2020 13:07:12 | ExportCommande() : Code GNL client est mal enregistrer.
+28/08/2020 13:07:12 | ExportCommande() : Ecrire le fichier dans : R:\CONNECTEUR_CFCI\CSV\Export_Veolog\orders_CFCI_20200828_BC200811.csv
+
+28/08/2020 13:07:12 | addFileToBackUp() : Copy file "R:\CONNECTEUR_CFCI\CSV\Export_Veolog\orders_CFCI_20200828_BC200811.csv" to "R:\CONNECTEUR_CFCI\CSV\BackUp\Export\Veolog_Commande\orders_CFCI_20200828_BC200811.csv"
+
+
+28/08/2020 13:07:12 | ExportCommande() : Ajouter la date de livraision "28/08/2020 01:07:12" de Veolog de la commande "BC200811".
+28/08/2020 13:07:12 | ExportCommande() : SQL ===> UPDATE CFCI.dbo.F_DOCENTETE SET Veolog = '28/08/2020 01:07:12' WHERE DO_Piece = 'BC200811'
+28/08/2020 13:07:12 | ExportCommande() : Date de livraison veolog à jour !
+
+28/08/2020 13:07:12 | ExportCommande() : Changer le statut de la commande "BC200811".
+28/08/2020 13:07:12 | ExportCommande() : SQL ===> UPDATE CFCI.dbo.F_DOCENTETE SET DO_Statut = 2 WHERE DO_PIECE = 'BC200811' 
+
+28/08/2020 13:07:13 | ExportCommande() : Commande exportée avec succés.
+
+
+
+
+SELECT cbMarq, DO_Statut FROM CFCI.dbo.F_DOCENTETE WHERE DO_Type = 3 AND DO_Statut = 1 ORDER BY cbMarq DESC
+
+
+SELECT doc.Do_Coord02, doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  
+FROM CFCI.dbo.F_comptet cli, CFCI.dbo.P_condlivr cond, CFCI.dbo.F_docentete doc, CFCI.dbo.F_LIVRAISON liv 
+WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=1)  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) AND doc.DO_Statut = 1
+
+
+
+https://sage100cloud.online-help.sage.fr/100cv3/wp-static-content/static-pages/fr_FR/Sage100pdf/Sage%20100c%20Structure%20des%20fichiers.pdf
+
+
+select * from CFCI.dbo.F_DOCENTETE where DO_Piece like 'BL2%'
+
+
+SELECT doc.DO_Piece,doc.DO_TIERS,doc.DO_date,doc.DO_dateLivr,doc.DO_devise,doc.LI_No,doc.DO_Statut,doc.DO_taxe1,doc.DO_taxe2,doc.DO_taxe3,doc.DO_TypeTaxe1,doc.DO_TypeTaxe2,doc.DO_TypeTaxe3,liv.LI_ADRESSE, liv.LI_CODEPOSTAL, liv.LI_CODEREGION, liv.LI_EMAIL, liv.LI_VILLE, liv.LI_PAYS, cond.C_MODE,doc.DO_REF, liv.LI_INTITULE,doc.do_motif,do_txescompte,doc.ca_num  
+FROM CFCI.dbo.F_comptet cli, CFCI.dbo.P_condlivr cond, CFCI.dbo.F_docentete doc, CFCI.dbo.F_LIVRAISON liv 
+WHERE (doc.DO_DOMAINE=0) AND (doc.DO_TYPE=3)  AND (doc.LI_NO=liv.LI_NO) AND (cond.CBINDICE=doc.do_condition)  AND (cli.CT_NUM=doc.do_tiers) AND doc.DO_Statut = 1
