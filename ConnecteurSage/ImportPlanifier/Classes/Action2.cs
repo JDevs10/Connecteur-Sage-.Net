@@ -8627,6 +8627,36 @@ namespace importPlanifier.Classes
             intro_B.intro(logFileWriter_general);
             logFileWriter_general.Flush();
 
+            string path = null;
+            try
+            {
+                path = getPath();
+                if (!Directory.Exists(path))
+                {
+                    //Create log directory
+                    Directory.CreateDirectory(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(DateTime.Now + " : No EDI folder || " + ex.Message);
+                logFileWriter_general.WriteLine("");
+                logFileWriter_general.WriteLine(DateTime.Now + " : LancerPlanification() | No EDI folder\n " + ex.Message);
+                logFileWriter_general.Flush();
+
+                Init.Init _init_ = new Init.Init();
+                _init_.setDisplay(logFileWriter_general, false);
+
+                // Load intro
+                Connecteur_Info.Custom.Batch_Ending _intro_E_ = new Connecteur_Info.Custom.Batch_Ending();
+                _intro_E_.ending(logFileWriter_general);
+
+                logFileWriter_general.Flush();
+                logFileWriter_general.Close();
+                return;
+            }
+
+
             // Init database && tables
             db = new Database.Database(logFileWriter_general);
             db.initTables(logFileWriter_general);
@@ -8647,18 +8677,7 @@ namespace importPlanifier.Classes
 
             //this.SendToVeolog();
             Console.WriteLine("");
-            string path = null;
             
-            try
-            {
-                path = getPath();
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(DateTime.Now + " : No EDI folder || " + ex.Message);
-                logFileWriter_general.WriteLine("");
-                logFileWriter_general.WriteLine(DateTime.Now + " : LancerPlanification() | No EDI folder\n " + ex.Message);
-            }
 
             logFileWriter_general.WriteLine("");
             logFileWriter_general.WriteLine("################################ Export des documents ###############################");

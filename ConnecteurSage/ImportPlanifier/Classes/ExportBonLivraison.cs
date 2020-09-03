@@ -27,6 +27,7 @@ namespace importPlanifier.Classes
 
         private List<DocumentVente> GetBonLivraisonFromDataBase(StreamWriter writer, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new, string statut)
         {
+            writer.Flush();
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : Called!");
             try
@@ -41,8 +42,10 @@ namespace importPlanifier.Classes
                     DocumentVente documentVente;
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : SQL ===> " + QueryHelper.getListDocumentVente(false, 3, statut));
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente(false, 3, statut), connection);
+                    writer.Flush();
+                    writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : SQL ===> " + QueryHelper.getListDocumentVente_v2(false, 3, statut));
+                    writer.Flush();
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVente_v2(false, 3, statut), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
@@ -86,28 +89,33 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 writer.WriteLine(DateTime.Now + " | GetBonLivraisonFromDataBase() : " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                writer.Flush();
                 recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.", e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
 
-        private List<DocumentVenteLine> getDocumentLine(string codeDocument, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
+        private List<DocumentVenteLine> getDocumentLine(StreamWriter writer, string codeDocument, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             try
             {
-                //DocumentVente Facture = new DocumentVente();
+                writer.WriteLine(DateTime.Now + " | getDocumentLine() : récupérer les lignes du documment => " + codeDocument);
                 List<DocumentVenteLine> lignesDocumentVente = new List<DocumentVenteLine>();
-                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
+                using (OdbcConnection connection = ConnexionManager.CreateOdbcConnexionSQL())
                 {
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
-                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(false, codeDocument), connection);
+                    writer.WriteLine(DateTime.Now + " | getDocumentLine() : SQL ===> " + QueryHelper.getListDocumentVenteLine(true, codeDocument));
+                    writer.Flush();
+                    OdbcCommand command = new OdbcCommand(QueryHelper.getListDocumentVenteLine(true, codeDocument), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
+                                writer.WriteLine(DateTime.Now + " | getDocumentLine() : Ref => " + reader[3].ToString() + " ; Name => " + reader[4].ToString());
+                                writer.Flush();
                                 DocumentVenteLine ligne = new DocumentVenteLine(reader[0].ToString().Replace("00:00:00", ""), reader[1].ToString().Replace("00:00:00", ""),
                                     reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(),
                                     reader[8].ToString(), reader[9].ToString(),
@@ -123,6 +131,8 @@ namespace importPlanifier.Classes
                             }
                         }
                     }
+                    writer.WriteLine(DateTime.Now + " | getDocumentLine() : ligne total => " + lignesDocumentVente.Count);
+                    writer.Flush();
                     return lignesDocumentVente;
 
                 }
@@ -133,31 +143,39 @@ namespace importPlanifier.Classes
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                writer.WriteLine(DateTime.Now + " | getDocumentLine() : Erreur \n " + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                writer.Flush();
                 recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.", e.Message, e.StackTrace, "", logFileName_export));
                 return null;
             }
         }
 
-        private Customer GetClient(string do_tiers)
+        private Customer GetClient(StreamWriter writer, string do_tiers)
         {
             try
             {
+                writer.WriteLine(DateTime.Now + " | GetClient() : ref => "+ do_tiers);
                 //List<Customer> listClient = new List<Customer>();
                 using (OdbcConnection connection = ConnexionManager.CreateOdbcConnextion())
                 {
 
                     connection.Open();
                     //Exécution de la requête permettant de récupérer les articles du dossier
+                    writer.WriteLine(DateTime.Now + " | GetClient() : SQL => " + QueryHelper.getCustomer(false, do_tiers));
                     OdbcCommand command = new OdbcCommand(QueryHelper.getCustomer(false, do_tiers), connection);
                     {
                         using (IDataReader reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
+                                writer.WriteLine(DateTime.Now + " | GetClient() : Client trouvé!");
+                                writer.Flush();
                                 return new Customer(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString(), reader[11].ToString(), reader[12].ToString(), reader[13].ToString(), reader[14].ToString(), reader[15].ToString(), reader[16].ToString());
                             }
                             else
                             {
+                                writer.WriteLine(DateTime.Now + " | GetClient() : Aucun réponse.");
+                                writer.Flush();
                                 return null;
                             }
                         }
@@ -170,6 +188,8 @@ namespace importPlanifier.Classes
             catch (Exception e)
             {
                 //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                writer.WriteLine(DateTime.Now + " | GetClient() : ref => " + do_tiers);
+                writer.Flush();
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 return null;
             }
@@ -245,11 +265,13 @@ namespace importPlanifier.Classes
                     logFileWriter_export.Close();
                     return recapLinesList_new;
                 }
+                logFileWriter_export.Flush();
 
                 List<DocumentVente> BonLivrasonAExporter = GetBonLivraisonFromDataBase(logFileWriter_export, recapLinesList_new, settings.configurationExport.DSADV.Status);
 
-                 if (BonLivrasonAExporter != null && BonLivrasonAExporter.Count > 0)
-                 {
+                logFileWriter_export.Flush();
+                if (BonLivrasonAExporter != null && BonLivrasonAExporter.Count > 0)
+                {
                      string outputFile = this.pathExport + @"\Fichier Exporter\Bons de Livraisons\Vente";
 
                      if (!Directory.Exists(outputFile))
@@ -262,15 +284,20 @@ namespace importPlanifier.Classes
                     if (BonLivrasonAExporter.Count > 0 && settings.configurationExport.DSADV.Format == "Plat")
                     {
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Le format du fichier d'export => " + settings.configurationExport.DSADV.Format);
+                        
 
                         for (int i = 0; i < BonLivrasonAExporter.Count; i++)
                         {
+                            logFileWriter_export.Flush();
                             exportTo = @"Export\Plat_BonLivraison\Vente";
-                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Nombre de DESADV à exporter ===> " + i + "/" + BonLivrasonAExporter.Count);
+                            logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Nombre de DESADV à exporter ===> " + (i+1) + "/" + BonLivrasonAExporter.Count);
 
-                            Customer customer = GetClient(BonLivrasonAExporter[i].DO_TIERS);
+                            Customer customer = GetClient(logFileWriter_export, BonLivrasonAExporter[i].DO_TIERS);
 
-                            var fileName = string.Format("BonLivraison{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
+                            // Init.Init init = new Init.Init();
+                            // logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Json BonLivrasonAExporter :\n " + init.FormatJson(BonLivrasonAExporter[i]));
+
+                            var fileName = string.Format("BonLivraison{0:dd-MM-yyyy_HH.mm.ss}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
 
                             using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName, false, Encoding.UTF8))
                             {
@@ -294,34 +321,43 @@ namespace importPlanifier.Classes
 
                                 writer.WriteLine("DESREF;;;;" + BonLivrasonAExporter[i].DO_COORD01 + ";;;;;");
                                 writer.WriteLine("");
+                                writer.Flush();
 
-
-                                BonLivrasonAExporter[i].lines = getDocumentLine(BonLivrasonAExporter[i].DO_Piece, recapLinesList_new);
+                                BonLivrasonAExporter[i].lines = getDocumentLine(logFileWriter_export, BonLivrasonAExporter[i].DO_Piece, recapLinesList_new);
 
 
                                 writer.WriteLine("DESLOG;" + BonLivrasonAExporter[i].lines.Count + ";" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].FNT_PoidsNet.Replace(",", ".") + ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
                                 writer.WriteLine("");
-
+                                writer.Flush();
 
                                 for (int j = 0; j < BonLivrasonAExporter[i].lines.Count; j++)
                                 {
                                     writer.WriteLine("DESLIN;" + BonLivrasonAExporter[i].lines[j].DL_Ligne + ";;" + BonLivrasonAExporter[i].lines[j].AR_CODEBARRE + ";;;;;;;" + BonLivrasonAExporter[i].lines[j].DL_Design + ";;;" + BonLivrasonAExporter[i].lines[j].DL_Qte + ";;" + BonLivrasonAExporter[i].lines[j].EU_Qte + ";;;;;;;;;;;" + ConvertDate(BonLivrasonAExporter[i].lines[j].DO_DateLivr) + ";;;" + BonLivrasonAExporter[i].lines[j].FNT_PrixUNet.Replace(",", ".") + ";;;;;;" + BonLivrasonAExporter[i].lines[j].FNT_MontantHT.Replace(",", ".") + ";;" + BonLivrasonAExporter[i].lines[j].DL_NoColis + ";;;;;;;;;;;");
                                     writer.WriteLine("");
+                                    writer.Flush();
                                 }
 
                                 writer.WriteLine("DESEND;" + BonLivrasonAExporter[i].lines.Count + ";;;" + BonLivrasonAExporter[i].FNT_TotalHTNet.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_TotalHT.Replace(",", ".") + ";" + BonLivrasonAExporter[i].FNT_PoidsBrut.Replace(",", ".") + ";;;;;");
                                 writer.WriteLine("");
                                 writer.WriteLine("");
+                                writer.Flush();
 
                             }
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Fichier d'export DESADV généré dans : " + outputFile + @"\" + fileName.Replace("..", "."));
+                            logFileWriter_export.Flush();
 
                             //add to backup folder
-                            addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName, logFileWriter_export);
+                            addFileToBackUp(pathExport + @"\BackUp\" + exportTo, outputFile + @"\" + fileName, fileName, logFileWriter_export);
+                            logFileWriter_export.Flush();
 
-                            UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece, recapLinesList_new);
+                            //UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece, recapLinesList_new);
+
+                            recapLinesList_new.AddRange(UpdateDocumentVente(logFileWriter_export, BonLivrasonAExporter[i].DO_Piece, outputFile + @"\" + fileName));
 
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Mettre à jour le Document de Vente");
+                            logFileWriter_export.WriteLine("");
+                            logFileWriter_export.WriteLine("");
+                            logFileWriter_export.Flush();
 
 
                         }  //END FOR export Bon de livraison
@@ -434,8 +470,16 @@ namespace importPlanifier.Classes
             }
             else
             {
-                writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + filename + "\"");
-                File.Copy(sourceFilePath, backUpFolderPath + @"\" + filename);
+                try
+                {
+                    writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Copy file \"" + sourceFilePath + "\" to \"" + backUpFolderPath + @"\" + filename + "\"");
+                    File.Copy(sourceFilePath, backUpFolderPath + @"\" + filename);
+                }
+                catch(Exception ex)
+                {
+                    writer.WriteLine(DateTime.Now + " | addFileToBackUp() : ########### ERROR FILE Copy ###########");
+                    writer.WriteLine(DateTime.Now + " | addFileToBackUp() : Message => "+ex.Message);
+                }
             }
 
             writer.WriteLine("");
@@ -464,6 +508,86 @@ namespace importPlanifier.Classes
                 Console.WriteLine("" + e.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                 recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export du bon de livraison est annulée.", e.Message, e.StackTrace, "", logFileName_export));
             }
+        }
+
+        private List<Alert_Mail.Classes.Custom.CustomMailRecapLines> UpdateDocumentVente(StreamWriter writer, string do_piece, string fileLocation)
+        {
+            using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
+            {
+                List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_ = new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>();
+                connexion.Open();
+
+                //update order statut
+                try
+                {
+                    writer.WriteLine("");
+                    writer.WriteLine(DateTime.Now + " | ExportCommande() : Changer le statut de la commande \"" + do_piece + "\".");
+
+                    writer.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.changeBLStatut(true, do_piece));
+                    OdbcCommand command1 = new OdbcCommand(QueryHelper.changeBLStatut(true, do_piece), connexion);
+                    {
+                        using (IDataReader reader = command1.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                //Statut Update
+                            }
+                        }
+                    }
+                    writer.WriteLine(DateTime.Now + " Le statut du documment \" " + fileLocation + " \" est à jour.");
+                    writer.Flush();
+
+                }
+                catch (Exception ex)
+                {
+                    //Exceptions pouvant survenir durant l'exécution de la requête SQL
+                    writer.WriteLine("");
+                    writer.WriteLine(DateTime.Now + " ********** Erreur ********** ");
+
+                    if (File.Exists(fileLocation))
+                    {
+                        try
+                        {
+                            File.Delete(fileLocation);
+                            writer.WriteLine(DateTime.Now + " Le fichier \" " + fileLocation + " \" est supprimer !.");
+                        }
+                        catch (Exception exf)
+                        {
+                            writer.WriteLine(DateTime.Now + " ********** Erreur Delete File ********** ");
+                            writer.WriteLine(DateTime.Now + " Impossible de supprimer le fichier \" " + fileLocation + " \".");
+                            writer.WriteLine(DateTime.Now + " Message: " + exf.Message);
+                        }
+                    }
+                    else
+                    {
+                        writer.WriteLine(DateTime.Now + " Le fichier \" " + do_piece + " \" n'existe plus (peut déjà être envoyé en EDI).");
+                    }
+                    writer.Flush();
+
+                    writer.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                    writer.WriteLine(DateTime.Now + " Export Annuler.");
+                    writer.Flush();
+
+                    if (ex.Message.Contains("Cet élément est en cours d'utilisation !"))
+                    {
+                        writer.WriteLine("");
+                        writer.WriteLine(DateTime.Now + " | ExportCommande() : Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + do_piece + "\".");
+                        recapLinesList_.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée. Cet élément est en cours d'utilisation ! Veuillez fermer la fenêtre de commande dans Sage afin que la commande puisse être exportée.", "Cet élément est en cours d'utilisation ! Impossible de changer le statut de la commande \"" + do_piece + "\".", ex.StackTrace, "", logFileName_export));
+                    }
+                    else
+                    {
+                        writer.WriteLine("");
+                        writer.WriteLine(DateTime.Now + " | ExportCommande() : " + ex.Message);
+                        recapLinesList_.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(docRefMail, "", "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                    }
+                    writer.Flush();
+                    //recapLinesList_new.Add(new CustomMailRecapLines(docRefMail, "L'export de la commande est annulée.", ex.Message, ex.StackTrace, "", logFileName_export));
+                }
+                writer.WriteLine("");
+                writer.Flush();
+                return recapLinesList_;
+            }
+            
         }
     }
 }

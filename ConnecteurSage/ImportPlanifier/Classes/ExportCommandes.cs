@@ -551,7 +551,7 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
                                         logFileWriter.WriteLine(DateTime.Now + " Export Annuler.");
                                         logFileWriter.Flush();
-                                        logFileWriter.Close();
+                                        // logFileWriter.Close();
 
                                         if (ex.Message.Contains("Cet élément est en cours d'utilisation !"))
                                         {
