@@ -1,0 +1,17 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\AlertMail.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Alert-Mail.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Database.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Connexion.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\System.Data.SQLite.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Dapper.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Database.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\System.Data.SQLite.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\System.Data.SQLite.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\x64\Release\Dapper.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\x64\Release\AlertMail.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\x64\Release\AlertMail.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\x64\Release\AlertMail.exe

@@ -39,3 +39,5 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\x64\Release\
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\x64\Release\aa\ConnecteurSage.resources.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\x64\Release\ConnecteurSage.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\obj\x64\Release\ConnecteurSage.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\x64\Release\Dapper.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\x64\Release\Dapper.xml

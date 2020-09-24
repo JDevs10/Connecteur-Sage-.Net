@@ -129,15 +129,14 @@ namespace ConnecteurSage.Forms
                 groupBox1.Enabled = false;
                 groupBox3.Enabled = false;
                 checkBox2.Enabled = false;
-                enregistrerButton.Enabled = false;
             }
             else
             {
                 groupBox1.Enabled = true;
                 checkBox2.Enabled = true;
                 groupBox3.Enabled = true;
-                enregistrerButton.Enabled = true;
             }
+            enregistrerButton.Enabled = true;
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -249,52 +248,90 @@ namespace ConnecteurSage.Forms
             }
 
             DailyTrigger dt = null;
-            try
+            if (checkBox1.Checked)
             {
-                TaskService ts = new TaskService();
-                TaskDefinition td = ts.NewTask();
-                td.Principal.UserId = "SYSTEM";
-                td.Principal.LogonType = TaskLogonType.S4U;
-                td.Settings.AllowDemandStart = true;
-                td.Principal.RunLevel = TaskRunLevel.Highest;
-                dt = (DailyTrigger)td.Triggers.Add(new DailyTrigger(1));
-                dt.StartBoundary = DateTime.Parse(date) + TimeSpan.FromHours(Convert.ToDouble(time.Substring(0, 2))) + TimeSpan.FromMinutes(Convert.ToDouble(time.Substring(3, 2)));
-                if (checkBox2.Checked)
+                try
                 {
-                    dt.Repetition.Duration = TimeSpan.FromDays(1);
-                    dt.Repetition.Interval = TimeSpan.FromHours(int.Parse(comboBox2.Text));
-                }
-                td.Actions.Add(new ExecAction(pathModule + @"\importPlanifier.exe", null, null));
-                ts.RootFolder.RegisterTaskDefinition(taskName, td);
-                td.Settings.Enabled = true;
+                    TaskService ts = new TaskService();
+                    TaskDefinition td = ts.NewTask();
+                    td.Principal.UserId = string.Concat(Environment.UserDomainName, "\\", Environment.UserName); // "SYSTEM";
+                    td.RegistrationInfo.Author = string.Concat(Environment.UserDomainName, "\\", Environment.UserName); // "SYSTEM";
+                    td.Principal.LogonType = TaskLogonType.S4U;
+                    td.Settings.AllowDemandStart = true;
+                    td.Principal.RunLevel = TaskRunLevel.Highest;
+                    dt = (DailyTrigger)td.Triggers.Add(new DailyTrigger(1));
+                    dt.StartBoundary = DateTime.Parse(date) + TimeSpan.FromHours(Convert.ToDouble(time.Substring(0, 2))) + TimeSpan.FromMinutes(Convert.ToDouble(time.Substring(3, 2)));
+                    if (checkBox2.Checked)
+                    {
+                        dt.Repetition.Duration = TimeSpan.FromDays(1);
+                        dt.Repetition.Interval = TimeSpan.FromHours(int.Parse(comboBox2.Text));
+                    }
+                    td.Actions.Add(new ExecAction(pathModule + @"\importPlanifier.exe", null, null));
+                    //ts.RootFolder.RegisterTaskDefinition(taskName, td);
+                    ts.RootFolder.RegisterTaskDefinition(taskName, td, TaskCreation.CreateOrUpdate, string.Concat(Environment.UserDomainName, "\\", Environment.UserName), "CFCI2018", TaskLogonType.Password, null);
+                    td.Settings.Enabled = true;
 
-                Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-                if (settings.isSettings())
-                {
-                    settings.Load();
-                    settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask(taskName, td.Principal.UserId, td.Settings.Enabled);
-                    settings.saveInfo();
-                }
-                else
-                {
-                    settings.configurationGeneral = new Init.Classes.ConfigurationGeneral();
-                    settings.configurationGeneral.general = new Init.Classes.Configuration.General();
-                    settings.configurationGeneral.paths = new Init.Classes.Configuration.Paths();
-                    settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask(taskName, td.Principal.UserId, td.Settings.Enabled);
-                    settings.configurationGeneral.priceType = new Init.Classes.Configuration.PriceType();
-                    settings.configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess();
-                    settings.saveInfo();
-                }
 
-                MessageBox.Show("La tache " + taskName + " est enregistré !", "Tache Planifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Close();
+                    Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+                    if (settings.isSettings())
+                    {
+                        settings.Load();
+                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask(taskName, td.Principal.UserId, td.Settings.Enabled);
+                        settings.saveInfo();
+                    }
+                    else
+                    {
+                        settings.configurationGeneral = new Init.Classes.ConfigurationGeneral();
+                        settings.configurationGeneral.general = new Init.Classes.Configuration.General();
+                        settings.configurationGeneral.paths = new Init.Classes.Configuration.Paths();
+                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask(taskName, td.Principal.UserId, td.Settings.Enabled);
+                        settings.configurationGeneral.priceType = new Init.Classes.Configuration.PriceType();
+                        settings.configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess();
+                        settings.saveInfo();
+                    }
+
+                    MessageBox.Show("La tache " + taskName + " est enregistré !", "Tache Planifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Message : " + ex.Message, "Erreur de création", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Message : " + ex.Message, "Erreur de création", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    TaskService ts = new TaskService();
+                    ts.RootFolder.DeleteTask(taskName);
+
+                    Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+                    if (settings.isSettings())
+                    {
+                        settings.Load();
+                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
+                        settings.saveInfo();
+                    }
+                    else
+                    {
+                        settings.configurationGeneral = new Init.Classes.ConfigurationGeneral();
+                        settings.configurationGeneral.general = new Init.Classes.Configuration.General();
+                        settings.configurationGeneral.paths = new Init.Classes.Configuration.Paths();
+                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
+                        settings.configurationGeneral.priceType = new Init.Classes.Configuration.PriceType();
+                        settings.configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess();
+                        settings.saveInfo();
+                    }
+
+                    MessageBox.Show("La tache " + taskName + " est supprimé !", "Tache Planifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Message : " + ex.Message, "Erreur de suppréssion", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
-            
+
+            Close();
         }
 
         public string ReturnTaskName()

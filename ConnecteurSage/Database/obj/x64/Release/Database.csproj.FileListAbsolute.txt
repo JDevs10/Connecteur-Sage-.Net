@@ -11,6 +11,7 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\x64\Release\Entity
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\x64\Release\EntityFramework.SqlServer.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\x64\Release\System.Data.SQLite.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\x64\Release\System.Data.SQLite.dll.config
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\x64\Release\Database.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\x64\Release\Database.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\x64\Release\Database.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\x64\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\x64\Release\Newtonsoft.Json.xml

@@ -1,0 +1,3 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\x64\Release\Fichier-De-Nettoyage.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\x64\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\x64\Release\Fichier-De-Nettoyage.dll

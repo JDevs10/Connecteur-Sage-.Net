@@ -5,3 +5,10 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Newto
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\x64\Release\Reprocess-Error-Files.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\x64\Release\Reprocess-Error-Files.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\x64\Release\Reprocess-Error-Files.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Database.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\System.Data.SQLite.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Dapper.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Database.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\System.Data.SQLite.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\System.Data.SQLite.dll.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\x64\Release\Dapper.xml

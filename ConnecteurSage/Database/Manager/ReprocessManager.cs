@@ -48,7 +48,7 @@ namespace Database.Manager
                     {
                         SQLiteCommand command = new SQLiteCommand(@"CREATE TABLE IF NOT EXISTS '" + TABLE_NAME + "' ('" + COLONNE_EDIFILEID + "' INTEGER UNIQUE, '" + COLONNE_FILENAME + "' TEXT NOT NULL, '" + COLONNE_FILEPATH + "' TEXT NOT NULL, '" + COLONNE_COUNT + "' TEXT NOT NULL)", conn);
                         x = command.ExecuteNonQuery();
-                        Console.WriteLine("Table created / Exist");
+                        //Console.WriteLine("Table created / Exist");
                     }
 
                     conn.Close();
@@ -78,7 +78,7 @@ namespace Database.Manager
                     {
                         SQLiteCommand command = new SQLiteCommand(@"INSERT INTO " + TABLE_NAME + " ('" + COLONNE_EDIFILEID + "', '" + COLONNE_FILENAME + "', '" + COLONNE_FILEPATH + "', '" + COLONNE_COUNT + "') VALUES(" + reprocess.ediFileID + ",'" + reprocess.fileName + "','" + reprocess.filePath + "','" + reprocess.fileReprocessCount + "')", conn);
                         x = command.ExecuteNonQuery();
-                        Console.WriteLine("Table created");
+                        //Console.WriteLine("Table created");
                     }
 
                     conn.Close();
