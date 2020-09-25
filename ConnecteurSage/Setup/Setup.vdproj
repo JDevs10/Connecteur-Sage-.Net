@@ -364,7 +364,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D5031AFA1477EFAF4E3730FBF0F5FBE0"
+        "OwnerKey" = "8:_5AAF74C8B2754DE7A1B1B7A6F6B91658"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -418,12 +418,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5AAF74C8B2754DE7A1B1B7A6F6B91658"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_A2419153306324CBF57980B07EE5C495"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -467,6 +461,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1E9411AC9F7780D69D873D29FC60092D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_D5031AFA1477EFAF4E3730FBF0F5FBE0"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -1187,15 +1187,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Connecteur Sage"
-        "ProductCode" = "8:{FBCCF378-4DDB-4E31-AE55-58E85A0EF33B}"
-        "PackageCode" = "8:{1A8A4F98-9D45-4E91-B6CE-D372F27325F4}"
+        "ProductCode" = "8:{99681037-E2F4-408B-8112-E806B8169F36}"
+        "PackageCode" = "8:{E0672529-DFAF-431E-BA34-0D2C3DBE44AB}"
         "UpgradeCode" = "8:{1991DDBB-12B7-4F0D-A521-ADED641216A9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.19.1"
+        "ProductVersion" = "8:1.19.3"
         "Manufacturer" = "8:Big Data Consulting"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

@@ -6372,17 +6372,32 @@ namespace importPlanifier.Classes
                                         logFileWriter.WriteLine("");
                                         if (tvaList != null)
                                         {
-                                            logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : List des TVA trouvé");
                                             TVA tva = null;
-                                            foreach (TVA tva_ in tvaList)
+                                            if (DL_CodeTaxe1 == null || DL_CodeTaxe1 == "")
                                             {
-                                                if (tva_.TA_Code == DL_CodeTaxe1)
+                                                foreach (TVA tva_ in tvaList)
                                                 {
-                                                    tva = tva_;
-                                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
-                                                    break;
+                                                    if (tva_.TA_Code == "C00")
+                                                    {
+                                                        tva = tva_;
+                                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                        break;
+                                                    }
                                                 }
                                             }
+                                            else
+                                            {
+                                                foreach (TVA tva_ in tvaList)
+                                                {
+                                                    if (tva_.TA_Code == DL_CodeTaxe1)
+                                                    {
+                                                        tva = tva_;
+                                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            
 
                                             double product_ht = Convert.ToDouble(DL_PrixUnitaire_salePriceHT);
                                             double product_20_P = (product_ht * Convert.ToDouble(tva.TA_Taux)) / 100;
@@ -6407,7 +6422,7 @@ namespace importPlanifier.Classes
                                     {
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : ******************** Exception TVA ********************");
-                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Erreur lors du calcule du prix d'article TTC, message :\n" + ex.Message);
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Erreur lors du calcule du prix d'article TTC, message : \n" + ex.Message);
                                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : StackTrace :" + ex.StackTrace);
                                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : Import annulée");
                                         logFileWriter.Flush();
