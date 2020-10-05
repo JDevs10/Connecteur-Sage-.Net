@@ -45,3 +45,4 @@ C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Export\bin\Release\Ne
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Export\obj\Release\Config-Export.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Export\obj\Release\Config-Export.dll
 C:\WorkPlace\Connecteur-Sage-.Net_v2\ConnecteurSage\Config-Export\obj\Release\Config-Export.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.csprojAssemblyReference.cache
