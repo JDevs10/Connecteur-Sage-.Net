@@ -1,0 +1,12 @@
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\Update.exe.config
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\Update.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\Update.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\Newtonsoft.Json.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\System.Net.Http.Extensions.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\System.Net.Http.Formatting.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\System.Net.Http.Primitives.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\bin\Release\Newtonsoft.Json.xml
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\obj\Release\Update.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\obj\Release\Update.csproj.CopyComplete
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\obj\Release\Update.exe
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Update\obj\Release\Update.pdb
