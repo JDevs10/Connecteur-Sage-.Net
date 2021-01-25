@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -18,25 +19,25 @@ namespace ConnecteurSage.Forms
         {
             InitializeComponent();
 
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
+            // Init database
+            Database.Database db = new Database.Database();
+            Database.Model.Settings settings_ = db.settingsManager.get(db.connectionString ,1);
 
-            if (settings.isSettings())
+            if(settings_ != null)
             {
-                settings.Load();
-                Init.Classes.ConfigurationGeneral configurationGeneral = settings.configurationGeneral;
-
-                if (configurationGeneral.general.showWindow == 5)
+                if (settings_.showWindow == 5)
                 {
                     // visible Software while running
                     debugMode_checkBox.Checked = true;
                 }
-                else if (configurationGeneral.general.showWindow == 0)
+                else if (settings_.showWindow == 0)
                 {
                     // Hide Software while running
                     debugMode_checkBox.Checked = false;
                 }
 
-                if (configurationGeneral.general.isAppOpen)
+                /*
+                if (settings_.isAppOpen)
                 {
                     label3.Text = "Planificateur en Cour...";
                 }
@@ -44,40 +45,41 @@ namespace ConnecteurSage.Forms
                 {
                     label3.Text = "Planificateur est fermet.";
                 }
+                */
 
-                if (configurationGeneral.general.isACP_ComptaCPT_CompteG)
+                if (settings_.isACP_ComptaCPT_CompteG == 1 ? true : false)
                 {
                     checkBox_activate_compt_g_taxe.Text = "Activer";
                     checkBox_activate_compt_g_taxe.Checked = true;
                     textBox1.Enabled = true;
-                    textBox1.Text = "" + configurationGeneral.general.ACP_ComptaCPT_CompteG;
+                    textBox1.Text = "" + settings_.ACP_ComptaCPT_CompteG;
                 }
                 else
                 {
                     checkBox_activate_compt_g_taxe.Text = "Désactiver";
                     checkBox_activate_compt_g_taxe.Checked = false;
                     textBox1.Enabled = false;
-                    textBox1.Text = "" + configurationGeneral.general.ACP_ComptaCPT_CompteG;
+                    textBox1.Text = "" + settings_.ACP_ComptaCPT_CompteG;
                 }
 
-                textBox2.Text = configurationGeneral.paths.EDI_Folder;
+                textBox2.Text = settings_.EDI_Folder;
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 /// Tarifaire
                 /// 
-                if (configurationGeneral.priceType.activate)
+                if (settings_.priceType_active == 1 ? true : false)
                 {
                     checkBox_activer_tarif.Text = "Activer";
                     checkBox_activer_tarif.Checked = true;
 
                     radioButton_tarif_cmd_EDI.Enabled = true;
-                    radioButton_tarif_cmd_EDI.Checked = configurationGeneral.priceType.cmdEDIPrice;
+                    radioButton_tarif_cmd_EDI.Checked = settings_.priceType_cmdEDIPrice == 1 ? true : false;
                     radioButton_tarif_produit.Enabled = true;
-                    radioButton_tarif_produit.Checked = configurationGeneral.priceType.productPrice;
+                    radioButton_tarif_produit.Checked = settings_.priceType_productPrice == 1 ? true : false;
                     radioButton_tarif_categorie.Enabled = true;
-                    radioButton_tarif_categorie.Checked = configurationGeneral.priceType.categoryPrice;
+                    radioButton_tarif_categorie.Checked = settings_.priceType_categoryPrice == 1 ? true : false;
                     radioButton_tarif_client.Enabled = true;
-                    radioButton_tarif_client.Checked = configurationGeneral.priceType.clientPrice;
+                    radioButton_tarif_client.Checked = settings_.priceType_clientPrice == 1 ? true : false;
                 }
                 else
                 {
@@ -85,19 +87,19 @@ namespace ConnecteurSage.Forms
                     checkBox_activer_tarif.Checked = false;
 
                     radioButton_tarif_cmd_EDI.Enabled = false;
-                    radioButton_tarif_cmd_EDI.Checked = configurationGeneral.priceType.cmdEDIPrice;
+                    radioButton_tarif_cmd_EDI.Checked = settings_.priceType_cmdEDIPrice == 1 ? true : false;
                     radioButton_tarif_produit.Enabled = false;
-                    radioButton_tarif_produit.Checked = configurationGeneral.priceType.productPrice;
+                    radioButton_tarif_produit.Checked = settings_.priceType_productPrice == 1 ? true : false;
                     radioButton_tarif_categorie.Enabled = false;
-                    radioButton_tarif_categorie.Checked = configurationGeneral.priceType.categoryPrice;
+                    radioButton_tarif_categorie.Checked = settings_.priceType_categoryPrice == 1 ? true : false;
                     radioButton_tarif_client.Enabled = false;
-                    radioButton_tarif_client.Checked = configurationGeneral.priceType.clientPrice;
+                    radioButton_tarif_client.Checked = settings_.priceType_clientPrice == 1 ? true : false;
                 }
 
                 ////////////////////////////////////////////////////////////////////////////////////
                 /// Reprocess
                 /// 
-                if (configurationGeneral.reprocess.activate)
+                if (settings_.reprocess_active == 1 ? true : false)
                 {
                     checkBox_reprocess_activate.Text = "Activer";
                     checkBox_reprocess_activate.Checked = true;
@@ -108,8 +110,8 @@ namespace ConnecteurSage.Forms
                     checkBox_reprocess_activate.Checked = false;
                 }
 
-                numericUpDown_hour.Value = configurationGeneral.reprocess.hour;
-                numericUpDown1_reprocess_cd.Value = configurationGeneral.reprocess.countDown;
+                numericUpDown_hour.Value = settings_.reprocess_hour;
+                numericUpDown1_reprocess_cd.Value = settings_.reprocess_countDown;
             }
         }
 
@@ -137,10 +139,11 @@ namespace ConnecteurSage.Forms
             int show;
             const int SW_HIDE = 0;
             const int SW_SHOW = 5;
-            Init.Classes.ConfigurationGeneral configurationGeneral = new Init.Classes.ConfigurationGeneral();
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
 
-            if (!settings.isSettings())
+            Database.Database db = new Database.Database();
+            Database.Model.Settings settings_ = db.settingsManager.get(db.connectionString, 1);
+
+            if (settings_ == null)
             {
                 if (debugMode_checkBox.Checked)
                 {
@@ -180,20 +183,110 @@ namespace ConnecteurSage.Forms
                     compt_g_taxe = "-1";
                 }
 
-                configurationGeneral.general = new Init.Classes.Configuration.General(show, false, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(compt_g_taxe.Trim()));
-                configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
-                configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
-                configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
-                configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
-                settings.configurationGeneral = configurationGeneral;
-                settings.saveInfo();
+
+                try
+                {
+                    Database.Model.Settings settings = new Database.Model.Settings(
+                    1, show, checkBox_activate_compt_g_taxe.Checked ? 1 : 0, Convert.ToInt32(compt_g_taxe.Trim()), @"" + Directory.GetCurrentDirectory(), @"" + textBox2.Text.Trim(),
+                    "", "", 0,
+                    checkBox_activer_tarif.Checked ? 1 : 0, radioButton_tarif_cmd_EDI.Checked ? 1 : 0, radioButton_tarif_produit.Checked ? 1 : 0, radioButton_tarif_categorie.Checked ? 1 : 0, radioButton_tarif_client.Checked ? 1 : 0,
+                    checkBox_reprocess_activate.Checked ? 1 : 0, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
+
+                    int result = db.settingsManager.insert(db.connectionString, settings);
+
+                    string TABLE_NAME = "Settings";
+                    string COLONNE_ID = "id";
+                    string COLONNE_showWindow = "showWindow";
+                    string COLONNE_isACP_ComptaCPT_CompteG = "isACP_ComptaCPT_CompteG";
+                    string COLONNE_ACP_ComptaCPT_CompteG = "ACP_ComptaCPT_CompteG";
+                    // paths settings
+                    string COLONNE_EXE_Folder = "EXE_Folder";
+                    string COLONNE_EDI_Folder = "EDI_Folder";
+                    // plannerTask settings
+                    string COLONNE_plannerTask_name = "plannerTask_name";
+                    string COLONNE_plannerTask_UserId = "plannerTask_UserId";
+                    string COLONNE_plannerTask_active = "plannerTask_active";
+                    //private settings
+                    string COLONNE_priceType_active = "priceType_active";
+                    string COLONNE_priceType_cmdEDIPrice = "priceType_cmdEDIPrice";
+                    string COLONNE_priceType_productPrice = "priceType_productPrice";
+                    string COLONNE_priceType_categoryPrice = "priceType_categoryPrice";
+                    string COLONNE_priceType_clientPrice = "priceType_clientPrice";
+                    // reprocess settings
+                    string COLONNE_reprocess_active = "reprocess_active";
+                    string COLONNE_reprocess_hour = "reprocess_hour";
+                    string COLONNE_reprocess_countDown = "reprocess_countDown";
+
+
+                    using (SQLiteConnection conn = new SQLiteConnection(db.connectionString))
+                    {
+                        try
+                        {
+                            string SQL_insert = @"INSERT INTO " + TABLE_NAME + " ('" + COLONNE_ID + "', '" + COLONNE_showWindow + "', '" + COLONNE_isACP_ComptaCPT_CompteG + "', '" + COLONNE_ACP_ComptaCPT_CompteG + "', '" + COLONNE_EXE_Folder + "', '" + COLONNE_EDI_Folder + "', '" + COLONNE_plannerTask_name + "', '" + COLONNE_plannerTask_UserId + "', '" + COLONNE_plannerTask_active + "', " +
+                                "'" + COLONNE_priceType_active + "', '" + COLONNE_priceType_cmdEDIPrice + "', '" + COLONNE_priceType_productPrice + "', '" + COLONNE_priceType_categoryPrice + "', '" + COLONNE_priceType_clientPrice + "', " +
+                                "'" + COLONNE_reprocess_active + "', '" + COLONNE_reprocess_hour + "', '" + COLONNE_reprocess_countDown + "') " +
+                                "VALUES (1, " + settings.showWindow + ", " + settings.isACP_ComptaCPT_CompteG + ", " + settings.ACP_ComptaCPT_CompteG + ", '" + settings.EXE_Folder + "', '" + settings.EDI_Folder + "', '" + settings.plannerTask_name + "', '" + settings.plannerTask_UserId + "', " + settings.plannerTask_active + ", " +
+                                "" + settings.priceType_active + ", " + settings.priceType_cmdEDIPrice + ", " + settings.priceType_productPrice + ", " + settings.priceType_categoryPrice + ", " + settings.priceType_clientPrice + ", " +
+                                "" + settings.reprocess_active + ", " + settings.reprocess_hour.ToString().Replace(',', '.') + ", " + settings.reprocess_countDown + ")";
+
+                            /*
+                            string SQL_insert__ = @"INSERT INTO " + TABLE_NAME + " ('" + COLONNE_ID + "', '" + COLONNE_showWindow + "', '" + COLONNE_isACP_ComptaCPT_CompteG + "', '" + COLONNE_ACP_ComptaCPT_CompteG + "', '" + COLONNE_EXE_Folder + "', '" + COLONNE_EDI_Folder + "', '" + COLONNE_plannerTask_name + "', '" + COLONNE_plannerTask_UserId + "', '" + COLONNE_plannerTask_active + "','" + COLONNE_priceType_active + "', '" + COLONNE_priceType_cmdEDIPrice + "', '" + COLONNE_priceType_productPrice + "', '" + COLONNE_priceType_categoryPrice + "', '" + COLONNE_priceType_clientPrice + "','" + COLONNE_reprocess_active + "', '" + COLONNE_reprocess_hour + "', '" + COLONNE_reprocess_countDown + "') VALUES " +
+                                "(1," + settings.showWindow + ", " + settings.isACP_ComptaCPT_CompteG + ", " + settings.ACP_ComptaCPT_CompteG + ", '" + settings.EXE_Folder + "', '" + settings.EDI_Folder + "', '" + settings.plannerTask_name + "', '" + settings.plannerTask_UserId + "', " + settings.plannerTask_active + ", " +
+                                "" + settings.priceType_active + ", " + settings.priceType_cmdEDIPrice + ", " + settings.priceType_productPrice + ", " + settings.priceType_categoryPrice + ", " + settings.priceType_clientPrice + ", " +
+                                "" + settings.reprocess_active + ", " + settings.reprocess_hour.ToString().Replace(',','.') + ", " + settings.reprocess_countDown + ")";
+                            */
+
+                            /*
+                            INSERT INTO Settings ('id', 'showWindow', 'isACP_ComptaCPT_CompteG', 'ACP_ComptaCPT_CompteG', 'EXE_Folder', 'EDI_Folder', 'plannerTask_name', 'plannerTask_UserId', 'plannerTask_active',
+                            'priceType_active', 'priceType_cmdEDIPrice', 'priceType_productPrice', 'priceType_categoryPrice', 'priceType_clientPrice',
+                            'reprocess_active', 'reprocess_hour', 'reprocess_countDown')
+                            VALUES(1, 5, 1, 12347, 'Path EXE Folder', 'Path EDI Folder', '', '', 0,
+                            1, 0, 0, 0, 1,
+                            1, 0.5, 3)
+                            */
+
+                            MessageBox.Show("SQL : " + SQL_insert + "\n\nJson: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+                            int x = -9;
+                            conn.Open();
+
+                            if (conn.State == System.Data.ConnectionState.Open)
+                            {
+                                SQLiteCommand command = new SQLiteCommand(SQL_insert, conn);
+                                x = command.ExecuteNonQuery();
+                            }
+
+                            conn.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("\nSettings Insert [ERROR]");
+                            Console.WriteLine("Message : " + ex.Message);
+                            Console.WriteLine("\nStackTrace : " + ex.StackTrace);
+                            conn.Close();
+                        }
+                    }
+
+
+                    /*
+                    if (result <= 0)
+                    {
+                        MessageBox.Show("result : " + result + "\n\nJson: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+                    */
+                }catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Config Général ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
             }
             else
             {
                 // if the config exist, then only get the isAppOpen variable
                 // and re-save it with the new overall config
-                settings.Load();
-                Init.Classes.ConfigurationGeneral configurationGeneral_2 = settings.configurationGeneral;
 
                 if (debugMode_checkBox.Checked)
                 {
@@ -227,13 +320,13 @@ namespace ConnecteurSage.Forms
                     compt_g_taxe = "-1";
                 }
 
-                configurationGeneral.general = new Init.Classes.Configuration.General(show, configurationGeneral_2.general.isAppOpen, checkBox_activate_compt_g_taxe.Checked, Convert.ToInt32(compt_g_taxe.Trim()));
-                configurationGeneral.paths = new Init.Classes.Configuration.Paths(textBox2.Text.Trim());
-                configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
-                configurationGeneral.priceType = new Init.Classes.Configuration.PriceType(checkBox_activer_tarif.Checked, radioButton_tarif_cmd_EDI.Checked, radioButton_tarif_produit.Checked, radioButton_tarif_categorie.Checked, radioButton_tarif_client.Checked);
-                configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess(checkBox_reprocess_activate.Checked, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
-                settings.configurationGeneral = configurationGeneral;
-                settings.saveInfo();
+                // Init database
+                Database.Model.Settings db_settings = new Database.Model.Settings(
+                    1, show, checkBox_activate_compt_g_taxe.Checked ? 1 : 0, Convert.ToInt32(compt_g_taxe.Trim()), Directory.GetCurrentDirectory(), textBox2.Text.Trim(),
+                    "", "", 0,
+                    checkBox_activer_tarif.Checked ? 1 : 0, radioButton_tarif_cmd_EDI.Checked ? 1 : 0, radioButton_tarif_produit.Checked ? 1 : 0, radioButton_tarif_categorie.Checked ? 1 : 0, radioButton_tarif_client.Checked ? 1 : 0,
+                    checkBox_reprocess_activate.Checked ? 1 : 0, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
+                db.settingsManager.update(db.connectionString, db_settings);
             }
 
             Close();

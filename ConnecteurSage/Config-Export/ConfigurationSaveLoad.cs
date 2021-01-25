@@ -12,23 +12,31 @@ namespace Config_Export
     public class ConfigurationSaveLoad
     {
         public ConfigurationExport configurationExport { get; set; }
-        private string fileName = "SettingExport.json";
+        private string fileName = "";
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        public ConfigurationSaveLoad() { }
+        public ConfigurationSaveLoad() 
+        {
+            Database.Database db = new Database.Database();
+            this.fileName = @"" + db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\SettingExport.json";
+        
+        }
         public ConfigurationSaveLoad(ConfigurationExport mConfigurationExport)
         {
+            Database.Database db = new Database.Database();
+            this.fileName = @"" + db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\SettingExport.json";
+
             this.configurationExport = mConfigurationExport;
         }
 
         public string getFilePath()
         {
-            return pathModule + @"\" + fileName;
+            return fileName;
         }
 
         public Boolean isSettings()
         {
-            if (File.Exists(fileName))
+            if (File.Exists(this.fileName))
             {
                 return true;
             }
@@ -42,7 +50,7 @@ namespace Config_Export
         {
             if (isSettings())
             {
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
+                StreamReader file = new System.IO.StreamReader(this.fileName);
                  ConfigurationExport deserializedProduct = JsonConvert.DeserializeObject<ConfigurationExport>(file.ReadToEnd());
                 this.configurationExport = deserializedProduct;
                 file.Close();
@@ -53,7 +61,7 @@ namespace Config_Export
         {
             try
             {
-                var myfile = File.Create(pathModule + @"\" + fileName);
+                var myfile = File.Create(this.fileName);
                 string json = JsonConvert.SerializeObject(this.configurationExport, Newtonsoft.Json.Formatting.Indented);
 
                 using (StreamWriter writer = new StreamWriter(myfile))

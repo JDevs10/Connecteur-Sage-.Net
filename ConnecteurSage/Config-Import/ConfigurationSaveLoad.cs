@@ -12,12 +12,19 @@ namespace Config_Import
     public class ConfigurationSaveLoad
     {
         public ConfigurationImport configurationImport { get; set; }
-        public string fileName = "SettingImport.json";
-        private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        public string fileName = "";
+        //private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        public ConfigurationSaveLoad() { }
+        public ConfigurationSaveLoad() 
+        {
+            Database.Database db = new Database.Database();
+            fileName = @"" + db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\SettingImport.json";
+        }
         public ConfigurationSaveLoad(ConfigurationImport mConfigurationImport)
         {
+            Database.Database db = new Database.Database();
+            fileName = @"" + db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\SettingImport.json";
+
             this.configurationImport = mConfigurationImport;
         }
 
@@ -37,7 +44,7 @@ namespace Config_Import
         {
             if (isSettings())
             {
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
+                StreamReader file = new System.IO.StreamReader(fileName);
                 ConfigurationImport deserializedProduct = JsonConvert.DeserializeObject<ConfigurationImport>(file.ReadToEnd());
                 this.configurationImport = deserializedProduct;
                 file.Close();
@@ -48,7 +55,7 @@ namespace Config_Import
         {
             try
             {
-                var myfile = File.Create(pathModule + @"\" + fileName);
+                var myfile = File.Create(fileName);
                 string json = JsonConvert.SerializeObject(this.configurationImport, Newtonsoft.Json.Formatting.Indented);
 
                 using (StreamWriter writer = new StreamWriter(myfile))

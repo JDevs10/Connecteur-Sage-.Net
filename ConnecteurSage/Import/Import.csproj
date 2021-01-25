@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{399A0BE9-47AF-48D0-9A17-6A6F02EC6EE3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Import</RootNamespace>
+    <AssemblyName>Import</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\AdresseLivraison.cs" />
+    <Compile Include="Classes\Article.cs" />
+    <Compile Include="Classes\Client.cs" />
+    <Compile Include="Classes\DocumentVenteLine.cs" />
+    <Compile Include="Classes\Order.cs" />
+    <Compile Include="Classes\QueryHelper.cs" />
+    <Compile Include="Classes\TVA.cs" />
+    <Compile Include="Classes\Veolog_BCF.cs" />
+    <Compile Include="Classes\Veolog_BCF_Lines.cs" />
+    <Compile Include="Classes\Veolog_DESADV.cs" />
+    <Compile Include="Classes\Veolog_DESADV_Colis.cs" />
+    <Compile Include="Classes\Veolog_DESADV_Lines.cs" />
+    <Compile Include="DocumentVent.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Alert-Mail\Alert-Mail.csproj">
+      <Project>{b5e11fc4-f58c-40b9-99cc-b831ddd17f4a}</Project>
+      <Name>Alert-Mail</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Config-Import\Config-Import.csproj">
+      <Project>{af89695c-a092-42cb-915b-27101839ad57}</Project>
+      <Name>Config-Import</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Connexion\Connexion.csproj">
+      <Project>{5d4414bd-f65b-4891-bae5-6a5d767a0fd0}</Project>
+      <Name>Connexion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Database\Database.csproj">
+      <Project>{43ccd91e-6fe4-4543-a49f-483dc7663e26}</Project>
+      <Name>Database</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

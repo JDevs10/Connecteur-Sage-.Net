@@ -74,21 +74,19 @@ namespace ConnecteurSage
                     Thread.Sleep(1);
                     progressDialog.UpdateProgress(n);
                 }
-
+                
                 // Init database && tables
                 Database.Database db = new Database.Database();
                 db.initTables();
 
-
-                Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-                if (settings.isSettings())
+                
+                Database.Model.Settings settings_ = db.settingsManager.get(db.connectionString, 1);
+                if (settings_ != null)
                 {
-                    settings.Load();
-
                     //settings.configurationGeneral.general.showWindow == 5  ---> show software
-                    label_debugMode.Text = ((settings.configurationGeneral.general.showWindow == 5) ? "Mode Débugage : Activé" : "Mode Débugage : Désactivé");
-                    label_tarifaire.Text = ((settings.configurationGeneral.priceType.activate) ? "Configuration Tarifaire : Activé" : "Config Tarifaire : Désactivé");
-                    label_retraitement.Text = ((settings.configurationGeneral.reprocess.activate) ? "Retraitement : Activé" : "Retraitement : Désactivé");
+                    label_debugMode.Text = ((settings_.showWindow == 5) ? "Mode Débugage : Activé" : "Mode Débugage : Désactivé");
+                    label_tarifaire.Text = ((settings_.priceType_active == 1 ? true : false) ? "Configuration Tarifaire : Activé" : "Config Tarifaire : Désactivé");
+                    label_retraitement.Text = ((settings_.reprocess_active == 1 ? true : false) ? "Retraitement : Activé" : "Retraitement : Désactivé");
                 }
                 else
                 {
@@ -105,6 +103,7 @@ namespace ConnecteurSage
                         MessageBox.Show(ex.Message);
                     }
                 }
+                
 
 
                 //Loading Connexion Settings
@@ -115,7 +114,7 @@ namespace ConnecteurSage
                     Thread.Sleep(1);
                     progressDialog.UpdateProgress(n);
                 }
-
+                
                 Connexion.ConnexionSaveLoad conn_Settings = new ConnexionSaveLoad();
 
                 if (conn_Settings.isSettings())
@@ -151,10 +150,13 @@ namespace ConnecteurSage
                     Thread.Sleep(1);
                     progressDialog.UpdateProgress(n);
                 }
+                
                 Config_Import.ConfigurationSaveLoad import_Settings = new Config_Import.ConfigurationSaveLoad();
+
 
                 if (import_Settings.isSettings())
                 {
+
                     import_Settings.Load();
 
                     int cpt = 0;
@@ -206,7 +208,7 @@ namespace ConnecteurSage
                         MessageBox.Show(ex.Message);
                     }
                 }
-
+                
 
                 // Loading Export Settings
                 if (progressDialog.InvokeRequired)
@@ -216,9 +218,9 @@ namespace ConnecteurSage
                     Thread.Sleep(1);
                     progressDialog.UpdateProgress(n);
                 }
-
+                
                 Config_Export.ConfigurationSaveLoad export_Settings = new Config_Export.ConfigurationSaveLoad();
-
+                
                 if (export_Settings.isSettings())
                 {
                     export_Settings.Load();
@@ -307,6 +309,7 @@ namespace ConnecteurSage
                         MessageBox.Show(ex.Message);
                     }
                 }
+                
 
                 bool ok = false;
                 for (int n = 80; n < 100; n++)

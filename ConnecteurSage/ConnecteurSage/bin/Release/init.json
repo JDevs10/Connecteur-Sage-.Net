@@ -2,8 +2,8 @@
   "general": {
     "showWindow": 5,
     "isAppOpen": false,
-    "isACP_ComptaCPT_CompteG": false,
-    "ACP_ComptaCPT_CompteG": -1
+    "isACP_ComptaCPT_CompteG": true,
+    "ACP_ComptaCPT_CompteG": 140001
   },
   "paths": {
     "EDI_Folder": "C:\\Program Files (x86)\\Big Data Consulting\\Connecteur Sage\\CSV"
@@ -14,15 +14,15 @@
     "Enabled": false
   },
   "priceType": {
-    "activate": false,
+    "activate": true,
     "cmdEDIPrice": false,
     "productPrice": false,
     "categoryPrice": false,
-    "clientPrice": false
+    "clientPrice": true
   },
   "reprocess": {
-    "activate": false,
-    "hour": 0.5,
-    "countDown": 0
+    "activate": true,
+    "hour": 1.0,
+    "countDown": 6
   }
 }

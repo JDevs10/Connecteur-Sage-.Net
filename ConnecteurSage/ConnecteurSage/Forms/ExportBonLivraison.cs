@@ -26,8 +26,8 @@ namespace ConnecteurSage.Forms
 
         private List<DocumentVente> BonLivrasonAExporter;
         private Customer customer = new Customer();
-
-        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON";
+        private Database.Database db = null;
+        private string logDirectoryName_export = null;
         private StreamWriter logFileWriter_export = null;
 
 
@@ -211,6 +211,10 @@ namespace ConnecteurSage.Forms
 
             try
             {
+                db = new Database.Database();
+                Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+                logDirectoryName_export = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON";
+
                 Config_Export.ConfigurationSaveLoad exportSettings = new Config_Export.ConfigurationSaveLoad();
                 try
                 {
@@ -801,8 +805,7 @@ namespace ConnecteurSage.Forms
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : Un export en Json du BL :");
 
-                        Init.Init init = new Init.Init();
-                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : JSON : \n" + init.FormatJson(BonLivrasonAExporter));
+                        logFileWriter.WriteLine(DateTime.Now + " | ExportBonLivraison() : JSON : \n" + db.JsonFormat(BonLivrasonAExporter));
                         logFileWriter.WriteLine("");
                     }
                 }

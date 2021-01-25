@@ -6380,6 +6380,8 @@ namespace importPlanifier.Classes
                                                     if (tva_.TA_Code == "C00")
                                                     {
                                                         tva = tva_;
+                                                        DL_CodeTaxe1 = tva_.TA_Code;
+                                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TA_Code trouvé C00");
                                                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
                                                         break;
                                                     }
@@ -6392,6 +6394,7 @@ namespace importPlanifier.Classes
                                                     if (tva_.TA_Code == DL_CodeTaxe1)
                                                     {
                                                         tva = tva_;
+                                                        logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TA_Code trouvé \"" + tva.TA_Taux + "\"");
                                                         logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : TVA trouvé \"" + tva.TA_Taux + "\"");
                                                         break;
                                                     }

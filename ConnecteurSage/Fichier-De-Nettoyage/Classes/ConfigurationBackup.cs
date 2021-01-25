@@ -69,10 +69,11 @@ namespace importPlanifier.Classes
         {
             try
             {
-                var myfile = File.Create(pathModule + @"\SettingBackup.xml");
+                //var myfile = File.Create(pathModule + @"\SettingBackup.xml");
+                FileStream fs = new FileStream(pathModule + @"\SettingBackup.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 XmlSerializer xml = new XmlSerializer(typeof(ConfigurationBackup));
-                xml.Serialize(myfile, backupSettings);
-                myfile.Close();
+                xml.Serialize(fs, backupSettings);
+                fs.Close();
             }
             catch (Exception ex)
             {
@@ -84,7 +85,8 @@ namespace importPlanifier.Classes
             if (File.Exists("SettingBackup.xml"))
             {
                 XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationBackup));
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingBackup.xml");
+                FileStream fs = new FileStream(pathModule + @"\SettingBackup.xml", FileMode.Open, FileAccess.ReadWrite);
+                StreamReader file = new System.IO.StreamReader(fs);
                 ConfigurationBackup mail = new ConfigurationBackup();
                 mail = (ConfigurationBackup)reader.Deserialize(file);
 

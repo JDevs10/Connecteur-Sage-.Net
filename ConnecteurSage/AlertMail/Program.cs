@@ -11,7 +11,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Alert_Mail.Classes;
 using Alert_Mail.Classes.Custom;
-using Init.Classes.Configuration;
 using Database.Manager;
 
 namespace AlertMail
@@ -36,40 +35,6 @@ namespace AlertMail
 
 
             db.alertMailLogManager.insert(db.connectionString, "");
-            try
-            {
-                int SW;
-                Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-
-                if (settings.isSettings())
-                {
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Fichier init.json existe.");
-
-                    settings.Load();
-                    SW = settings.configurationGeneral.general.showWindow;
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Fichier init.json chargé.");
-                }
-                else
-                {
-                    SW = 5;
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Fichier init.json n existe pas.");
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: SW = 5.");
-                }
-                db.alertMailLogManager.insert(db.connectionString, "");
-
-                // hide or show the running software window
-                var handle = GetConsoleWindow();
-                ShowWindow(handle, SW);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Mode débogage 2 : " + ex.Message);
-                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: ##### [ERROR] Window Mode ##################################################");
-                db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Message => "+ex.Message);
-                //db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: StackTrace => " + ex.StackTrace);
-                db.alertMailLogManager.insert(db.connectionString, "");
-                return;
-            }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             /// Gestion des notifications email

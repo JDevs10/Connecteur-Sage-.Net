@@ -12,10 +12,11 @@ namespace Connecteur_Info
 {
     public class ConnecteurInfo
     {
-        public string Name = "Connecteur Sage";
-        public string Version = "1.19.1";
-        public string Developper = "JDevs";
+        public string Name = "EDI Connect - TableWear";
+        public string Version = "1.20.0";
+        public string Developper = "@Développeur JL";
         public string Author = "Big Data Consulting";
+        public string Client = "TableWear";
 
         public ConnecteurInfo(){}
     }

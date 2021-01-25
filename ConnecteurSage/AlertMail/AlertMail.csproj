@@ -76,10 +76,6 @@
       <Project>{43ccd91e-6fe4-4543-a49f-483dc7663e26}</Project>
       <Name>Database</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Init\Init.csproj">
-      <Project>{e5b16814-331d-4ccf-8937-36d3751aca78}</Project>
-      <Name>Init</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

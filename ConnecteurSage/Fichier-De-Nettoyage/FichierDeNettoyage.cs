@@ -10,9 +10,17 @@ namespace Fichier_De_Nettoyage
 {
     public class FichierDeNettoyage
     {
+        private string fileName = null;
+
+        public FichierDeNettoyage()
+        {
+            Database.Database db = new Database.Database();
+            fileName = db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\SettingBackup.json";
+        }
+
         private bool checkConfig()
         {
-            if(File.Exists(Directory.GetCurrentDirectory() + @"\SettingBackup.xml"))
+            if(File.Exists(this.fileName))
             {
                 return true;
             }

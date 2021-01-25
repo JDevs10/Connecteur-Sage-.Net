@@ -17,15 +17,17 @@ namespace Database
         public static string DB_NAME = "Database.db";
         public static string DB_NAME_BACKUP = "Database_backup.db";
         public static string DB_DOSSIER = "db";
-        private static string directory_db = Directory.GetCurrentDirectory() + @"\" + DB_DOSSIER;
+        private static string directory_db = @"C:\Program Files (x86)\Big Data Consulting\ConnecteurSage_TW\" + DB_DOSSIER;
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         public string connectionString = "Data Source=" + directory_db + @"\" + DB_NAME + "; Version=" + DB_VERSION;
-        //SQLiteConnection conn { get; set; }
         #endregion
 
         #region Tables Management
         public ReprocessManager reprocessManager { get; set; }
         public AlertMailLogManager alertMailLogManager { get; set; }
+        public SettingsManager settingsManager { get; set; }
+        public ConnexionManager connexionManager { get; set; }
+        public EmailManager emailManager { get; set; }
         #endregion
 
 
@@ -41,6 +43,9 @@ namespace Database
             }
             this.reprocessManager = new ReprocessManager();
             this.alertMailLogManager = new AlertMailLogManager();
+            this.settingsManager = new SettingsManager();
+            this.connexionManager = new ConnexionManager();
+            this.emailManager = new EmailManager();
         }
 
         public Database(StreamWriter writer)
@@ -59,6 +64,9 @@ namespace Database
             }
             this.reprocessManager = new ReprocessManager();
             this.alertMailLogManager = new AlertMailLogManager();
+            this.settingsManager = new SettingsManager();
+            this.connexionManager = new ConnexionManager();
+            this.emailManager = new EmailManager();
 
             writer.WriteLine("");
             writer.Flush();
@@ -72,6 +80,9 @@ namespace Database
             // Reprocess Table
             this.reprocessManager.createTable(connectionString);
             this.alertMailLogManager.createTable(connectionString);
+            this.settingsManager.createTable(connectionString);
+            this.connexionManager.createTable(connectionString);
+            this.emailManager.createTable(connectionString);
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup();
@@ -87,6 +98,9 @@ namespace Database
             // Reprocess Table
             this.reprocessManager.createTable(connectionString, writer);
             this.alertMailLogManager.createTable(connectionString, writer);
+            this.settingsManager.createTable(connectionString, writer);
+            this.connexionManager.createTable(connectionString, writer);
+            this.emailManager.createTable(connectionString, writer);
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup(writer);

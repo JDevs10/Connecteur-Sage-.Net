@@ -11,23 +11,47 @@ namespace Reprocess
 {
     public class ReprocessErrorFiles
     {
+        private Database.Database db = null;
         private string directoryName_EDI = null;
-        private string directoryName_tmp = Directory.GetCurrentDirectory() + @"\" + "tmp";
-        private string directoryName_ErrorFile = Directory.GetCurrentDirectory() + @"\" + "Error File";
-        private static string localPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        private string directoryName_tmp = null;
+        private string directoryName_ErrorFile = null;
+        //private static string localPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
         //private double inputHour = 1.0; // 1 hours
+
+        public ReprocessErrorFiles()
+        {
+            // Init database && tables
+            db = new Database.Database();
+
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            directoryName_tmp = settings.EXE_Folder + @"\" + "tmp";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Import";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "Error File";
+        }
+
+        public ReprocessErrorFiles(StreamWriter writer)
+        {
+            // Init database && tables
+            db = new Database.Database(writer);
+            writer.Flush();
+
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            directoryName_tmp = settings.EXE_Folder + @"\" + "tmp";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Import";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "Error File";
+        }
 
         private bool getEDI_CSV_Folder(StreamWriter writer)
         {
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " :: Reprocess.dll => getEDI_CSV_Folder()");
 
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-            if (settings.isSettings())
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+
+            if (settings != null)
             {
-                settings.Load();
-                directoryName_EDI = settings.configurationGeneral.paths.EDI_Folder;
+                directoryName_EDI = settings.EDI_Folder;
                 
                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => getEDI_CSV_Folder() | dossier EDI CSV trouvé.");
                 return true;
@@ -94,12 +118,11 @@ namespace Reprocess
             Console.WriteLine("");
             Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess()");
 
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-            if (settings.isSettings())
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            if (settings != null)
             {
-                settings.Load();
 
-                if (settings.configurationGeneral.reprocess.activate)
+                if (settings.reprocess_active == 1 ? true : false)
                 {
                     if (!getEDI_CSV_Folder(writer))
                     {
@@ -117,7 +140,7 @@ namespace Reprocess
                         writer.Flush();
                         Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Les fichier EDI dans " + directoryName_ErrorFile);
 
-                        if (settings.configurationGeneral.reprocess.hour == 0) 
+                        if (settings.reprocess_hour == 0) 
                         {
                             writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Aucunne heure de retraitement saisi, HR = 0");
                             Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Aucunne heure de retraitement saisi");
@@ -142,11 +165,11 @@ namespace Reprocess
                                 writer.WriteLine("");
                                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Index : " + (x + 1));
                                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Date aujourd'hui : " + string.Format("{0:dd-MM-yyyy HH:mm}", fileDateTime) + ", Date de création : " + string.Format("{0:dd-MM-yyyy HH:mm}", fileDateTime) + ", TimeSpan : " + string.Format("{0}", ts.TotalHours));
-                                writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Temps d'existence du fichier : "+ ts.TotalHours + " hrs >= Heure de retraitement : " + settings.configurationGeneral.reprocess.hour + " hrs");
+                                writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Temps d'existence du fichier : "+ ts.TotalHours + " hrs >= Heure de retraitement : " + settings.reprocess_hour + " hrs");
                                 writer.Flush();
 
                                 // if file hour > X hours
-                                if (ts.TotalHours >= Convert.ToDouble(settings.configurationGeneral.reprocess.hour))
+                                if (ts.TotalHours >= Convert.ToDouble(settings.reprocess_hour))
                                 {
                                     string[] fileNamePieces = file.Name.Split(new String[] { "__" }, StringSplitOptions.None);
                                     string newFileName = fileNamePieces[(fileNamePieces.Length - 1)];
@@ -161,9 +184,9 @@ namespace Reprocess
                                         /// new feature
                                         /// 
                                         writer.Flush();
-                                        writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | settings.configurationGeneral.reprocess.countDown => " + settings.configurationGeneral.reprocess.countDown);
+                                        writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | settings.configurationGeneral.reprocess.countDown => " + settings.reprocess_countDown);
 
-                                        if (settings.configurationGeneral.reprocess.countDown == 0)
+                                        if (settings.reprocess_countDown == 0)
                                         {
                                             writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | La suppression des fichiers de retraitement X fois est désactivée");
                                             File.Copy(file.FullName, directoryName_EDI + @"\" + newFileName);
@@ -200,7 +223,7 @@ namespace Reprocess
                                                 reprocess_db.filePath = file.FullName;
                                                 reprocess_db.fileReprocessCount = (reprocess_db.fileReprocessCount + 1);
 
-                                                if(reprocess_db.fileReprocessCount >= settings.configurationGeneral.reprocess.countDown)
+                                                if(reprocess_db.fileReprocessCount >= settings.reprocess_countDown)
                                                 {
                                                     // move the file to tmp
                                                     writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Le Connecteur a tenté d'importer ce document " + reprocess_db.fileReprocessCount + " fois de suite sans succès, il sera déplacé sur dans le dossier => " + directoryName_tmp);
@@ -316,11 +339,10 @@ namespace Reprocess
         /// 
         private bool getEDI_CSV_Folder()
         {
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-            if (settings.isSettings())
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            if (settings != null)
             {
-                settings.Load();
-                directoryName_EDI = settings.configurationGeneral.paths.EDI_Folder;
+                directoryName_EDI = settings.EDI_Folder;
                 return true;
             }
             return false;
@@ -362,12 +384,11 @@ namespace Reprocess
         // Reprocess all file from Error File 
         public void reprocessManually()
         {
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-            if (settings.isSettings())
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            if (settings != null)
             {
-                settings.Load();
 
-                if (settings.configurationGeneral.reprocess.activate)
+                if (settings.reprocess_active == 1 ? true : false)
                 {
                     if (!getEDI_CSV_Folder())
                     {
@@ -379,7 +400,7 @@ namespace Reprocess
                         DirectoryInfo fileListing = new DirectoryInfo(directoryName_ErrorFile);
                         FileInfo[] allFiles = fileListing.GetFiles("*.csv");
 
-                        if (settings.configurationGeneral.reprocess.hour == 0)
+                        if (settings.reprocess_hour == 0)
                         {
                             Console.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Aucunne heure de retraitement saisi");
                         }
@@ -410,16 +431,14 @@ namespace Reprocess
     
         public void reprocessTmpManually()
         {
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-            if (settings.isSettings())
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            if (settings != null)
             {
-                settings.Load();
-
                 // check if tmp and EDI/CSV folders existe
                 getEDI_CSV_Folder();
                 if (Directory.Exists(directoryName_tmp) && Directory.Exists(directoryName_EDI))
                 {
-                    if (settings.configurationGeneral.reprocess.activate)
+                    if (settings.reprocess_active == 1 ? true : false)
                     {
                         // tmp dossier
                         DirectoryInfo fileListing = new DirectoryInfo(directoryName_tmp);

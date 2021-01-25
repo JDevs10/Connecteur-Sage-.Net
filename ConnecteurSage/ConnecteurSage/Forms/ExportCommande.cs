@@ -23,8 +23,8 @@ namespace ConnecteurSage.Forms
         /// commande à exporter
         /// </summary>
         private Order CommandeAExporter;
-
-        private string logDirectoryName_export = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE";
+        private Database.Database db = null;
+        private string logDirectoryName_export = null;
         private StreamWriter logFileWriter_export = null;
 
         #endregion
@@ -96,15 +96,14 @@ namespace ConnecteurSage.Forms
         /// </summary>
         private void ExportFacture(StreamWriter logFileWriter)
         {
-            Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-            if (!settings.isSettings())
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            if (settings != null)
             {
                 MessageBox.Show("La configuration générale n'est pas renseigné!\nVeuillez ajouter la configuration avant d'utiliser cette action.", "Config d'Export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            settings.Load();
 
-            string path = settings.configurationGeneral.paths.EDI_Folder;
+            string path = settings.EDI_Folder;
             string exportTo = "";
 
             Config_Export.ConfigurationSaveLoad exportSettings = new Config_Export.ConfigurationSaveLoad();
@@ -863,7 +862,9 @@ namespace ConnecteurSage.Forms
 
         private void ImportOrdersForm_Load(object sender, EventArgs e)
         {
-
+            db = new Database.Database();
+            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+            logDirectoryName_export = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE";
         }
 
         private void button1_Click(object sender, EventArgs e)

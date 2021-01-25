@@ -17,18 +17,34 @@ namespace ConnecteurSage.Forms
 {
     public partial class Planifier : Form
     {
+        private Database.Database db = null;
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         private string taskName;
+        BindingList<string> repeatList = new BindingList<string>();
 
         public Planifier()
         {
             InitializeComponent();
+
+            this.repeatList.Clear();
+            int i = 5;
+            while (i < 60)
+            {
+                this.repeatList.Add("" + i);
+                i = i + 5;
+            }
+            this.repeatList.Add("Indefinitely");
+            comboBox2.DataSource = repeatList;
+
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            string path = ReturnPath();
+            // Init database && tables
+            db = new Database.Database();
+            db.initTables();
+            string path = db.settingsManager.get(db.connectionString, 1).EDI_Folder;
             taskName = ReturnTaskName();
 
             if(taskName == null)
@@ -81,14 +97,17 @@ namespace ConnecteurSage.Forms
                 dateTimePicker2.Text = "" + td.Triggers[0].StartBoundary.ToString().Substring(0, 10);
                 dateTimePicker1.Text = "" + td.Triggers[0].StartBoundary.ToString().Substring(11, 8);
 
-                int interval = int.Parse(td.Triggers[0].Repetition.Interval.ToString().Substring(0, 2));
+                //MessageBox.Show("Obj :\n"+new Init.Init().FormatJson(td.Triggers[0].Repetition));
                 
-                if(interval != 0)
+                int interval = int.Parse(td.Triggers[0].Repetition.Interval.ToString().Split(':')[1]);
+
+                //MessageBox.Show("Obj :\nInterval :" + td.Triggers[0].Repetition.Interval.ToString() + " || Sub: " + td.Triggers[0].Repetition.Interval.ToString().Split(':')[1] + "\nint: " + interval);
+
+                if (interval != 0)
                 {
 
                 comboBox2.Text = "" + interval;
                 checkBox2.Checked = true;
-
                 }
                 else
                 {
@@ -217,26 +236,6 @@ namespace ConnecteurSage.Forms
 
         }
 
-        /*
-        private void button1_Click(object sender, EventArgs e)
-        {
-            FolderBrowserDialog folderDlg = new FolderBrowserDialog();
-
-            folderDlg.ShowNewFolderButton = true;
-
-            // Show the FolderBrowserDialog.
-
-            DialogResult result = folderDlg.ShowDialog();
-
-            if (result == DialogResult.OK)
-            {
-
-                textBox1.Text = folderDlg.SelectedPath;
-
-                //Environment.SpecialFolder root = folderDlg.RootFolder;
-            }
-        }
-        */
 
         public void EnregistrerLaTache(string date,string time)
         {
@@ -250,6 +249,28 @@ namespace ConnecteurSage.Forms
             DailyTrigger dt = null;
             if (checkBox1.Checked)
             {
+                Classes.Credentials admin = new Classes.Credentials(string.Concat(Environment.UserDomainName, "\\", Environment.UserName), "");
+
+                try
+                {
+                    Forms.AdminCredentials adminCredentials = new Forms.AdminCredentials(admin);
+
+                    if (adminCredentials.ShowDialog() == DialogResult.OK)
+                    {
+                        admin = adminCredentials.admin;
+                        //MessageBox.Show("Admin : \n"+new Init.Init().FormatJson(admin), "Info");
+                    }
+                    else if (adminCredentials.ShowDialog() == DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Message : " + ex.Message, "Erreur[100]", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 try
                 {
                     TaskService ts = new TaskService();
@@ -260,41 +281,55 @@ namespace ConnecteurSage.Forms
                     td.Settings.AllowDemandStart = true;
                     td.Principal.RunLevel = TaskRunLevel.Highest;
                     dt = (DailyTrigger)td.Triggers.Add(new DailyTrigger(1));
-                    dt.StartBoundary = DateTime.Parse(date) + TimeSpan.FromHours(Convert.ToDouble(time.Substring(0, 2))) + TimeSpan.FromMinutes(Convert.ToDouble(time.Substring(3, 2)));
+                    string[] times = time.Split(':');
+                    try
+                    {
+                        //MessageBox.Show("Date: " + date + " | time: " + time + "\nTime 1: " + times[0] + " | Time 2: " + times[1] + " | Time 3: " + times[2].Split(' ')[0], "Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        dt.StartBoundary = DateTime.Parse(date) + TimeSpan.FromHours(Convert.ToDouble(times[0])) + TimeSpan.FromMinutes(Convert.ToDouble(times[1]));
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Message : " + ex.Message+ "\nDate: " + date + " | time: " + time + "\nTime 1: " + times[0] + " | Time 2: " + times[1] + " | Time 3: " + times[2].Split(' ')[0], "Erreur[101]", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                     if (checkBox2.Checked)
                     {
-                        dt.Repetition.Duration = TimeSpan.FromDays(1);
-                        dt.Repetition.Interval = TimeSpan.FromHours(int.Parse(comboBox2.Text));
+                        //dt.Repetition.Duration = TimeSpan.FromDays(1);
+                        dt.Repetition.Interval = TimeSpan.FromMinutes(int.Parse(comboBox2.Text));
+                        dt.Repetition.StopAtDurationEnd = true;
                     }
-                    td.Actions.Add(new ExecAction(pathModule + @"\importPlanifier.exe", null, null));
+                    td.Actions.Add(new ExecAction(pathModule + @"\ConnecteurAuto.exe", null, null));
                     //ts.RootFolder.RegisterTaskDefinition(taskName, td);
-                    ts.RootFolder.RegisterTaskDefinition(taskName, td, TaskCreation.CreateOrUpdate, string.Concat(Environment.UserDomainName, "\\", Environment.UserName), "CFCI2018", TaskLogonType.Password, null);
+                    ts.RootFolder.RegisterTaskDefinition(taskName, td, TaskCreation.CreateOrUpdate, admin.User, admin.Password, TaskLogonType.Password, null);
                     td.Settings.Enabled = true;
 
+                    int result = -99;
 
-                    Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-                    if (settings.isSettings())
+                    Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+                    if(settings != null)
                     {
-                        settings.Load();
-                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask(taskName, td.Principal.UserId, td.Settings.Enabled);
-                        settings.saveInfo();
+                        settings.plannerTask_active = td.Settings.Enabled ? 1 : 0;
+                        settings.plannerTask_UserId = td.Principal.UserId;
+                        settings.plannerTask_name = taskName;
+
+                        result = db.settingsManager.update(db.connectionString, settings);
                     }
                     else
                     {
-                        settings.configurationGeneral = new Init.Classes.ConfigurationGeneral();
-                        settings.configurationGeneral.general = new Init.Classes.Configuration.General();
-                        settings.configurationGeneral.paths = new Init.Classes.Configuration.Paths();
-                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask(taskName, td.Principal.UserId, td.Settings.Enabled);
-                        settings.configurationGeneral.priceType = new Init.Classes.Configuration.PriceType();
-                        settings.configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess();
-                        settings.saveInfo();
+                        MessageBox.Show("Veuillez d'abord enregistrer les paramètres généraux", "Erreur de création", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
 
-                    MessageBox.Show("La tache " + taskName + " est enregistré !", "Tache Planifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(result > 0)
+                    {
+                        MessageBox.Show("La tache " + taskName + " est enregistré !", "Tache Planifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Message : " + ex.Message, "Erreur de création", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
             }
             else
@@ -304,29 +339,31 @@ namespace ConnecteurSage.Forms
                     TaskService ts = new TaskService();
                     ts.RootFolder.DeleteTask(taskName);
 
-                    Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-                    if (settings.isSettings())
+                    int result = -99;
+                    Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+                    if (settings != null)
                     {
-                        settings.Load();
-                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
-                        settings.saveInfo();
+                        settings.plannerTask_active = 0; // is false | desable
+                        settings.plannerTask_UserId = "";
+                        settings.plannerTask_name = "";
+                        result = db.settingsManager.update(db.connectionString, settings);
                     }
                     else
                     {
-                        settings.configurationGeneral = new Init.Classes.ConfigurationGeneral();
-                        settings.configurationGeneral.general = new Init.Classes.Configuration.General();
-                        settings.configurationGeneral.paths = new Init.Classes.Configuration.Paths();
-                        settings.configurationGeneral.plannerTask = new Init.Classes.Configuration.PlannerTask();
-                        settings.configurationGeneral.priceType = new Init.Classes.Configuration.PriceType();
-                        settings.configurationGeneral.reprocess = new Init.Classes.Configuration.Reprocess();
-                        settings.saveInfo();
+                        MessageBox.Show("Veuillez d'abord enregistrer les paramètres généraux", "Erreur de création", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
 
-                    MessageBox.Show("La tache " + taskName + " est supprimé !", "Tache Planifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (result > 0)
+                    {
+                        MessageBox.Show("La tache " + taskName + " est supprimé !", "Tache Planifier", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    
                 }
                 catch(Exception ex)
                 {
                     MessageBox.Show("Message : " + ex.Message, "Erreur de suppréssion", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
             }
 
@@ -354,31 +391,6 @@ namespace ConnecteurSage.Forms
                 MessageBox.Show("Message: " + ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-        }
-
-        public string ReturnPath()
-        {
-
-            try
-            {
-                Init.Classes.SaveLoadInit settings = new Init.Classes.SaveLoadInit();
-                if (settings.isSettings())
-                {
-                    settings.Load();
-                    return settings.configurationGeneral.paths.EDI_Folder;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch 
-            {
-                //Exception pouvant survenir si l'objet SqlConnection est dans l'état 'Fermé'
-                MessageBox.Show("Erreur[P1] : path file.");
-                return null;
-            }
-           
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)

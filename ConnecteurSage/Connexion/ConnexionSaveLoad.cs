@@ -13,17 +13,25 @@ namespace Connexion
     {
         public ConfigurationConnexion configurationConnexion { get; set; }
         private string fileName = "SettingConnexions.json";
+        public string path = null;
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
-        public ConnexionSaveLoad() { }
+        public ConnexionSaveLoad() 
+        {
+            Database.Database db = new Database.Database();
+            this.path = @"" + db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\" + fileName;
+        }
         public ConnexionSaveLoad(ConfigurationConnexion mConfigurationConnexion)
         {
+            Database.Database db = new Database.Database();
+            this.path = @"" + db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\" + fileName;
+
             this.configurationConnexion = mConfigurationConnexion;
         }
 
         public Boolean isSettings()
         {
-            if (File.Exists(fileName))
+            if (File.Exists(this.path))
             {
                 return true;
             }
@@ -37,7 +45,7 @@ namespace Connexion
         {
             if (isSettings())
             {
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
+                StreamReader file = new System.IO.StreamReader(this.path);
                 ConfigurationConnexion deserializedProduct = JsonConvert.DeserializeObject<ConfigurationConnexion>(file.ReadToEnd());
                 deserializedProduct.ODBC.PWD = Utilities.Utils.Decrypt(deserializedProduct.ODBC.PWD);
                 deserializedProduct.SQL.PWD = Utilities.Utils.Decrypt(deserializedProduct.SQL.PWD);
@@ -51,7 +59,7 @@ namespace Connexion
         {
             try
             {
-                var myfile = File.Create(pathModule + @"\" + fileName);
+                var myfile = File.Create(this.path);
 
                 this.configurationConnexion.ODBC.PWD = Utilities.Utils.Encrypt(this.configurationConnexion.ODBC.PWD);
                 this.configurationConnexion.SQL.PWD = Utilities.Utils.Encrypt(this.configurationConnexion.SQL.PWD);
@@ -82,7 +90,7 @@ namespace Connexion
             }
             else
             {
-                return "No file \"" + fileName + "\" found!";
+                return "No file \"" + this.path + "\" found!";
             }
         }
     }

@@ -70,6 +70,7 @@ namespace ConnecteurSage.Forms
                 comboBox_import_stock_statut.Items.Add(list3[i]);
             }
 
+            
             Config_Import.ConfigurationSaveLoad settings = new Config_Import.ConfigurationSaveLoad();
             if (settings.isSettings())
             {
@@ -107,7 +108,7 @@ namespace ConnecteurSage.Forms
                 comboBox_import_stock_format.Text = configurationImport.Doc_Stock.Stock.Format;
                 comboBox_import_stock_statut.Text = getStatutName(configurationImport.Doc_Stock.Stock.Status);
             }
-
+            
         }
 
         public static Boolean[] getValuesExport()

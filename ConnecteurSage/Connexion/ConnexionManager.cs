@@ -15,12 +15,13 @@ namespace Connexion
 
         public static OdbcConnection CreateOdbcConnextion()
         {
+
             DbConnectionStringBuilder connectionString = new DbConnectionStringBuilder();
             connectionString.Add("Dsn", "");
             connectionString.Add("Driver", "{SAGE Gestion commerciale 100}");
 
             ConnexionSaveLoad settings = new ConnexionSaveLoad();
-            
+
             if (settings.isSettings())
             {
                 settings.Load();
@@ -28,9 +29,12 @@ namespace Connexion
                 connectionString.Add("Dsn", settings.configurationConnexion.ODBC.DNS);
                 connectionString.Add("uid", settings.configurationConnexion.ODBC.USER);
                 connectionString.Add("pwd", settings.configurationConnexion.ODBC.PWD);
+
+                //connectionString__ = @"Data Source=" + directory_db + ";uid="+ settings.configurationConnexion.ODBC.USER + ";pwd="+ settings.configurationConnexion.ODBC.PWD + ";";
             }
 
             return new OdbcConnection(connectionString.ConnectionString);
+            //return new OdbcConnection(connectionString__);
         }
 
         public static OdbcConnection CreateOdbcConnexionSQL()

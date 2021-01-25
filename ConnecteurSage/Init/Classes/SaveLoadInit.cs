@@ -10,6 +10,7 @@ namespace Init.Classes
 {
     public class SaveLoadInit
     {
+        /*
         public ConfigurationGeneral configurationGeneral { get; set; }
         private string fileName = "init.json";
         private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
@@ -36,7 +37,8 @@ namespace Init.Classes
         {
             if (isSettings())
             {
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
+                FileStream fs = new FileStream(pathModule + @"\" + fileName, FileMode.Open, FileAccess.Read);
+                StreamReader file = new System.IO.StreamReader(fs);
                 ConfigurationGeneral deserializedProduct = JsonConvert.DeserializeObject<ConfigurationGeneral>(file.ReadToEnd());
                 this.configurationGeneral = deserializedProduct;
                 file.Close();
@@ -48,7 +50,8 @@ namespace Init.Classes
             writer.WriteLine("");
             if (isSettings())
             {
-                StreamReader file = new System.IO.StreamReader(pathModule + @"\" + fileName);
+                FileStream fs = new FileStream(pathModule + @"\" + fileName, FileMode.Open, FileAccess.Read);
+                StreamReader file = new System.IO.StreamReader(fs);
                 ConfigurationGeneral deserializedProduct = JsonConvert.DeserializeObject<ConfigurationGeneral>(file.ReadToEnd());
                 this.configurationGeneral = deserializedProduct;
                 file.Close();
@@ -68,16 +71,17 @@ namespace Init.Classes
         {
             try
             {
-                var myfile = File.Create(pathModule + @"\" + fileName);
+                //var myfile = File.Create(pathModule + @"\" + fileName);
+                FileStream fs = new FileStream(pathModule + @"\" + fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 string json = JsonConvert.SerializeObject(this.configurationGeneral, Newtonsoft.Json.Formatting.Indented);
 
-                using (StreamWriter writer = new StreamWriter(myfile))
+                using (StreamWriter writer = new StreamWriter(fs))
                 {
                     writer.Write(json);
                     writer.Flush();
                     writer.Close();
                 }
-                myfile.Close();
+                fs.Close();
             }
             catch (Exception ex)
             {
@@ -90,19 +94,20 @@ namespace Init.Classes
             try
             {
                 writer_.WriteLine("");
-                var myfile = File.Create(pathModule + @"\" + fileName);
+                //var myfile = File.Create(pathModule + @"\" + fileName);
+                FileStream fs = new FileStream(pathModule + @"\" + fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 string json = JsonConvert.SerializeObject(this.configurationGeneral);
 
                 writer_.WriteLine(DateTime.Now + " : Reprocess.dll => SaveLoadInit => saveInfo() | Saving....");
                 writer_.WriteLine(FormatJson(this.configurationGeneral));
 
-                using (StreamWriter writer = new StreamWriter(myfile))
+                using (StreamWriter writer = new StreamWriter(fs))
                 {
                     writer.Write(json);
                     writer.Flush();
                     writer.Close();
                 }
-                myfile.Close();
+                fs.Close();
             }
             catch (Exception ex)
             {
@@ -144,5 +149,6 @@ namespace Init.Classes
                 return "No file \"" + fileName + "\" found!";
             }
         }
+        */
     }
 }
