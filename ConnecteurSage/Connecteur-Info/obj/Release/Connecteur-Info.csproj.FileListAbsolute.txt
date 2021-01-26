@@ -59,7 +59,6 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Sys
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\System.Data.SQLite.dll.config
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Newtonsoft.Json.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Dapper.xml
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.pdb

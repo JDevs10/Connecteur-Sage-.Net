@@ -2438,7 +2438,7 @@ namespace ConnecteurAuto.Classes
                                                 }
                                                 */
 
-                                                if (Import.DocumentVent.insert_DESADV_Veolog(reference_DESADV_doc, dh, dl, filename.Name, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
+                                                if (Import.DocumentVent.insert_DESADV_Veolog(reference_DESADV_doc, dh, dl, filename.Name, logFileWriter_import, recapLinesList_new) != null) //insert or update the database with the values obtained from the document
                                                 {
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");

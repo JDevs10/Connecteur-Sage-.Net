@@ -14,20 +14,22 @@ namespace Import
     public class DocumentVent
     {
         private static string logFileName_import;
-        private static List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new;
+        //private static List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new;
 
         public DocumentVent(string logFileName_import_, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new_) 
         {
-            recapLinesList_new = recapLinesList_new_;
+            //recapLinesList_new = recapLinesList_new_;
             logFileName_import = logFileName_import_;
         }
 
+        /*
         public List<Alert_Mail.Classes.Custom.CustomMailRecapLines> returnAlertLogs()
         {
             return recapLinesList_new;
         }
+        */
 
-        public static string[,] importBC(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter)
+        public static string[,] importBC(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
             string[] list_of_client_info = null;
@@ -804,7 +806,7 @@ namespace Import
         }
 
 
-        public static string[,] insertDesadv_Veolog_(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter)
+        public static string[,] insertDesadv_Veolog_(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
             string[] list_of_client_info = null;
@@ -1580,7 +1582,7 @@ namespace Import
             return list_of_cmd_lines;
         }
 
-        public static string[,] insert_DESADV_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter)
+        public static string[,] insert_DESADV_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             string METHODE_NAME = "insert_DESADV_Veolog()";
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
@@ -1634,6 +1636,8 @@ namespace Import
                             }
                         }
                     }
+                    logFileWriter.WriteLine("");
+                    logFileWriter.Flush();
 
                     //get veolog delivery date and time
                     string veologDeliveryDateTime = "";
@@ -1677,37 +1681,49 @@ namespace Import
 
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Récupérer des informations de la commande la référence " + dh.Ref_Commande_Donneur_Ordre);
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre));
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                    try
                     {
-                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        using (OdbcCommand command = new OdbcCommand(QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                         {
-                            if (reader.Read()) // If any rows returned
+                            using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
                             {
-                                dh.Ref_Commande_Client_Livre = reader[0].ToString();
-                                nature_op_p_ = reader[1].ToString();
-                                do_totalHT_ = reader[2].ToString().Replace(",", ".");
-                                do_totalHTNet_ = reader[3].ToString().Replace(",", ".");
-                                do_totalTTC_ = reader[4].ToString().Replace(",", ".");
-                                do_NetAPayer_ = reader[5].ToString().Replace(",", ".");
-                                do_MontantRegle_ = reader[6].ToString().Replace(",", ".");
-                                ref_client = reader[7].ToString();
-                                CO_No = reader[8].ToString();
-                                DO_Reliquat = reader[9].ToString();
-                            }
-                            else// If no rows returned
-                            {
-                                //do nothing.
-                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Aucune commande trouvé!. ");
-                                logFileWriter.Flush();
-                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée. La commande " + dh.Ref_Commande_Donneur_Ordre + " n'exist pas dans la base Sage", "La commande " + dh.Ref_Commande_Donneur_Ordre + " n'exist pas dans la BDD", "", fileName, logFileName_import));
-                                return null;
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    dh.Ref_Commande_Client_Livre = reader[0].ToString();
+                                    nature_op_p_ = reader[1].ToString();
+                                    do_totalHT_ = reader[2].ToString().Replace(",", ".");
+                                    do_totalHTNet_ = reader[3].ToString().Replace(",", ".");
+                                    do_totalTTC_ = reader[4].ToString().Replace(",", ".");
+                                    do_NetAPayer_ = reader[5].ToString().Replace(",", ".");
+                                    do_MontantRegle_ = reader[6].ToString().Replace(",", ".");
+                                    ref_client = reader[7].ToString();
+                                    CO_No = reader[8].ToString();
+                                    DO_Reliquat = reader[9].ToString();
+                                }
+                                else// If no rows returned
+                                {
+                                    //do nothing.
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Aucune commande trouvé!. ");
+                                    logFileWriter.Flush();
+                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée. La commande " + dh.Ref_Commande_Donneur_Ordre + " n'exist pas dans la base Sage", "La commande " + dh.Ref_Commande_Donneur_Ordre + " n'exist pas dans la BDD", "", fileName, logFileName_import));
+                                    return null;
+                                }
                             }
                         }
+                    }catch(Exception e)
+                    {
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : ******************** Erreur SQL GET CMD ********************");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Message => "+e.Message);
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : StackTrace => " + e.StackTrace);
+                        logFileWriter.Flush();
+                        recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée. Le client " + ref_client + " n'existe pas dans Sage", "Le client " + ref_client + " n'existe pas dans la BDD", "Aucune reponse. list_of_client_info est null", fileName, logFileName_import));
+                        return null;
                     }
 
 
                     //get Client Reference by Ref
                     logFileWriter.WriteLine("");
+                    logFileWriter.Flush();
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Obtenir les infos client par la référence.");
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getClientReferenceById_DESADV(true, ref_client));
                     using (OdbcCommand command = new OdbcCommand(QueryHelper.getClientReferenceById_DESADV(true, ref_client), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
@@ -1740,6 +1756,9 @@ namespace Import
                             }
                         }
                     }
+
+                    logFileWriter.WriteLine("");
+                    logFileWriter.Flush();
 
                     //get client delivery adress
                     if (list_of_client_info != null)
@@ -1776,7 +1795,7 @@ namespace Import
                         return null;
                     }
 
-
+                    logFileWriter.Flush();
                     if (DO_Reliquat.Equals("0"))        // BL normal
                     {
 
