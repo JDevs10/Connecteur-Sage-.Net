@@ -46,7 +46,7 @@ namespace ConnecteurAuto.Classes
         private StreamWriter logFileWriter_general = null;
         //private StreamWriter logFileWriter_import = null;
 
-
+        
         public Action()
         {
             // Init database && tables
@@ -171,6 +171,8 @@ namespace ConnecteurAuto.Classes
             // string[,] importErrorTable = new string[allFiles.Length, 3];
 
             logFileWriter_general.Flush();
+            logFileWriter_general.WriteLine("");
+            logFileWriter_general.WriteLine(DateTime.Now + " : Fichier log import => " + logFileName_import);
 
             recapLinesList_new = new List<Alert_Mail.Classes.Custom.CustomMailRecapLines>();
             successList = new List<Alert_Mail.Classes.Custom.CustomMailSuccess>();
@@ -2437,10 +2439,15 @@ namespace ConnecteurAuto.Classes
                                                     goto goErrorLoop;
                                                 }
                                                 */
+                                                
+                                                //Import.DocumentVent DOC_V_desadv = new Import.DocumentVent(logFileName_import, recapLinesList_new);
 
-                                                if (Import.DocumentVent.insert_DESADV_Veolog(reference_DESADV_doc, dh, dl, filename.Name, logFileWriter_import, recapLinesList_new) != null) //insert or update the database with the values obtained from the document
+                                                if (Import.DocumentVent.insert_DESADV_Veolog(reference_DESADV_doc, dh, dl, filename.Name, logFileWriter_import, logFileName_import, recapLinesList_new) != null) //insert or update the database with the values obtained from the document
                                                 {
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
+
+                                                    //recapLinesList_new = DOC_V_desadv.returnAlertLogs();
+
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
 
                                                     //deplacer les fichiers csv
@@ -2455,6 +2462,8 @@ namespace ConnecteurAuto.Classes
                                                 }
                                                 else
                                                 {
+                                                    //recapLinesList_new = DOC_V_desadv.returnAlertLogs();
+
                                                     logFileWriter_import.WriteLine("");
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
@@ -8933,7 +8942,13 @@ namespace ConnecteurAuto.Classes
                 Alert_Mail.Classes.ConfigurationSaveLoad configurationSaveLoad = new Alert_Mail.Classes.ConfigurationSaveLoad();
 
                 Connecteur_Info.Custom.Batch_Intro intro_B_ = new Connecteur_Info.Custom.Batch_Intro();
-                intro_B_.intro(db, "String");   //add software intro in AlerMail logs
+                //intro_B_.intro(db, "String");   //add software intro in AlerMail logs
+
+                // Add Log Header in Alert Mail logs
+                Connecteur_Info.ConnecteurInfo mConnecteurInfo = new Connecteur_Info.ConnecteurInfo();
+                db.alertMailLogManager.insert(db.connectionString, "##############################################################################################################################");
+                db.alertMailLogManager.insert(db.connectionString, "#################################################### L import planifier ######################################################");
+                db.alertMailLogManager.insert(db.connectionString, "##### Version " + mConnecteurInfo.Version + " ############################################################################################ " + mConnecteurInfo.Developper + " #####");
                 db.alertMailLogManager.insert(db.connectionString, "");
 
                 if (configurationSaveLoad.isSettings())

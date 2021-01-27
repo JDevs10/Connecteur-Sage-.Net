@@ -55,7 +55,11 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\EntityFram
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Newtonsoft.Json.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\System.Data.SQLite.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\System.Data.SQLite.dll.config
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\obj\Release\Database.csprojAssemblyReference.cache
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Connecteur-Info.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\bin\Release\Init.pdb

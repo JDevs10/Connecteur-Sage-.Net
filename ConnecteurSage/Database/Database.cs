@@ -17,7 +17,7 @@ namespace Database
         public static string DB_NAME = "Database.db";
         public static string DB_NAME_BACKUP = "Database_backup.db";
         public static string DB_DOSSIER = "db";
-        private static string directory_db = @"C:\Program Files (x86)\Big Data Consulting\ConnecteurSage_TW\" + DB_DOSSIER;
+        private static string directory_db = "";
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         public string connectionString = "Data Source=" + directory_db + @"\" + DB_NAME + "; Version=" + DB_VERSION;
         #endregion
@@ -33,6 +33,13 @@ namespace Database
 
         public Database()
         {
+            Init.Init init = new Init.Init();
+            if (init.isSettings())
+            {
+                init.Load();
+                directory_db = init.connecteurInfo.installation_dir + @"\" + DB_DOSSIER;
+            }
+
             if (!Directory.Exists(directory_db))
             {
                 Directory.CreateDirectory(directory_db);
@@ -50,6 +57,20 @@ namespace Database
 
         public Database(StreamWriter writer)
         {
+            Init.Init init = new Init.Init();
+            if (init.isSettings())
+            {
+                init.Load_w_logs(writer);
+                directory_db = init.connecteurInfo.installation_dir + @"\" + DB_DOSSIER;
+            }
+            else
+            {
+                writer.WriteLine("");
+                writer.WriteLine(DateTime.Now + " :: Database.dll => Database() | Creation d'une instance");
+                writer.WriteLine(DateTime.Now + " :: Database.dll => Database() | ");
+                writer.WriteLine(DateTime.Now + " :: Database.dll => Database() | Creation d'une instance");
+            }
+
             writer.WriteLine("");
             writer.WriteLine(DateTime.Now + " :: Database.dll => Database() | Creation d'une instance");
             if (!Directory.Exists(directory_db))

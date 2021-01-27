@@ -98,3 +98,5 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.exe
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\obj\Release\AlertMail.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\AlertMail\bin\Release\Init.pdb

@@ -1,9 +1,0 @@
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Debug\Init.dll
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Debug\Init.pdb
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Debug\Newtonsoft.Json.dll
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\Debug\Newtonsoft.Json.xml
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Debug\Init.csprojAssemblyReference.cache
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Debug\Init.csproj.CoreCompileInputs.cache
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Debug\Init.csproj.CopyComplete
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Debug\Init.dll
-C:\Users\harak\source\repos\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\Debug\Init.pdb

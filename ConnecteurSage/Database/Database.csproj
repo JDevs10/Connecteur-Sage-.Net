@@ -92,6 +92,16 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Connecteur-Info\Connecteur-Info.csproj">
+      <Project>{151fabb0-d64f-42ea-ab2a-aea6ebc854c2}</Project>
+      <Name>Connecteur-Info</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Init\Init.csproj">
+      <Project>{773fba6e-fb86-45a4-805f-470328b67b7e}</Project>
+      <Name>Init</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

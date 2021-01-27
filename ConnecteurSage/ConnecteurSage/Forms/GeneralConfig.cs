@@ -19,6 +19,21 @@ namespace ConnecteurSage.Forms
         {
             InitializeComponent();
 
+            // Init Connecteur Info, Version and Database path in a file
+            Init.Init init = new Init.Init();
+            if (init.isSettings())
+            {
+                init.Load();
+                init.connecteurInfo.installation_dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                init.saveInfo();
+            }
+            else
+            {
+                init.connecteurInfo = new Connecteur_Info.ConnecteurInfo();
+                init.connecteurInfo.installation_dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                init.saveInfo();
+            }
+
             // Init database
             Database.Database db = new Database.Database();
             Database.Model.Settings settings_ = db.settingsManager.get(db.connectionString ,1);
@@ -245,7 +260,7 @@ namespace ConnecteurSage.Forms
                             1, 0.5, 3)
                             */
 
-                            MessageBox.Show("SQL : " + SQL_insert + "\n\nJson: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            //MessageBox.Show("SQL : " + SQL_insert + "\n\nJson: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 
                             int x = -9;
@@ -517,6 +532,11 @@ namespace ConnecteurSage.Forms
 
                 }
             }
+        }
+
+        private void GeneralConfig_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

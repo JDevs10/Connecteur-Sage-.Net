@@ -53,3 +53,7 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Dappe
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\obj\Release\Config-Export.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Export\bin\Release\Connecteur-Info.pdb

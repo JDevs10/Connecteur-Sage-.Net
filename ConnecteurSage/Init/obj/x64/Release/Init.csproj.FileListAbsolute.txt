@@ -1,5 +1,0 @@
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\x64\Release\Init.dll
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\x64\Release\Newtonsoft.Json.dll
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\bin\x64\Release\Newtonsoft.Json.xml
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\x64\Release\Init.csproj.CopyComplete
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Init\obj\x64\Release\Init.dll

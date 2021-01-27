@@ -54,3 +54,7 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\obj\Release\Connexion.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connexion\bin\Release\Connecteur-Info.pdb

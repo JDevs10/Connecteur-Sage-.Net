@@ -32,3 +32,5 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\obj\Release\Conn
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\obj\Release\ConnecteurAuto.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\bin\Release\Import.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\bin\Release\Import.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\bin\Release\Init.pdb

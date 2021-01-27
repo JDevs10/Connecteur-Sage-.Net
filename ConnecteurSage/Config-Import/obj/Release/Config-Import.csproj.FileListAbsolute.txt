@@ -62,3 +62,7 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Confi
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Connecteur-Info.pdb

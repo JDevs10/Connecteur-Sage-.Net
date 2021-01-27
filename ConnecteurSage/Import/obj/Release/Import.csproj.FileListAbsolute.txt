@@ -20,3 +20,7 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\bin\Release\Dapper.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\obj\Release\Import.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\obj\Release\Import.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\obj\Release\Import.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Import\bin\Release\Connecteur-Info.pdb

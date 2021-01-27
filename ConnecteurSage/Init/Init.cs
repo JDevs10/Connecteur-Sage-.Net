@@ -1,5 +1,4 @@
-﻿using Init.Classes;
-using Init.Classes.Configuration;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,119 +10,149 @@ namespace Init
 {
     public class Init
     {
-        private ConfigurationGeneral mConfigurationGeneral;
-        private string localPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+        public Connecteur_Info.ConnecteurInfo connecteurInfo { get; set; }
+        private string _FILENAME_ = "init.ini";
+        private string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
         public Init() { }
-        public Init(ConfigurationGeneral configurationGeneral)
+        public Init(Connecteur_Info.ConnecteurInfo connecteurInfo)
         {
-            this.mConfigurationGeneral = configurationGeneral;
+            this.connecteurInfo = connecteurInfo;
         }
 
-        public void setDisplay(StreamWriter writer, Boolean show)
+        public Boolean isSettings()
+        {
+            if (File.Exists(pathModule + @"\"+ _FILENAME_))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean isSettings_w_logs(StreamWriter writer)
+        {
+            writer.WriteLine(DateTime.Now + " : Init.dll => Init => isSettings_w_logs() | checking if file => \""+ pathModule + @"\" + _FILENAME_ + "\" existe...");
+            if (File.Exists(pathModule + @"\" + _FILENAME_))
+            {
+                writer.WriteLine(DateTime.Now + " : Init.dll => Init => isSettings_w_logs() | la config existe.");
+                writer.WriteLine("");
+                writer.Flush();
+                return true;
+            }
+            else
+            {
+                writer.WriteLine(DateTime.Now + " : Init.dll => Init => isSettings_w_logs() | La config n'existe pes");
+                writer.WriteLine("");
+                writer.Flush();
+                return false;
+            }
+        }
+
+        public void Load()
+        {
+            if (isSettings())
+            {
+                FileStream fs = new FileStream(pathModule + @"\" + _FILENAME_, FileMode.Open, FileAccess.Read);
+                StreamReader file = new System.IO.StreamReader(fs);
+                Connecteur_Info.ConnecteurInfo deserializedConnecteurInfo = JsonConvert.DeserializeObject<Connecteur_Info.ConnecteurInfo>(file.ReadToEnd());
+                this.connecteurInfo = deserializedConnecteurInfo;
+                file.Close();
+            }
+        }
+
+        public void Load_w_logs(StreamWriter writer)
         {
             writer.WriteLine("");
-            writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay(show : "+show+")");
-            SaveLoadInit settings = new SaveLoadInit();
-
-            if (settings.isSettings())
+            if (isSettings_w_logs(writer))
             {
-                settings.Load();
-                // Update ini file
-                General mGeneral = settings.configurationGeneral.general;
-                General newGeneral = new General(mGeneral.showWindow, show, mGeneral.isACP_ComptaCPT_CompteG, mGeneral.ACP_ComptaCPT_CompteG);
+                FileStream fs = new FileStream(pathModule + @"\" + _FILENAME_, FileMode.Open, FileAccess.Read);
+                StreamReader file = new System.IO.StreamReader(fs);
+                Connecteur_Info.ConnecteurInfo deserializedConnecteurInfo = JsonConvert.DeserializeObject<Connecteur_Info.ConnecteurInfo>(file.ReadToEnd());
+                this.connecteurInfo = deserializedConnecteurInfo;
+                file.Close();
 
-                writer.WriteLine("");
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |Before| showWindow : " + mGeneral.showWindow);
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |Before| isAppOpen : "+ mGeneral.isAppOpen);
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |Before| ACP_ComptaCPT_CompteG : "+ mGeneral.ACP_ComptaCPT_CompteG);
-                writer.WriteLine("");
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |After| showWindow : " + newGeneral.showWindow);
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |After| isAppOpen : " + newGeneral.isAppOpen);
-                writer.WriteLine(DateTime.Now + " : Init.dll => setDisplay() |After| ACP_ComptaCPT_CompteG : " + newGeneral.ACP_ComptaCPT_CompteG);
-
-                settings.configurationGeneral.general = newGeneral;
-                settings.saveInfo();
+                writer.WriteLine(DateTime.Now + " : Init.dll => Init => Load_w_logs() | Loading...");
+                writer.WriteLine(FormatJson_ConnecteurInfo());
+            }
+            else
+            {
+                writer.WriteLine(DateTime.Now + " : Init.dll => Init => Load_w_logs() | No file \"" + pathModule + @"\" + _FILENAME_ + "\" found!");
             }
             writer.WriteLine("");
             writer.Flush();
         }
 
-        public void setDisplay(Boolean show)
+        public void saveInfo()
         {
-            SaveLoadInit settings = new SaveLoadInit();
-
-            if (settings.isSettings())
+            try
             {
-                settings.Load();
-                // Update ini file
-                General mGeneral = settings.configurationGeneral.general;
-                General newGeneral = new General(mGeneral.showWindow, show, mGeneral.isACP_ComptaCPT_CompteG, mGeneral.ACP_ComptaCPT_CompteG);
-                
-                settings.configurationGeneral.general = newGeneral;
-                settings.saveInfo();
+                //var myfile = File.Create(pathModule + @"\" + fileName);
+                FileStream fs = new FileStream(pathModule + @"\" + _FILENAME_, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                string json = JsonConvert.SerializeObject(this.connecteurInfo, Newtonsoft.Json.Formatting.Indented);
+
+                using (StreamWriter writer = new StreamWriter(fs))
+                {
+                    writer.Write(json);
+                    writer.Flush();
+                    writer.Close();
+                }
+                fs.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("" + ex.Message);
             }
         }
 
-
-        public int checkRunningApp()
+        public void saveInfo_w_logs(StreamWriter writer_)
         {
-            SaveLoadInit settings = new SaveLoadInit();
-
-            if (settings.isSettings())
+            try
             {
-                try
+                writer_.WriteLine("");
+                //var myfile = File.Create(pathModule + @"\" + fileName);
+                FileStream fs = new FileStream(pathModule + @"\" + _FILENAME_, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                string json = JsonConvert.SerializeObject(this.connecteurInfo);
+
+                writer_.WriteLine(DateTime.Now + " : Init.dll => Init => saveInfo_w_logs() | Saving....");
+                writer_.WriteLine(FormatJson_ConnecteurInfo());
+
+                using (StreamWriter writer = new StreamWriter(fs))
                 {
-                    settings.Load();
-                    General mGeneral = settings.configurationGeneral.general;
-
-                    if (mGeneral.isAppOpen)
-                    {
-                        Console.WriteLine("Le Planificateur est déja en cours");
-                        for (int z = 5; z > 0; z--)
-                        {
-                            Console.WriteLine(DateTime.Now + " Fermeture dans " + z + " seconds....");
-                            System.Threading.Thread.Sleep((z * 500));
-                        }
-
-                        return 99;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Le Planificateur en marche...");
-
-                        General newGeneral = new General(mGeneral.showWindow, true, mGeneral.isACP_ComptaCPT_CompteG, mGeneral.ACP_ComptaCPT_CompteG);
-                        settings.configurationGeneral.general = newGeneral;
-                        settings.saveInfo();
-                        return mGeneral.showWindow;
-                    }
+                    writer.Write(json);
+                    writer.Flush();
+                    writer.Close();
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Mode débogage 2 : " + ex.Message);
-                    return 99;
-                }
+                fs.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("" + ex.Message);
+                writer_.WriteLine(DateTime.Now + " : Init.dll => Init => saveInfo_w_logs() | ************** Exception **************");
+                writer_.WriteLine(DateTime.Now + " : Init.dll => Init => saveInfo_w_logs() | Message : " + ex.Message);
+                writer_.WriteLine(DateTime.Now + " : Init.dll => Init => saveInfo_w_logs() | StackTrace : " + ex.StackTrace);
+            }
+            writer_.WriteLine("");
+            writer_.Flush();
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////:
+        /// Pretty Print Json
+        public string FormatJson_ConnecteurInfo()
+        {
+            if (isSettings())
+            {
+                Load();
+                var f = Newtonsoft.Json.JsonConvert.SerializeObject(this.connecteurInfo, Newtonsoft.Json.Formatting.Indented);
+                return f;
             }
             else
             {
-                Console.WriteLine("Error[1]");
-                return 99;
+                return "No file \"" + pathModule + @"\" + _FILENAME_ + "\" found!";
             }
         }
 
-
-        // Pretty Print any Class Object JSON
-        public string FormatJson(Object obj)
-        {
-            var f = Newtonsoft.Json.JsonConvert.SerializeObject(obj, Newtonsoft.Json.Formatting.Indented);
-            return f;
-        }
-
-        // Pretty Print any Class List Object JSON
-        public string FormatJson(List<Object> objList)
-        {
-            var f = Newtonsoft.Json.JsonConvert.SerializeObject(objList, Newtonsoft.Json.Formatting.Indented);
-            return f;
-        }
     }
 }

@@ -82,3 +82,7 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\obj\Release\Reprocess-Error-Files.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Init.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Connecteur-Info.dll
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Init.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Reprocess\bin\Release\Connecteur-Info.pdb

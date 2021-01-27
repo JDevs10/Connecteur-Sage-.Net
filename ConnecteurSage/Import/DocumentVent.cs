@@ -13,23 +13,24 @@ namespace Import
 {
     public class DocumentVent
     {
-        private static string logFileName_import;
-        //private static List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new;
+        private string logFileName_import;
+        private List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new;
 
-        public DocumentVent(string logFileName_import_, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new_) 
+        public DocumentVent() { }
+        public DocumentVent(string logFileName_import_, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new_)
         {
-            //recapLinesList_new = recapLinesList_new_;
-            logFileName_import = logFileName_import_;
+            this.recapLinesList_new = recapLinesList_new_;
+            this.logFileName_import = logFileName_import_;
         }
 
-        /*
+
         public List<Alert_Mail.Classes.Custom.CustomMailRecapLines> returnAlertLogs()
         {
             return recapLinesList_new;
         }
-        */
 
-        public static string[,] importBC(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
+
+        public static string[,] importBC(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, string logFileName_import, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
             string[] list_of_client_info = null;
@@ -806,7 +807,7 @@ namespace Import
         }
 
 
-        public static string[,] insertDesadv_Veolog_(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
+        public static string[,] insertDesadv_Veolog_(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, string logFileName_import, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]
             string[] list_of_client_info = null;
@@ -1582,7 +1583,7 @@ namespace Import
             return list_of_cmd_lines;
         }
 
-        public static string[,] insert_DESADV_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
+        public static string[,] insert_DESADV_Veolog(string reference_DESADV_doc, Veolog_DESADV dh, List<Veolog_DESADV_Lines> dl, string fileName, StreamWriter logFileWriter, string logFileName_import, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new)
         {
             string METHODE_NAME = "insert_DESADV_Veolog()";
             string[,] list_of_cmd_lines = new string[dl.Count, 82];    // new string [x,y]

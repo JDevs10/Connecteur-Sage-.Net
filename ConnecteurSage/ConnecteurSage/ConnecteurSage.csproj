@@ -359,6 +359,10 @@
       <Project>{43ccd91e-6fe4-4543-a49f-483dc7663e26}</Project>
       <Name>Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Init\Init.csproj">
+      <Project>{773fba6e-fb86-45a4-805f-470328b67b7e}</Project>
+      <Name>Init</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reprocess\Reprocess-Error-Files.csproj">
       <Project>{ada83e63-ca51-4e6e-b500-d08b92916807}</Project>
       <Name>Reprocess-Error-Files</Name>
