@@ -51,4 +51,3 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Con
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\bin\Release\Connecteur-Info.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.pdb
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Connecteur-Info\obj\Release\Connecteur-Info.csprojAssemblyReference.cache

@@ -380,20 +380,20 @@ namespace ConnecteurAuto.Classes
                                             {
                                                 mask = "LF";
                                             }
-                                            else
+                                            else if (prefix == "BIJOU")
                                             {
-                                                mask = "BLF";
+                                                mask = "FBL";
                                             }
 
                                             string reference_BLF_doc = get_next_num_piece_commande_v2(mask, logFileWriter_import); // lastNumberReference(mask, logFileWriter_import);
 
                                             int i = 0;
                                             string totallines = "";
-                                            Veolog_BCF dh = new Veolog_BCF();
-                                            Veolog_BCF_Lines dll = new Veolog_BCF_Lines();
+                                            Import.Classes.Veolog_BCF dh = new Import.Classes.Veolog_BCF();
+                                            Import.Classes.Veolog_BCF_Lines dll = new Import.Classes.Veolog_BCF_Lines();
 
                                             List<String> doubleProductCheck = new List<String>();
-                                            List<Veolog_BCF_Lines> dl = new List<Veolog_BCF_Lines>(); //creating new object type BCF line and store item values
+                                            List<Import.Classes.Veolog_BCF_Lines> dl = new List<Import.Classes.Veolog_BCF_Lines>(); //creating new object type BCF line and store item values
 
                                             foreach (string ligneDuFichier in lines) //read lines by line
                                             {
@@ -401,7 +401,7 @@ namespace ConnecteurAuto.Classes
 
                                                 if (tab[0] == "E") //checking if its header of file for control
                                                 {
-                                                    Veolog_BCF bcf_info = new Veolog_BCF();
+                                                    Import.Classes.Veolog_BCF bcf_info = new Import.Classes.Veolog_BCF();
                                                     bcf_info.Ref_Commande_Donneur_Ordre = tab[1];
                                                     bcf_info.Ref_Commande_Fournisseur = tab[2];
                                                     bcf_info.Origine_Commande = tab[3];
@@ -448,7 +448,7 @@ namespace ConnecteurAuto.Classes
                                                     //check if an article exist in my check list
                                                     if (!doubleProductCheck.Contains(tab[2]))
                                                     {
-                                                        Veolog_BCF_Lines bcfLine_info = new Veolog_BCF_Lines();
+                                                        Import.Classes.Veolog_BCF_Lines bcfLine_info = new Import.Classes.Veolog_BCF_Lines();
 
                                                         bcfLine_info.Type_Ligne = tab[0];
                                                         bcfLine_info.Numero_Ligne_Donneur_Ordre = tab[1];
@@ -485,7 +485,7 @@ namespace ConnecteurAuto.Classes
                                             }
                                             else
                                             {
-                                                if (insertSupplierOrder(reference_BLF_doc, dh, dl, filename.Name, logFileWriter_import) != null) //insert the database with the values obtained from the document
+                                                if (Import.DocumentAchat.insertSupplierOrder_w_Reliquat(reference_BLF_doc, dh, dl, filename.Name, logFileWriter_import, logFileName_import, recapLinesList_new) != null) //insert the database with the values obtained from the document
                                                 {
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : importe du " + mask + " avec succès");
@@ -2470,189 +2470,6 @@ namespace ConnecteurAuto.Classes
                                                     tabCommandeError.Add(filename.Name);
                                                     goto goErrorLoop;
                                                 }
-                                            }
-                                        }
-                                        else if (lines[0].Split(';').Length == 7)   //New BL / BL Relicat
-                                        {
-
-                                            //Check BL Relicat
-                                            if (lines[0].Split(';')[6] == "")        //New BL
-                                            {
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Trouvé");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                                                logFileWriter_general.WriteLine("");
-
-
-
-                                            }
-                                            else if (lines[0].Split(';')[6] == "R")  //BL Relicat
-                                            {
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Relicat Trouvé");
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Plus information sur l'import se trouve dans le log : " + logFileName_import);
-                                                logFileWriter_general.WriteLine("");
-
-                                                file_doc_reference = lines[0].Split(';')[1];
-
-                                                //Check if the BL existe ... and if so, return a list of all article codeBarres and the document number
-                                                string DESADV_doc_reference = null;
-                                                List<string> current_DESADV_articles_list = new List<string>();
-                                                List<string> current_DESADV_articles = get_DESADV_Document(logFileWriter_import, lines[0].Split(';')[1], lines[0].Split(';')[2]);
-
-                                                if (current_DESADV_articles != null)
-                                                {
-                                                    //unsplit the article codeBarres and the document number
-                                                    foreach (string listLine in current_DESADV_articles)
-                                                    {
-                                                        string[] x = listLine.Split(new String[] { "__" }, StringSplitOptions.None);
-                                                        DESADV_doc_reference = x[0];
-                                                        current_DESADV_articles_list.Add(x[1]);
-                                                    }
-
-                                                    int i = 0;
-                                                    string totallines = "";
-                                                    Veolog_DESADV dh = new Veolog_DESADV();
-                                                    Veolog_DESADV_Lines dll = new Veolog_DESADV_Lines();
-
-                                                    List<String> doubleProductCheck = new List<String>();
-                                                    List<Veolog_DESADV_Lines> dl = new List<Veolog_DESADV_Lines>(); //creating new object type desadvline and storing item values
-
-                                                    foreach (string ligneDuFichier in lines) //read lines by line
-                                                    {
-                                                        string[] tab = ligneDuFichier.Split(';'); //split the line by its delimiter ; - creating an array tab
-
-                                                        if (tab[0] == "E") //checking if its header of file for control
-                                                        {
-                                                            Veolog_DESADV desadv_info = new Veolog_DESADV();
-                                                            desadv_info.Ref_Commande_Donneur_Ordre = tab[1];
-                                                            desadv_info.Ref_Commande_Client_Livre = tab[2];
-                                                            desadv_info.Date_De_Expedition = tab[3];
-                                                            desadv_info.Heure_De_Expedition = tab[4];
-                                                            desadv_info.Etat = tab[5];
-                                                            desadv_info.Relicat = tab[6];
-
-                                                            if (desadv_info.Etat == "X")
-                                                            {
-                                                                desadv_info.Etat = "1";
-                                                            }
-                                                            else if (desadv_info.Etat == "P")
-                                                            {
-                                                                desadv_info.Etat = "0";
-                                                            }
-                                                            else
-                                                            {
-                                                                //deplacer les fichiers csv
-                                                                logFileWriter_import.WriteLine("");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
-
-                                                                logFileWriter_import.WriteLine("");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
-                                                                logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
-                                                                logFileWriter_import.Flush();
-                                                                tabCommandeError.Add(filename.Name);
-                                                                recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines("Relicat : " + DESADV_doc_reference, "L'import du Bon de Livraison Relicat est annulée, erreur dans le fichier EDI.\nCe problème sera vérifié et résolu entre une à quatre heures ouvrables.", "L'import du Bon de Livraison est annulée. Erreur dans le fichier EDI", "Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.", "", filename.Name, logFileName_import));
-                                                                goto goErrorLoop;
-                                                            }
-
-                                                            dh = desadv_info;
-                                                        }
-                                                        /*
-                                                        if (tab[0] == "C") //checking if its colis of file for control
-                                                        {
-                                                            Veolog_DESADV_Colis desadvColis_info = new Veolog_DESADV_Colis();
-                                                            desadvColis_info.Numero_Colis = tab[1];
-                                                            desadvColis_info.ID_Tracking_Transporteur = tab[2];
-                                                            desadvColis_info.URL_Tracking_Transporteur = tab[3];
-
-                                                            dc = desadvColis_info; //adding the object into the list type stock
-                                                        }
-                                                        */
-                                                        if (tab[0] == "L") //checking if its line of document inside the file for control
-                                                        {
-                                                            //check if an article does not exist in my check list
-                                                            if (!doubleProductCheck.Contains(tab[2]))
-                                                            {
-                                                                //check if the article does not exist in the current BL
-                                                                if (!current_DESADV_articles_list.Contains(tab[2]))
-                                                                {
-                                                                    Veolog_DESADV_Lines desadvLine_info = new Veolog_DESADV_Lines();
-
-                                                                    desadvLine_info.Numero_Ligne_Order = tab[1];
-                                                                    desadvLine_info.Code_Article = tab[2];
-                                                                    desadvLine_info.Quantite_Colis = tab[3];
-                                                                    desadvLine_info.Numero_Lot = tab[4];
-
-                                                                    dl.Add(desadvLine_info);
-                                                                    doubleProductCheck.Add(desadvLine_info.Code_Article);
-                                                                }
-                                                                else
-                                                                {
-                                                                    logFileWriter_general.WriteLine("");
-                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" dans le BL Relicat de Sage. Donc je ne vais pas l'intégrer!");
-                                                                    logFileWriter_general.WriteLine("");
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                logFileWriter_general.WriteLine("");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
-                                                                logFileWriter_general.WriteLine("");
-                                                            }
-                                                            i++;
-                                                        }
-
-                                                        if (tab[0] == "F") //checking if its end of file for control
-                                                        {
-                                                            totallines = tab[1];
-                                                        }
-                                                    }
-
-                                                    // *once list is filled with values, start executing queries for each line - one by one.*
-
-                                                    if (i != Convert.ToInt16(totallines)) //convert string to int : checking if number of items is equal to the number of items mentioned in the footer (optional for desadv document)
-                                                    {
-                                                        logFileWriter_import.WriteLine("");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le pied du page n'est pas en forme correcte. La valeur 'nombre d'articles' n'est pas égale à nombre des lignes totale indiqué dans le pied du page.");
-                                                    }
-                                                    else
-                                                    {
-                                                        if (insertDesadv_Relicat_Veolog(DESADV_doc_reference, current_DESADV_articles_list, dh, dl, filename.Name, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
-                                                        {
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
-
-                                                            //deplacer les fichiers csv
-                                                            string theFileName = filename.FullName;
-                                                            string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + DESADV_doc_reference + "R__" + System.IO.Path.GetFileName(theFileName);
-                                                            File.Move(theFileName, newFileLocation);
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
-                                                            logFileWriter_import.WriteLine("");
-                                                            logFileWriter_import.WriteLine("");
-                                                            SaveSuccess++;
-                                                        }
-                                                        else
-                                                        {
-                                                            logFileWriter_import.WriteLine("");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                                            logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV Relicat");
-                                                            tabCommandeError.Add(filename.Name);
-                                                            goto goErrorLoop;
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Fichier Veolog DESADV Relicat non trouvé.");
-                                                }
-
-                                            }
-                                            else    //Unknown BL...
-                                            {
-                                                logFileWriter_general.WriteLine(DateTime.Now + " : Un Fichier DESADV bizzare.");
                                             }
                                         }
                                         else

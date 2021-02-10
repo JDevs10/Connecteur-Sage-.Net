@@ -44,6 +44,7 @@
     <Compile Include="Classes\AdresseLivraison.cs" />
     <Compile Include="Classes\Article.cs" />
     <Compile Include="Classes\Client.cs" />
+    <Compile Include="Classes\DocumentAchatLine.cs" />
     <Compile Include="Classes\DocumentVenteLine.cs" />
     <Compile Include="Classes\Order.cs" />
     <Compile Include="Classes\QueryHelper.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="Classes\Veolog_DESADV.cs" />
     <Compile Include="Classes\Veolog_DESADV_Colis.cs" />
     <Compile Include="Classes\Veolog_DESADV_Lines.cs" />
+    <Compile Include="DocumentAchat.cs" />
     <Compile Include="DocumentVent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

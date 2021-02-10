@@ -1866,7 +1866,7 @@ namespace Import
                                     DL_PieceBC = reader[10].ToString();
                                     DL_DateBC = reader[11].ToString();
                                     DL_QteBC = reader[12].ToString().Replace(",", ".");
-                                    DL_QtePL = reader[12].ToString().Replace(",", ".");
+                                    DL_QtePL = reader[13].ToString().Replace(",", ".");
                                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Info du produit " + line.Code_Article + " trouvé");
 
                                 }
@@ -2448,6 +2448,8 @@ namespace Import
 
             return list_of_cmd_lines;
         }
+
+
 
         public static bool deleteLineAndHeaderOfDocument(bool SqlConnexion, string reference, OdbcConnection connexion, StreamWriter writer)
         {

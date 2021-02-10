@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Import.Classes
 {
-    class Veolog_DESADV_Colis
+    public class Veolog_DESADV_Colis
     {
         //Colis
         public string Numero_Ligne;

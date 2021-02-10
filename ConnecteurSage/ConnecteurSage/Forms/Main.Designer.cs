@@ -885,6 +885,7 @@
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Connecteur SAGE";
+            this.Load += new System.EventHandler(this.Main_Load);
             this.tabPage3.ResumeLayout(false);
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();

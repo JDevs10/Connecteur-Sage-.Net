@@ -60,6 +60,21 @@ namespace ConnecteurSage
             labelVersion.Text = "Version : " + version;
             labelCopyright.Text = "Copyright © 2013 - 2020";
 
+            // Init Connecteur Info, Version and Database path in a file
+            Init.Init init = new Init.Init();
+            if (init.isSettings())
+            {
+                init.Load();
+                init.connecteurInfo.installation_dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                init.saveInfo();
+            }
+            else
+            {
+                init.connecteurInfo = new Connecteur_Info.ConnecteurInfo();
+                init.connecteurInfo.installation_dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                init.saveInfo();
+            }
+
             Forms.ProgressDialog progressDialog = new Forms.ProgressDialog();
 
             // Initialize the thread that will handle the background process
@@ -784,6 +799,11 @@ namespace ConnecteurSage
         }
 
         private void button14_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Main_Load(object sender, EventArgs e)
         {
 
         }

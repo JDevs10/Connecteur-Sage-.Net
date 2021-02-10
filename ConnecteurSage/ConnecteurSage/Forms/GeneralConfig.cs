@@ -36,7 +36,7 @@ namespace ConnecteurSage.Forms
 
             // Init database
             Database.Database db = new Database.Database();
-            Database.Model.Settings settings_ = db.settingsManager.get(db.connectionString ,1);
+            Database.Model.Settings settings_ = db.settingsManager.get(db.connectionString, 1);
 
             if(settings_ != null)
             {
@@ -207,8 +207,12 @@ namespace ConnecteurSage.Forms
                     checkBox_activer_tarif.Checked ? 1 : 0, radioButton_tarif_cmd_EDI.Checked ? 1 : 0, radioButton_tarif_produit.Checked ? 1 : 0, radioButton_tarif_categorie.Checked ? 1 : 0, radioButton_tarif_client.Checked ? 1 : 0,
                     checkBox_reprocess_activate.Checked ? 1 : 0, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
 
-                    int result = db.settingsManager.insert(db.connectionString, settings);
+                    MessageBox.Show("Before Json: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    db.settingsManager.insert(db.connectionString, settings);
+                    Database.Model.Settings db_settings_ = db.settingsManager.get(db.connectionString, 1);
+                    MessageBox.Show("After Json: \n" + db.JsonFormat(db_settings_), "Config Général Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                    /*
                     string TABLE_NAME = "Settings";
                     string COLONNE_ID = "id";
                     string COLONNE_showWindow = "showWindow";
@@ -251,37 +255,38 @@ namespace ConnecteurSage.Forms
                                 "" + settings.reprocess_active + ", " + settings.reprocess_hour.ToString().Replace(',','.') + ", " + settings.reprocess_countDown + ")";
                             */
 
-                            /*
-                            INSERT INTO Settings ('id', 'showWindow', 'isACP_ComptaCPT_CompteG', 'ACP_ComptaCPT_CompteG', 'EXE_Folder', 'EDI_Folder', 'plannerTask_name', 'plannerTask_UserId', 'plannerTask_active',
-                            'priceType_active', 'priceType_cmdEDIPrice', 'priceType_productPrice', 'priceType_categoryPrice', 'priceType_clientPrice',
-                            'reprocess_active', 'reprocess_hour', 'reprocess_countDown')
-                            VALUES(1, 5, 1, 12347, 'Path EXE Folder', 'Path EDI Folder', '', '', 0,
-                            1, 0, 0, 0, 1,
-                            1, 0.5, 3)
-                            */
+                    /*
+                    INSERT INTO Settings ('id', 'showWindow', 'isACP_ComptaCPT_CompteG', 'ACP_ComptaCPT_CompteG', 'EXE_Folder', 'EDI_Folder', 'plannerTask_name', 'plannerTask_UserId', 'plannerTask_active',
+                    'priceType_active', 'priceType_cmdEDIPrice', 'priceType_productPrice', 'priceType_categoryPrice', 'priceType_clientPrice',
+                    'reprocess_active', 'reprocess_hour', 'reprocess_countDown')
+                    VALUES(1, 5, 1, 12347, 'Path EXE Folder', 'Path EDI Folder', '', '', 0,
+                    1, 0, 0, 0, 1,
+                    1, 0.5, 3)
+                    * /
 
-                            //MessageBox.Show("SQL : " + SQL_insert + "\n\nJson: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //MessageBox.Show("SQL : " + SQL_insert + "\n\nJson: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 
-                            int x = -9;
-                            conn.Open();
+                    int x = -9;
+                    conn.Open();
 
-                            if (conn.State == System.Data.ConnectionState.Open)
-                            {
-                                SQLiteCommand command = new SQLiteCommand(SQL_insert, conn);
-                                x = command.ExecuteNonQuery();
-                            }
-
-                            conn.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("\nSettings Insert [ERROR]");
-                            Console.WriteLine("Message : " + ex.Message);
-                            Console.WriteLine("\nStackTrace : " + ex.StackTrace);
-                            conn.Close();
-                        }
+                    if (conn.State == System.Data.ConnectionState.Open)
+                    {
+                        SQLiteCommand command = new SQLiteCommand(SQL_insert, conn);
+                        x = command.ExecuteNonQuery();
                     }
+
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("\nSettings Insert [ERROR]");
+                    Console.WriteLine("Message : " + ex.Message);
+                    Console.WriteLine("\nStackTrace : " + ex.StackTrace);
+                    conn.Close();
+                }
+            }
+            */
 
 
                     /*
@@ -291,7 +296,8 @@ namespace ConnecteurSage.Forms
                         return;
                     }
                     */
-                }catch(Exception ex)
+                }
+                catch(Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Config Général ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -335,13 +341,25 @@ namespace ConnecteurSage.Forms
                     compt_g_taxe = "-1";
                 }
 
-                // Init database
-                Database.Model.Settings db_settings = new Database.Model.Settings(
-                    1, show, checkBox_activate_compt_g_taxe.Checked ? 1 : 0, Convert.ToInt32(compt_g_taxe.Trim()), Directory.GetCurrentDirectory(), textBox2.Text.Trim(),
-                    "", "", 0,
-                    checkBox_activer_tarif.Checked ? 1 : 0, radioButton_tarif_cmd_EDI.Checked ? 1 : 0, radioButton_tarif_produit.Checked ? 1 : 0, radioButton_tarif_categorie.Checked ? 1 : 0, radioButton_tarif_client.Checked ? 1 : 0,
-                    checkBox_reprocess_activate.Checked ? 1 : 0, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
-                db.settingsManager.update(db.connectionString, db_settings);
+                try 
+                { 
+                    Database.Model.Settings db_settings = new Database.Model.Settings(
+                        1, show, checkBox_activate_compt_g_taxe.Checked ? 1 : 0, Convert.ToInt32(compt_g_taxe.Trim()), Directory.GetCurrentDirectory(), textBox2.Text.Trim(),
+                        "", "", 0,
+                        checkBox_activer_tarif.Checked ? 1 : 0, radioButton_tarif_cmd_EDI.Checked ? 1 : 0, radioButton_tarif_produit.Checked ? 1 : 0, radioButton_tarif_categorie.Checked ? 1 : 0, radioButton_tarif_client.Checked ? 1 : 0,
+                        checkBox_reprocess_activate.Checked ? 1 : 0, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
+
+                    MessageBox.Show("Before Json: \n" + db.JsonFormat(db_settings), "Config Général Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    db.settingsManager.update(db.connectionString, db_settings);
+                    Database.Model.Settings db_settings_ = db.settingsManager.get(db.connectionString, 1);
+                    MessageBox.Show("After Json: \n" + db.JsonFormat(db_settings_), "Config Général Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Config Général ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
             Close();

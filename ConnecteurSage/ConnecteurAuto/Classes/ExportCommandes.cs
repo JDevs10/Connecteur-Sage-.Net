@@ -388,7 +388,7 @@ namespace ConnecteurAuto.Classes
                                         string[] time_delivery = date_time_delivery[1].Split(':');
                                         CommandeAExporter.HeureLivraison = time_delivery[0] + "" + time_delivery[1];
 
-                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line
+                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.commentaires); // E line
 
                                         CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, recapLinesList_new); // Maybe thisssss
 

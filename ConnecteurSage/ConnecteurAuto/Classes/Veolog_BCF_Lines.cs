@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ConnecteurAuto.Classes
 {
-    class Veolog_BCF_Lines
+    public class Veolog_BCF_Lines
     {
         //Colis
         public string Type_Ligne;

@@ -38,6 +38,7 @@ namespace Database
             {
                 init.Load();
                 directory_db = init.connecteurInfo.installation_dir + @"\" + DB_DOSSIER;
+                connectionString = "Data Source=" + directory_db + @"\" + DB_NAME + "; Version=" + DB_VERSION;
             }
 
             if (!Directory.Exists(directory_db))
@@ -62,6 +63,7 @@ namespace Database
             {
                 init.Load_w_logs(writer);
                 directory_db = init.connecteurInfo.installation_dir + @"\" + DB_DOSSIER;
+                connectionString = "Data Source=" + directory_db + @"\" + DB_NAME + "; Version=" + DB_VERSION;
             }
             else
             {

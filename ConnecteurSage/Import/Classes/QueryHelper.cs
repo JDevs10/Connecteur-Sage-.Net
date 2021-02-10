@@ -282,6 +282,18 @@ namespace Import.Classes
             }
         }
 
+        public static string updateCommandeLigneReliquat_achat(bool sqlConnexion, string do_piece, DocumentAchatLine documentAchatLine)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCLIGNE SET DL_Qte = " + documentAchatLine.DL_Qte + ", DL_QtePL = " + documentAchatLine.DL_QtePL + ", EU_Qte = " + documentAchatLine.EU_Qte + "  WHERE DO_PIECE = '" + do_piece + "' AND AR_Ref = '" + documentAchatLine.AR_Ref + "' ";
+            }
+            else
+            {
+                return "UPDATE F_DOCLIGNE SET DL_Qte = " + documentAchatLine.DL_Qte + ", DL_QtePL = " + documentAchatLine.DL_QtePL + ", EU_Qte = " + documentAchatLine.EU_Qte + "  WHERE DO_PIECE = '" + do_piece + "'  AND AR_Ref = '" + documentAchatLine.AR_Ref + "' ";
+            }
+        }
+
         public static string deleteCommande(bool sqlConnexion, string numCommande)
         {
             if (sqlConnexion)
@@ -913,13 +925,13 @@ namespace Import.Classes
             {
                 //return "SELECT AR_Ref, AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch, AR_PrixVen FROM " + getPrefix() + "F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
                 //return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT, DL_Taxe1, DL_CodeTaxe1, DO_Piece, DO_Date, DL_Qte FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '" + DO_Piece + "' AND AR_Ref = '" + reference_article + "' ";
-                return "SELECT docli.AR_Ref, docli.DL_Design, docli.DL_PoidsNet, docli.DL_PoidsBrut, docli.DL_PrixUnitaire, docli.COLIS, docli.PCB, docli.COMPLEMENT, docli.DL_Taxe1, docli.DL_CodeTaxe1, docli.DO_Piece, docli.DO_Date, docli.DL_Qte FROM " + getPrefix() + "F_DOCLIGNE as docli, " + getPrefix() + "F_ARTICLE as ar WHERE docli.DO_Piece = '" + DO_Piece + "' AND docli.AR_Ref = ar.AR_Ref AND ar.AR_CodeBarre = '" + reference_article + "'";
+                return "SELECT docli.AR_Ref, docli.DL_Design, docli.DL_PoidsNet, docli.DL_PoidsBrut, docli.DL_PrixUnitaire, docli.COLIS, docli.PCB, docli.COMPLEMENT, docli.DL_Taxe1, docli.DL_CodeTaxe1, docli.DO_Piece, docli.DO_Date, docli.DL_Qte, docli.DL_QtePL FROM " + getPrefix() + "F_DOCLIGNE as docli, " + getPrefix() + "F_ARTICLE as ar WHERE docli.DO_Piece = '" + DO_Piece + "' AND docli.AR_Ref = ar.AR_Ref AND ar.AR_CodeBarre = '" + reference_article + "'";
             }
             else
             {
                 //return "SELECT AR_Ref, AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch, AR_PrixVen FROM F_ARTICLE WHERE AR_Ref IN('" + reference_article + "') ";
                 //return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT, DL_Taxe1, DL_CodeTaxe1, DO_Piece, DO_Date, DL_Qte FROM F_DOCLIGNE WHERE DO_Piece = '" + DO_Piece + "' AND AR_Ref = '" + reference_article + "' ";
-                return "SELECT docli.AR_Ref, docli.DL_Design, docli.DL_PoidsNet, docli.DL_PoidsBrut, docli.DL_PrixUnitaire, docli.COLIS, docli.PCB, docli.COMPLEMENT, docli.DL_Taxe1, docli.DL_CodeTaxe1, docli.DO_Piece, docli.DO_Date, docli.DL_Qte FROM F_DOCLIGNE as docli, F_ARTICLE as ar WHERE docli.DO_Piece = '" + DO_Piece + "' AND docli.AR_Ref = ar.AR_Ref AND ar.AR_CodeBarre = '" + reference_article + "'";
+                return "SELECT docli.AR_Ref, docli.DL_Design, docli.DL_PoidsNet, docli.DL_PoidsBrut, docli.DL_PrixUnitaire, docli.COLIS, docli.PCB, docli.COMPLEMENT, docli.DL_Taxe1, docli.DL_CodeTaxe1, docli.DO_Piece, docli.DO_Date, docli.DL_Qte, docli.DL_QtePL FROM F_DOCLIGNE as docli, F_ARTICLE as ar WHERE docli.DO_Piece = '" + DO_Piece + "' AND docli.AR_Ref = ar.AR_Ref AND ar.AR_CodeBarre = '" + reference_article + "'";
             }
         }
 

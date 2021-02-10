@@ -91,10 +91,35 @@ namespace ConnecteurAuto
 
         static void Main(string[] args)
         {
-            int Height = Console.LargestWindowHeight - 10;
-            int Width = Console.LargestWindowWidth - 10;
-            Console.SetWindowSize(Width, Height);
-            Console.SetWindowPosition(0, 0);
+            const int SW_SHOWMINIMIZED = 2;
+            var handle = GetConsoleWindow();
+            ShowWindow(handle, SW_SHOWMINIMIZED);
+
+            // Hide or not the screen
+            Database.Database db = new Database.Database();
+            db.initTables();
+            Database.Model.Settings _settings_ = db.settingsManager.get(db.connectionString, 1);
+            int SW_HIDE_SHOW = _settings_.showWindow;
+
+            // SW_HIDE = 0
+            // SW_SHOW = 5
+            if (SW_HIDE_SHOW == 5)
+            {
+                // Show
+                ShowWindow(handle, 9);
+                ShowWindow(handle, SW_HIDE_SHOW);
+                int Height = Console.LargestWindowHeight - 20;
+                int Width = Console.LargestWindowWidth - 20;
+                Console.SetWindowSize(Width, Height);
+                Console.SetWindowPosition(0, 0);
+            }
+            else if (SW_HIDE_SHOW == 0)
+            {
+                // Hide
+                Console.SetWindowSize(1, 1);
+                Console.SetWindowPosition(0, 0);
+                ShowWindow(handle, SW_HIDE_SHOW);
+            }
 
             // Some biolerplate to react to close window event, CTRL-C, kill, etc
             _handler += new EventHandler(Handler);
