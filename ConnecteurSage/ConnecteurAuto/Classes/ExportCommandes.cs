@@ -336,6 +336,10 @@ namespace ConnecteurAuto.Classes
                                     fileName = fileName.Replace("..", ".");
                                 }
 
+                                // log order json
+                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : CommandeAExporter JSON => " + new Database.Database().JsonFormat(CommandeAExporter));
+                                logFileWriter.Flush();
+
                                 bool veolog_file_check = false;
                                 using (StreamWriter orderFileWriter = new StreamWriter(exportPath + @"\" + fileName, false, Encoding.Default))
                                 {
@@ -389,7 +393,9 @@ namespace ConnecteurAuto.Classes
                                         string[] time_delivery = date_time_delivery[1].Split(':');
                                         CommandeAExporter.HeureLivraison = time_delivery[0] + "" + time_delivery[1];
 
-                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.do_coord01 + ";" + CommandeAExporter.commentaires); // E line
+
+                                        // orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line old
+                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.codeAcheteur + "" + CommandeAExporter.commentaires); // E line with GLN client
 
                                         CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, recapLinesList_new); // Maybe thisssss
 

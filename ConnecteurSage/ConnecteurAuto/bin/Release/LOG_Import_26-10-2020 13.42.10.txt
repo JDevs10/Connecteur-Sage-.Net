@@ -1,3 +1,0 @@
-Hello
-Dir : C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\bin\Release
-file : C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurAuto\bin\Release\LOG_Import_26-10-2020 13.42.10.txt
