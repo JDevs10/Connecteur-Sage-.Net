@@ -37,7 +37,6 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Releas
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\System.Data.SQLite.dll.config
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Newtonsoft.Json.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Dapper.xml
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.pdb
@@ -45,3 +44,4 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Releas
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Connecteur-Info.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Init.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\bin\Release\Connecteur-Info.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Fichier-De-Nettoyage\obj\Release\Fichier-De-Nettoyage.csprojAssemblyReference.cache

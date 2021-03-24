@@ -359,6 +359,10 @@
       <Project>{43ccd91e-6fe4-4543-a49f-483dc7663e26}</Project>
       <Name>Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Export\Export.csproj">
+      <Project>{7c3d92c6-4111-472f-b6f6-2e2b8431b09c}</Project>
+      <Name>Export</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Init\Init.csproj">
       <Project>{773fba6e-fb86-45a4-805f-470328b67b7e}</Project>
       <Name>Init</Name>

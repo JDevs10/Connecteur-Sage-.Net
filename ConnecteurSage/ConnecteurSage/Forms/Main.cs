@@ -807,5 +807,19 @@ namespace ConnecteurSage
         {
 
         }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            // Export des clients
+            Export.DocummentClient docummentClient = new Export.DocummentClient();
+            docummentClient.export_window();
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            // Export des produits
+            Export.DocummentArticle docummentArticle = new Export.DocummentArticle();
+            docummentArticle.export_window();
+        }
     }
 }
