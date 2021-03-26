@@ -970,10 +970,11 @@ namespace Import
                                 else// If no rows returned
                                 {
                                     //do nothing.
-                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Aucune reponse. ");
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la commande " + dh.Ref_Commande_Donneur_Ordre + ".");
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Alors je saute cette article.");
                                     logFileWriter.Flush();
-                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur est annulée. L'article \"" + line.Code_Article + "\" n'existe pas dans le BCF " + dh.Ref_Commande_Donneur_Ordre, "L'article \"" + line.Code_Article + "\" n'existe pas dans la commande " + dh.Ref_Commande_Donneur_Ordre, "", fileName, logFileName_import));
-                                    return null;
+                                    // recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_BLF_doc, "", "L'import du bon de livraison fournisseur est annulée. L'article \"" + line.Code_Article + "\" n'existe pas dans le BCF " + dh.Ref_Commande_Donneur_Ordre, "L'article \"" + line.Code_Article + "\" n'existe pas dans la commande " + dh.Ref_Commande_Donneur_Ordre, "", fileName, logFileName_import));
+                                    continue;
                                 }
                             }
                         }

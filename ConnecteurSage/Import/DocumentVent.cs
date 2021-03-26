@@ -1874,9 +1874,11 @@ namespace Import
                                 {
                                     //do nothing.
                                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la commande " + dh.Ref_Commande_Donneur_Ordre + ".");
-                                    logFileWriter.Flush();
-                                    recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée. L'article \"" + line.Code_Article + "\" n'est pas trouvé dans le champ CodeBare ou dans la base Sage", "L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la BDD.", "", fileName, logFileName_import));
-                                    return null;
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Alors je saute cette article.");
+                                    // logFileWriter.Flush();
+                                    // recapLinesList_new.Add(new Alert_Mail.Classes.Custom.CustomMailRecapLines(reference_DESADV_doc, "", "L'import du bon de livraison est annulée. L'article \"" + line.Code_Article + "\" n'est pas trouvé dans le champ CodeBare ou dans la base Sage", "L'article \"" + line.Code_Article + "\" n'est pas trouvé dans la BDD.", "", fileName, logFileName_import));
+                                    // return null;
+                                    continue;
                                 }
                             }
                         }
