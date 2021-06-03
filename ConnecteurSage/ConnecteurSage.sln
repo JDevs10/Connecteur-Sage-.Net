@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Init", "Init\Init.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Export", "Export\Export.csproj", "{7C3D92C6-4111-472F-B6F6-2E2B8431B09C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reliquat", "Reliquat\Reliquat.csproj", "{19286D3B-6CBA-4C27-A532-020AB78273FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,14 @@ Global
 		{7C3D92C6-4111-472F-B6F6-2E2B8431B09C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7C3D92C6-4111-472F-B6F6-2E2B8431B09C}.Release|x64.ActiveCfg = Release|Any CPU
 		{7C3D92C6-4111-472F-B6F6-2E2B8431B09C}.Release|x64.Build.0 = Release|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Debug|x64.Build.0 = Debug|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Release|x64.ActiveCfg = Release|Any CPU
+		{19286D3B-6CBA-4C27-A532-020AB78273FB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

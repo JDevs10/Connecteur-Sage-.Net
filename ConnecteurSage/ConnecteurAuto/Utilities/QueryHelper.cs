@@ -1095,14 +1095,14 @@ namespace ConnecteurAuto.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, liv.CT_Num, CONCAT(liv.LI_Adresse,',', liv.LI_Complement,',',liv.LI_CodePostal,',',liv.LI_Ville, ',',liv.LI_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, liv.LI_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, liv.LI_Telephone, liv.LI_EMail, cmd.DO_Coord01  " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, liv.CT_Num, CONCAT(liv.LI_Adresse,',', liv.LI_Complement,',',liv.LI_CodePostal,',',liv.LI_Ville, ',',liv.LI_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, liv.LI_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, liv.LI_Telephone, liv.LI_EMail, cli.CT_EdiCode, cmd.DO_Coord01  " +
                     "FROM " + getPrefix() + "F_COMPTET as cli, " + getPrefix() + "F_DOCENTETE as cmd, " + getPrefix() + "F_livraison liv " +
                     "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num AND liv.LI_No = cmd.LI_No " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";
             }
             else
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,',',cli.CT_CodePostal,',',cli.CT_Ville, ',',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail, cmd.DO_Coord01  " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,',',cli.CT_CodePostal,',',cli.CT_Ville, ',',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail, cli.CT_EdiCode, cmd.DO_Coord01  " +
                     "FROM F_COMPTET as cli, F_DOCENTETE as cmd, F_livraison liv " +
                     "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";

@@ -44,12 +44,18 @@
   <ItemGroup>
     <Compile Include="Classes\Article.cs" />
     <Compile Include="Classes\Client.cs" />
+    <Compile Include="Classes\Order.cs" />
     <Compile Include="Classes\QueryHelper.cs" />
+    <Compile Include="DocummentCommande.cs" />
     <Compile Include="DocummentClient.cs" />
     <Compile Include="DocummentArticle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Alert-Mail\Alert-Mail.csproj">
+      <Project>{b5e11fc4-f58c-40b9-99cc-b831ddd17f4a}</Project>
+      <Name>Alert-Mail</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Connecteur-Info\Connecteur-Info.csproj">
       <Project>{151fabb0-d64f-42ea-ab2a-aea6ebc854c2}</Project>
       <Name>Connecteur-Info</Name>

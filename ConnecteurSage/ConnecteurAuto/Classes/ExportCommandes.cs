@@ -214,7 +214,8 @@ namespace ConnecteurAuto.Classes
                                 CommandeAExporter.email = reader[14].ToString();
                                 CommandeAExporter.commentaires = "";
                                 CommandeAExporter.Transporteur = "";
-                                CommandeAExporter.do_coord01 = reader[15].ToString();
+                                CommandeAExporter.GLN_Destinataire = reader[15].ToString();
+                                CommandeAExporter.do_coord01 = reader[16].ToString();
                             }
 
                         }
@@ -259,7 +260,7 @@ namespace ConnecteurAuto.Classes
                                 }
                                 else
                                 {
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Code GNL client n'est pas enregistrer, valeur '" + CommandeAExporter.codeClient + "'.");
+                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Code GNL client enregistrer, valeur '" + CommandeAExporter.codeClient + "'.");
                                 }
                                 if (!IsNumeric(CommandeAExporter.DO_MOTIF) && CommandeAExporter.DO_MOTIF != "")
                                 {
@@ -395,7 +396,8 @@ namespace ConnecteurAuto.Classes
 
 
                                         // orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line old
-                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.codeAcheteur + "" + CommandeAExporter.commentaires); // E line with GLN client
+                                        // orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.codeAcheteur + "" + CommandeAExporter.commentaires); // E line with client order
+                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.do_coord01); // E line with GLN client, client order
 
                                         CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, recapLinesList_new); // Maybe thisssss
 

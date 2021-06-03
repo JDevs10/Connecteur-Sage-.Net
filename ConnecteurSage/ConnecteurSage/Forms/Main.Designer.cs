@@ -63,6 +63,12 @@
             this.button3 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.button16 = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.button15 = new System.Windows.Forms.Button();
             this.groupBox_export_doc_stock = new System.Windows.Forms.GroupBox();
             this.label_export_doc_stock = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
@@ -100,12 +106,6 @@
             this.label_backup_activation = new System.Windows.Forms.Label();
             this.label_backup_generalLog = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button15 = new System.Windows.Forms.Button();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.button16 = new System.Windows.Forms.Button();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -116,6 +116,8 @@
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox_export_doc_stock.SuspendLayout();
             this.groupBox_export_doc_achat.SuspendLayout();
             this.groupBox_export_doc_vente.SuspendLayout();
@@ -127,8 +129,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // Fermer
@@ -156,7 +156,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 23);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(610, 325);
+            this.tabPage3.Size = new System.Drawing.Size(610, 452);
             this.tabPage3.TabIndex = 5;
             this.tabPage3.Text = "À propos";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -179,7 +179,7 @@
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 42.85714F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(604, 319);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(604, 446);
             this.tableLayoutPanel.TabIndex = 2;
             // 
             // labelProductName
@@ -197,7 +197,7 @@
             // labelVersion
             // 
             this.labelVersion.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelVersion.Location = new System.Drawing.Point(6, 45);
+            this.labelVersion.Location = new System.Drawing.Point(6, 63);
             this.labelVersion.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelVersion.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelVersion.Name = "labelVersion";
@@ -209,7 +209,7 @@
             // labelCopyright
             // 
             this.labelCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCopyright.Location = new System.Drawing.Point(6, 90);
+            this.labelCopyright.Location = new System.Drawing.Point(6, 126);
             this.labelCopyright.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelCopyright.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCopyright.Name = "labelCopyright";
@@ -221,7 +221,7 @@
             // labelCompanyName
             // 
             this.labelCompanyName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCompanyName.Location = new System.Drawing.Point(6, 135);
+            this.labelCompanyName.Location = new System.Drawing.Point(6, 189);
             this.labelCompanyName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.labelCompanyName.MaximumSize = new System.Drawing.Size(0, 17);
             this.labelCompanyName.Name = "labelCompanyName";
@@ -233,13 +233,13 @@
             // textBoxDescription
             // 
             this.textBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxDescription.Location = new System.Drawing.Point(6, 183);
+            this.textBoxDescription.Location = new System.Drawing.Point(6, 255);
             this.textBoxDescription.Margin = new System.Windows.Forms.Padding(6, 3, 3, 3);
             this.textBoxDescription.Multiline = true;
             this.textBoxDescription.Name = "textBoxDescription";
             this.textBoxDescription.ReadOnly = true;
             this.textBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxDescription.Size = new System.Drawing.Size(598, 133);
+            this.textBoxDescription.Size = new System.Drawing.Size(598, 188);
             this.textBoxDescription.TabIndex = 23;
             this.textBoxDescription.TabStop = false;
             this.textBoxDescription.Text = "Le connecteur Sage permet d\'importer ou d\'exporter des documents commerciaux éléc" +
@@ -259,7 +259,7 @@
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage4.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.tabPage4.Size = new System.Drawing.Size(610, 325);
+            this.tabPage4.Size = new System.Drawing.Size(610, 452);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Config";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -499,6 +499,64 @@
             this.tabPage2.Text = "Export";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label13);
+            this.groupBox4.Controls.Add(this.button16);
+            this.groupBox4.Location = new System.Drawing.Point(191, 367);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(410, 55);
+            this.groupBox4.TabIndex = 17;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Export d\'un document Produit";
+            // 
+            // label13
+            // 
+            this.label13.Location = new System.Drawing.Point(200, 19);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(204, 53);
+            this.label13.TabIndex = 15;
+            this.label13.Text = "Non défini";
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(20, 19);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(174, 23);
+            this.button16.TabIndex = 0;
+            this.button16.Text = "Export des produits";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label6);
+            this.groupBox3.Controls.Add(this.button15);
+            this.groupBox3.Location = new System.Drawing.Point(194, 306);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(410, 55);
+            this.groupBox3.TabIndex = 16;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Export d\'un document Client";
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(200, 19);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(204, 53);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Non défini";
+            // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(20, 19);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(174, 23);
+            this.button15.TabIndex = 0;
+            this.button15.Text = "Export des clients";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
+            // 
             // groupBox_export_doc_stock
             // 
             this.groupBox_export_doc_stock.Controls.Add(this.label_export_doc_stock);
@@ -644,7 +702,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 23);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(610, 325);
+            this.tabPage1.Size = new System.Drawing.Size(610, 452);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Import";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -716,7 +774,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 23);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(610, 325);
+            this.tabPage5.Size = new System.Drawing.Size(610, 452);
             this.tabPage5.TabIndex = 6;
             this.tabPage5.Text = "Sauvegarder";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -879,64 +937,6 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.label6);
-            this.groupBox3.Controls.Add(this.button15);
-            this.groupBox3.Location = new System.Drawing.Point(194, 306);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(410, 55);
-            this.groupBox3.TabIndex = 16;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Export d\'un document Client";
-            // 
-            // label6
-            // 
-            this.label6.Location = new System.Drawing.Point(200, 19);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(204, 53);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Non défini";
-            // 
-            // button15
-            // 
-            this.button15.Location = new System.Drawing.Point(20, 19);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(174, 23);
-            this.button15.TabIndex = 0;
-            this.button15.Text = "Export des clients";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.label13);
-            this.groupBox4.Controls.Add(this.button16);
-            this.groupBox4.Location = new System.Drawing.Point(191, 367);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(410, 55);
-            this.groupBox4.TabIndex = 17;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Export d\'un document Produit";
-            // 
-            // label13
-            // 
-            this.label13.Location = new System.Drawing.Point(200, 19);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(204, 53);
-            this.label13.TabIndex = 15;
-            this.label13.Text = "Non défini";
-            // 
-            // button16
-            // 
-            this.button16.Location = new System.Drawing.Point(20, 19);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(174, 23);
-            this.button16.TabIndex = 0;
-            this.button16.Text = "Export des produits";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.button16_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -970,6 +970,8 @@
             this.groupBox8.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.groupBox_export_doc_stock.ResumeLayout(false);
             this.groupBox_export_doc_achat.ResumeLayout(false);
             this.groupBox_export_doc_vente.ResumeLayout(false);
@@ -983,8 +985,6 @@
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -28,6 +28,7 @@ namespace Database
         public SettingsManager settingsManager { get; set; }
         public ConnexionManager connexionManager { get; set; }
         public EmailManager emailManager { get; set; }
+        public ReliquatManager reliquatManager { get; set; }
         #endregion
 
 
@@ -54,6 +55,7 @@ namespace Database
             this.settingsManager = new SettingsManager();
             this.connexionManager = new ConnexionManager();
             this.emailManager = new EmailManager();
+            this.reliquatManager = new ReliquatManager();
         }
 
         public Database(StreamWriter writer)
@@ -90,6 +92,7 @@ namespace Database
             this.settingsManager = new SettingsManager();
             this.connexionManager = new ConnexionManager();
             this.emailManager = new EmailManager();
+            this.reliquatManager = new ReliquatManager();
 
             writer.WriteLine("");
             writer.Flush();
@@ -106,6 +109,7 @@ namespace Database
             this.settingsManager.createTable(connectionString);
             this.connexionManager.createTable(connectionString);
             this.emailManager.createTable(connectionString);
+            this.reliquatManager.createTable(connectionString, null);
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup();
@@ -124,6 +128,7 @@ namespace Database
             this.settingsManager.createTable(connectionString, writer);
             this.connexionManager.createTable(connectionString, writer);
             this.emailManager.createTable(connectionString, writer);
+            this.reliquatManager.createTable(connectionString, writer);
 
             // Save a backup of the db in ./Backup/Database_backup.db
             saveBackup(writer);

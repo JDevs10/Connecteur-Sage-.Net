@@ -13,6 +13,7 @@ namespace Import
 {
     public class DocumentVent
     {
+        private static Database.Database db;
         private string logFileName_import;
         private List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new;
 
@@ -21,6 +22,7 @@ namespace Import
         {
             this.recapLinesList_new = recapLinesList_new_;
             this.logFileName_import = logFileName_import_;
+            db = new Database.Database();
         }
 
 
@@ -1658,6 +1660,7 @@ namespace Import
                         string veologDeliveryDate = year + "-" + month + "-" + day;
                         string veologDeliveryTime = hour + ":" + mins + ":00";
                         veologDeliveryDateTime = veologDeliveryDate + " " + veologDeliveryTime;
+
                     }
                     catch (Exception e)
                     {
@@ -1679,6 +1682,7 @@ namespace Import
                     string do_MontantRegle_ = "";
                     string CO_No = "";
                     string DO_Reliquat = "0"; // 0 => Non Reliquat | 1 => Un Reliquat
+                    int total_lines = 0; // number of lines in the order
 
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Récupérer des informations de la commande la référence " + dh.Ref_Commande_Donneur_Ordre);
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getRefCMDClient(true, dh.Ref_Commande_Donneur_Ordre));
@@ -1700,6 +1704,7 @@ namespace Import
                                     ref_client = reader[7].ToString();
                                     CO_No = reader[8].ToString();
                                     DO_Reliquat = reader[9].ToString();
+                                    total_lines = (reader[10].ToString() != null && reader[10].ToString() != "null" && reader[10].ToString() != "NULL" && reader[10].ToString() != "" ? Convert.ToInt16(reader[10].ToString()) : 0);
                                 }
                                 else// If no rows returned
                                 {
@@ -1752,7 +1757,7 @@ namespace Import
                             }
                             else// If no rows returned
                             {
-                                //do nothing.
+                                // do nothing.
                                 logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Aucune reponse. list_of_client_info est null");
                             }
                         }
@@ -1797,18 +1802,107 @@ namespace Import
                     }
 
                     logFileWriter.Flush();
-                    if (DO_Reliquat.Equals("0"))        // BL normal
-                    {
 
-                    }else if (DO_Reliquat.Equals("1"))  // BL Reliquat
-                    {
 
+                    // get all DO_Piece lines
+                    /*
+                    List<Database.Model.Reliquat> sageDocLigne_Reliquat;
+                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getCommandeByDoPiece(true, dh.Ref_Commande_Donneur_Ordre));
+
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeByDoPiece(true, dh.Ref_Commande_Donneur_Ordre), connection))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            if (reader.Read()) // If any rows returned
+                            {
+                                sageDocLigne_Reliquat = new List<Database.Model.Reliquat>();
+                                sageDocLigne_Reliquat.Add(new Database.Model.Reliquat(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString()));
+                                while (reader.Read())
+                                {
+                                    sageDocLigne_Reliquat.Add(new Database.Model.Reliquat(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString()));
+                                }
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                sageDocLigne_Reliquat = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Aucune reponse. ");
+                            }
+                        }
                     }
 
-                    bool isNeedReliquat = false;
+                    // insert/update doc lines in reliquat local db
+                    // get reliquat information from local db
+                    // to compaire later each order line
+                    List<Database.Model.Reliquat> reliquatList = db.reliquatManager.getByDo_Piece(db.connectionString, logFileWriter, dh.Ref_Commande_Donneur_Ordre);
+
+                    if(reliquatList == null)
+                    {
+                        // insert all document lines in reliquat table
+                        db.reliquatManager.insert(db.connectionString, sageDocLigne_Reliquat, logFileWriter);
+                    }
+                    else
+                    {
+                        // update all document lines in reliquat table
+                        foreach (Database.Model.Reliquat _reliquat_ in sageDocLigne_Reliquat)
+                        {
+                            Database.Model.Exist isProduct = db.reliquatManager.isExist(db.connectionString, logFileWriter, _reliquat_);
+
+                            if (isProduct != null && isProduct.result)
+                            {
+                                db.reliquatManager.update(db.connectionString, logFileWriter, _reliquat_);
+                            }
+                            else if (isProduct != null && !isProduct.result)
+                            {
+                                db.reliquatManager.insert(db.connectionString, _reliquat_, logFileWriter);
+                            }
+                            else
+                            {
+                                db.reliquatManager.deleteById(db.connectionString, logFileWriter, _reliquat_);
+                            }
+                        }
+                    }
+
+                    // get updated reliquar list after insert/update from sage db to local db
+                    reliquatList = db.reliquatManager.getByDo_Piece(db.connectionString, logFileWriter, dh.Ref_Commande_Donneur_Ordre);
+                    */
+
+
+                    // get all DO_Piece lines
+                    List<Import.Classes.OrderLines> tmpOrderLines;
+                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getOrderLinesByDoPiece(true, dh.Ref_Commande_Donneur_Ordre));
+
+                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getOrderLinesByDoPiece(true, dh.Ref_Commande_Donneur_Ordre), connection))
+                    {
+                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
+                        {
+                            tmpOrderLines = new List<Import.Classes.OrderLines>();
+                            if (reader.Read()) // If any rows returned
+                            {
+                                tmpOrderLines.Add(new Import.Classes.OrderLines(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString()));
+                                while (reader.Read())
+                                {
+                                    tmpOrderLines.Add(new Import.Classes.OrderLines(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString()));
+                                }
+                            }
+                            else// If no rows returned
+                            {
+                                //do nothing.
+                                tmpOrderLines = null;
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Aucune reponse. ");
+                            }
+                        }
+                    }
+
+                    
+
+
                     bool isLastBlReliquat = true;
                     List<DocumentVenteLine> produitReliquat = new List<DocumentVenteLine>();
+                    List<Import.Classes.OrderLines> reliquatOrderLines = new List<Import.Classes.OrderLines>();
                     int counter = 0;
+                    List<Database.Model.Reliquat>  reliquat = new List<Database.Model.Reliquat>();
+
 
                     foreach (Veolog_DESADV_Lines line in dl) //read item by item
                     {
@@ -1828,6 +1922,7 @@ namespace Import
                         string DL_DateBC = "";
                         string DL_QteBC = "";
                         string DL_QtePL = ""; //Qte Livrées
+                        string DL_LigneBC = "";
 
                         logFileWriter.WriteLine("");
                         logFileWriter.WriteLine("");
@@ -1867,6 +1962,7 @@ namespace Import
                                     DL_DateBC = reader[11].ToString();
                                     DL_QteBC = reader[12].ToString().Replace(",", ".");
                                     DL_QtePL = reader[13].ToString().Replace(",", ".");
+                                    DL_LigneBC = reader[14].ToString().Replace(",", ".");
                                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Info du produit " + line.Code_Article + " trouvé");
 
                                 }
@@ -1883,6 +1979,87 @@ namespace Import
                             }
                         }
 
+
+                        // get current product from reliquat table
+                        // to check if a reliquat is need later...
+                        /*
+                        Database.Model.Reliquat foundReliquat = reliquatList.Find(item => item.do_piece == dh.Ref_Commande_Donneur_Ordre && item.ar_codebarre == line.Code_Article);
+
+                        if(foundReliquat.dl_qtepl == line.Quantite_Colis)
+                        {
+                            // continue import normally
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Article => " + line.Code_Article);
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Qte préparé : " + DL_QtePL.Split('.')[0] + " == Qte livrer : " + line.Quantite_Colis);
+                            logFileWriter.WriteLine("");
+                        }
+                        else
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Article => " + line.Code_Article);
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Qte préparé : " + DL_QtePL.Split('.')[0] + " != Qte livrer : " + line.Quantite_Colis);
+                            logFileWriter.WriteLine("");
+
+                            DO_Reliquat = "1";
+                            isLastBlReliquat = false;
+                            DocumentVenteLine doc = new DocumentVenteLine();
+                            doc.AR_Ref = ref_article;
+                            doc.AR_CODEBARRE = line.Code_Article;
+                            doc.DL_Qte = (Convert.ToInt32(DL_QteBC.Split('.')[0]) - Convert.ToInt32(line.Quantite_Colis)).ToString();
+                            doc.DL_QtePL = (Convert.ToInt32(DL_QtePL.Split('.')[0]) - Convert.ToInt32(line.Quantite_Colis)).ToString();
+
+                            produitReliquat.Add(doc);
+                            reliquat.Add(new Database.Model.Reliquat(null, null, string.Format("{0:yyyy-MM-dd hh:mm:ss}", DateTime.Now), dh.Ref_Commande_Donneur_Ordre, dh.Ref_Commande_Client_Livre, DL_LigneBC, name_article, DL_QteBC, DL_QtePL, ref_article, line.Code_Article));
+                        }
+                        */
+
+                        Import.Classes.OrderLines sageOrderLine = tmpOrderLines.Find(item => item.ar_codebarre == line.Code_Article);
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine("");
+                        // tmpOrderLines.Exists(item => item.do_piece == dh.Ref_Commande_Donneur_Ordre && item.ar_codebarre == line.Code_Article);
+
+                        logFileWriter.WriteLine("tmpOrderLines: \n" + new Database.Database().JsonFormat(tmpOrderLines));
+
+                        logFileWriter.WriteLine("sageOrderLine: \n" + new Database.Database().JsonFormat(sageOrderLine));
+
+                        if (sageOrderLine != null)
+                        {
+                            Import.Classes.OrderLines orderLine = sageOrderLine;
+
+                            if (sageOrderLine.dl_qte.Split(',')[0] == line.Quantite_Colis)
+                            {
+                                // continue import normally
+                                orderLine.isReliquat = false;
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Article => " + line.Code_Article);
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Qte commandé : " + sageOrderLine.dl_qte.Split(',')[0] + " == Qte livrer : " + line.Quantite_Colis);
+                                logFileWriter.WriteLine("");
+                            }
+                            else
+                            {
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Article => " + line.Code_Article);
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Qte commandé : " + sageOrderLine.dl_qte.Split(',')[0] + " != Qte livrer : " + line.Quantite_Colis);
+                                logFileWriter.WriteLine("");
+
+                                DO_Reliquat = "1";
+                                isLastBlReliquat = false;
+
+                                orderLine.dl_qte = (Convert.ToInt32(DL_QteBC.Split('.')[0]) - Convert.ToInt32(line.Quantite_Colis)).ToString();
+                                orderLine.dl_qtepl = (Convert.ToInt32(DL_QtePL.Split('.')[0]) - Convert.ToInt32(line.Quantite_Colis)).ToString();
+                                orderLine.isReliquat = true;
+                            }
+                            reliquatOrderLines.Add(orderLine);
+                        }
+                        else
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : ******************** Warning Order/Reliquat ********************");
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Le produit \""+ line.Code_Article + "\" dans \""+ dh.Ref_Commande_Donneur_Ordre + "\" n'existe pas dans la commande sage, alors j'importe...");
+                            logFileWriter.WriteLine("");
+                        }
+
+                        /*
                         if (DL_QteBC.Split('.')[0].Equals(line.Quantite_Colis))
                         {
                             // continue import normally
@@ -1908,6 +2085,7 @@ namespace Import
 
                             produitReliquat.Add(doc);
                         }
+                        */
 
 
                         if (ref_article != "" && name_article != "" && list_of_client_info != null)
@@ -2326,6 +2504,14 @@ namespace Import
                     }
 
                     //Delete the BC of the BL if BL is good or last BL reliquat
+                    // check if current BC lines is equal to BL lines
+                    if (total_lines != dl.Count)
+                    {
+                        isLastBlReliquat = false;
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Numbre total de produit dans la commande \"" + total_lines + "\" est différent de celui dans le BL \"" + dl.Count + "\"");
+                    }
+
                     if (isLastBlReliquat)
                     {
                         try
@@ -2365,13 +2551,20 @@ namespace Import
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : En attente de BL Reliquat pour la prochaine fois...");
                             logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Mise à jour du Bon de Commande (BC) en ENTETE \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
+
                             logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.updateCommandeReliquat(true, dh.Ref_Commande_Donneur_Ordre));
                             OdbcCommand command = new OdbcCommand(QueryHelper.updateCommandeReliquat(true, dh.Ref_Commande_Donneur_Ordre), connection);
                             IDataReader reader = command.ExecuteReader();
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Bon de Commande ENTETE Mise à jour");
 
+                            /*
+                            //logFileWriter.WriteLine("");
+                            //logFileWriter.WriteLine("Update local Reliquat table...");
+                            //db.reliquatManager.update(db.connectionString, logFileWriter, reliquat);
+
                             logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine("produitReliquat list : " + produitReliquat.Count);
+
                             for (int x=0; x<produitReliquat.Count; x++)
                             {
                                 logFileWriter.WriteLine("");
@@ -2380,7 +2573,40 @@ namespace Import
                                 OdbcCommand command_ = new OdbcCommand(QueryHelper.updateCommandeLigneReliquat(true, dh.Ref_Commande_Donneur_Ordre, produitReliquat[x]), connection);
                                 IDataReader reader_ = command_.ExecuteReader();
                             }
-                            
+                            */
+
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine("reliquatOrderLines list : " + reliquatOrderLines.Count);
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Mise à jour du Bon de Commande (BC) en LIGNE \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
+
+                            for (int x = 0; x < reliquatOrderLines.Count; x++)
+                            {
+                                logFileWriter.WriteLine("");
+
+                                // if order line is waiting on a futur reliquat
+                                // ie order product qte is different to BL product qte
+                                // update order product
+                                if (reliquatOrderLines[x].isReliquat)
+                                {
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Mettre à jour le produit : \"" + reliquatOrderLines[x].dl_ligne + "\" - \"" + reliquatOrderLines[x].dl_design+ "\" ("+ reliquatOrderLines[x].ar_codebarre+") dans \"" + dh.Ref_Commande_Donneur_Ordre + "\" ");
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.updateCommandeLigneReliquat(true, dh.Ref_Commande_Donneur_Ordre, reliquatOrderLines[x]));
+                                    OdbcCommand command_ = new OdbcCommand(QueryHelper.updateCommandeLigneReliquat(true, dh.Ref_Commande_Donneur_Ordre, reliquatOrderLines[x]), connection);
+                                    IDataReader reader_ = command_.ExecuteReader();
+                                }
+                                else
+                                {
+                                    // if order line is equal/not waiting on a futur reliquat
+                                    // ie order product qte is equal to BL product qte
+                                    // remove order product
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Retirer le produit : \"" + reliquatOrderLines[x].dl_ligne + "\" - \"" + reliquatOrderLines[x].dl_design + "\" (" + reliquatOrderLines[x].ar_codebarre + ") dans \"" + dh.Ref_Commande_Donneur_Ordre + "\" ");
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.deleteCommandeLine(true, dh.Ref_Commande_Donneur_Ordre, reliquatOrderLines[x]));
+                                    OdbcCommand command_ = new OdbcCommand(QueryHelper.deleteCommandeLine(true, dh.Ref_Commande_Donneur_Ordre, reliquatOrderLines[x]), connection);
+                                    IDataReader reader_ = command_.ExecuteReader();
+                                }
+
+
+                            }
+
                             logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Bon de Commande (Reliquat) Mise à jour");
                         }
                         catch (Exception ex)

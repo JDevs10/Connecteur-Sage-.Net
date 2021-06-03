@@ -270,15 +270,16 @@ namespace Import.Classes
             }
         }
 
-        public static string updateCommandeLigneReliquat(bool sqlConnexion, string do_piece, DocumentVenteLine documentVenteLine)
+        public static string updateCommandeLigneReliquat(bool sqlConnexion, string do_piece, OrderLines orderLines)
         {
             if (sqlConnexion)
             {
-                return "UPDATE " + getPrefix() + "F_DOCLIGNE SET DL_Qte = "+ documentVenteLine.DL_Qte + ", DL_QtePL = " + documentVenteLine.DL_QtePL + "  WHERE DO_PIECE = '" + do_piece + "' AND AR_Ref = '" + documentVenteLine.AR_Ref + "' ";
+                return "UPDATE " + getPrefix() + "F_DOCLIGNE SET DL_Qte = "+ orderLines.dl_qte + ", DL_QtePL = " + orderLines.dl_qtepl + "  WHERE DO_PIECE = '" + do_piece + "' AND AR_Ref = '" + orderLines.ar_ref + "' ";
+                // return "UPDATE " + getPrefix() + "F_DOCLIGNE SET DL_QtePL = " + documentVenteLine.DL_QtePL + "  WHERE DO_PIECE = '" + do_piece + "' AND AR_Ref = '" + documentVenteLine.AR_Ref + "' ";
             }
             else
             {
-                return "UPDATE F_DOCLIGNE SET DL_Qte = " + documentVenteLine.DL_Qte + ", DL_QtePL = " + documentVenteLine.DL_QtePL + "  WHERE DO_PIECE = '" + do_piece + "'  AND AR_Ref = '" + documentVenteLine.AR_Ref + "' ";
+                return "UPDATE F_DOCLIGNE SET DL_Qte = " + orderLines.dl_qte + ", DL_QtePL = " + orderLines.dl_qtepl + "  WHERE DO_PIECE = '" + do_piece + "'  AND AR_Ref = '" + orderLines.ar_ref + "' ";
             }
         }
 
@@ -294,6 +295,18 @@ namespace Import.Classes
             }
         }
 
+        public static string deleteValidCommandeLigne_achat(bool sqlConnexion, string numCommande, string REF_Article)
+        {
+            if (sqlConnexion)
+            {
+                return "DELETE FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '" + numCommande + "' AND AR_Ref = '" + REF_Article + "'";
+            }
+            else
+            {
+                return "DELETE FROM F_DOCLIGNE WHERE DO_Piece = '" + numCommande + "' AND AR_Ref = '" + REF_Article + "'";
+            }
+        }
+
         public static string deleteCommande(bool sqlConnexion, string numCommande)
         {
             if (sqlConnexion)
@@ -303,6 +316,18 @@ namespace Import.Classes
             else
             {
                 return "delete from F_DOCLIGNE where do_piece = '" + numCommande + "' delete from F_DOCREGL where do_piece = '" + numCommande + "' delete from F_DOCENTETE where do_piece = '" + numCommande + "'";
+            }
+        }
+
+        public static string deleteCommandeLine(bool sqlConnexion, string numCommande, OrderLines orderLines)
+        {
+            if (sqlConnexion)
+            {
+                return "delete from " + getPrefix() + "F_DOCLIGNE where do_piece = '" + numCommande + "' AND cbMarq = "+ orderLines.cbMarq;
+            }
+            else
+            {
+                return "delete from F_DOCLIGNE where do_piece = '" + numCommande + "' AND cbMarq = " + orderLines.cbMarq;
             }
         }
 
@@ -910,7 +935,7 @@ namespace Import.Classes
             {
                 //return "SELECT AR_Ref, AR_Design, AR_PoidsNet, AR_PoidsBrut, AR_PrixAch, AR_PrixVen FROM " + getPrefix() + "F_ARTICLE WHERE AR_Ref IN('" + reference + "') ";
                 //return "SELECT AR_Ref, DL_Design, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, COLIS, PCB, COMPLEMENT, DL_Taxe1, DL_CodeTaxe1, DO_Piece, DO_Date, DL_Qte FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '"+DO_Piece+"' AND AR_Ref = '" + reference_article + "' ";
-                return "SELECT ar.AR_Ref, li.DL_Design, li.DL_PoidsNet, li.DL_PoidsBrut, li.DL_PrixUnitaire, li.COLIS, li.PCB, li.COMPLEMENT, li.DL_Taxe1, li.DL_CodeTaxe1, li.DO_Piece, li.DO_Date, li.DL_Qte, li.DL_QtePL FROM " + getPrefix() + "F_DOCLIGNE as li, " + getPrefix() + "F_ARTICLE as ar WHERE li.AR_Ref = ar.AR_Ref and li.DO_Piece = '" + DO_Piece + "' AND ar.AR_CodeBarre = '" + reference_article + "'";
+                return "SELECT ar.AR_Ref, li.DL_Design, li.DL_PoidsNet, li.DL_PoidsBrut, li.DL_PrixUnitaire, li.COLIS, li.PCB, li.COMPLEMENT, li.DL_Taxe1, li.DL_CodeTaxe1, li.DO_Piece, li.DO_Date, li.DL_Qte, li.DL_QtePL, li.DL_Ligne FROM " + getPrefix() + "F_DOCLIGNE as li, " + getPrefix() + "F_ARTICLE as ar WHERE li.AR_Ref = ar.AR_Ref and li.DO_Piece = '" + DO_Piece + "' AND ar.AR_CodeBarre = '" + reference_article + "'";
             }
             else
             {
@@ -1145,11 +1170,11 @@ namespace Import.Classes
         {
             if (sqlConnexion)
             {
-                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_TIERS, CO_No, DO_Reliquat FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
+                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_TIERS, CO_No, DO_Reliquat, (SELECT COUNT(*) FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '" + reference_doc + "') as lines FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
             }
             else
             {
-                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_TIERS, CO_No, DO_Reliquat FROM F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
+                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_TIERS, CO_No, DO_Reliquat, (SELECT COUNT(*) FROM DOCLIGNE WHERE DO_Piece = '" + reference_doc + "') as lines FROM F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
             }
         }
 
@@ -1157,11 +1182,12 @@ namespace Import.Classes
         {
             if (sqlConnexion)
             {
-                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_Tiers, DO_Reliquat FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
+                //return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_Tiers, DO_Reliquat FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
+                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_Tiers, DO_Reliquat, (SELECT COUNT(*) FROM " + getPrefix() + "F_DOCLIGNE WHERE DO_Piece = '" + reference_doc + "') as lines FROM " + getPrefix() + "F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
             }
             else
             {
-                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_Tiers, DO_Reliquat FROM F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
+                return "SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_Tiers, DO_Reliquat, (SELECT COUNT(*) FROM F_DOCLIGNE WHERE DO_Piece = '" + reference_doc + "') as lines FROM F_DOCENTETE WHERE DO_Piece = '" + reference_doc + "'";
             }
         }
 
@@ -1323,6 +1349,18 @@ namespace Import.Classes
             }
         }
 
+        public static string getOrderLinesByDoPiece(bool sqlConnexion, string do_piece)
+        {
+            if (sqlConnexion)
+            {
+                // string id, string date, string modification, string do_piece, string do_ref, string dl_ligne, string dl_design, string dl_qte, string dl_qtepl, string ar_ref, string ar_codebarre
+                return "SELECT l.cbMarq, l.DL_Design, l.DO_Piece, l.DO_Date, l.DL_Qte, l.DL_QtePL, l.DL_Ligne, a.AR_ref, a.AR_Codebarre FROM " + getPrefix() + "F_DOCLIGNE as l, " + getPrefix() + "F_ARTICLE as a WHERE l.AR_Ref = a.AR_Ref AND l.DO_Piece = '" + do_piece + "'";
+            }
+            else
+            {
+                return "SELECT * FROM F_DOCLIGNE WHERE DO_Piece = '" + do_piece + "'";
+            }
+        }
 
         public static string updateDOC_NumerotationTable(bool sqlConnexion, string DOC_Mask, string DOC_Reference)
         {

@@ -1,0 +1,174 @@
+##############################################################################################################################
+#################################################### L'import planifier ######################################################
+##### Version 1.20.3 ############################################################################################ @Développeur JL #####
+
+03/06/2021 10:31:02 : -----> Fichier 0/1 : CFP51_001010.csv
+03/06/2021 10:31:02 : Scan fichier...
+03/06/2021 10:31:02 : Import Veolog DESADV Inventaire.
+
+03/06/2021 10:31:02 | get_next_num_piece_commande_v2() | Mask 'BL'
+03/06/2021 10:31:03 | NextNumPiece_v2() : SQL ==> SELECT DC_PIECE FROM CFCI.dbo.F_DOCCURRENTPIECE WHERE DC_Piece LIKE '%BL%'
+03/06/2021 10:31:03 | get_next_num_piece_commande_v2() | New Mask 'BL210380'
+03/06/2021 10:31:03 : lastNumberReference() | db_result.Replace(mask, '') == 210380
+03/06/2021 10:31:03 : lastNumberReference() | Nouveau mask : BL210381
+
+03/06/2021 10:31:03 | insert_DESADV_Veolog() : Connexion ouverte.
+
+03/06/2021 10:31:03 | insert_DESADV_Veolog() : Récupére tous les tva
+03/06/2021 10:31:03 | insert_DESADV_Veolog() : SQL ===> SELECT TA_Intitule, TA_Taux, CG_Num, TA_Code, cbMarq FROM CFCI.dbo.F_TAXE 
+
+03/06/2021 10:31:03 | insert_DESADV_Veolog() : Récupérer des informations de la commande la référence BC210429
+03/06/2021 10:31:03 | insert_DESADV_Veolog() : SQL ===> SELECT DO_Ref, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, DO_TIERS, CO_No, DO_Reliquat, (SELECT COUNT(*) FROM CFCI.dbo.F_DOCLIGNE WHERE DO_Piece = 'BC210429') as lines FROM CFCI.dbo.F_DOCENTETE WHERE DO_Piece = 'BC210429'
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Obtenir les infos client par la référence.
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : SQL ===> SELECT CT_Num, CA_Num, CG_NumPrinc, CT_NumPayeur, N_Condition, N_Devise, CT_Langue, CT_Facture, CT_Taux02, N_CatCompta, CO_No, N_CatTarif, N_Expedition, cbMarq FROM CFCI.dbo.F_Comptet WHERE CT_Num IN('C00308')
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Client trouvé.
+
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : SQL ===> SELECT LI_No FROM CFCI.dbo.F_LIVRAISON WHERE CT_Num = 'C00308'
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Adresse de livraison (2696) trouvé!
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : SQL ===> SELECT l.cbMarq, l.DL_Design, l.DO_Piece, l.DO_Date, l.DL_Qte, l.DL_QtePL, l.DL_Ligne, a.AR_ref, a.AR_Codebarre FROM CFCI.dbo.F_DOCLIGNE as l, CFCI.dbo.F_ARTICLE as a WHERE l.AR_Ref = a.AR_Ref AND l.DO_Piece = 'BC210429'
+
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Lire la ligne de l'article.
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : SQL ===> SELECT ar.AR_Ref, li.DL_Design, li.DL_PoidsNet, li.DL_PoidsBrut, li.DL_PrixUnitaire, li.COLIS, li.PCB, li.COMPLEMENT, li.DL_Taxe1, li.DL_CodeTaxe1, li.DO_Piece, li.DO_Date, li.DL_Qte, li.DL_QtePL, li.DL_Ligne FROM CFCI.dbo.F_DOCLIGNE as li, CFCI.dbo.F_ARTICLE as ar WHERE li.AR_Ref = ar.AR_Ref and li.DO_Piece = 'BC210429' AND ar.AR_CodeBarre = '8710964924770'
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Info du produit 8710964924770 trouvé
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : ******************** Warning Order/Reliquat ********************
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Le produit "8710964924770" dans "BC210429" n'existe pas dans la commande sage, alors j'importe...
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Article trouvé.
+
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : List des TVA trouvé
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : TVA VIDE trouvé, alors TVA mis à 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : endTVA = 0,000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Prix TTC créé
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Compter => 1
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Vérifier si un produit pour 0 = BL
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : Requête en cours d'exécution ===>
+INSERT INTO CFCI.dbo.F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, LI_No, cbLI_No, DO_Imprim, DO_Reliquat, CA_Num, DO_Souche, DO_Ecart, AB_No, CA_No, DO_Transfere, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_ValFrais, DO_TypeLigneFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, DO_FactureElec, DO_FactureFrs, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_EStatut, DO_StatutBAP, DO_Escompte, DO_DocType, DO_TypeCalcul, DO_AdressePaiement, DO_PaiementLigne, DO_MotifDevis, DO_Conversion) VALUES (411000, 'C00308', 1, 0, 0, 1, 0.000000, 4, 0, 1, 0, 0, 0, 1, {d '2021-06-03'}, {ts '2021-06-04 00:00:00'}, 0, 1, 1, 'BL210381', 'Test JL', 21, 2, 1, 'C00308', 11, 0, 3, 1, 0, '', 'BL210381: document from logistic.', 0.000000, 'OP', 66.760000, 66.760000, 66.760000, 66.760000, 0.000000, 2696, 2696, 0, 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : insert documentline into the database with articles having 3 as value @index 2
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,0] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,1] = 3
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,2] = 3
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,3] = C00308
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,4] = BL210381
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,5] = 2021-06-03
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,6] = 2021-06-02 00:00:00
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,7] = 1000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,8] = Test JL
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,9] = 8710964924770
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,10] = 1
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,11] = 1
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,12] = COFFRET 6 TASSES A CAFÉ 18CL
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,13] = 6
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,14] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,15] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,16] = 10.960000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,17] = 10.960000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,18] = 10.960000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,19] = Heure
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,20] = 6.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,21] = 65.76
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,22] = 65.76
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,23] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,24] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,25] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,26] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,27] = 10.96
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,28] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,29] = BC210429
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,30] = BL210381
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,31] = 2021-06-03
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,32] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,33] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,34] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,35] = 6.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,36] = 6
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,37] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,38] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,39] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,40] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,41] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,42] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,43] = 1
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,44] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,45] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,46] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,47] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,48] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,49] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,50] = NULL
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,51] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,52] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,53] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,54] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,55] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,56] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,57] = NULL
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,58] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,59] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,60] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,61] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,62] = C00
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,63] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,64] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,65] = 0.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,66] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,67] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,68] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,69] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,70] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,71] = 0
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,72] = 3
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,73] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,74] = 0.750000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,75] = 4.000000
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,76] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,77] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,78] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,79] = 
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,80] = 2021-06-04 00:00:00
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : products_BL_L[0,81] = 0
+
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : insert the article COFFRET 6 TASSES A CAFÉ 18CL (Ref:8710964924770) to documentline in the database
+03/06/2021 10:31:04 | insert_DESADV_Veolog() : requette sql ===> INSERT INTO CFCI.dbo.F_DOCLIGNE (DO_Domaine, DO_Type, DO_DocType, CT_Num, DO_Piece, DO_Date, DL_DateBC, DL_Ligne, DO_Ref, AR_Ref, DL_Valorise, DE_No, DL_Design, DL_Qte, DL_PoidsNet, DL_PoidsBrut, DL_PrixUnitaire, DL_PrixRU, DL_CMUP, EU_Enumere, EU_Qte, DL_MontantHT, DL_MontantTTC, PF_Num, DL_No, DL_FactPoids, DL_Escompte, DL_PUTTC, DL_TTC, DL_PieceBC, DL_PieceBL, DL_DateBL, DL_TNomencl, DL_TRemPied, DL_TRemExep, DL_QteBC, DL_QteBL, DL_Remise01REM_Valeur, DL_Remise01REM_Type, DL_Remise02REM_Valeur, DL_Remise02REM_Type, DL_Remise03REM_Valeur, DL_Remise03REM_Type, DL_NoRef, DL_TypePL, DL_PUDevise, CA_Num, DL_Frais, AC_RefClient, DL_PiecePL, DL_DatePL, DL_QtePL, DL_NoColis, DL_NoLink, CO_No, DT_No, DL_PieceDE, DL_DateDe, DL_QteDE, DL_NoSousTotal, CA_No, DL_PUBC, DL_CodeTaxe1, DL_Taxe1, DL_Taxe2, DL_Taxe3, DL_TypeTaux1, DL_TypeTaxe1, DL_TypeTaux2, DL_TypeTaxe2, DL_TypeTaux3, DL_TypeTaxe3, DL_MvtStock, AF_RefFourniss, COLIS, PCB, COMPLEMENT, PourVeolog, DL_PieceOFProd, DL_Operation, DO_DateLivr, DL_NonLivre, AG_No1, AG_No2) VALUES (0, 3, 3, 'C00308', 'BL210381', {d '2021-06-03'}, {ts '2021-06-02 00:00:00'}, 1000, 'Test JL', '8710964924770', 1, 1, 'COFFRET 6 TASSES A CAFÉ 18CL', 6, 0.000000, 0.000000, 10.960000, 10.960000, 10.960000, 'Heure', 6.000000, 65.76, 65.76, '', 0, 0, 0, 10.96, 0, 'BC210429', 'BL210381', {d '2021-06-03'}, 0, 0, 0, 6.000000, 6, 0.000000, 0, 0.000000, 0, 0.000000, 0, 1, 0, 0.000000, '', 0.000000, '', '', NULL, 0.000000, '', 0, 0, 0, '', NULL, 0.000000, 0, 0, 0.000000, 'C00', 0.000000, 0.000000, 0.000000, 0, 0, 0, 0, 0, 0, 3, '', 0.750000, 4.000000, '', '', '', '', {ts '2021-06-04 00:00:00'}, 0, 0, 0)
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : get current stock in F_ARTSTOCK table in the database
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : requette sql ===> SELECT AS_QteSto, AS_QteRes, AS_MontSto, AS_QteCom FROM CFCI.dbo.F_ARTSTOCK WHERE AR_Ref = '8710964924770' and DE_No = 1
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Stock trouvé : AS_StockReel (20,000000), AS_StockReserve (43,000000), AS_StockMontant (219,200000).
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : new_AS_StockReel: 14 = AS_StockReel: 20 - products_DESADV[x, 13]: 6
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : new_AS_StockReserve: 37 = AS_StockReserve: 43 - products_DESADV[x, 13]: 6
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : new_AS_StockMontant: 153,44 = new_AS_StockReel: 14 * productPrixUnite: 10,96
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : new_AS_CMUP: 10,96 = new_AS_StockMontant: 153,44 / new_AS_StockReel: 14
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : update article COFFRET 6 TASSES A CAFÉ 18CL (Ref:8710964924770) stock in F_ARTSTOCK table in the database
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : requette sql ===> UPDATE CFCI.dbo.F_ARTSTOCK SET AS_QteSto = 14, AS_QteRes = 37, AS_MontSto = 153.44 WHERE AR_Ref = '8710964924770' and DE_No = 1
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Ajouter la date de livraision "03/06/2021 10:31:05" de Veolog au DESADV "BL210381".
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : SQL ===> UPDATE CFCI.dbo.F_DOCENTETE SET Veolog = '03/06/2021 10:31:05   BC210429' WHERE DO_Piece = 'BL210381'
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Date de livraison veolog à jour !
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Numbre total de produit dans la commande "2" est différent de celui dans le BL "1"
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : En attente de BL Reliquat pour la prochaine fois...
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Mise à jour du Bon de Commande (BC) en ENTETE "BC210429".
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : SQL ===> UPDATE CFCI.dbo.F_DOCENTETE SET DO_Reliquat = '1' WHERE DO_PIECE = 'BC210429' 
+03/06/2021 10:31:05 | insertDesadv_Veolog() : Bon de Commande ENTETE Mise à jour
+
+produitReliquat list : 0
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Mise à jour du Bon de Commande (BC) en LIGNE "BC210429".
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Bon de Commande (Reliquat) Mise à jour
+
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : Mettre à jour la numérotation du document "BL210381".
+03/06/2021 10:31:05 | insert_DESADV_Veolog() : SQL ===> UPDATE CFCI.dbo.F_DOCCURRENTPIECE set DC_PIECE = 'BL210381' where DC_Domaine = 0 AND DC_IdCol = 3
+03/06/2021 10:31:05 | insertDesadv_Veolog() : Nouvelle numérotation à jour!
+
+
+

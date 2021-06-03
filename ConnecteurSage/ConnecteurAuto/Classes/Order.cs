@@ -117,6 +117,7 @@ namespace ConnecteurAuto.Classes
     public string HeureCommande { get; set; }
     public string HeureLivraison { get; set; }
     public string Transporteur { get; set; }
+    public string GLN_Destinataire { get; set; }
 
         #endregion
 

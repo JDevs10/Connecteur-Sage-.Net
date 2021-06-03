@@ -78,9 +78,12 @@
     <Compile Include="Manager\AlertMailLogManager.cs" />
     <Compile Include="Manager\ConnexionManager.cs" />
     <Compile Include="Manager\EmailManager.cs" />
+    <Compile Include="Manager\ReliquatManager.cs" />
     <Compile Include="Manager\SettingsManager.cs" />
     <Compile Include="Manager\ReprocessManager.cs" />
     <Compile Include="Model\AlertMailLog.cs" />
+    <Compile Include="Model\Exist.cs" />
+    <Compile Include="Model\Reliquat.cs" />
     <Compile Include="Model\Reprocess.cs" />
     <Compile Include="Model\Connexion.cs" />
     <Compile Include="Model\Email.cs" />

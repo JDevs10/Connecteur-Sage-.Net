@@ -8,7 +8,6 @@ namespace ConnecteurAuto.Classes
     public class Article
     {
         public string AR_REF { get; set; }
-        public string AR_CodeBarre { get; set; }
         public string gamme1 { get; set; }
         public string gamme2 { get; set; }
         public string AR_SuiviStock { get; set; }
@@ -22,6 +21,8 @@ namespace ConnecteurAuto.Classes
         public string AR_UnitePoids { get; set; }
         public string AR_DESIGN { get; set; }
         public Conditionnement Conditionnement = null;
+
+        public string AR_CodeBarre { get; set; }
         public string DL_CodeTaxe1 { get; set; }
         public string DL_Taxe1 { get; set; }
         public string DL_CodeTaxe2 { get; set; }

@@ -128,6 +128,7 @@
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.export_stockliste);
             this.Controls.Add(this.groupBox2);
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExportStocks";
             this.Text = "ExportStocks";

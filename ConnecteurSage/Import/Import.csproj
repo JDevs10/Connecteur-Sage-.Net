@@ -48,6 +48,7 @@
     <Compile Include="Classes\DocumentVenteLine.cs" />
     <Compile Include="Classes\Order.cs" />
     <Compile Include="Classes\QueryHelper.cs" />
+    <Compile Include="Classes\OrderLines.cs" />
     <Compile Include="Classes\TVA.cs" />
     <Compile Include="Classes\Veolog_BCF.cs" />
     <Compile Include="Classes\Veolog_BCF_Lines.cs" />

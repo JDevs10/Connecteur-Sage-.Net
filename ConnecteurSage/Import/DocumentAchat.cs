@@ -784,6 +784,7 @@ namespace Import
                     string do_MontantRegle_ = "";
                     string ref_supplier = null;
                     string DO_Reliquat = "0"; // 0 => Non Reliquat | 1 => Un Reliquat
+                    int total_lines = 0; // number of lines in the order
 
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Récupérer la référence Commande fournisseur livré de la commande " + dh.Ref_Commande_Donneur_Ordre);
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getCMDSupplierByRef(true, dh.Ref_Commande_Donneur_Ordre));
@@ -802,6 +803,7 @@ namespace Import
                                 do_MontantRegle_ = reader[6].ToString().Replace(",", ".");
                                 ref_supplier = reader[7].ToString();
                                 DO_Reliquat = reader[8].ToString();
+                                total_lines = (reader[9].ToString() != null && reader[9].ToString() != "null" && reader[9].ToString() != "NULL" && reader[9].ToString() != "" ? Convert.ToInt16(reader[9].ToString()) : 0);
                             }
                             else// If no rows returned
                             {
@@ -918,6 +920,7 @@ namespace Import
 
                     bool isNeedReliquat = false;
                     bool isLastBlReliquat = true;
+                    List<string> validProducts = new List<string>();
                     List<DocumentAchatLine> produitReliquat = new List<DocumentAchatLine>();
                     int counter = 0;
 
@@ -1342,6 +1345,19 @@ namespace Import
                                     OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant), connexion);
                                     command.ExecuteReader();
                                 }
+
+
+                                // check if product needs a reliquat
+                                // if so then, it is not valid OR if not, then it is valid
+                                var xxx = produitReliquat.Exists(item => item.AR_Ref != products_BCF[x, 9]);
+                                logFileWriter.WriteLine("");
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : produitReliquat.Exists(item => item.AR_Ref != "+products_BCF[x, 9]+") ");
+                                if (!xxx)
+                                {
+                                    validProducts.Add(products_BCF[x, 9]);
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : added: " + products_BCF[x, 9] + " | validProducts size : " + validProducts.Count);
+                                }
+
                             }
                             catch (OdbcException ex)
                             {
@@ -1387,6 +1403,29 @@ namespace Import
 
 
                     //Delete the BC of the BL if BL is good or last BL reliquat
+                    if (total_lines != dl.Count)
+                    {
+                        isLastBlReliquat = false;
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Numbre total de produit dans la commande \""+total_lines+"\" est différent de celui dans le BLF \""+dl.Count+"\"");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Supprimer \"" + validProducts.Count + "\" produits dans \""+ dh.Ref_Commande_Donneur_Ordre + "\" ,qu'ils sont dans le nouveau "+ reference_BLF_doc);
+
+                        for (int x = 0; x < validProducts.Count; x++)
+                        {
+                            logFileWriter.WriteLine("");
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Suppréssion de l'article "+ validProducts[x] + " du Bon de Commande Fournisseur (BCF) \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
+                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.deleteValidCommandeLigne_achat(true, dh.Ref_Commande_Donneur_Ordre, validProducts[x]));
+                            OdbcCommand command_ = new OdbcCommand(QueryHelper.deleteValidCommandeLigne_achat(true, dh.Ref_Commande_Donneur_Ordre, validProducts[x]), connexion);
+                            IDataReader reader_ = command_.ExecuteReader();
+                        }
+
+                    }
+                    else
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Numbre total de produit dans la commande \"" + total_lines + "\" est équal à celui dans le BLF \"" + dl.Count + "\"");
+                    }
+
                     if (isLastBlReliquat)
                     {
                         try
