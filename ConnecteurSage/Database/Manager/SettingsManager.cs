@@ -391,8 +391,8 @@ namespace Database.Manager
                     {
                         using (IDbConnection db = conn)
                         {
-                            writer.WriteLine(DateTime.Now + " :: SettingsManager.dll => getById(di: " + id + ") | SQL => "+SQL_get);
-                            var xxx = conn.Query<Settings>(SQL_get);
+                            writer.WriteLine(DateTime.Now + " :: SettingsManager.dll => getById(di: " + id + ") | SQL => "+SQL_get + "" + id);
+                            var xxx = conn.Query<Settings>(SQL_get +""+ id);
                             
                             if(xxx.ToList() == null || xxx.ToList().Count == 0)
                             {

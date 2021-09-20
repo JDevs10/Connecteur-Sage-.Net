@@ -821,5 +821,99 @@ namespace ConnecteurSage
             Export.DocummentArticle docummentArticle = new Export.DocummentArticle();
             docummentArticle.export_window();
         }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            Forms.ProgressDialog progressDialog = new Forms.ProgressDialog();
+
+            // Initialize the thread that will handle the background process
+            Thread backgroundThread = new Thread(
+            new ThreadStart(() =>
+            {
+                //Loading General Settings
+                if (progressDialog.InvokeRequired)
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Text = "Nettoyage des logs...."));
+                for (int n = 0; n < 30; n++)
+                {
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
+                }
+
+                //Create log file
+                string clean_file_log = Directory.GetCurrentDirectory() + @"\LOG\" + string.Format("LOG_clean_{0:dd-MM-yyyy_HH.mm.ss}.txt", DateTime.Now);
+                try
+                {
+                    var logFile_clean = File.Create(clean_file_log);
+                    using (StreamWriter writer = new StreamWriter(logFile_clean))
+                    {
+                        // Init database && tables
+                        Database.Database db = new Database.Database();
+                        db.initTables(writer);
+                        writer.Flush();
+
+                        Fichier_De_Nettoyage.FichierDeNettoyage clean = new Fichier_De_Nettoyage.FichierDeNettoyage();
+                        Database.Model.Settings db_settings_ = db.settingsManager.get(db.connectionString, 1, writer);
+                        writer.Flush();
+
+                        for (int n = 30; n < 60; n++)
+                        {
+                            Thread.Sleep(1);
+                            progressDialog.UpdateProgress(n);
+                        }
+
+                        string[,] paths = new string[12, 2] {
+                            { "general_logs", db_settings_.EXE_Folder + @"\" + @"LOG"}, //log files
+                            { "import_logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Import" }, //log files
+                            { "export_Logs", db_settings_.EXE_Folder + @"\" + @"LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE" }, //log files
+                            { "export_Logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON" }, //log files
+                            { "export_Logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE" }, //log files
+                            { "export_Logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "STOCK" }, //log files
+                            { "import_files_success", db_settings_.EXE_Folder + @"\Success File" }, //fichier import success
+                            { "import_files_error", db_settings_.EXE_Folder + @"\Error File" }, //fichier import erreur
+                            { "export_files_BC", db_settings_.EDI_Folder }, //backup export files
+                            { "export_files_BL", db_settings_.EDI_Folder }, //backup export files
+                            { "export_files_FA", db_settings_.EDI_Folder }, //backup export files
+                            { "export_files_ME_MS", db_settings_.EDI_Folder } //backup export files
+                        };
+                        
+                        clean.startClean(writer, paths);
+
+                        writer.Flush();
+                        writer.Close();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("ERROR[Clean 1] : " + ex.Message, "Erreur!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+
+
+                bool ok = false;
+                for (int n = 60; n < 100; n++)
+                {
+                    Thread.Sleep(1);
+                    progressDialog.UpdateProgress(n);
+                    if (n == 99) { ok = true; };
+                }
+
+                // Close the dialog if it hasn't been already
+                if (ok && progressDialog.InvokeRequired)
+                {
+                    progressDialog.BeginInvoke(new System.Action(() => progressDialog.Close()));
+                }
+
+            }
+            ));
+
+            // Start the background process thread
+            backgroundThread.Start();
+
+            // Open the dialog
+            progressDialog.ShowDialog();
+
+
+        }
     }
 }

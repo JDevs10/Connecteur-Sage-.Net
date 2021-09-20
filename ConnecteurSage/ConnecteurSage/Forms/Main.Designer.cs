@@ -106,6 +106,7 @@
             this.label_backup_activation = new System.Windows.Forms.Label();
             this.label_backup_generalLog = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.button17 = new System.Windows.Forms.Button();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -768,6 +769,7 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.button17);
             this.tabPage5.Controls.Add(this.pictureBox4);
             this.tabPage5.Controls.Add(this.button11);
             this.tabPage5.Controls.Add(this.groupBox7);
@@ -937,6 +939,16 @@
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
             // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(220, 192);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(125, 23);
+            this.button17.TabIndex = 15;
+            this.button17.Text = "Nettoyer maintenant";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1069,6 +1081,7 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.Button button17;
     }
 
 }

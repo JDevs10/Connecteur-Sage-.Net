@@ -207,10 +207,10 @@ namespace ConnecteurSage.Forms
                     checkBox_activer_tarif.Checked ? 1 : 0, radioButton_tarif_cmd_EDI.Checked ? 1 : 0, radioButton_tarif_produit.Checked ? 1 : 0, radioButton_tarif_categorie.Checked ? 1 : 0, radioButton_tarif_client.Checked ? 1 : 0,
                     checkBox_reprocess_activate.Checked ? 1 : 0, numericUpDown_hour.Value, Convert.ToInt32(numericUpDown1_reprocess_cd.Value));
 
-                    MessageBox.Show("Before Json: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //MessageBox.Show("Before Json: \n" + db.JsonFormat(settings), "Config Général", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     db.settingsManager.insert(db.connectionString, settings);
                     Database.Model.Settings db_settings_ = db.settingsManager.get(db.connectionString, 1);
-                    MessageBox.Show("After Json: \n" + db.JsonFormat(db_settings_), "Config Général Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //MessageBox.Show("After Json: \n" + db.JsonFormat(db_settings_), "Config Général Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     /*
                     string TABLE_NAME = "Settings";

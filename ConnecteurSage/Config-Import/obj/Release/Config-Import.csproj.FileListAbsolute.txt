@@ -58,7 +58,6 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Newto
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\System.Data.SQLite.xml
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\System.Data.SQLite.dll.config
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Dapper.xml
-C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csprojAssemblyReference.cache
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csproj.CopyComplete
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.pdb
@@ -66,3 +65,4 @@ C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Init.
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Connecteur-Info.dll
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Init.pdb
 C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\bin\Release\Connecteur-Info.pdb
+C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Config-Import\obj\Release\Config-Import.csprojAssemblyReference.cache

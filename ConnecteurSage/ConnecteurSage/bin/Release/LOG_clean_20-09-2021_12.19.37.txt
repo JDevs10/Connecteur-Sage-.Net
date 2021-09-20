@@ -1,0 +1,50 @@
+9/20/2021 12:19:37 PM :: Database.dll => initTables() | Creation d'une instance
+
+9/20/2021 12:19:37 PM :: ReprocessManager.dll => createTable() | Creation d'une instance
+9/20/2021 12:19:37 PM :: ReprocessManager.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS 'Reprocess' ('ediFileID' INTEGER UNIQUE, 'fileName' TEXT NOT NULL, 'filePath' TEXT NOT NULL, 'fileReprocessCount' TEXT NOT NULL)
+9/20/2021 12:19:37 PM :: ReprocessManager.dll => createTable() | Table created
+
+9/20/2021 12:19:37 PM :: AlertMailLog.dll => createTable() | Creation d'une instance
+9/20/2021 12:19:37 PM :: AlertMailLog.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS 'AlertMail_Log' ('id' INTEGER, 'log' TEXT NOT NULL, PRIMARY KEY('id' AUTOINCREMENT))
+9/20/2021 12:19:37 PM :: AlertMailLog.dll => createTable() | Table created
+
+9/20/2021 12:19:37 PM :: SettingsManager.dll => createTable() | Creation d'une instance
+9/20/2021 12:19:37 PM :: SettingsManager.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS 'Settings' ('id' INTEGER UNIQUE, 'showWindow' INTEGER NOT NULL, 'isACP_ComptaCPT_CompteG' INTEGER NOT NULL, 'ACP_ComptaCPT_CompteG' INTEGER NOT NULL, 'EXE_Folder' TEXT NOT NULL, 'EDI_Folder' TEXT NOT NULL, 'plannerTask_name' TEXT NOT NULL, 'plannerTask_UserId' TEXT NOT NULL, 'plannerTask_active' INTEGER NOT NULL, 'priceType_active' INTEGER NOT NULL, 'priceType_cmdEDIPrice' INTEGER NOT NULL, 'priceType_productPrice' INTEGER NOT NULL, 'priceType_categoryPrice' INTEGER NOT NULL, 'priceType_clientPrice' INTEGER NOT NULL, 'reprocess_active' INTEGER NOT NULL, 'reprocess_hour' DECIMAL NOT NULL, 'reprocess_countDown' INTEGER NOT NULL)
+9/20/2021 12:19:37 PM :: SettingsManager.dll => createTable() | Table created
+
+9/20/2021 12:19:37 PM :: ConnexionManager.dll => createTable() | Creation d'une instance
+9/20/2021 12:19:37 PM :: ConnexionManager.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS 'Settings' ('id' INTEGER UNIQUE, 'TYPE' TEXT NOT NULL, 'DNS' TEXT NOT NULL, 'USER' TEXT NOT NULL, 'PASSWORD' TEXT NOT NULL)
+9/20/2021 12:19:37 PM :: ConnexionManager.dll => createTable() | Table created
+
+9/20/2021 12:19:37 PM :: EmailManager.dll => createTable() | Creation d'une instance
+9/20/2021 12:19:37 PM :: EmailManager.dll => createTable() | SQL => CREATE TABLE IF NOT EXISTS 'Notification' ('id' INTEGER UNIQUE, 'active' INTEGER NOT NULL, 'connexion_smtp' TEXT NOT NULL, 'connexion_port' INTEGER NOT NULL, 'connexion_login' TEXT NOT NULL, 'connexion_password' TEXT NOT NULL, 'email_client_list_active' INTEGER NOT NULL, 'email_client_list' TEXT NOT NULL, 'email_team_list_active' INTEGER NOT NULL, 'email_team_list' TEXT NOT NULL, 'email_error_active' INTEGER NOT NULL, 'email_error_informClient' INTEGER NOT NULL, 'email_error_informTeam' INTEGER NOT NULL, 'email_summary_active' INTEGER NOT NULL, 'email_summary_hours' INTEGER NOT NULL, 'email_summary_lastActivated' INTEGER(15) NOT NULL)
+9/20/2021 12:19:37 PM :: EmailManager.dll => createTable() | Table created
+
+9/20/2021 12:19:37 PM :: ReliquatManager => createTable() | Creation d'une instance
+SQL: CREATE TABLE IF NOT EXISTS 'Reliquat'('id' INTEGER UNIQUE, 'date' TEXT NOT NULL, 'modification' TEXT NOT NULL, 'do_piece' TEXT NOT NULL, 'do_ref' TEXT NOT NULL, 'dl_ligne' TEXT NOT NULL, 'dl_design' TEXT NOT NULL, 'dl_qte' TEXT NOT NULL, 'dl_qtepl' TEXT NOT NULL, 'ar_ref' TEXT NOT NULL, 'ar_codebarre' TEXT NOT NULL)
+9/20/2021 12:19:37 PM :: Database.dll => saveBackup() | Creation d'une instance
+9/20/2021 12:19:37 PM :: Database.dll => saveBackup() | Le repertoire existe => C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\db\Database.db
+9/20/2021 12:19:37 PM :: Database.dll => saveBackup() | Copie la BDD depuis "C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\db\Database.db" a "C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\ConnecteurSage\bin\Release\db\Backup\Database_backup.db"
+
+
+9/20/2021 12:19:37 PM :: SettingsManager.dll => getById(id: 1) | Creation d'un Instance.
+9/20/2021 12:19:37 PM :: SettingsManager.dll => getById(di: 1) | SQL => SELECT id, showWindow, isACP_ComptaCPT_CompteG, ACP_ComptaCPT_CompteG, EXE_Folder, EDI_Folder, plannerTask_name, plannerTask_UserId, plannerTask_active, priceType_active, priceType_cmdEDIPrice, priceType_productPrice, priceType_categoryPrice, priceType_clientPrice, reprocess_active, reprocess_hour, reprocess_countDown FROM Settings WHERE id = 
+9/20/2021 12:19:37 PM :: SettingsManager.dll => getById() | ##################################################
+9/20/2021 12:19:37 PM :: SettingsManager.dll => getById() | [ERROR] getById
+9/20/2021 12:19:37 PM :: SettingsManager.dll => getById() | Message : SQL logic error
+incomplete input
+9/20/2021 12:19:37 PM :: SettingsManager.dll => getById() | StackTrace :    at System.Data.SQLite.SQLite3.Prepare(SQLiteConnection cnn, String strSql, SQLiteStatement previous, UInt32 timeoutMS, String& strRemain)
+   at System.Data.SQLite.SQLiteCommand.BuildNextCommand()
+   at System.Data.SQLite.SQLiteCommand.GetStatement(Int32 index)
+   at System.Data.SQLite.SQLiteDataReader.NextResult()
+   at System.Data.SQLite.SQLiteDataReader..ctor(SQLiteCommand cmd, CommandBehavior behave)
+   at System.Data.SQLite.SQLiteCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.SQLite.SQLiteCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at Dapper.SqlMapper.ExecuteReaderWithFlagsFallback(IDbCommand cmd, Boolean wasClosed, CommandBehavior behavior) in /_/Dapper/SqlMapper.cs:line 1051
+   at Dapper.SqlMapper.<QueryImpl>d__140`1.MoveNext() in /_/Dapper/SqlMapper.cs:line 1079
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at Dapper.SqlMapper.Query[T](IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Boolean buffered, Nullable`1 commandTimeout, Nullable`1 commandType) in /_/Dapper/SqlMapper.cs:line 721
+   at Database.Manager.SettingsManager.get(String connectionString, Int32 id, StreamWriter writer) in C:\WorkPlace\Connecteur-Sage-.Net\ConnecteurSage\Database\Manager\SettingsManager.cs:line 395
+

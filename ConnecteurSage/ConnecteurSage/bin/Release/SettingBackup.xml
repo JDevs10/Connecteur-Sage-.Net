@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <ConfigurationBackup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <activate>false</activate>
-  <general_Log>0</general_Log>
-  <import_Log>0</import_Log>
+  <activate>true</activate>
+  <general_Log>10</general_Log>
+  <import_Log>10</import_Log>
   <export_Log>0</export_Log>
   <import_files_success>0</import_files_success>
   <import_files_error>0</import_files_error>

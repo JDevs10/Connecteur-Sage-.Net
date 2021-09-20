@@ -363,6 +363,10 @@
       <Project>{7c3d92c6-4111-472f-b6f6-2e2b8431b09c}</Project>
       <Name>Export</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Fichier-De-Nettoyage\Fichier-De-Nettoyage.csproj">
+      <Project>{a575f215-85ed-44b6-a502-9971f401a116}</Project>
+      <Name>Fichier-De-Nettoyage</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Init\Init.csproj">
       <Project>{773fba6e-fb86-45a4-805f-470328b67b7e}</Project>
       <Name>Init</Name>
