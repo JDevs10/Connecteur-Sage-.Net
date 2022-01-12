@@ -1148,6 +1148,29 @@ namespace Import.Classes
             }
         }
 
+        public static string updateComplementDeliveryDate(bool sqlConnexion, string reference, string info)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET Complément = '" + info + "' WHERE DO_Piece = '" + reference + "'";
+            }
+            else
+            {
+                return "UPDATE F_DOCENTETE SET Complément = '" + info + "' WHERE DO_Piece = '" + reference + "'";
+            }
+        }
+        public static string getDepotById(bool sqlConnexion, string DE_No)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT DE_Intitule FROM " + getPrefix() + "F_DEPOT WHERE DE_No = " + DE_No;
+            }
+            else
+            {
+                return "SELECT DE_Intitule FROM F_DEPOT WHERE DE_No = " + DE_No;
+            }
+        }
+
         public static string getCoommandeById(bool sqlConnexion, string cbMarq)
         {
             if (sqlConnexion)
@@ -1197,14 +1220,14 @@ namespace Import.Classes
             {
                 string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, " +
                     "LI_No, cbLI_No, DO_Imprim, DO_Reliquat, CA_Num, DO_Souche, DO_Ecart, AB_No, CA_No, DO_Transfere, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_ValFrais, DO_TypeLigneFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, DO_FactureElec, DO_FactureFrs, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_EStatut, DO_StatutBAP, DO_Escompte, DO_DocType, DO_TypeCalcul, DO_AdressePaiement, DO_PaiementLigne, DO_MotifDevis, DO_Conversion) " +
-                                "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + CO_No + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Client_Livre + "', 21, 2, " + reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
+                                "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + CO_No + ", "+ dh.Entrepot + ", 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Client_Livre + "', 21, 2, " + reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
                                 "" + reference_client[14] + ", " + reference_client[14] + ", 0, 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)";
                 return sql;
             }
             else
             {
                 string sql = "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, LI_NO, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle)" +
-                                "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + CO_No + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Client_Livre + "', 21, 2, " + reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ")";
+                                "VALUES (" + reference_client[2] + ", '" + reference_client[3] + "', " + reference_client[4] + ", " + reference_client[5] + ", " + reference_client[6] + ", " + reference_client[7] + ", " + reference_client[8] + ", " + reference_client[9] + ", " + CO_No + ", " + dh.Entrepot + ", 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 0, " + DO_Expedit + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Client_Livre + "', 21, 2, " + reference_client[11] + ", '" + reference_client[0] + "', 11, 0, " + DO_Type + ", 1, 0, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ")";
                 return sql;
             }
         }
@@ -1239,7 +1262,7 @@ namespace Import.Classes
             {
                 string sql = "INSERT INTO " + getPrefix() + "F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, " +
                     "LI_No, cbLI_No, DO_Imprim, DO_Reliquat, CA_Num, DO_Souche, DO_Ecart, AB_No, CA_No, DO_Transfere, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_ValFrais, DO_TypeLigneFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, DO_FactureElec, DO_FactureFrs, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_EStatut, DO_StatutBAP, DO_Escompte, DO_DocType, DO_TypeCalcul, DO_AdressePaiement, DO_PaiementLigne, DO_MotifDevis, DO_Conversion) " +
-                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Donneur_Ordre + " " + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
+                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", "+ dh.Entrepot + ", 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Donneur_Ordre + " " + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
                                 "" + list_of_supplier_info[14] + ", " + list_of_supplier_info[15] + ", 0, 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)";
                 return sql;
             }
@@ -1247,7 +1270,7 @@ namespace Import.Classes
             {
                 string sql = "INSERT INTO F_DOCENTETE (CG_NUM, CT_NUMPAYEUR, DO_CONDITION, DO_DEVISE, DO_LANGUE, DO_NBFACTURE, DO_TXESCOMPTE, N_CATCOMPTA, CO_NO, DE_NO, DO_ATTENTE, DO_BLFACT, DO_CLOTURE, DO_COLISAGE, DO_DATE, DO_DATELIVR, DO_DOMAINE, DO_EXPEDIT, DO_PERIOD, DO_PIECE, DO_REF, DO_REGIME, DO_STATUT, DO_TARIF, DO_TIERS, DO_TRANSACTION, DO_TYPETRANSAC, DO_TYPE, DO_TYPECOLIS, DO_VENTILE, DO_COORD01, COMMENTAIRES, DO_COURS, Nature_OP_P, DO_TotalHT, DO_TotalHTNet, DO_TotalTTC, DO_NetAPayer, DO_MontantRegle, " +
                     "LI_No, cbLI_No, DO_Imprim, DO_Reliquat, CA_Num, DO_Souche, DO_Ecart, AB_No, CA_No, DO_Transfere, DO_Provenance, CA_NumIFRS, MR_No, DO_TypeFrais, DO_ValFrais, DO_TypeLigneFrais, DO_TypeFranco, DO_ValFranco, DO_TypeLigneFranco, DO_FactureElec, DO_FactureFrs, DO_DemandeRegul, ET_No, DO_Valide, DO_Coffre, DO_EStatut, DO_StatutBAP, DO_Escompte, DO_DocType, DO_TypeCalcul, DO_AdressePaiement, DO_PaiementLigne, DO_MotifDevis, DO_Conversion) " +
-                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", 1, 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Donneur_Ordre + " " + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
+                                "VALUES (" + list_of_supplier_info[2] + ", '" + list_of_supplier_info[3] + "', " + list_of_supplier_info[4] + ", " + list_of_supplier_info[5] + ", " + list_of_supplier_info[6] + ", " + list_of_supplier_info[7] + ", " + list_of_supplier_info[8] + ", " + list_of_supplier_info[9] + ", " + list_of_supplier_info[10] + ", "+ dh.Entrepot + ", 0, 0, 0, 1, {d '" + curr_date_time + "'}, {ts '" + veologDeliveryDateTime + "'}, 1, " + list_of_supplier_info[12] + ", 1, '" + reference_doc + "', '" + dh.Ref_Commande_Donneur_Ordre + " " + dh.Ref_Commande_Fournisseur + "', 21, 2, " + list_of_supplier_info[11] + ", '" + list_of_supplier_info[0] + "', 11, 0, " + DO_Type + ", 1, 0, '', '" + reference_doc + ": document from logistic.', 0.000000, '" + Nature_OP_P + "', " + DO_TotalHT + ", " + DO_TotalHTNet + ", " + DO_TotalTTC + ", " + DO_NetAPayer + ", " + DO_MontantRegle + ", " +
                                 "" + list_of_supplier_info[14] + ", " + list_of_supplier_info[15] + ", 0, 0, '', 0, 0.000000, 0, 0, 0, '', '', 0, 0, 0.000000, 0, 0, 0.000000, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 3, 0, '', 0, 0, 0)";
                 return sql;
             }
@@ -1277,39 +1300,39 @@ namespace Import.Classes
             }
         }
 
-        public static string getArticleStock(bool sqlConnexion, string reference)
+        public static string getArticleStock(bool sqlConnexion, string reference, string DE_No)
         {
             if (sqlConnexion)
             {
-                return "SELECT AS_QteSto, AS_QteRes, AS_MontSto, AS_QteCom FROM " + getPrefix() + "F_ARTSTOCK WHERE AR_Ref = '" + reference + "' and DE_No = 1";
+                return "SELECT AS_QteSto, AS_QteRes, AS_MontSto, AS_QteCom FROM " + getPrefix() + "F_ARTSTOCK WHERE AR_Ref = '" + reference + "' and DE_No = "+DE_No;
             }
             else
             {
-                return "SELECT AS_QteSto, AS_QteRes, AS_MontSto, AS_QteCom FROM F_ARTSTOCK WHERE AR_Ref = '" + reference + "'";
+                return "SELECT AS_QteSto, AS_QteRes, AS_MontSto, AS_QteCom FROM F_ARTSTOCK WHERE AR_Ref = '" + reference + "' and DE_No = " + DE_No;
             }
         }
 
-        public static string updateArticleStock(bool sqlConnexion, string reference, double AS_StockReel, double AS_StockReserve, double AS_StockMontant)
+        public static string updateArticleStock(bool sqlConnexion, string reference, double AS_StockReel, double AS_StockReserve, double AS_StockMontant, string DE_No)
         {
             if (sqlConnexion)
             {
-                return "UPDATE " + getPrefix() + "F_ARTSTOCK SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteRes = " + (AS_StockReserve).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = 1";
+                return "UPDATE " + getPrefix() + "F_ARTSTOCK SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteRes = " + (AS_StockReserve).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = " + DE_No;
             }
             else
             {
-                return "UPDATE F_ARTSTOCK SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteRes = " + (AS_StockReserve).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = 1";
+                return "UPDATE F_ARTSTOCK SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteRes = " + (AS_StockReserve).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = " + DE_No;
             }
         }
 
-        public static string updateArticleStockBLF(bool sqlConnexion, string reference, double AS_StockReel, double AS_StockCommande, double AS_StockMontant)
+        public static string updateArticleStockBLF(bool sqlConnexion, string reference, double AS_StockReel, double AS_StockCommande, double AS_StockMontant, string DE_No)
         {
             if (sqlConnexion)
             {
-                return "UPDATE " + getPrefix() + "F_ARTSTOCK SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteCom = " + (AS_StockCommande).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = 1";
+                return "UPDATE " + getPrefix() + "F_ARTSTOCK SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteCom = " + (AS_StockCommande).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = " + DE_No;
             }
             else
             {
-                return "UPDATE F_ARTSTOCK SET SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteCom = " + (AS_StockCommande).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = 1";
+                return "UPDATE F_ARTSTOCK SET SET AS_QteSto = " + (AS_StockReel).ToString().Replace(',', '.') + ", AS_QteCom = " + (AS_StockCommande).ToString().Replace(',', '.') + ", AS_MontSto = " + (AS_StockMontant).ToString().Replace(',', '.') + " WHERE AR_Ref = '" + reference + "' and DE_No = " + DE_No;
             }
         }
 

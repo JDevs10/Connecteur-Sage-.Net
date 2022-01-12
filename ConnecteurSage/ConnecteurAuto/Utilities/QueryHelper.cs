@@ -841,12 +841,12 @@ namespace ConnecteurAuto.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock FROM " + getPrefix() + "F_ARTICLE as Art, " + getPrefix() + "F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref ORDER BY ArtStock.AS_QteSto DESC";
+                return "SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock, ArtStock.DE_No, (SELECT in_depot.DE_Intitule FROM " + getPrefix() + "F_DEPOT as in_depot WHERE in_depot.DE_No = ArtStock.DE_No) as DE_No_Name FROM " + getPrefix() + "F_ARTICLE as Art, " + getPrefix() + "F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref ORDER BY ArtStock.AS_QteSto DESC";
                 // testing : SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock,ArtLot.LS_NoSerie,ArtLot.LS_Qte,ArtLot.LS_LotEpuise FROM "+ getPrefix() + "BIJOU.dbo.F_LOTSERIE as ArtLot, BIJOU.dbo.F_ARTICLE as Art, BIJOU.dbo.F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref AND Art.AR_Ref= ArtLot.AR_Ref ORDER BY ArtStock.AS_QteSto DESC
             }
             else
             {
-                return "SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock FROM F_ARTICLE as Art, F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref ORDER BY ArtStock.AS_QteSto DESC";
+                return "SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock, ArtStock.DE_No, (SELECT in_depot.DE_Intitule FROM F_DEPOT as in_depot WHERE in_depot.DE_No = ArtStock.DE_No) as DE_No_Name FROM F_ARTICLE as Art, F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref ORDER BY ArtStock.AS_QteSto DESC";
                 // testing : SELECT Art.AR_Design as libelle,Art.AR_Ref as ref, Art.AR_CodeBarre as barcode, ArtStock.AS_QteSto as stock,ArtLot.LS_NoSerie,ArtLot.LS_Qte,ArtLot.LS_LotEpuise FROM "+ getPrefix() + "BIJOU.dbo.F_LOTSERIE as ArtLot, BIJOU.dbo.F_ARTICLE as Art, BIJOU.dbo.F_ARTSTOCK as ArtStock WHERE Art.AR_Ref=ArtStock.AR_Ref AND Art.AR_Ref= ArtLot.AR_Ref ORDER BY ArtStock.AS_QteSto DESC
             }
         }
@@ -1095,16 +1095,16 @@ namespace ConnecteurAuto.Utilities
         {
             if (sqlConnexion)
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, liv.CT_Num, CONCAT(liv.LI_Adresse,',', liv.LI_Complement,',',liv.LI_CodePostal,',',liv.LI_Ville, ',',liv.LI_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, liv.LI_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, liv.LI_Telephone, liv.LI_EMail, cli.CT_EdiCode, cmd.DO_Coord01  " +
-                    "FROM " + getPrefix() + "F_COMPTET as cli, " + getPrefix() + "F_DOCENTETE as cmd, " + getPrefix() + "F_livraison liv " +
-                    "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num AND liv.LI_No = cmd.LI_No " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, liv.CT_Num, CONCAT(liv.LI_Adresse,',', liv.LI_Complement,',',liv.LI_CodePostal,',',liv.LI_Ville, ',',liv.LI_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, liv.LI_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, liv.LI_Telephone, liv.LI_EMail, cli.CT_EdiCode, cmd.DO_Coord01, cmd.DE_No, depot.DE_Intitule as DE_No_NAME  " +
+                    "FROM " + getPrefix() + "F_COMPTET as cli, " + getPrefix() + "F_DOCENTETE as cmd, " + getPrefix() + "F_livraison liv, " + getPrefix() + "F_DEPOT as depot " +
+                    "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num AND liv.LI_No = cmd.LI_No AND cmd.DE_No = depot.DE_No " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";
             }
             else
             {
-                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,',',cli.CT_CodePostal,',',cli.CT_Ville, ',',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail, cli.CT_EdiCode, cmd.DO_Coord01  " +
-                    "FROM F_COMPTET as cli, F_DOCENTETE as cmd, F_livraison liv " +
-                    "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num " +
+                return "SELECT DISTINCT(DO_Piece)as DO_Piece, cli.CT_Num, CONCAT(cli.CT_Complement,',',cli.CT_CodePostal,',',cli.CT_Ville, ',',cli.CT_Pays)as Adresse, cmd.DO_DEVISE, cmd.DO_Date, cmd.DO_DateLivr, cmd.DO_Condition, cmd.DO_TotalHT, cli.CT_Intitule, cmd.DO_Motif, cli.CT_EdiCode, cmd.N_CATCOMPTA, liv.LI_Contact, cli.CT_Telephone, cli.CT_EMail, cli.CT_EdiCode, cmd.DO_Coord01, cmd.DE_No, depot.DE_Intitule as DE_No_NAME  " +
+                    "FROM F_COMPTET as cli, F_DOCENTETE as cmd, F_livraison liv, F_DEPOT as depot " +
+                    "WHERE cmd.DO_Tiers = cli.CT_Num AND cmd.DO_Tiers = liv.CT_Num AND cmd.DE_No = depot.DE_No " +
                     "AND cmd.cbMarq = '" + cbMarq + "'";
             }
         }
@@ -1290,7 +1290,28 @@ namespace ConnecteurAuto.Utilities
                 return "SELECT DL_Ligne FROM F_DOCLIGNE WHERE DO_Piece = '" + reference + "' ORDER BY DL_Ligne DESC";
             }
         }
-
+        public static string updateComplementDeliveryDate(bool sqlConnexion, string reference, string info)
+        {
+            if (sqlConnexion)
+            {
+                return "UPDATE " + getPrefix() + "F_DOCENTETE SET Complément = '" + info + "' WHERE DO_Piece = '" + reference + "'";
+            }
+            else
+            {
+                return "UPDATE F_DOCENTETE SET Complément = '" + info + "' WHERE DO_Piece = '" + reference + "'";
+            }
+        }
+        public static string getDepotById(bool sqlConnexion, string DE_No)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT DE_Intitule FROM " + getPrefix() + "F_DEPOT WHERE DE_No = " + DE_No;
+            }
+            else
+            {
+                return "SELECT DE_Intitule FROM F_DEPOT WHERE DE_No = " + DE_No;
+            }
+        }
 
         public static string updateDOC_NumerotationTable(bool sqlConnexion, string DOC_Mask, string DOC_Reference)
         {

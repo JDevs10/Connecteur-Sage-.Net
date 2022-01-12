@@ -23,7 +23,7 @@ namespace Export
         public DocummentClient()
         {
             Database.Database db = new Database.Database();
-            export_folder = db.settingsManager.get(db.connectionString, 1).EDI_Folder + @"\Export_Client";
+            export_folder = db.settingsManager.get(db.connectionString, 1).EDI_Folder + @"\Export\Client";
             export_backup_folder = db.settingsManager.get(db.connectionString, 1).EDI_Folder + @"\BackUp\Export\Client";
             fileName = export_folder + @"\" + fileName_;
             clientList = new List<Client>();

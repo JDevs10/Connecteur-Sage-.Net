@@ -12,6 +12,7 @@ namespace ConnecteurAuto.Classes
 {
     class ExportBonLivraison
     {
+        private Database.Model.Settings settings = null;
         private Database.Database db = null;
         private string pathExport;
         private string docRefMail = "";
@@ -19,14 +20,14 @@ namespace ConnecteurAuto.Classes
         public string logDirectoryName_export = null;
         private StreamWriter logFileWriter_export = null;
 
-        public ExportBonLivraison(string path)
+        public ExportBonLivraison()
         {
-            this.pathExport = path;
             // Init database && tables
             this.db = new Database.Database();
 
-            Database.Model.Settings settings = this.db.settingsManager.get(this.db.connectionString, 1);
-            this.logDirectoryName_export = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON";
+            this.settings = this.db.settingsManager.get(this.db.connectionString, 1);
+            this.pathExport = this.settings.EDI_Folder + @"\Export\BL";
+            this.logDirectoryName_export = this.settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON";
         }
 
         private List<DocumentVente> GetBonLivraisonFromDataBase(StreamWriter writer, List<Alert_Mail.Classes.Custom.CustomMailRecapLines> recapLinesList_new, string statut)
@@ -286,7 +287,7 @@ namespace ConnecteurAuto.Classes
                 logFileWriter_export.Flush();
                 if (BonLivrasonAExporter != null && BonLivrasonAExporter.Count > 0)
                 {
-                     string outputFile = this.pathExport + @"\Fichier Exporter\Bons de Livraisons\Vente";
+                     string outputFile = this.pathExport;
 
                      if (!Directory.Exists(outputFile))
                      {
@@ -303,7 +304,7 @@ namespace ConnecteurAuto.Classes
                         for (int i = 0; i < BonLivrasonAExporter.Count; i++)
                         {
                             logFileWriter_export.Flush();
-                            exportTo = @"Export\Plat_BonLivraison\Vente";
+                            exportTo = @"Export\BL";
                             logFileWriter_export.WriteLine(DateTime.Now + " | ExportBonLivraisonAction() : Nombre de DESADV à exporter ===> " + (i+1) + "/" + BonLivrasonAExporter.Count);
 
                             Customer customer = GetClient(logFileWriter_export, BonLivrasonAExporter[i].DO_TIERS);
@@ -361,7 +362,7 @@ namespace ConnecteurAuto.Classes
                             logFileWriter_export.Flush();
 
                             //add to backup folder
-                            addFileToBackUp(pathExport + @"\BackUp\" + exportTo, outputFile + @"\" + fileName, fileName, logFileWriter_export);
+                            addFileToBackUp(this.settings.EDI_Folder + @"\BackUp\" + exportTo, outputFile + @"\" + fileName, fileName, logFileWriter_export);
                             logFileWriter_export.Flush();
 
                             //UpdateDocumentVente(BonLivrasonAExporter[i].DO_Piece, recapLinesList_new);

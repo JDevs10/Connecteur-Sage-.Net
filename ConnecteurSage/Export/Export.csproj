@@ -46,7 +46,6 @@
     <Compile Include="Classes\Client.cs" />
     <Compile Include="Classes\Order.cs" />
     <Compile Include="Classes\QueryHelper.cs" />
-    <Compile Include="DocummentCommande.cs" />
     <Compile Include="DocummentClient.cs" />
     <Compile Include="DocummentArticle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

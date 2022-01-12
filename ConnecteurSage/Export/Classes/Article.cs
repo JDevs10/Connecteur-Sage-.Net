@@ -17,6 +17,8 @@ namespace Export.Classes
         public string AR_PrixVen { get; set; }
         public string AR_PrixTTC { get; set; }
         public string AR_Pays { get; set; }
+        public string DE_No { get; set; }
+        public string DE_No_Name { get; set; }
 
         public Article()
         {

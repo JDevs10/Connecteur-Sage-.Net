@@ -29,7 +29,24 @@ namespace ConnecteurSage.Helpers
             return result;
         }
 
-    public static string getClient(bool sqlConnexion, string id)
+        /// <summary>
+        /// a sql to test the db connection
+        /// </summary>
+        /// <param name="sqlConnexion">Use SQL connection ?</param>
+        /// <returns>SQL string</returns>
+        public static string testConnection(bool sqlConnexion)
+        {
+            if (sqlConnexion)
+            {
+                return "SELECT getDate() as test, DO_Piece FROM " + getPrefix() + "F_DOCENTETE";
+            }
+            else
+            {
+                return "SELECT DO_Piece FROM F_DOCENTETE";
+            }
+        }
+
+        public static string getClient(bool sqlConnexion, string id)
    {
         if (sqlConnexion) 
         {

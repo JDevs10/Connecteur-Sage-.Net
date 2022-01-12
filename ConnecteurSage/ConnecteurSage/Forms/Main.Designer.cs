@@ -58,6 +58,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.test_connexion_button = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
@@ -86,27 +87,24 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button18 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.button17 = new System.Windows.Forms.Button();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.button11 = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.label_backup_exportLog = new System.Windows.Forms.Label();
-            this.label_backup_export_BLF = new System.Windows.Forms.Label();
-            this.label_backup_export_ME_MS = new System.Windows.Forms.Label();
-            this.label_backup_export_FA = new System.Windows.Forms.Label();
-            this.label_backup_export_BL = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.label_backup_export_BC = new System.Windows.Forms.Label();
+            this.label_fichier_backup = new System.Windows.Forms.Label();
             this.label_backup_import_error = new System.Windows.Forms.Label();
             this.label_backup_import_success = new System.Windows.Forms.Label();
             this.label_backup_importLog = new System.Windows.Forms.Label();
             this.label_backup_activation = new System.Windows.Forms.Label();
             this.label_backup_generalLog = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.button17 = new System.Windows.Forms.Button();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -437,6 +435,7 @@
             // 
             // groupBox8
             // 
+            this.groupBox8.Controls.Add(this.test_connexion_button);
             this.groupBox8.Controls.Add(this.label1);
             this.groupBox8.Controls.Add(this.label5);
             this.groupBox8.Location = new System.Drawing.Point(6, 127);
@@ -445,6 +444,16 @@
             this.groupBox8.TabIndex = 9;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Connexion";
+            // 
+            // test_connexion_button
+            // 
+            this.test_connexion_button.Location = new System.Drawing.Point(134, 65);
+            this.test_connexion_button.Name = "test_connexion_button";
+            this.test_connexion_button.Size = new System.Drawing.Size(96, 23);
+            this.test_connexion_button.TabIndex = 13;
+            this.test_connexion_button.Text = "Test Connexion";
+            this.test_connexion_button.UseVisualStyleBackColor = true;
+            this.test_connexion_button.Click += new System.EventHandler(this.test_connexion_button_Click);
             // 
             // label1
             // 
@@ -517,7 +526,7 @@
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(204, 53);
             this.label13.TabIndex = 15;
-            this.label13.Text = "Non défini";
+            this.label13.Text = "Export Prêt";
             // 
             // button16
             // 
@@ -546,7 +555,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(204, 53);
             this.label6.TabIndex = 15;
-            this.label6.Text = "Non défini";
+            this.label6.Text = "Export Prêt";
             // 
             // button15
             // 
@@ -718,14 +727,25 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button18);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Location = new System.Drawing.Point(6, 40);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(217, 126);
+            this.groupBox1.Size = new System.Drawing.Size(217, 164);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Import des documents";
+            // 
+            // button18
+            // 
+            this.button18.Location = new System.Drawing.Point(29, 118);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(158, 38);
+            this.button18.TabIndex = 2;
+            this.button18.Text = "Lancé l\'import automatique";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.button18_Click);
             // 
             // button2
             // 
@@ -781,6 +801,16 @@
             this.tabPage5.Text = "Sauvegarder";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(220, 162);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(125, 23);
+            this.button17.TabIndex = 15;
+            this.button17.Text = "Nettoyer maintenant";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
+            // 
             // pictureBox4
             // 
             this.pictureBox4.Image = global::ConnecteurSage.Properties.Resources.configuration;
@@ -793,7 +823,7 @@
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(89, 192);
+            this.button11.Location = new System.Drawing.Point(89, 162);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(125, 23);
             this.button11.TabIndex = 13;
@@ -804,12 +834,8 @@
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.label_backup_exportLog);
-            this.groupBox7.Controls.Add(this.label_backup_export_BLF);
-            this.groupBox7.Controls.Add(this.label_backup_export_ME_MS);
-            this.groupBox7.Controls.Add(this.label_backup_export_FA);
-            this.groupBox7.Controls.Add(this.label_backup_export_BL);
             this.groupBox7.Controls.Add(this.label12);
-            this.groupBox7.Controls.Add(this.label_backup_export_BC);
+            this.groupBox7.Controls.Add(this.label_fichier_backup);
             this.groupBox7.Controls.Add(this.label_backup_import_error);
             this.groupBox7.Controls.Add(this.label_backup_import_success);
             this.groupBox7.Controls.Add(this.label_backup_importLog);
@@ -817,7 +843,7 @@
             this.groupBox7.Controls.Add(this.label_backup_generalLog);
             this.groupBox7.Location = new System.Drawing.Point(89, 23);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(513, 163);
+            this.groupBox7.Size = new System.Drawing.Size(513, 130);
             this.groupBox7.TabIndex = 12;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Paramétrage";
@@ -831,42 +857,6 @@
             this.label_backup_exportLog.TabIndex = 11;
             this.label_backup_exportLog.Text = "Log d\'export :";
             // 
-            // label_backup_export_BLF
-            // 
-            this.label_backup_export_BLF.AutoSize = true;
-            this.label_backup_export_BLF.Location = new System.Drawing.Point(244, 137);
-            this.label_backup_export_BLF.Name = "label_backup_export_BLF";
-            this.label_backup_export_BLF.Size = new System.Drawing.Size(135, 14);
-            this.label_backup_export_BLF.TabIndex = 10;
-            this.label_backup_export_BLF.Text = "Fichier EDI Import (BLF) :";
-            // 
-            // label_backup_export_ME_MS
-            // 
-            this.label_backup_export_ME_MS.AutoSize = true;
-            this.label_backup_export_ME_MS.Location = new System.Drawing.Point(244, 114);
-            this.label_backup_export_ME_MS.Name = "label_backup_export_ME_MS";
-            this.label_backup_export_ME_MS.Size = new System.Drawing.Size(150, 14);
-            this.label_backup_export_ME_MS.TabIndex = 9;
-            this.label_backup_export_ME_MS.Text = "Fichier EDI Export (ME/MS) :";
-            // 
-            // label_backup_export_FA
-            // 
-            this.label_backup_export_FA.AutoSize = true;
-            this.label_backup_export_FA.Location = new System.Drawing.Point(244, 91);
-            this.label_backup_export_FA.Name = "label_backup_export_FA";
-            this.label_backup_export_FA.Size = new System.Drawing.Size(131, 14);
-            this.label_backup_export_FA.TabIndex = 8;
-            this.label_backup_export_FA.Text = "Fichier EDI Export (FA) : ";
-            // 
-            // label_backup_export_BL
-            // 
-            this.label_backup_export_BL.AutoSize = true;
-            this.label_backup_export_BL.Location = new System.Drawing.Point(244, 68);
-            this.label_backup_export_BL.Name = "label_backup_export_BL";
-            this.label_backup_export_BL.Size = new System.Drawing.Size(131, 14);
-            this.label_backup_export_BL.TabIndex = 7;
-            this.label_backup_export_BL.Text = "Fichier EDI Export (BL) : ";
-            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -875,19 +865,19 @@
             this.label12.Size = new System.Drawing.Size(0, 14);
             this.label12.TabIndex = 6;
             // 
-            // label_backup_export_BC
+            // label_fichier_backup
             // 
-            this.label_backup_export_BC.AutoSize = true;
-            this.label_backup_export_BC.Location = new System.Drawing.Point(243, 44);
-            this.label_backup_export_BC.Name = "label_backup_export_BC";
-            this.label_backup_export_BC.Size = new System.Drawing.Size(132, 14);
-            this.label_backup_export_BC.TabIndex = 5;
-            this.label_backup_export_BC.Text = "Fichier EDI Export (BC) : ";
+            this.label_fichier_backup.AutoSize = true;
+            this.label_fichier_backup.Location = new System.Drawing.Point(238, 91);
+            this.label_fichier_backup.Name = "label_fichier_backup";
+            this.label_fichier_backup.Size = new System.Drawing.Size(110, 14);
+            this.label_fichier_backup.TabIndex = 5;
+            this.label_fichier_backup.Text = "Fichier EDI backup : ";
             // 
             // label_backup_import_error
             // 
             this.label_backup_import_error.AutoSize = true;
-            this.label_backup_import_error.Location = new System.Drawing.Point(16, 137);
+            this.label_backup_import_error.Location = new System.Drawing.Point(238, 68);
             this.label_backup_import_error.Name = "label_backup_import_error";
             this.label_backup_import_error.Size = new System.Drawing.Size(146, 14);
             this.label_backup_import_error.TabIndex = 4;
@@ -896,7 +886,7 @@
             // label_backup_import_success
             // 
             this.label_backup_import_success.AutoSize = true;
-            this.label_backup_import_success.Location = new System.Drawing.Point(16, 114);
+            this.label_backup_import_success.Location = new System.Drawing.Point(238, 44);
             this.label_backup_import_success.Name = "label_backup_import_success";
             this.label_backup_import_success.Size = new System.Drawing.Size(154, 14);
             this.label_backup_import_success.TabIndex = 3;
@@ -938,16 +928,6 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
-            // 
-            // button17
-            // 
-            this.button17.Location = new System.Drawing.Point(220, 192);
-            this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(125, 23);
-            this.button17.TabIndex = 15;
-            this.button17.Text = "Nettoyer maintenant";
-            this.button17.UseVisualStyleBackColor = true;
-            this.button17.Click += new System.EventHandler(this.button17_Click);
             // 
             // Main
             // 
@@ -1042,17 +1022,13 @@
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Label label_backup_export_BL;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label_backup_export_BC;
+        private System.Windows.Forms.Label label_fichier_backup;
         private System.Windows.Forms.Label label_backup_import_error;
         private System.Windows.Forms.Label label_backup_import_success;
         private System.Windows.Forms.Label label_backup_importLog;
         private System.Windows.Forms.Label label_backup_activation;
         private System.Windows.Forms.Label label_backup_generalLog;
-        private System.Windows.Forms.Label label_backup_export_BLF;
-        private System.Windows.Forms.Label label_backup_export_ME_MS;
-        private System.Windows.Forms.Label label_backup_export_FA;
         private System.Windows.Forms.Label label_backup_exportLog;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button_config_import;
@@ -1082,6 +1058,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button15;
         private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.Button test_connexion_button;
+        private System.Windows.Forms.Button button18;
     }
 
 }

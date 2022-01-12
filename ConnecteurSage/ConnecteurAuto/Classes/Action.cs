@@ -85,19 +85,6 @@ namespace ConnecteurAuto.Classes
             List<string> tabCommandeError = new List<string>();
             List<Order> ordersList = new List<Order>();
 
-            //###################################################################################################
-            //####################################### Get Tache Planifier #######################################
-            //string infoPlan = InfoTachePlanifier(logFileWriter_general);
-            string infoPlan = null;
-            if (infoPlan == null)
-            {
-                infoPlan = "Tache Manuel";
-                Console.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
-                Console.WriteLine(DateTime.Now + " : Import annulée");
-                logFileWriter_general.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé!");
-                logFileWriter_general.WriteLine(DateTime.Now + " : Probablement executé manuellement ???");
-            }
-            //###################################################################################################
 
             try
             {
@@ -225,7 +212,6 @@ namespace ConnecteurAuto.Classes
                 logFileWriter_general.Flush();
                 logFileWriter_general.WriteLine("");
                 logFileWriter_general.WriteLine("");
-                logFileWriter_general.WriteLine(DateTime.Now + " : " + infoPlan);
                 logFileWriter_general.WriteLine(DateTime.Now + " : Dossier : " + fileListing);
                 logFileWriter_general.WriteLine("");
                 logFileWriter_general.WriteLine(DateTime.Now + " : Scan du dossier ...");
@@ -324,7 +310,7 @@ namespace ConnecteurAuto.Classes
                         #endregion
 
                         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        /// Document Bon de livraison
+                        /// Document Bon de livraison   (BLF)   => Confirmation de Réception 
                         ///
                         #region Document_DESADV
                         if (Boolean.Parse(importSetting.configurationImport.Doc_Achat.DSADV.Activate))
@@ -347,7 +333,7 @@ namespace ConnecteurAuto.Classes
                             }
                             else if (importSetting.configurationImport.Doc_Achat.DSADV.Format.Equals("Véolog"))
                             {
-                                if (filename.Name.Contains("CFP41") || filename.Name.Contains("TWP41"))
+                                if (filename.Name.Contains("CFP41") || filename.Name.Contains("TWP41") || filename.Name.Contains("status_recept_"))
                                 {
                                     if (lines[0].Split(';')[0] == "E") //Import Veolog BLF doc
                                     {
@@ -365,18 +351,18 @@ namespace ConnecteurAuto.Classes
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog Bon de Livraison Fournisseur BLF Inventaire.");
 
                                         file_doc_reference = lines[0].Split(';')[1];
-                                        if (lines[0].Split(';').Length == 8)
+                                        if (lines[0].Split(';').Length == 9)
                                         {
                                             Connexion.ConnexionSaveLoad connexionSaveLoad = new ConnexionSaveLoad();
                                             connexionSaveLoad.Load();
 
                                             string mask = "";
                                             string prefix = connexionSaveLoad.configurationConnexion.SQL.PREFIX;
-                                            if (prefix == "CFCI")
+                                            if (prefix == "CFCI" || prefix == "CFCI_TEST")
                                             {
                                                 mask = "BLF";
                                             }
-                                            else if (prefix == "TABLEWEAR")
+                                            else if (prefix == "TABLEWEAR" || prefix == "TABLEWEAR_TEST")
                                             {
                                                 mask = "LF";
                                             }
@@ -409,6 +395,7 @@ namespace ConnecteurAuto.Classes
                                                     bcf_info.Date_De_Reception = tab[5];
                                                     bcf_info.Heure_De_Reception = tab[6];
                                                     bcf_info.Etat = tab[7];
+                                                    bcf_info.Entrepot = tab[8];
 
                                                     if (bcf_info.Etat == "S") // S : Stocké
                                                     {
@@ -465,8 +452,18 @@ namespace ConnecteurAuto.Classes
                                                     {
                                                         logFileWriter_general.WriteLine("");
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Warning *********************");
-                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore!");
-                                                        logFileWriter_general.WriteLine("");
+                                                        logFileWriter_general.WriteLine(DateTime.Now + " : Nous avons trouvé cette \"" + tab[2] + "\" encore avec \""+tab[4]+"\" quantitée !");
+
+                                                        foreach(Import.Classes.Veolog_BCF_Lines line in dl)
+                                                        {
+                                                            if (line.Code_Article.Equals(tab[2]))
+                                                            {
+                                                                logFileWriter_general.WriteLine(DateTime.Now + " : Additionner "+ line.Quantite+" + "+ tab[4]+" = "+ Convert.ToInt32(line.Quantite) + Convert.ToInt32(tab[4]));
+                                                                line.Quantite = (Convert.ToInt32(line.Quantite) + Convert.ToInt32(tab[4])).ToString();
+                                                                break;
+                                                            }
+                                                        }
+                                                        
                                                     }
                                                     i++;
                                                 }
@@ -492,7 +489,7 @@ namespace ConnecteurAuto.Classes
 
                                                     //deplacer les fichiers csv
                                                     string theFileName = filename.FullName;
-                                                    string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "__" + System.IO.Path.GetFileName(theFileName);
+                                                    string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "__" + reference_BLF_doc + "__" + System.IO.Path.GetFileName(theFileName);
                                                     File.Move(theFileName, newFileLocation);
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
@@ -2182,7 +2179,7 @@ namespace ConnecteurAuto.Classes
                         #endregion
 
                         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        /// Document Bon de Livraison
+                        /// Document Bon de Livraison (BL)  => Confirmation d’Ordre de Préparation
                         ///
                         #region Document_DESADV
                         if (Boolean.Parse(importSetting.configurationImport.Doc_Ventes.DSADV.Activate))
@@ -2297,7 +2294,7 @@ namespace ConnecteurAuto.Classes
                             }
                             else if (importSetting.configurationImport.Doc_Ventes.DSADV.Format.Equals("Véolog"))
                             {
-                                if (filename.Name.Contains("CFP51") || filename.Name.Contains("TWP51"))
+                                if (filename.Name.Contains("CFP51") || filename.Name.Contains("TWP51") || filename.Name.Contains("status_orders"))
                                 {
                                     if (lines[0].Split(';')[0] == "E") //Import Veolog DESADV doc
                                     {
@@ -2309,7 +2306,7 @@ namespace ConnecteurAuto.Classes
 
                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import Veolog DESADV Inventaire.");
 
-                                        if (lines[0].Split(';').Length == 6)
+                                        if (lines[0].Split(';').Length == 7)
                                         {
                                             file_doc_reference = lines[0].Split(';')[1];
                                             string reference_DESADV_doc = get_next_num_piece_commande_v2("BL", logFileWriter_import); //lastNumberReference("BL", logFileWriter_import);    //get last reference number for desadv STOCK document MEXXXXX and increment it
@@ -2335,6 +2332,7 @@ namespace ConnecteurAuto.Classes
                                                     desadv_info.Date_De_Expedition = tab[3];
                                                     desadv_info.Heure_De_Expedition = tab[4];
                                                     desadv_info.Etat = tab[5];
+                                                    desadv_info.Entrepot = tab[6];
 
                                                     if (desadv_info.Etat == "X")
                                                     {
@@ -2346,14 +2344,14 @@ namespace ConnecteurAuto.Classes
                                                     }
                                                     else
                                                     {
-                                                        //deplacer les fichiers csv
+                                                        // deplacer les fichiers csv
                                                         logFileWriter_import.WriteLine("");
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                                         logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
 
                                                         logFileWriter_import.WriteLine("");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : ********************** erreur *********************");
-                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé.");
+                                                        logFileWriter_import.WriteLine(DateTime.Now + " : Le champ 'Etat' dans l'entête du fichier n'est pas valide!\nUn Etat valide est soit X : Expédié ou P : Préparé. Il est \"" + desadv_info.Etat + "\"");
                                                         logFileWriter_import.WriteLine(DateTime.Now + " : Import annulée");
                                                         logFileWriter_import.Flush();
                                                         tabCommandeError.Add(filename.Name);
@@ -2414,45 +2412,15 @@ namespace ConnecteurAuto.Classes
                                             }
                                             else
                                             {
-                                                /*
-                                                if (insertDesadv_Veolog(reference_DESADV_doc, dh, dl, filename.Name, logFileWriter_import) != null) //insert or update the database with the values obtained from the document
-                                                {
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
-
-                                                    //deplacer les fichiers csv
-                                                    string theFileName = filename.FullName;
-                                                    string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + reference_DESADV_doc + "__" + System.IO.Path.GetFileName(theFileName);
-                                                    File.Move(theFileName, newFileLocation);
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
-
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_import.WriteLine("");
-                                                    SaveSuccess++;
-                                                }
-                                                else
-                                                {
-                                                    logFileWriter_import.WriteLine("");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-                                                    logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
-                                                    tabCommandeError.Add(filename.Name);
-                                                    goto goErrorLoop;
-                                                }
-                                                */
-                                                
-                                                //Import.DocumentVent DOC_V_desadv = new Import.DocumentVent(logFileName_import, recapLinesList_new);
-
                                                 if (Import.DocumentVent.insert_DESADV_Veolog(reference_DESADV_doc, dh, dl, filename.Name, logFileWriter_import, logFileName_import, recapLinesList_new) != null) //insert or update the database with the values obtained from the document
                                                 {
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
-
-                                                    //recapLinesList_new = DOC_V_desadv.returnAlertLogs();
-
+                                                    
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : importe du DESADV avec succès");
 
                                                     //deplacer les fichiers csv
                                                     string theFileName = filename.FullName;
-                                                    string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + reference_DESADV_doc + "__" + System.IO.Path.GetFileName(theFileName);
+                                                    string newFileLocation = directoryName_SuccessFile + @"\" + string.Format("{0:ddMMyyyyHHmmss}", DateTime.Now) + "__" + file_doc_reference + "__" + reference_DESADV_doc + "__" + System.IO.Path.GetFileName(theFileName);
                                                     File.Move(theFileName, newFileLocation);
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : Le fichier '" + theFileName + "' est déplacé dans ===> " + newFileLocation);
 
@@ -2462,8 +2430,6 @@ namespace ConnecteurAuto.Classes
                                                 }
                                                 else
                                                 {
-                                                    //recapLinesList_new = DOC_V_desadv.returnAlertLogs();
-
                                                     logFileWriter_import.WriteLine("");
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : ********************** Information *********************");
                                                     logFileWriter_general.WriteLine(DateTime.Now + " : Nous n'avons pas pu importer le DESADV");
@@ -7541,6 +7507,62 @@ namespace ConnecteurAuto.Classes
         }
 
 
+        public Process InfoAppProcess(StreamWriter writer)
+        {
+            writer.WriteLine("");
+            writer.WriteLine("#################################### Check App Process ###################################");
+            writer.WriteLine("");
+            writer.Flush();
+            try
+            {
+                Process current = Process.GetCurrentProcess();
+                Process[] processes = Process.GetProcessesByName(current.ProcessName);
+                Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
+
+                writer.WriteLine(DateTime.Now + " : InfoAppProcess() | My Process : {0} ID: {1} | {2}", current.ProcessName, current.Id, current.MainModule.FileName);
+
+                //Loop through the running processes in with the same name 
+                foreach (Process process in processes)
+                {
+                    writer.WriteLine(DateTime.Now + " : InfoAppProcess() | Process : {0} ID: {1} | {2}", process.ProcessName, process.Id, process.MainModule.FileName);
+
+                    //Ignore the current process 
+                    if (process.Id != current.Id)
+                    {
+                        // Make sure that the process is running from the exe file. 
+                        // Also check from exe path in db settings
+                        if (System.Reflection.Assembly.GetExecutingAssembly().Location.Replace("/", "\\") == process.MainModule.FileName && process.MainModule.FileName == settings.EXE_Folder + @"\ConnecteurAuto.exe")
+                        {
+                            //Return the other process instance.
+                            writer.WriteLine(DateTime.Now + " : InfoAppProcess() | Process found : {0} ID: {1} | {2}", process.ProcessName, process.Id, process.MainModule.FileName);
+                            writer.WriteLine("");
+                            writer.WriteLine("#################################### End - Check App Process ###################################");
+                            writer.WriteLine("");
+                            writer.Flush();
+                            return process;
+
+                        }
+                    }
+                }
+                //No other instance was found, return null.
+                writer.WriteLine("");
+                writer.WriteLine("#################################### End - Check App Process ###################################");
+                writer.WriteLine("");
+                writer.Flush();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                writer.WriteLine("");
+                writer.WriteLine("#################################### ERROR - Check App Process ###################################");
+                writer.WriteLine("");
+                writer.WriteLine(DateTime.Now + " : InfoAppProcess() | Message :\n " + ex.Message);
+                writer.WriteLine("");
+                writer.Flush();
+                return null;
+            }
+        }
+
         public string InfoTachePlanifier(StreamWriter writer)
         {
             try
@@ -8508,6 +8530,37 @@ namespace ConnecteurAuto.Classes
             intro_B.intro(logFileWriter_general);
             logFileWriter_general.Flush();
 
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /// Check Planificateur de taches Process
+            //string infoPlan = InfoTachePlanifier(logFileWriter_general);
+            string infoPlan = null;
+            if (infoPlan != null)
+            {
+                infoPlan = "Tache Manuel";
+                Console.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé");
+                Console.WriteLine(DateTime.Now + " : Import annulée");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Aucune importation planifiée trouvé!");
+                logFileWriter_general.WriteLine(DateTime.Now + " : Probablement executé manuellement ???");
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /// Check App Process
+            ///
+            #region Check App Process
+            // check is app have an other instance running..
+            if (this.InfoAppProcess(logFileWriter_general) != null)
+            {
+                // Load ending
+                Connecteur_Info.Custom.Batch_Ending _intro_E_ = new Connecteur_Info.Custom.Batch_Ending();
+                _intro_E_.ending(logFileWriter_general);
+                logFileWriter_general.Flush();
+                logFileWriter_general.Close();
+                return;
+            }
+            #endregion
+
             string path = null;
             try
             {
@@ -8575,7 +8628,7 @@ namespace ConnecteurAuto.Classes
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export des Commandes activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportCommandes c = new Classes.ExportCommandes(path);
+                Classes.ExportCommandes c = new Classes.ExportCommandes();
                 recapLinesList_new___ = c.ExportCommande(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -8596,7 +8649,7 @@ namespace ConnecteurAuto.Classes
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export des Bons de livraisons activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportBonLivraison b = new Classes.ExportBonLivraison(path);
+                Classes.ExportBonLivraison b = new Classes.ExportBonLivraison();
                 recapLinesList_new___ = b.ExportBonLivraisonAction(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -8617,7 +8670,7 @@ namespace ConnecteurAuto.Classes
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export des Factures activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportFactures a = new Classes.ExportFactures(path);
+                Classes.ExportFactures a = new Classes.ExportFactures();
                 recapLinesList_new___ = a.ExportFacture(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -8638,7 +8691,7 @@ namespace ConnecteurAuto.Classes
                 logFileWriter_general.WriteLine(DateTime.Now + " : Export du Stock activé !");
                 logFileWriter_general.WriteLine("");
 
-                Classes.ExportStocks s = new Classes.ExportStocks(path);
+                Classes.ExportStocks s = new Classes.ExportStocks();
                 recapLinesList_new___ = s.ExportStock(recapLinesList_new);
                 recapLinesList_new.AddRange(recapLinesList_new___);
             }
@@ -8871,28 +8924,7 @@ namespace ConnecteurAuto.Classes
             logFileWriter_general.WriteLine("");
 
             Fichier_De_Nettoyage.FichierDeNettoyage clean = new FichierDeNettoyage();
-            Database.Model.Settings db_settings_ = db.settingsManager.get(db.connectionString, 1);
-            ExportFactures ef = new ExportFactures(null);
-            ExportBonLivraison el = new ExportBonLivraison(null);
-            ExportCommandes ec = new ExportCommandes(null);
-            ExportStocks es = new ExportStocks(null);
-
-            string[,] paths = new string[12, 2] {
-                { "general_logs", logDirectoryName_general}, //log files
-                { "import_logs", logDirectoryName_import }, //log files
-                { "export_Logs", ef.logDirectoryName_export }, //log files
-                { "export_Logs", el.logDirectoryName_export }, //log files
-                { "export_Logs", ec.logDirectoryName_export }, //log files
-                { "export_Logs", es.logDirectoryName_export }, //log files
-                { "import_files_success", db_settings_.EXE_Folder + @"\Success File" }, //fichier import success
-                { "import_files_error", db_settings_.EXE_Folder + @"\Error File" }, //fichier import erreur
-                { "export_files_BC", path }, //backup export files
-                { "export_files_BL", path }, //backup export files
-                { "export_files_FA", path }, //backup export files
-                { "export_files_ME_MS", path } //backup export files
-            };
-
-            clean.startClean(logFileWriter_general, paths);
+            clean.startClean(logFileWriter_general);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //Console.ReadLine();

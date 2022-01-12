@@ -19,6 +19,7 @@ namespace ConnecteurAuto.Classes
         /// </summary>
         //private Order CommandeAExporter;
 
+        private Database.Model.Settings settings = null;
         private Database.Database db = null;
         private string pathExport;
         private string docRefMail = "";
@@ -30,14 +31,14 @@ namespace ConnecteurAuto.Classes
 
 
 
-        public ExportCommandes(string path)
+        public ExportCommandes()
         {
-            this.pathExport = path;
             // Init database && tables
             this.db = new Database.Database();
 
-            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
-            this.logDirectoryName_export = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE";
+            this.settings = this.db.settingsManager.get(this.db.connectionString, 1);
+            this.pathExport = this.settings.EDI_Folder + @"\Export\Orders";
+            this.logDirectoryName_export = this.settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE";
         }
 
         #region Intéractions avec l'application
@@ -174,13 +175,10 @@ namespace ConnecteurAuto.Classes
                 return recapLinesList_new;
             }
 
-            Database.Model.Settings settings_ = this.db.settingsManager.get(db.connectionString, 1);
-            string path = settings_.EDI_Folder;
-            string exportPath = path;
-            string exportTo = "";
+            string exportPath = this.pathExport;
+            string exportTo = @"Export\Orders";
 
-            logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() | Database obj Settings => " + new Database.Database().JsonFormat(settings_));
-            logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() | path : " + path);
+            logFileWriter.WriteLine(DateTime.Now + " : ExportCommande() | export path : " + this.pathExport);
 
             logFileWriter.WriteLine("");
 
@@ -216,6 +214,8 @@ namespace ConnecteurAuto.Classes
                                 CommandeAExporter.Transporteur = "";
                                 CommandeAExporter.GLN_Destinataire = reader[15].ToString();
                                 CommandeAExporter.do_coord01 = reader[16].ToString();
+                                CommandeAExporter.DE_No = reader[17].ToString();
+                                CommandeAExporter.DE_No_NAME = reader[18].ToString();
                             }
 
                         }
@@ -281,10 +281,8 @@ namespace ConnecteurAuto.Classes
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : N° de commande est mal enregistrer, valeur '" + CommandeAExporter.DO_MOTIF + "'.");
                                 }
 
-                                var fileName = string.Format("EDI_ORDERS." + CommandeAExporter.codeClient + "." + CommandeAExporter.NumCommande + "." + ConvertDate(CommandeAExporter.DateCommande) + "." + CommandeAExporter.adresseLivraison + ".{0:yyyyMMddhhmmss}.csv", DateTime.Now);
-                                
-                                fileName = fileName.Replace("...", ".");
 
+                                string fileName = "";
 
                                 //Verifier le format utilise depuis le fichier de config
                                 Config_Export.ConfigurationSaveLoad settings = new Config_Export.ConfigurationSaveLoad();
@@ -296,14 +294,6 @@ namespace ConnecteurAuto.Classes
                                 logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : veolog_format => " + veolog_format);
                                 if (veolog_format)
                                 {
-
-                                    exportTo = @"Export\Veolog_Commande";
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : exportPath => " + exportPath);
-                                    if (!exportPath.Contains("Export_Veolog"))
-                                    {
-                                        exportPath = exportPath + @"\Export_Veolog";
-                                    }
-
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : exportPath => " + exportPath);
 
                                     if (!Directory.Exists(exportPath))
@@ -315,17 +305,11 @@ namespace ConnecteurAuto.Classes
                                     connexionSaveLoad.Load();
 
                                     veolog_format = true;
-                                    fileName = string.Format("orders_"+ connexionSaveLoad.configurationConnexion.SQL.PREFIX +"_{0:yyyyMMdd}_"+CommandeAExporter.NumCommande+".csv", DateTime.Now);
+                                    // filename = DE_No_NAME == "XPLOG" ? nom du fichier pour xplog OU nom du fichier pour veolog
+                                    fileName = CommandeAExporter.DE_No_NAME.Equals("XPLOG") ? string.Format("{0}_orders_{1:yyyyMMdd}_{2}.csv", connexionSaveLoad.configurationConnexion.SQL.PREFIX, DateTime.Now, CommandeAExporter.NumCommande) : string.Format("orders_"+ connexionSaveLoad.configurationConnexion.SQL.PREFIX + "_" + CommandeAExporter.DE_No_NAME.Replace(" ", "-") + "_" + CommandeAExporter.NumCommande + "_{0:yyyyMMdd}.csv", DateTime.Now);
                                 }
                                 else
                                 {
-                                    exportTo = @"Export\Plat_Commande";
-                                    logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : exportPath => " + exportPath);
-                                    if (!exportPath.Contains("Export_Plat"))
-                                    {
-                                        exportPath = exportPath + @"\Export_Plat";
-                                    }
-
                                     logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : exportPath => " + exportPath);
 
                                     if (!Directory.Exists(exportPath))
@@ -334,6 +318,7 @@ namespace ConnecteurAuto.Classes
                                     }
 
                                     veolog_format = false;
+                                    fileName = string.Format("EDI_ORDERS." + CommandeAExporter.codeClient + "." + CommandeAExporter.NumCommande + "." + ConvertDate(CommandeAExporter.DateCommande) + "." + CommandeAExporter.adresseLivraison + ".{0:yyyyMMddhhmmss}_"+ CommandeAExporter.DE_No_NAME.Replace(" ", "-") + ".csv", DateTime.Now);
                                     fileName = fileName.Replace("..", ".");
                                 }
 
@@ -397,7 +382,7 @@ namespace ConnecteurAuto.Classes
 
                                         // orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.commentaires); // E line old
                                         // orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;"+ CommandeAExporter.codeAcheteur + "" + CommandeAExporter.commentaires); // E line with client order
-                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.do_coord01); // E line with GLN client, client order
+                                        orderFileWriter.WriteLine("E;" + CommandeAExporter.NumCommande + ";" + CommandeAExporter.codeClient + ";;" + CommandeAExporter.NomClient + ";" + CommandeAExporter.adresse + ";" + CommandeAExporter.adresse_2 + ";;" + CommandeAExporter.codepostale + ";" + CommandeAExporter.ville + ";" + CommandeAExporter.pays + ";" + CommandeAExporter.telephone + ";" + CommandeAExporter.email + ";" + CommandeAExporter.DateLivraison + ";" + CommandeAExporter.HeureLivraison + ";" + CommandeAExporter.Transporteur + ";;;" + CommandeAExporter.codeAcheteur + ";" + CommandeAExporter.do_coord01+";"+ CommandeAExporter.DE_No); // E line with GLN client, client order
 
                                         CommandeAExporter.Lines = getLigneCommande(CommandeAExporter.NumCommande, recapLinesList_new); // Maybe thisssss
 
@@ -466,7 +451,7 @@ namespace ConnecteurAuto.Classes
                                         veolog_file_check = true;
 
                                         //add to backup folder
-                                        addFileToBackUp(path + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
+                                        addFileToBackUp(this.settings.EDI_Folder + @"\BackUp\" + exportTo, exportPath + @"\" + fileName, fileName, logFileWriter);
                                     }
                                 }
                                 else
@@ -485,12 +470,12 @@ namespace ConnecteurAuto.Classes
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Ajouter la date de livraision \""+ delivery_date_veolog + "\" de Veolog de la commande \"" + CommandeAExporter.NumCommande + "\".");
 
-                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog));
-                                        OdbcCommand command1 = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, CommandeAExporter.NumCommande, delivery_date_veolog), connexion);
+                                        logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : SQL ===> " + QueryHelper.updateComplementDeliveryDate(true, CommandeAExporter.NumCommande, CommandeAExporter.DE_No_NAME + " le " + delivery_date_veolog));
+                                        OdbcCommand command1 = new OdbcCommand(QueryHelper.updateComplementDeliveryDate(true, CommandeAExporter.NumCommande, CommandeAExporter.DE_No_NAME + " le " + delivery_date_veolog), connexion);
                                         {
                                             using (IDataReader reader = command1.ExecuteReader())
                                             {
-                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison veolog à jour !");
+                                                logFileWriter.WriteLine(DateTime.Now + " | ExportCommande() : Date de livraison chez \""+ CommandeAExporter.DE_No_NAME + "\" à jour !");
                                             }
                                         }
                                     }

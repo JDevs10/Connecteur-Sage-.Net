@@ -11,14 +11,29 @@ namespace Fichier_De_Nettoyage
     public class FichierDeNettoyage
     {
         private string fileName = null;
+        string[,] paths = null;
 
         public FichierDeNettoyage()
         {
             Database.Database db = new Database.Database();
-            fileName = db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\SettingBackup.xml";
+            this.fileName = db.settingsManager.get(db.connectionString, 1).EXE_Folder + @"\SettingBackup.xml";
+
+            Database.Model.Settings db_settings_ = db.settingsManager.get(db.connectionString, 1);
+            this.paths = new string[12, 2] {
+                { "general_logs", db_settings_.EXE_Folder + @"\LOG"}, //log files
+                { "general_logs", db_settings_.EXE_Folder + @"\LOG\LOG_AlertMail"}, //log files
+                { "import_logs", db_settings_.EXE_Folder + @"\LOG\LOG_Import" }, //log files
+                { "export_Logs", db_settings_.EXE_Folder + @"\LOG\LOG_Export\FACTURE" }, //log files
+                { "export_Logs", db_settings_.EXE_Folder + @"\LOG\LOG_Export\BON_LIVRAISON" }, //log files
+                { "export_Logs", db_settings_.EXE_Folder + @"\LOG\LOG_Export\COMMANDE" }, //log files
+                { "export_Logs", db_settings_.EXE_Folder + @"\LOG\LOG_Export\STOCK" }, //log files
+                { "import_files_success", db_settings_.EXE_Folder + @"\Success File" }, //fichier import success
+                { "import_files_error", db_settings_.EXE_Folder + @"\Error File" }, //fichier import erreur
+                { "backup_files", db_settings_.EDI_Folder + @"\BackUp\Export\Orders" }, //backup files
+                { "backup_files", db_settings_.EDI_Folder + @"\BackUp\Export\Article" }, //backup files
+                { "backup_files", db_settings_.EDI_Folder + @"\BackUp\Export\Client" }, //backup files
+            };
         }
-
-
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////:
         /// With StreamWriter
@@ -40,7 +55,7 @@ namespace Fichier_De_Nettoyage
             }
         }
 
-        public void startClean(StreamWriter writer, string[,] paths)
+        public void startClean(StreamWriter writer)
         {
             writer.WriteLine("");
             writer.WriteLine("################################ Nettoyage De Fichier ###############################");
@@ -52,7 +67,8 @@ namespace Fichier_De_Nettoyage
                 Console.WriteLine(DateTime.Now + " : Cleaning Files");
                 writer.Flush();
 
-                cleanFiles(writer, paths);
+                // cleanFiles(writer, paths);
+                cleanFiles(writer, this.paths);
 
                 writer.WriteLine("");
                 writer.Flush();
@@ -74,7 +90,7 @@ namespace Fichier_De_Nettoyage
         {
             writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles()");
 
-            if (checkConfig())
+            if (this.checkConfig(writer))
             {
                 ConfigurationBackup configBackup = new ConfigurationBackup();
                 configBackup.Load();
@@ -84,689 +100,127 @@ namespace Fichier_De_Nettoyage
                 {
                     Console.WriteLine("Cleaning settings are activated !");
                     writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Paramètres de nettoyage activé.");
-                    writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + directoriesList.GetLength(0) + " dossiers à nettoyer.");
+                    writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + directoriesList.GetLength(0) + " dossiers à nettoyer :");
                     writer.Flush();
-
-                    List<String> doneDirectories = new List<string>();
 
                     for (int x = 0; x < directoriesList.GetLength(0); x++)
                     {
-                        if (configBackup.general_Log != 0 && directoriesList[x, 0] == "general_logs" && !doneDirectories.Contains("general_logs"))
-                        {
-                            doneDirectories.Add("general_logs");
-
-                            Console.WriteLine("");
-                            Console.WriteLine("Nettoyage des logs généraux ...");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs généraux ...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.general_Log);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Supprimer tous les anciens fichiers log après " + ago);
-                                Console.WriteLine("");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des logs généraux => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush();
-
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            //writer.WriteLine(DateTime.Now + " | cleanFiles() :Created: Delete File => " + filename.FullName);
-                                            writer.Flush();
-
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            //writer.WriteLine(DateTime.Now + " | cleanFiles() :Modify: Delete File => " + filename.FullName);
-                                            writer.Flush();
-
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                Console.WriteLine("");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.import_Log != 0 && directoriesList[x, 0] == "import_logs" && !doneDirectories.Contains("import_logs"))
-                        {
-                            doneDirectories.Add("import_logs");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Import logs...");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs import ...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_Log);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " : cleanFiles() | Delete all old file after " + ago);
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Supprimer tous les anciens fichiers log après " + ago);
-                                Console.WriteLine("");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des logs import => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush(); 
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                writer.WriteLine(DateTime.Now + "  :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.export_Log != 0 && directoriesList[x, 0] == "export_Logs" && !doneDirectories.Contains("export_Logs"))
-                        {
-                            doneDirectories.Add("export_Logs");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export logs...");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + "  :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'export ...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_Log);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des logs d'export => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush(); 
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                writer.WriteLine(DateTime.Now + "  :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.import_files_success != 0 && directoriesList[x, 0] == "import_files_success" && !doneDirectories.Contains("import_files_success"))
-                        {
-                            doneDirectories.Add("import_files_success");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import réussi...");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + "  :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers d'import réussi ...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago + "\n");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des fichier OK => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush();
-
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.import_files_error != 0 && directoriesList[x, 0] == "import_files_error" && !doneDirectories.Contains("import_files_error"))
-                        {
-                            doneDirectories.Add("import_files_error");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import en erreur...");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers d'import en erreur...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_error);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des fichier KO => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush();
-
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.export_files_BC != 0 && directoriesList[x, 0] == "export_files_BC" && !doneDirectories.Contains("export_files_BC"))
-                        {
-                            doneDirectories.Add("export_files_BC");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files BC...");
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers EDI BC...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_BC_type == "Export_Veolog")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Veolog_Commande";
-                            }
-                            else if (configBackup.export_files_BC_type == "Export_Plat")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_Commande";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
-                                writer.WriteLine("");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Aucun format selectionné !");
-                                break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_BC);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des fichier EDI BC => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush();
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL" && !doneDirectories.Contains("export_files_BL"))
-                        {
-                            doneDirectories.Add("export_files_BL");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files BL...");
-
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + "  :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers EDI BL...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_BL_type == "Export_Plat")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_BonLivraison";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
-                                writer.WriteLine("");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Aucun format selectionné !");
-                                break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_BL);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des EDI BL => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush();
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA" && !doneDirectories.Contains("export_files_FA"))
-                        {
-                            doneDirectories.Add("export_files_FA");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files FA...");
-
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers EDI FA...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_FA_type == "Export_Plat")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_Facture";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
-                                writer.WriteLine("");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Aucun format selectionné !");
-                                break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_FA);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des EDI FA => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush();
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < 2 weeks ago: " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-                        if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS" && !doneDirectories.Contains("export_files_ME_MS"))
-                        {
-                            doneDirectories.Add("export_files_ME_MS");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files ME/MS...");
-
-                            writer.WriteLine("");
-                            writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers EDI ME/MS...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_ME_MS_type == "Veolog_Stock")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Veolog_Stock";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
-                                writer.WriteLine("");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Aucun format selectionné !");
-                                break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_ME_MS);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Chemin des EDI ME/MS => " + backUpFolderPath);
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Il y a " + allFiles + " fichiers");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
-                                writer.Flush();
-
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | cleanFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
-                                    writer.Flush();
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            //writer.WriteLine("");
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                Console.WriteLine("");
-                                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                writer.WriteLine("");
-                                writer.Flush();
-                            }
-                        }
-
+                        writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Type : " + directoriesList[x, 0] + " Répertoire : " + directoriesList[x, 1]);
+                        writer.Flush();
                     }
 
-                    Console.WriteLine("Out of cleaning...");
+                    writer.WriteLine("");
+                    writer.Flush();
+
+                    for (int x = 0; x < directoriesList.GetLength(0); x++)
+                    {
+                        switch(directoriesList[x, 0])
+                        {
+                            case "general_logs":
+                                if (configBackup.general_Log > 0)
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs généraux dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs généraux dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(writer, configBackup.general_Log, directoriesList[x, 1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs généraux est désactivé!");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs généraux est désactivé!");
+                                }                         
+                                writer.WriteLine("");
+                                writer.Flush();
+                                break;
+
+                            case "import_logs":
+                                if (configBackup.import_Log > 0)
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'import dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'import dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(writer, configBackup.import_Log, directoriesList[x, 1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'import est désactivé!");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'import est désactivé!");
+                                }
+                                writer.WriteLine("");
+                                writer.Flush();
+                                break;
+
+                            case "export_Logs":
+                                if (configBackup.export_Log > 0)
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'export dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'export dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(writer, configBackup.export_Log, directoriesList[x, 1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'export est désactivé!");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'export est désactivé!");
+                                }
+                                writer.WriteLine("");
+                                writer.Flush();
+                                break;
+
+                            case "import_files_success":
+                                if (configBackup.import_files_success > 0)
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import OK dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import OK dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(writer, configBackup.import_files_success, directoriesList[x, 1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import OK est désactivé!");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import OK est désactivé!");
+                                }
+                                writer.WriteLine("");
+                                writer.Flush();
+                                break;
+
+                            case "import_files_error":
+                                if (configBackup.import_files_error > 0)
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import en erreur dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import en erreur dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(writer, configBackup.import_files_error, directoriesList[x, 1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import en erreur est désactivé!");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import en erreur est désactivé!");
+                                }                                
+                                writer.WriteLine("");
+                                writer.Flush();
+                                break;
+
+                            case "backup_files":
+                                if (configBackup.backup_files > 0)
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers backup dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers backup dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(writer, configBackup.backup_files, directoriesList[x, 1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers backup est désactivé!");
+                                    writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers backup est désactivé!");
+                                }
+                                writer.WriteLine("");
+                                writer.Flush();
+                                break;
+
+                            default:
+                                Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Paramètre inconnu \"{directoriesList[x, 0]}\" du répertoir \"{directoriesList[x, 1]}\".");
+                                writer.WriteLine("");
+                                writer.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Paramètre inconnu \"{directoriesList[x, 0]}\" du répertoir \"{directoriesList[x, 1]}\".");
+                                writer.Flush();
+                                break;
+                        }
+                    }
+
                 }
                 else
                 {
@@ -782,8 +236,75 @@ namespace Fichier_De_Nettoyage
                 writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Les paramètres de nettoyage sont manquants !!!");
             }
             writer.WriteLine("");
+            writer.Flush();
         }
 
+        private void deleteOldFiles(StreamWriter writer, int configBackup_daysToKeep, string backUpFolderPath)
+        {
+            if (Directory.Exists(backUpFolderPath))
+            {
+                //delete all files the backup folder after x days
+                DateTime today = DateTime.Now;
+                DateTime ago = today.AddDays(-configBackup_daysToKeep);  //DateTime of x days ago
+
+                Console.WriteLine(DateTime.Now + " | deleteOldFiles() : Supprimer tous les anciens fichiers log après " + ago);
+                Console.WriteLine("");
+
+                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
+                int filesDeleted = 0;
+                FileInfo[] files = fileListing.GetFiles("*.txt");
+                int allFiles = files.Length;
+
+                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => deleteOldFiles() | Chemin des logs généraux => " + backUpFolderPath);
+                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => deleteOldFiles() | Il y a " + allFiles + " fichiers");
+                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => deleteOldFiles() | Supprimer tous les anciens fichiers log après " + string.Format("{0:dd-MM-yyyy HH.mm.ss}", ago));
+                writer.Flush();
+
+                for (int y = 0; y < allFiles; y++)
+                {
+                    FileInfo filename = files[y];
+                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
+                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
+
+                    //writer.WriteLine(DateTime.Now + " | deleteOldFiles() : File: " + filename.Name + " | Creation Date: " + fileDateTime + " | Modify Date: " + fileDateTimeModif);
+                    writer.Flush();
+
+                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
+                    {
+                        //file was never modified
+                        if (fileDateTime < ago)
+                        {
+                            Console.WriteLine(DateTime.Now + " | deleteOldFiles() : File creation date: " + fileDateTime + " < " + ago);
+                            File.Delete(filename.FullName);
+                            //writer.WriteLine(DateTime.Now + " | deleteOldFiles() :Created: Delete File => " + filename.FullName);
+                            writer.Flush();
+
+                            filesDeleted++;
+                        }
+                    }
+                    else
+                    {
+                        //file was modified
+                        if (fileDateTimeModif < ago)
+                        {
+                            Console.WriteLine(DateTime.Now + " | deleteOldFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
+                            File.Delete(filename.FullName);
+                            //writer.WriteLine(DateTime.Now + " | deleteOldFiles() :Modify: Delete File => " + filename.FullName);
+                            writer.Flush();
+
+                            filesDeleted++;
+                        }
+                    }
+                    //writer.Flush();
+                }
+                Console.WriteLine(DateTime.Now + " | deleteOldFiles() : " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
+                Console.WriteLine("");
+                writer.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => deleteOldFiles() | " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
+                writer.WriteLine("");
+                writer.Flush();
+            }
+        }
+        
         
         #endregion
 
@@ -803,7 +324,7 @@ namespace Fichier_De_Nettoyage
             }
         }
 
-        public void startClean(string[,] paths)
+        public void startClean()
         {
             Console.WriteLine("");
             Console.WriteLine("");
@@ -815,7 +336,7 @@ namespace Fichier_De_Nettoyage
                 Console.WriteLine("");
                 Console.WriteLine(DateTime.Now + " : Cleaning Files");
 
-                cleanFiles(paths);
+                cleanFiles(this.paths);
                 Console.WriteLine("");
             }
             catch (Exception ex)
@@ -830,546 +351,99 @@ namespace Fichier_De_Nettoyage
 
         private void cleanFiles(string[,] directoriesList)
         {
-            if (checkConfig())
+            if (this.checkConfig())
             {
                 ConfigurationBackup configBackup = new ConfigurationBackup();
                 configBackup.Load();
-
                 if (configBackup.activate)
                 {
-                    Console.WriteLine("Cleaning settings are activated !");
-
-                    List<String> doneDirectories = new List<string>();
+                    for (int x = 0; x < directoriesList.GetLength(0); x++)
+                    {
+                        Console.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Type : " + directoriesList[x, 0] + " Répertoire : " + directoriesList[x, 1]);
+                    }
 
                     for (int x = 0; x < directoriesList.GetLength(0); x++)
                     {
-                        if (configBackup.general_Log != 0 && directoriesList[x, 0] == "general_logs" && !doneDirectories.Contains("general_logs"))
+                        switch (directoriesList[x, 0])
                         {
-                            doneDirectories.Add("general_logs");
-
-                            Console.WriteLine("");
-                            Console.WriteLine("Nettoyage des logs généraux ...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.general_Log);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Supprimer tous les anciens fichiers log après " + ago);
-                                Console.WriteLine("");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
+                            case "general_logs":
+                                if (configBackup.general_Log > 0)
                                 {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs généraux dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(configBackup.general_Log, directoriesList[x, 1]);
                                 }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " fichiers ont été supprimés.");
-                                Console.WriteLine("");
-                            }
-                        }
-                        if (configBackup.import_Log != 0 && directoriesList[x, 0] == "import_logs" && !doneDirectories.Contains("import_logs"))
-                        {
-                            doneDirectories.Add("import_logs");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Import logs...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_Log);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " : cleanFiles() | Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
+                                else
                                 {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-                                    
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs généraux est désactivé!");
                                 }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                            }
-                        }
-                        if (configBackup.export_Log != 0 && directoriesList[x, 0] == "export_Logs" && !doneDirectories.Contains("export_Logs"))
-                        {
-                            doneDirectories.Add("export_Logs");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export logs...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_Log);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.txt");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                            }
-                        }
-                        if (configBackup.import_files_success != 0 && directoriesList[x, 0] == "import_files_success" && !doneDirectories.Contains("import_files_success"))
-                        {
-                            doneDirectories.Add("import_files_success");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import réussi...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_success);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago + "\n");
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.csv");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                            }
-                        }
-                        if (configBackup.import_files_error != 0 && directoriesList[x, 0] == "import_files_error" && !doneDirectories.Contains("import_files_error"))
-                        {
-                            doneDirectories.Add("import_files_error");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Nettoyage des fichiers d'import en erreur...");
-
-                            string backUpFolderPath = directoriesList[x, 1];
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.import_files_error);  //DateTime of x days ago
-
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.csv");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
-                                {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
-                                }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                            }
-                        }
-                        if (configBackup.export_files_BC != 0 && directoriesList[x, 0] == "export_files_BC" && !doneDirectories.Contains("export_files_BC"))
-                        {
-                            doneDirectories.Add("export_files_BC");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files BC...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_BC_type == "Export_Veolog")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Veolog_Commande";
-                            }
-                            else if (configBackup.export_files_BC_type == "Export_Plat")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_Commande";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
                                 break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_BC);  //DateTime of x days ago
 
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.csv");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
+                            case "import_logs":
+                                if (configBackup.import_Log > 0)
                                 {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'import dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(configBackup.import_Log, directoriesList[x, 1]);
                                 }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                            }
-                        }
-                        if (configBackup.export_files_BL != 0 && directoriesList[x, 0] == "export_files_BL" && !doneDirectories.Contains("export_files_BL"))
-                        {
-                            doneDirectories.Add("export_files_BL");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files BL...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_BL_type == "Export_Plat")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_BonLivraison";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'import est désactivé!");
+                                }
                                 break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_BL);  //DateTime of x days ago
 
-                                Console.WriteLine(DateTime.Now + " :: Fichier-De-Nettoyage.dll => cleanFiles() | Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.csv");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
+                            case "export_Logs":
+                                if (configBackup.export_Log > 0)
                                 {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'export dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(configBackup.export_Log, directoriesList[x, 1]);
                                 }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                            }
-                        }
-                        if (configBackup.export_files_FA != 0 && directoriesList[x, 0] == "export_files_FA" && !doneDirectories.Contains("export_files_FA"))
-                        {
-                            doneDirectories.Add("export_files_FA");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files FA...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_FA_type == "Export_Plat")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Plat_Facture";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des logs d'export est désactivé!");
+                                }
                                 break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_FA);  //DateTime of x days ago
 
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.csv");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
+                            case "import_files_success":
+                                if (configBackup.import_files_success > 0)
                                 {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < 2 weeks ago: " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import OK dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(configBackup.import_files_success, directoriesList[x, 1]);
                                 }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                            }
-                        }
-                        if (configBackup.export_files_ME_MS != 0 && directoriesList[x, 0] == "export_files_ME_MS" && !doneDirectories.Contains("export_files_ME_MS"))
-                        {
-                            doneDirectories.Add("export_files_ME_MS");
-
-                            Console.WriteLine("");
-                            Console.WriteLine(DateTime.Now + " : Cleaning Export files ME/MS...");
-
-                            string backUpFolderPath = null;
-                            if (configBackup.export_files_ME_MS_type == "Veolog_Stock")
-                            {
-                                backUpFolderPath = directoriesList[x, 1] + @"\BackUp\Export\Veolog_Stock";
-                            }
-                            else
-                            {
-                                Console.WriteLine("No format was selected !");
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import OK est désactivé!");
+                                }
                                 break;
-                            }
-                            if (Directory.Exists(backUpFolderPath))
-                            {
-                                //delete all files the backup folder after x days
-                                DateTime today = DateTime.Now;
-                                DateTime ago = today.AddDays(-configBackup.export_files_ME_MS);  //DateTime of x days ago
 
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : Delete all old file after " + ago);
-
-                                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
-                                int filesDeleted = 0;
-                                FileInfo[] files = fileListing.GetFiles("*.csv");
-                                int allFiles = files.Length;
-
-                                for (int y = 0; y < allFiles; y++)
+                            case "import_files_error":
+                                if (configBackup.import_files_error > 0)
                                 {
-                                    FileInfo filename = files[y];
-                                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
-                                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
-
-                                    //writer.WriteLine(DateTime.Now + " | addFileToBackUp() : File: " + filename.Name + "\nCreation Date: " + fileDateTime + "\nModify Date: " + fileDateTimeModif);
-                                    
-                                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
-                                    {
-                                        //file was never modified
-                                        if (fileDateTime < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File creation date: " + fileDateTime + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //file was modified
-                                        if (fileDateTimeModif < ago)
-                                        {
-                                            Console.WriteLine(DateTime.Now + " | cleanFiles() : File modify date: " + fileDateTimeModif + " < " + ago);
-                                            File.Delete(filename.FullName);
-                                            filesDeleted++;
-                                        }
-                                    }
-                                    //writer.Flush();
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import en erreur dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(configBackup.import_files_error, directoriesList[x, 1]);
                                 }
-                                Console.WriteLine(DateTime.Now + " | cleanFiles() : " + filesDeleted + "/" + allFiles + " files were deleted.");
-                                Console.WriteLine("");
-                            }
-                        }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers import en erreur est désactivé!");
+                                }
+                                break;
 
+                            case "backup_files":
+                                if (configBackup.backup_files > 0)
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers backup dans le répertoir \"{directoriesList[x, 1]}\" ...");
+                                    this.deleteOldFiles(configBackup.backup_files, directoriesList[x, 1]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Nettoyage des fichiers backup est désactivé!");
+                                }
+                                break;
+
+                            default:
+                                Console.WriteLine(DateTime.Now + $" :: Fichier-De-Nettoyage.dll => cleanFiles() | Paramètre inconnu \"{directoriesList[x, 0]}\" du répertoir \"{directoriesList[x, 1]}\".");
+                                break;
+                        }
                     }
+
                 }
                 else
                 {
@@ -1379,6 +453,47 @@ namespace Fichier_De_Nettoyage
             else
             {
                 Console.WriteLine("Les paramètres de nettoyage sont manquants !!!");
+            }
+        }
+
+        private void deleteOldFiles(int configBackup_daysToKeep, string backUpFolderPath)
+        {
+            if (Directory.Exists(backUpFolderPath))
+            {
+                //delete all files the backup folder after x days
+                DateTime today = DateTime.Now;
+                DateTime ago = today.AddDays(-configBackup_daysToKeep);  //DateTime of x days ago
+
+                DirectoryInfo fileListing = new DirectoryInfo(backUpFolderPath);
+                int filesDeleted = 0;
+                FileInfo[] files = fileListing.GetFiles("*.txt");
+                int allFiles = files.Length;
+
+                for (int y = 0; y < allFiles; y++)
+                {
+                    FileInfo filename = files[y];
+                    DateTime fileDateTime = File.GetCreationTime(filename.FullName);
+                    DateTime fileDateTimeModif = File.GetLastWriteTime(filename.FullName);
+
+                    if (fileDateTime.ToString("dd/MM/yyyy hh:mm:ss") == fileDateTimeModif.ToString("dd/MM/yyyy hh:mm:ss"))
+                    {
+                        //file was never modified
+                        if (fileDateTime < ago)
+                        {
+                            File.Delete(filename.FullName);
+                            filesDeleted++;
+                        }
+                    }
+                    else
+                    {
+                        //file was modified
+                        if (fileDateTimeModif < ago)
+                        {
+                            File.Delete(filename.FullName);
+                            filesDeleted++;
+                        }
+                    }
+                }
             }
         }
 

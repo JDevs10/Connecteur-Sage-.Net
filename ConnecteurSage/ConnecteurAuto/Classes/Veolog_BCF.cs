@@ -15,12 +15,13 @@ namespace ConnecteurAuto.Classes
         public string Date_De_Reception;
         public string Heure_De_Reception;
         public string Etat;
+        public string Entrepot;
 
         public Veolog_BCF()
         {
 
         }
-        public Veolog_BCF(string Commande_Donneur_Ordre, string Ref_Commande_Fournisseur, string Origine_Commande, string Code_Fournisseur, string Date_De_Reception, string Heure_De_Reception, string Etat)
+        public Veolog_BCF(string Commande_Donneur_Ordre, string Ref_Commande_Fournisseur, string Origine_Commande, string Code_Fournisseur, string Date_De_Reception, string Heure_De_Reception, string Etat, string Entrepot)
         {
             this.Ref_Commande_Donneur_Ordre = Commande_Donneur_Ordre;
             this.Ref_Commande_Fournisseur = Ref_Commande_Fournisseur;
@@ -29,6 +30,7 @@ namespace ConnecteurAuto.Classes
             this.Date_De_Reception = Date_De_Reception;
             this.Heure_De_Reception = Heure_De_Reception;
             this.Etat = Etat;
+            this.Entrepot = Entrepot;
         }
 
     }

@@ -535,8 +535,8 @@ namespace Import
 
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : get current stock in F_ARTSTOCK table in the database");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.getArticleStock(true, products_BCF[x, 9]));
-                                    using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_BCF[x, 9]), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.getArticleStock(true, products_BCF[x, 9], dh.Entrepot));
+                                    using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_BCF[x, 9], dh.Entrepot), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
                                     {
                                         using (IDataReader reader = command_.ExecuteReader()) //read rows of the executed query
                                         {
@@ -582,9 +582,9 @@ namespace Import
 
                                         logFileWriter.WriteLine("");
                                         logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : update article " + products_BCF[x, 12] + " (Ref:" + products_BCF[x, 9] + ") stock in F_ARTSTOCK table in the database");
-                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant));
+                                        logFileWriter.WriteLine(DateTime.Now + " | insertSupplierOrder() : requette sql ===> " + QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant, dh.Entrepot));
 
-                                        OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant), connexion);
+                                        OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant, dh.Entrepot), connexion);
                                         command.ExecuteReader();
                                     }
                                 }
@@ -1109,7 +1109,7 @@ namespace Import
                                 list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Fournisseur; // DO_Ref
                                 list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
                                 list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
-                                list_of_cmd_lines[counter, 11] = "1"; //DE_NO
+                                list_of_cmd_lines[counter, 11] = dh.Entrepot; //DE_NO
                                 list_of_cmd_lines[counter, 12] = name_article.Replace("'", "''"); // DL_Design
                                 list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
                                 list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
@@ -1293,8 +1293,8 @@ namespace Import
 
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : get current stock in F_ARTSTOCK table in the database");
-                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.getArticleStock(true, products_BCF[x, 9]));
-                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_BCF[x, 9]), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.getArticleStock(true, products_BCF[x, 9], dh.Entrepot));
+                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_BCF[x, 9], dh.Entrepot), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
                                 {
                                     using (IDataReader reader = command_.ExecuteReader()) //read rows of the executed query
                                     {
@@ -1340,9 +1340,9 @@ namespace Import
 
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : update article " + products_BCF[x, 12] + " (Ref:" + products_BCF[x, 9] + ") stock in F_ARTSTOCK table in the database");
-                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant));
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant, dh.Entrepot));
 
-                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant), connexion);
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStockBLF(true, products_BCF[x, 9], new_AS_StockReel, new_AS_StockCommande, new_AS_StockMontant, dh.Entrepot), connexion);
                                     command.ExecuteReader();
                                 }
 
@@ -1374,15 +1374,53 @@ namespace Import
                         }
                     }
 
-                    //set Veolog date time import
+                    // get DE_No name from db
+                    string DE_No_Name = "";
+                    try
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Récupérer le depot.");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getDepotById(true, dh.Entrepot));
+                        using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getDepotById(true, dh.Entrepot), connexion)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Depot trouvé");
+                                    DE_No_Name = reader[0].ToString();
+                                }
+                                else// If no rows returned
+                                {
+                                    //put the depot name empty.
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Depot non trouvé");
+                                    DE_No_Name = "";
+                                }
+                            }
+                        }
+                        logFileWriter.Flush();
+                    }
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Warning Depot ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Depot non trouvé");
+                        logFileWriter.Flush();
+                        DE_No_Name = "";
+                        logFileWriter.Flush();
+                    }
+
+                    //set logistic name and date time import in "Complement" field
                     try
                     {
                         string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
                         logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog au BLF \"" + reference_BLF_doc + "\".");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de \"" + DE_No_Name + "\" au BLF \"" + reference_BLF_doc + "\".");
 
-                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_BLF_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre));
-                        OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_BLF_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre), connexion);
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.updateComplementDeliveryDate(true, reference_BLF_doc, DE_No_Name + "  " + delivery_date_veolog + "  " + dh.Ref_Commande_Donneur_Ordre));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.updateComplementDeliveryDate(true, reference_BLF_doc, DE_No_Name + "  " + delivery_date_veolog + "  " + dh.Ref_Commande_Donneur_Ordre), connexion);
                         {
                             using (IDataReader reader = command.ExecuteReader())
                             {

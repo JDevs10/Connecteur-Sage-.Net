@@ -23,7 +23,7 @@ namespace Export
         public DocummentArticle()
         {
             Database.Database db = new Database.Database();
-            export_folder = db.settingsManager.get(db.connectionString, 1).EDI_Folder + @"\Export_Article";
+            export_folder = db.settingsManager.get(db.connectionString, 1).EDI_Folder + @"\Export\Article";
             export_backup_folder = db.settingsManager.get(db.connectionString, 1).EDI_Folder + @"\BackUp\Export\Article";
             fileName = export_folder + @"\" + fileName_;
             articleList = new List<Article>();
@@ -85,7 +85,10 @@ namespace Export
                     {
                         while (reader.Read()) // reads lines/rows from the query
                         {
-                            articleList.Add(new Article(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString()));
+                            Article article = new Article(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString());
+                            article.DE_No = "";
+                            article.DE_No_Name = "";
+                            articleList.Add(article);
                         }
                     }
                     connexion.Close();

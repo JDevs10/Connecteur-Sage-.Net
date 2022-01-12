@@ -310,23 +310,21 @@ namespace Alert_Mail
             try
             {
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Creation d une instance.");
-                if (mConfigurationEmail.active)
-                {
+                if (mConfigurationEmail.active){
                     // Objet mail
                     MailMessage msg = new MailMessage();
 
                     // Expéditeur (obligatoire). Notez qu'on peut spécifier le nom
-                    msg.From = new MailAddress(Utils.Decrypt(mConfigurationEmail.connexion.login), "CONNECTEUR SAGE [" + getDNS() + "]");
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Utiliser l adresse " + mConfigurationEmail.connexion.login + " sur le nom de CONNECTEUR SAGE [" + getDNS() + "] pour l envoie du mail.");
-
-                    Console.WriteLine("emailClientList : " + mConfigurationEmail.emailLists.emailClientList[0]);
+                    msg.From = new MailAddress("edi@anexys.fr", "CONNECTEUR SAGE [" + getDNS() + "]");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Utiliser l'adresse \"edi@anexys.fr\" sur le nom de CONNECTEUR SAGE [" + getDNS() + "] pour l'expéditeur.");
 
                     // Destinataires (il en faut au moins un)
                     if (type.Equals("client"))
                     {
                         db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type client.");
-                        if (mConfigurationEmail.emailLists.activeClient)
+                        if (mConfigurationEmail.emailLists.activeClient && mConfigurationEmail.emailLists.emailClientList.Count > 0)
                         {
+                            msg.CC.Add("edi@anexys.fr");
                             db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Envoie des mails client activé!");
                             for (int x = 0; x < mConfigurationEmail.emailLists.emailClientList.Count; x++)
                             {
@@ -334,7 +332,7 @@ namespace Alert_Mail
                                 {
                                     Console.WriteLine("");
                                     Console.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse client \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
-                                    msg.To.Add(new MailAddress(mConfigurationEmail.emailLists.emailClientList[x], mConfigurationEmail.emailLists.emailClientList[x]));
+                                    msg.To.Add(mConfigurationEmail.emailLists.emailClientList[x]);
                                     db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l adresse client " + mConfigurationEmail.emailLists.emailClientList[x] + " dans le mail.");
                                 }
                             }
@@ -345,7 +343,7 @@ namespace Alert_Mail
                             db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | L envoi des mails client sont désactivé!");
                             return;
                         }
-                        
+
                     }
                     else if (type.Equals("log"))
                     {
@@ -359,7 +357,7 @@ namespace Alert_Mail
                                 {
                                     Console.WriteLine("");
                                     Console.WriteLine(DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l'adresse team \"" + mConfigurationEmail.emailLists.emailClientList[x] + "\" dans le mail.");
-                                    msg.To.Add(new MailAddress(mConfigurationEmail.emailLists.emailTeamList[x], mConfigurationEmail.emailLists.emailTeamList[x]));
+                                    msg.To.Add(mConfigurationEmail.emailLists.emailTeamList[x]);
                                     db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Ajouter le l adresse team " + mConfigurationEmail.emailLists.emailClientList[x] + " dans le mail.");
                                 }
                             }
@@ -379,10 +377,11 @@ namespace Alert_Mail
                     }
 
 
+                    // sujet du mail
                     msg.Subject = subject;
-
                     Console.WriteLine("Suject : " + subject);
-                    // Texte du mail (facultatif)
+
+                    // Texte du mail
                     msg.Body = body;
                     Console.WriteLine("body : " + body);
 
@@ -398,39 +397,42 @@ namespace Alert_Mail
                         }
                     }
 
-                    SmtpClient client;
+
+                    SmtpClient smtpServer;
 
                     if (Utils.Decrypt(mConfigurationEmail.connexion.smtp) != "" && Utils.Decrypt(mConfigurationEmail.connexion.login) != "" && Utils.Decrypt(mConfigurationEmail.connexion.password) != "")
                     {
                         // Envoi du message SMTP
-                        client = new SmtpClient(Utils.Decrypt(mConfigurationEmail.connexion.smtp), Convert.ToInt32(Utils.Decrypt(mConfigurationEmail.connexion.port)));
-                        client.Credentials = new NetworkCredential(Utils.Decrypt(mConfigurationEmail.connexion.login), Utils.Decrypt(mConfigurationEmail.connexion.password));
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | smtp : " + mConfigurationEmail.connexion.smtp + " | Port : " + mConfigurationEmail.connexion.port);
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | login : "+ mConfigurationEmail.connexion.login + " | pwd : "+ mConfigurationEmail.connexion.password);
+                        smtpServer = new SmtpClient(Utils.Decrypt(mConfigurationEmail.connexion.smtp), Convert.ToInt32(Utils.Decrypt(mConfigurationEmail.connexion.port)));
+                        smtpServer.Credentials = new NetworkCredential(Utils.Decrypt(mConfigurationEmail.connexion.login), Utils.Decrypt(mConfigurationEmail.connexion.password));
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | smtp : " + Utils.Decrypt(mConfigurationEmail.connexion.smtp) + " | Port : " + Convert.ToInt32(Utils.Decrypt(mConfigurationEmail.connexion.port)));
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | login : " + Utils.Decrypt(mConfigurationEmail.connexion.login) + " | pwd : " + Utils.Decrypt(mConfigurationEmail.connexion.password));
                     }
                     else
                     {
                         Console.WriteLine("");
-                        Console.WriteLine(DateTime.Now + " : Les paramètres de connexion ne sont pas correcte!");
-                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n est pas client ou log");
+                        Console.WriteLine(DateTime.Now + " : Les paramètres de mail ne sont pas correcte!");
+                        db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Les paramètres de mail ne sont pas correcte!");
                         return;
                     }
 
-                    client.EnableSsl = true;
+                    // EnableSsl
+                    smtpServer.EnableSsl = true;
                     //NetworkInformation s = new NetworkCredential();
-                    ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+                    //ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
 
                     // Envoi du mail
-                    client.Send(msg);
+                    smtpServer.Send(msg);
 
                     Console.WriteLine("");
                     Console.WriteLine(DateTime.Now + " : Envoi de Mail..OK");
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n est pas client ou log");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Envoi de Mail..OK");
+
                 }
                 else
                 {
                     Console.WriteLine("La configuration des alert mail sont désactivé !");
-                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Mail type n est pas client ou log");
+                    db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | La configuration des alert mail sont désactivé !");
                 }
             }
             catch (Exception e)
@@ -441,12 +443,7 @@ namespace Alert_Mail
 
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " :: ############################### Exception EnvoiMail ###############################");
                 db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | Message : " + e.Message);
-                //db.alertMailLogManager.insert(db.connectionString, DateTime.Now + " : AlertMail :: Alert-Mail.dll => EnvoiMail() | StackTrace : " + e.StackTrace);
-
-
-
                 db.alertMailLogManager.insert(db.connectionString, "");
-                //Console.ReadLine();
             }
         }
 

@@ -15,9 +15,6 @@ namespace Reprocess
         private string directoryName_EDI = null;
         private string directoryName_tmp = null;
         private string directoryName_ErrorFile = null;
-        //private static string localPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-
-        //private double inputHour = 1.0; // 1 hours
 
         public ReprocessErrorFiles()
         {
@@ -25,9 +22,9 @@ namespace Reprocess
             db = new Database.Database();
 
             Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
-            directoryName_tmp = settings.EXE_Folder + @"\" + "tmp";
-            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Import";
-            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "Error File";
+            directoryName_tmp = settings.EXE_Folder + @"\tmp";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\LOG\LOG_Import";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\Error File";
         }
 
         public ReprocessErrorFiles(StreamWriter writer)
@@ -37,9 +34,9 @@ namespace Reprocess
             writer.Flush();
 
             Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
-            directoryName_tmp = settings.EXE_Folder + @"\" + "tmp";
-            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Import";
-            directoryName_ErrorFile = settings.EXE_Folder + @"\" + "Error File";
+            directoryName_tmp = settings.EXE_Folder + @"\tmp";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\LOG\LOG_Import";
+            directoryName_ErrorFile = settings.EXE_Folder + @"\Error File";
         }
 
         private bool getEDI_CSV_Folder(StreamWriter writer)
@@ -209,7 +206,7 @@ namespace Reprocess
                                             string ediFileId_str = (newFileName.Contains("EDI_ORDERS") ? newFileName.Split('.')[1] : ((newFileName.Contains("CFP41") || newFileName.Contains("CFP51") || newFileName.Contains("TWP41") || newFileName.Contains("TWP51")) ? newFileName.Split('_')[1].Replace(".csv", "") : "999"));
 
                                             //get reprocess obj
-                                            Database.Model.Reprocess reprocess_db = db.reprocessManager.getById(db.connectionString, Convert.ToInt32(ediFileId_str), writer);
+                                            Database.Model.Reprocess reprocess_db = db.reprocessManager.getById(db.connectionString, ediFileId_str, writer);
                                             
                                             writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | check obj");
                                             writer.Flush();
@@ -218,7 +215,7 @@ namespace Reprocess
                                             {
                                                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | Reprocess obj != null");
 
-                                                reprocess_db.ediFileID = Convert.ToInt32(ediFileId_str);
+                                                reprocess_db.ediFileID = ediFileId_str;
                                                 reprocess_db.fileName = newFileName;
                                                 reprocess_db.filePath = file.FullName;
                                                 reprocess_db.fileReprocessCount = (reprocess_db.fileReprocessCount + 1);
@@ -275,7 +272,7 @@ namespace Reprocess
                                                 writer.WriteLine(DateTime.Now + " :: Reprocess.dll => reprocess() | reprocess_db == null");
 
                                                 Database.Model.Reprocess reprocess = new Database.Model.Reprocess();
-                                                reprocess.ediFileID = Convert.ToInt32(ediFileId_str);
+                                                reprocess.ediFileID = ediFileId_str;
                                                 reprocess.fileName = newFileName;
                                                 reprocess.filePath = file.FullName;
                                                 reprocess.fileReprocessCount = 1;

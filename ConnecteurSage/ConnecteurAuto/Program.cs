@@ -47,18 +47,9 @@ namespace ConnecteurAuto
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             /////////////// Fichier_De_Nettoyage.dll ///////////////
             ///
-            string logDirectoryName_general = Directory.GetCurrentDirectory() + @"\" + "LOG";
-            string logDirectoryName_import = Directory.GetCurrentDirectory() + @"\" + "LOG" + @"\" + "LOG_Import";
 
             Fichier_De_Nettoyage.FichierDeNettoyage clean = new Fichier_De_Nettoyage.FichierDeNettoyage();
-            string[,] paths = new string[4, 2] {
-                { "general_logs", logDirectoryName_general}, //log files
-                { "import_logs", logDirectoryName_import }, //log files
-                { "import_files_success", Directory.GetCurrentDirectory() + @"\Success File" }, //fichier import success
-                { "import_files_error", Directory.GetCurrentDirectory() + @"\Error File" } //fichier import erreur
-            };
-
-            clean.startClean(paths);
+            clean.startClean();
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             ///
             Console.WriteLine("Cleanup complete !");

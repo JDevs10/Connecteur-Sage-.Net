@@ -135,7 +135,7 @@ namespace Database.Manager
         }
 
         // Get by ID
-        public Reprocess getById(string connectionString, int ediFileID)
+        public Reprocess getById(string connectionString, string ediFileID)
         {
             using (SQLiteConnection conn = new SQLiteConnection(connectionString))
             {
@@ -272,7 +272,7 @@ namespace Database.Manager
             
         }
 
-        public bool deleteById(string connectionString, int reprocessID)
+        public bool deleteById(string connectionString, string reprocessID)
         {
             using (SQLiteConnection conn = new SQLiteConnection(connectionString))
             {
@@ -424,7 +424,7 @@ namespace Database.Manager
         }
 
         // Get by ID
-        public Reprocess getById(string connectionString, int ediFileID, StreamWriter writer)
+        public Reprocess getById(string connectionString, string ediFileID, StreamWriter writer)
         {
             using (SQLiteConnection conn = new SQLiteConnection(connectionString))
             {
@@ -557,7 +557,7 @@ namespace Database.Manager
                 try
                 {
                     conn.Open();
-                    writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => deleteById(reprocess .ediFileID: " + reprocess .ediFileID+ ") | Creation d'une Instance");
+                    writer.WriteLine(DateTime.Now + " :: ReprocessManager.dll => deleteById(reprocess .ediFileID: " + reprocess.ediFileID+ ") | Creation d'une Instance");
 
                     if (conn.State == System.Data.ConnectionState.Open)
                     {
@@ -591,7 +591,7 @@ namespace Database.Manager
 
         }
 
-        public bool deleteById(string connectionString, int reprocessID, StreamWriter writer)
+        public bool deleteById(string connectionString, string reprocessID, StreamWriter writer)
         {
             using (SQLiteConnection conn = new SQLiteConnection(connectionString))
             {

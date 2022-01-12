@@ -22,58 +22,32 @@ namespace importPlanifier.Classes
         [XmlElement]
         public int import_files_error { get; set; }
         [XmlElement]
-        public int export_files_BC { get; set; }
-        [XmlElement]
-        public string export_files_BC_type { get; set; }
-        [XmlElement]
-        public int export_files_BL { get; set; }
-        [XmlElement]
-        public string export_files_BL_type { get; set; }
-        [XmlElement]
-        public int export_files_FA { get; set; }
-        [XmlElement]
-        public string export_files_FA_type { get; set; }
-        [XmlElement]
-        public int export_files_ME_MS { get; set; }
-        [XmlElement]
-        public string export_files_ME_MS_type { get; set; }
-
-
-
+        public int backup_files { get; set; }
         private static string pathModule = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
         public ConfigurationBackup()
         {
         }
 
-        public ConfigurationBackup(bool activate, int general_Log, int import_Log, int export_Log, int import_files_success, int import_files_error, int export_files_BC, string export_files_BC_type, int export_files_BL, string export_files_BL_type, int export_files_FA, string export_files_FA_type, int export_files_ME_MS, string export_files_ME_MS_type)
+        public ConfigurationBackup(bool activate, int general_Log, int import_Log, int export_Log, int import_files_success, int import_files_error, int backup_files)
         {
             this.activate = activate;
             this.general_Log = general_Log;
             this.import_Log = import_Log;
             this.export_Log = export_Log;
-            this.export_Log = export_Log;
             this.import_files_success = import_files_success;
             this.import_files_error = import_files_error;
-            this.export_files_BC = export_files_BC;
-            this.export_files_BC_type = export_files_BC_type;
-            this.export_files_BL = export_files_BL;
-            this.export_files_BL_type = export_files_BL_type;
-            this.export_files_FA = export_files_FA;
-            this.export_files_FA_type = export_files_FA_type;
-            this.export_files_ME_MS = export_files_ME_MS;
-            this.export_files_ME_MS_type = export_files_ME_MS_type;
+            this.backup_files = backup_files;
         }
 
         public void saveInfo(ConfigurationBackup backupSettings)
         {
             try
             {
-                //var myfile = File.Create(pathModule + @"\SettingBackup.xml");
-                FileStream fs = new FileStream(pathModule + @"\SettingBackup.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                var myfile = File.Create(pathModule + @"\SettingBackup.xml");
                 XmlSerializer xml = new XmlSerializer(typeof(ConfigurationBackup));
-                xml.Serialize(fs, backupSettings);
-                fs.Close();
+                xml.Serialize(myfile, backupSettings);
+                myfile.Close();
             }
             catch (Exception ex)
             {
@@ -85,26 +59,18 @@ namespace importPlanifier.Classes
             if (File.Exists("SettingBackup.xml"))
             {
                 XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(typeof(ConfigurationBackup));
-                FileStream fs = new FileStream(pathModule + @"\SettingBackup.xml", FileMode.Open, FileAccess.ReadWrite);
-                StreamReader file = new System.IO.StreamReader(fs);
-                ConfigurationBackup mail = new ConfigurationBackup();
-                mail = (ConfigurationBackup)reader.Deserialize(file);
+                StreamReader file = new System.IO.StreamReader(pathModule + @"\SettingBackup.xml");
+                ConfigurationBackup config = new ConfigurationBackup();
+                config = (ConfigurationBackup)reader.Deserialize(file);
 
-                this.activate = mail.activate;
-                this.general_Log = mail.general_Log;
-                this.import_Log = mail.import_Log;
-                this.export_Log = mail.export_Log;
-                this.export_Log = mail.export_Log;
-                this.import_files_success = mail.import_files_success;
-                this.import_files_error = mail.import_files_error;
-                this.export_files_BC = mail.export_files_BC;
-                this.export_files_BC_type = mail.export_files_BC_type;
-                this.export_files_BL = mail.export_files_BL;
-                this.export_files_BL_type = mail.export_files_BL_type;
-                this.export_files_FA = mail.export_files_FA;
-                this.export_files_FA_type = mail.export_files_FA_type;
-                this.export_files_ME_MS = mail.export_files_ME_MS;
-                this.export_files_ME_MS_type = mail.export_files_ME_MS_type;
+                this.activate = config.activate;
+                this.general_Log = config.general_Log;
+                this.import_Log = config.import_Log;
+                this.export_Log = config.export_Log;
+                this.export_Log = config.export_Log;
+                this.import_files_success = config.import_files_success;
+                this.import_files_error = config.import_files_error;
+                this.backup_files = config.backup_files;
                 file.Close();
             }
         }

@@ -30,9 +30,10 @@ namespace ConnecteurSage
         private bool isDocStock = false;
         private const string taskName = "importCommandeSage";
 
+
         protected override void OnShown(EventArgs e)
         {
-            base.OnShown(e);
+            base.OnShown(e);            
 
             //DateTime value = new DateTime(2013, 5, 1);
             //if (value <= DateTime.Today)
@@ -58,7 +59,8 @@ namespace ConnecteurSage
             string version = new Connecteur_Info.ConnecteurInfo().Version;
             label3.Text = "Connecteur Sage v" + version + " \nImport et export de documents commerciaux.";
             labelVersion.Text = "Version : " + version;
-            labelCopyright.Text = "Copyright © 2013 - 2020";
+            labelCopyright.Text = "Copyright © 2013 - 2022";
+
 
             // Init Connecteur Info, Version and Database path in a file
             Init.Init init = new Init.Init();
@@ -304,10 +306,7 @@ namespace ConnecteurSage
                     label_backup_exportLog.Text = ((backup.export_Log != 0) ? "Log d'export : " + backup.export_Log + " jours" : "Log d'export : désactiver");
                     label_backup_import_success.Text = ((backup.import_files_success != 0) ? "Fichier EDI import (Success) : " + backup.import_files_success + " jours" : "Fichier EDI import (Success) : désactiver");
                     label_backup_import_error.Text = ((backup.import_files_error != 0) ? "Fichier EDI import (Erreur) : " + backup.import_files_error + " jours" : "Fichier EDI import (Erreur) : désactiver");
-                    label_backup_export_BC.Text = ((backup.export_files_BC != 0) ? "Fichier EDI Export (BC) : " + backup.export_files_BC + " jours" : "Fichier EDI Export (BC) : désactiver");
-                    label_backup_export_BL.Text = ((backup.export_files_BL != 0) ? "Fichier EDI Export (BL) : " + backup.export_files_BL + " jours" : "Fichier EDI Export (BL) : désactiver");
-                    label_backup_export_FA.Text = ((backup.export_files_FA != 0) ? "Fichier EDI Export (FA) : " + backup.export_files_FA + " jours" : "Fichier EDI Export (FA) : désactiver");
-                    label_backup_export_ME_MS.Text = ((backup.export_files_ME_MS != 0) ? "Fichier EDI Export (ME/MS) : " + backup.export_files_ME_MS + " jours" : "Fichier EDI Export (ME/MS) : désactiver");
+                    label_fichier_backup.Text = ((backup.backup_files != 0) ? "Fichier EDI backup :  " + backup.backup_files + " jours" : "Fichier EDI backup : désactiver");
                 }
                 else
                 {
@@ -387,6 +386,7 @@ namespace ConnecteurSage
 
         private void button1_Click(object sender, EventArgs e)
         {
+            //connecteur_auto_status_Thread.Abort();
             Close();
         }
 
@@ -813,6 +813,7 @@ namespace ConnecteurSage
             // Export des clients
             Export.DocummentClient docummentClient = new Export.DocummentClient();
             docummentClient.export_window();
+            MessageBox.Show("L'export des clients de la base Sage est terminé", "Export Client", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button16_Click(object sender, EventArgs e)
@@ -820,6 +821,7 @@ namespace ConnecteurSage
             // Export des produits
             Export.DocummentArticle docummentArticle = new Export.DocummentArticle();
             docummentArticle.export_window();
+            MessageBox.Show("L'export des articles de la base Sage est terminé", "Export Article", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button17_Click(object sender, EventArgs e)
@@ -840,7 +842,7 @@ namespace ConnecteurSage
                 }
 
                 //Create log file
-                string clean_file_log = Directory.GetCurrentDirectory() + @"\LOG\" + string.Format("LOG_clean_{0:dd-MM-yyyy_HH.mm.ss}.txt", DateTime.Now);
+                string clean_file_log = Directory.GetCurrentDirectory() + @"\LOG\" + string.Format("LOG_Clean_{0:dd-MM-yyyy_HH.mm.ss}.txt", DateTime.Now);
                 try
                 {
                     var logFile_clean = File.Create(clean_file_log);
@@ -852,7 +854,6 @@ namespace ConnecteurSage
                         writer.Flush();
 
                         Fichier_De_Nettoyage.FichierDeNettoyage clean = new Fichier_De_Nettoyage.FichierDeNettoyage();
-                        Database.Model.Settings db_settings_ = db.settingsManager.get(db.connectionString, 1, writer);
                         writer.Flush();
 
                         for (int n = 30; n < 60; n++)
@@ -861,27 +862,11 @@ namespace ConnecteurSage
                             progressDialog.UpdateProgress(n);
                         }
 
-                        string[,] paths = new string[12, 2] {
-                            { "general_logs", db_settings_.EXE_Folder + @"\" + @"LOG"}, //log files
-                            { "import_logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Import" }, //log files
-                            { "export_Logs", db_settings_.EXE_Folder + @"\" + @"LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE" }, //log files
-                            { "export_Logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "BON_LIVRAISON" }, //log files
-                            { "export_Logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "COMMANDE" }, //log files
-                            { "export_Logs", db_settings_.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "STOCK" }, //log files
-                            { "import_files_success", db_settings_.EXE_Folder + @"\Success File" }, //fichier import success
-                            { "import_files_error", db_settings_.EXE_Folder + @"\Error File" }, //fichier import erreur
-                            { "export_files_BC", db_settings_.EDI_Folder }, //backup export files
-                            { "export_files_BL", db_settings_.EDI_Folder }, //backup export files
-                            { "export_files_FA", db_settings_.EDI_Folder }, //backup export files
-                            { "export_files_ME_MS", db_settings_.EDI_Folder } //backup export files
-                        };
-                        
-                        clean.startClean(writer, paths);
+                        clean.startClean(writer);
 
                         writer.Flush();
                         writer.Close();
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -913,6 +898,109 @@ namespace ConnecteurSage
             // Open the dialog
             progressDialog.ShowDialog();
 
+
+        }
+
+        private void test_connexion_button_Click(object sender, EventArgs e)
+        {
+            bool odbc_conn = false;
+            bool sql_conn = false;
+            string msg_error = "";
+
+            try
+            {
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnextion())
+                {
+                    connexion.Open();
+                    OdbcCommand command = new OdbcCommand(QueryHelper.testConnection(false), connexion);
+                    command.ExecuteReader();
+                    odbc_conn = true;
+                }
+
+            } catch(Exception ex)
+            {
+                msg_error += "* ODBC Error\n"+ex.Message+"\n";
+            }
+
+            try
+            {
+                using (OdbcConnection connexion = ConnexionManager.CreateOdbcConnexionSQL())
+                {
+                    connexion.Open();
+                    OdbcCommand command = new OdbcCommand(QueryHelper.testConnection(true), connexion);
+                    command.ExecuteReader();
+                    sql_conn = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                msg_error += "* SQL Error\n" + ex.Message + "\n";
+            }
+
+            if(!odbc_conn || !sql_conn)
+            {
+                MessageBox.Show(msg_error, "Test Connexion", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                MessageBox.Show("La connexion avec le driver ODBC et SQL fonctionne.", "Test Connexion", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            Forms.ProgressDialog progressDialog = new Forms.ProgressDialog();
+            Thread backgroundThread = new Thread(new ThreadStart(()=> { }));
+            try
+            {
+                // Initialize the thread that will handle the background process
+                backgroundThread = new Thread(
+                new ThreadStart(() =>
+                {
+                //Loading General Settings
+                if (progressDialog.InvokeRequired)
+                        progressDialog.BeginInvoke(new System.Action(() => progressDialog.Text = "Connecteur Automatique en cours d'execution...."));
+
+                    for (int n = 0; n < 50; n++)
+                    {
+                        Thread.Sleep(1);
+                        progressDialog.UpdateProgress(n);
+                    }
+
+                    Database.Database db = new Database.Database();
+                    db.initTables();
+
+                    Database.Model.Settings db_settings = db.settingsManager.get(db.connectionString, 1);
+
+                    if(File.Exists(db_settings.EXE_Folder + @"\ConnecteurAuto.exe"))
+                    {
+                        System.Diagnostics.Process process = Process.Start(db_settings.EXE_Folder + @"\ConnecteurAuto.exe");
+                        process.WaitForExit();
+                    }
+
+                    for (int n = 50; n < 100; n++)
+                    {
+                        Thread.Sleep(1);
+                        progressDialog.UpdateProgress(n);
+                    }
+
+                }
+                ));
+
+                // Start the background process thread
+                backgroundThread.Start();
+                
+                // Open the dialog
+                progressDialog.ShowDialog();
+                
+            }
+            catch(Exception ex)
+            {
+                backgroundThread.Abort();
+                progressDialog.Close();
+                MessageBox.Show("Une erreur survenu lors de l'execution du connecteur automatique. Veuillez touver l'erreur ci-dessous : \n"+ex.Message, "Execution ConnecteurAuto", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         }
     }

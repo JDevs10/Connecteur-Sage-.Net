@@ -13,28 +13,25 @@ namespace ConnecteurAuto.Classes
 {
     class ExportFactures
     {
-
+        private Database.Model.Settings settings = null;
         private Database.Database db = null;
         private string docRefMail;
         private string logFileName_export;
         public string logDirectoryName_export = null;
         private StreamWriter logFileWriter_export = null;
+        private string pathExport_Avoirs;
+        private string pathExport_Factures;
 
-        private string pathExport;
 
         public ExportFactures()
         {
-
-        }
-
-        public ExportFactures(string path)
-        {
-            this.pathExport = path;
             // Init database && tables
-            db = new Database.Database();
+            this.db = new Database.Database();
 
-            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
-            logDirectoryName_export = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE";
+            this.settings = db.settingsManager.get(db.connectionString, 1);
+            this.pathExport_Avoirs = this.settings.EDI_Folder + @"\Export\Avoirs\";
+            this.pathExport_Factures = this.settings.EDI_Folder + @"\Export\Factures\";
+            logDirectoryName_export = this.settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "FACTURE";
         }
 
         private List<DocumentVente> GetFacturesFromDataBase(StreamWriter writer, string statut)
@@ -625,14 +622,16 @@ namespace ConnecteurAuto.Classes
 
                             if (FacturesAExporter[i].DO_Piece.StartsWith("BA"))
                             {
-                                outputFile = this.pathExport + @"\Fichier Exporter\Avoirs\";
+                                exportTo = @"Export\Avoirs";
+                                outputFile = this.pathExport_Avoirs;
                                 fileName = string.Format("AVOIR-{0:HHmmss}.{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
                                 prefix = "BA";
                                 identifiant = "381";
                             }
                             else
                             {
-                                outputFile = this.pathExport + @"\Fichier Exporter\Factures\";
+                                exportTo = @"Export\Factures";
+                                outputFile = this.pathExport_Factures;
                                 fileName = string.Format("INV-{0:HHmmss}.{0:yyyyMMdd}." + customer.CT_Num + "." + customer.CT_EDI1 + ".csv", DateTime.Now);
 
                             }
@@ -645,10 +644,9 @@ namespace ConnecteurAuto.Classes
 
                             if(settings.configurationExport.Facture.Format == "Plat")
                             {
-                                exportTo = @"Export\Plat_Facture";
 
                                 logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Chemin du fichier export => "+ outputFile + @"\" + fileName);
-                                using (StreamWriter writer = new StreamWriter(outputFile + @"\" + fileName, false, Encoding.Default))
+                                using (StreamWriter writer = new StreamWriter(outputFile + @"\PLAT-" + fileName, false, Encoding.Default))
                                 {
                                     writer.WriteLine("DEMAT-AAA;v01.0;;;" + DateTime.Today.Year + addZero(DateTime.Today.Month.ToString()) + addZero(DateTime.Today.Day.ToString()) + ";;");
                                     writer.WriteLine("");
@@ -930,7 +928,7 @@ namespace ConnecteurAuto.Classes
                                 if (File.Exists(outputFile + @"\" + fileName) && new FileInfo(outputFile + @"\" + fileName).Length > 0)
                                 {
                                     logFileWriter_export.WriteLine(DateTime.Now + " | ExportFacture() : Chemin du fichier export => " + outputFile + @"\" + fileName);
-                                    addFileToBackUp(pathExport + @"\BackUp\" + exportTo, outputFile + @"\" + fileName, fileName, logFileWriter_export);
+                                    addFileToBackUp(this.settings.EDI_Folder + @"\BackUp\" + exportTo, outputFile + @"\" + fileName, fileName, logFileWriter_export);
                                     logFileWriter_export.Flush();
                                 }
                                 else if(!File.Exists(outputFile + @"\" + fileName))

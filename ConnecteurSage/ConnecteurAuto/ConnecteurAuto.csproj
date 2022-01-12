@@ -139,6 +139,10 @@
       <Project>{399a0be9-47af-48d0-9a17-6a6f02ec6ee3}</Project>
       <Name>Import</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Init\Init.csproj">
+      <Project>{773fba6e-fb86-45a4-805f-470328b67b7e}</Project>
+      <Name>Init</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Reprocess\Reprocess-Error-Files.csproj">
       <Project>{ada83e63-ca51-4e6e-b500-d08b92916807}</Project>
       <Name>Reprocess-Error-Files</Name>

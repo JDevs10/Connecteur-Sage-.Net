@@ -14,6 +14,8 @@ namespace ConnecteurAuto.Classes
         public string numerolot;
         public string lotqty;
         public string lotepuise;
+        public string DE_No;
+        public string DE_No_Name;
 
         public Stock()
         {

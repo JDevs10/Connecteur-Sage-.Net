@@ -619,8 +619,8 @@ namespace Import
 
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : get current stock in F_ARTSTOCK table in the database");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9]));
-                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9]), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9], dh.Entrepot));
+                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9], dh.Entrepot), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                                 {
                                     using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
                                     {
@@ -665,9 +665,9 @@ namespace Import
 
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : update article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") stock in F_ARTSTOCK table in the database");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant, dh.Entrepot));
 
-                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connection);
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant, dh.Entrepot), connection);
                                     command.ExecuteReader();
                                 }
                             }
@@ -1396,8 +1396,8 @@ namespace Import
 
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : get current stock in F_ARTSTOCK table in the database");
-                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9]));
-                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9]), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9], dh.Entrepot));
+                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9], dh.Entrepot), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                                 {
                                     using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
                                     {
@@ -1442,9 +1442,9 @@ namespace Import
 
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : update article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") stock in F_ARTSTOCK table in the database");
-                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
+                                    logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant, dh.Entrepot));
 
-                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connection);
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant, dh.Entrepot), connection);
                                     command.ExecuteReader();
                                 }
                             }
@@ -1805,70 +1805,6 @@ namespace Import
 
 
                     // get all DO_Piece lines
-                    /*
-                    List<Database.Model.Reliquat> sageDocLigne_Reliquat;
-                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getCommandeByDoPiece(true, dh.Ref_Commande_Donneur_Ordre));
-
-                    using (OdbcCommand command = new OdbcCommand(QueryHelper.getCommandeByDoPiece(true, dh.Ref_Commande_Donneur_Ordre), connection))
-                    {
-                        using (IDataReader reader = command.ExecuteReader()) // read rows of the executed query
-                        {
-                            if (reader.Read()) // If any rows returned
-                            {
-                                sageDocLigne_Reliquat = new List<Database.Model.Reliquat>();
-                                sageDocLigne_Reliquat.Add(new Database.Model.Reliquat(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString()));
-                                while (reader.Read())
-                                {
-                                    sageDocLigne_Reliquat.Add(new Database.Model.Reliquat(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString(), reader[6].ToString(), reader[7].ToString(), reader[8].ToString(), reader[9].ToString(), reader[10].ToString()));
-                                }
-                            }
-                            else// If no rows returned
-                            {
-                                //do nothing.
-                                sageDocLigne_Reliquat = null;
-                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Aucune reponse. ");
-                            }
-                        }
-                    }
-
-                    // insert/update doc lines in reliquat local db
-                    // get reliquat information from local db
-                    // to compaire later each order line
-                    List<Database.Model.Reliquat> reliquatList = db.reliquatManager.getByDo_Piece(db.connectionString, logFileWriter, dh.Ref_Commande_Donneur_Ordre);
-
-                    if(reliquatList == null)
-                    {
-                        // insert all document lines in reliquat table
-                        db.reliquatManager.insert(db.connectionString, sageDocLigne_Reliquat, logFileWriter);
-                    }
-                    else
-                    {
-                        // update all document lines in reliquat table
-                        foreach (Database.Model.Reliquat _reliquat_ in sageDocLigne_Reliquat)
-                        {
-                            Database.Model.Exist isProduct = db.reliquatManager.isExist(db.connectionString, logFileWriter, _reliquat_);
-
-                            if (isProduct != null && isProduct.result)
-                            {
-                                db.reliquatManager.update(db.connectionString, logFileWriter, _reliquat_);
-                            }
-                            else if (isProduct != null && !isProduct.result)
-                            {
-                                db.reliquatManager.insert(db.connectionString, _reliquat_, logFileWriter);
-                            }
-                            else
-                            {
-                                db.reliquatManager.deleteById(db.connectionString, logFileWriter, _reliquat_);
-                            }
-                        }
-                    }
-
-                    // get updated reliquar list after insert/update from sage db to local db
-                    reliquatList = db.reliquatManager.getByDo_Piece(db.connectionString, logFileWriter, dh.Ref_Commande_Donneur_Ordre);
-                    */
-
-
-                    // get all DO_Piece lines
                     List<Import.Classes.OrderLines> tmpOrderLines;
                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getOrderLinesByDoPiece(true, dh.Ref_Commande_Donneur_Ordre));
 
@@ -1895,8 +1831,6 @@ namespace Import
                     }
 
                     
-
-
                     bool isLastBlReliquat = true;
                     List<DocumentVenteLine> produitReliquat = new List<DocumentVenteLine>();
                     List<Import.Classes.OrderLines> reliquatOrderLines = new List<Import.Classes.OrderLines>();
@@ -1979,39 +1913,6 @@ namespace Import
                             }
                         }
 
-
-                        // get current product from reliquat table
-                        // to check if a reliquat is need later...
-                        /*
-                        Database.Model.Reliquat foundReliquat = reliquatList.Find(item => item.do_piece == dh.Ref_Commande_Donneur_Ordre && item.ar_codebarre == line.Code_Article);
-
-                        if(foundReliquat.dl_qtepl == line.Quantite_Colis)
-                        {
-                            // continue import normally
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Article => " + line.Code_Article);
-                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Qte préparé : " + DL_QtePL.Split('.')[0] + " == Qte livrer : " + line.Quantite_Colis);
-                            logFileWriter.WriteLine("");
-                        }
-                        else
-                        {
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Article => " + line.Code_Article);
-                            logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Qte préparé : " + DL_QtePL.Split('.')[0] + " != Qte livrer : " + line.Quantite_Colis);
-                            logFileWriter.WriteLine("");
-
-                            DO_Reliquat = "1";
-                            isLastBlReliquat = false;
-                            DocumentVenteLine doc = new DocumentVenteLine();
-                            doc.AR_Ref = ref_article;
-                            doc.AR_CODEBARRE = line.Code_Article;
-                            doc.DL_Qte = (Convert.ToInt32(DL_QteBC.Split('.')[0]) - Convert.ToInt32(line.Quantite_Colis)).ToString();
-                            doc.DL_QtePL = (Convert.ToInt32(DL_QtePL.Split('.')[0]) - Convert.ToInt32(line.Quantite_Colis)).ToString();
-
-                            produitReliquat.Add(doc);
-                            reliquat.Add(new Database.Model.Reliquat(null, null, string.Format("{0:yyyy-MM-dd hh:mm:ss}", DateTime.Now), dh.Ref_Commande_Donneur_Ordre, dh.Ref_Commande_Client_Livre, DL_LigneBC, name_article, DL_QteBC, DL_QtePL, ref_article, line.Code_Article));
-                        }
-                        */
 
                         Import.Classes.OrderLines sageOrderLine = tmpOrderLines.Find(item => item.ar_codebarre == line.Code_Article);
                         logFileWriter.WriteLine("");
@@ -2198,7 +2099,7 @@ namespace Import
                                 list_of_cmd_lines[counter, 8] = dh.Ref_Commande_Client_Livre; // DO_Ref
                                 list_of_cmd_lines[counter, 9] = ref_article; // AR_Ref
                                 list_of_cmd_lines[counter, 10] = "1"; //DL_Valorise
-                                list_of_cmd_lines[counter, 11] = "1"; //DE_NO
+                                list_of_cmd_lines[counter, 11] = dh.Entrepot; //DE_NO
                                 list_of_cmd_lines[counter, 12] = name_article.Replace("'", "''"); // DL_Design
                                 list_of_cmd_lines[counter, 13] = Convert.ToInt16(line.Quantite_Colis).ToString().Replace(",", ".");  //line.Quantite_Colis; // DL_Qte
                                 list_of_cmd_lines[counter, 14] = Convert.ToDouble(DL_PoidsNet).ToString().Replace(",", "."); // DL_PoidsNet
@@ -2393,8 +2294,8 @@ namespace Import
 
                                 logFileWriter.WriteLine("");
                                 logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : get current stock in F_ARTSTOCK table in the database");
-                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9]));
-                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9]), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.getArticleStock(true, products_DESADV[x, 9], dh.Entrepot));
+                                using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getArticleStock(true, products_DESADV[x, 9], dh.Entrepot), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
                                 {
                                     using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
                                     {
@@ -2439,9 +2340,9 @@ namespace Import
 
                                     logFileWriter.WriteLine("");
                                     logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : update article " + products_DESADV[x, 12] + " (Ref:" + products_DESADV[x, 9] + ") stock in F_ARTSTOCK table in the database");
-                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant));
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : requette sql ===> " + QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant, dh.Entrepot));
 
-                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant), connection);
+                                    OdbcCommand command = new OdbcCommand(QueryHelper.updateArticleStock(true, products_DESADV[x, 9], new_AS_StockReel, new_AS_StockReserve, new_AS_StockMontant, dh.Entrepot), connection);
                                     command.ExecuteReader();
                                 }
                             }
@@ -2468,15 +2369,53 @@ namespace Import
                         }
                     }
 
-                    //set Veolog date time import
+                    // get DE_No name from db
+                    string DE_No_Name = "";
+                    try
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Récupérer le depot.");
+
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.getDepotById(true, dh.Entrepot));
+                        using (OdbcCommand command_ = new OdbcCommand(QueryHelper.getDepotById(true, dh.Entrepot), connection)) //execute the function within this statement : getNegativeStockOfAProduct()
+                        {
+                            using (IDataReader reader = command_.ExecuteReader()) // read rows of the executed query
+                            {
+                                if (reader.Read()) // If any rows returned
+                                {
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Depot trouvé");
+                                    DE_No_Name = reader[0].ToString();
+                                }
+                                else// If no rows returned
+                                {
+                                    //put the depot name empty.
+                                    logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Depot non trouvé");
+                                    DE_No_Name = "";
+                                }
+                            }
+                        }
+                        logFileWriter.Flush();
+                    }
+                    catch (Exception ex)
+                    {
+                        logFileWriter.WriteLine("");
+                        logFileWriter.WriteLine(DateTime.Now + " ********** Warning Depot ********** ");
+                        logFileWriter.WriteLine(DateTime.Now + " Message: " + ex.Message.Replace("[CBase]", "").Replace("[Simba]", " ").Replace("[Simba ODBC Driver]", "").Replace("[Microsoft]", " ").Replace("[Gestionnaire de pilotes ODBC]", "").Replace("[SimbaEngine ODBC Driver]", " ").Replace("[DRM File Library]", ""));
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Depot non trouvé");
+                        logFileWriter.Flush();
+                        DE_No_Name = "";
+                        logFileWriter.Flush();
+                    }
+
+                    //set logistic name and date time import in "Complement" field
                     try
                     {
                         string delivery_date_veolog = string.Format("{0:dd/MM/yyyy hh:mm:ss}", DateTime.Now);
                         logFileWriter.WriteLine("");
-                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de Veolog au DESADV \"" + reference_DESADV_doc + "\".");
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Ajouter la date de livraision \"" + delivery_date_veolog + "\" de \""+ DE_No_Name + "\" au DESADV \"" + reference_DESADV_doc + "\".");
 
-                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre));
-                        OdbcCommand command = new OdbcCommand(QueryHelper.updateVeologDeliveryDate(true, reference_DESADV_doc, delivery_date_veolog + "   " + dh.Ref_Commande_Donneur_Ordre), connection);
+                        logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.updateComplementDeliveryDate(true, reference_DESADV_doc, DE_No_Name + "  "+delivery_date_veolog + "  " + dh.Ref_Commande_Donneur_Ordre));
+                        OdbcCommand command = new OdbcCommand(QueryHelper.updateComplementDeliveryDate(true, reference_DESADV_doc, DE_No_Name + "  " + delivery_date_veolog + "  " + dh.Ref_Commande_Donneur_Ordre), connection);
                         {
                             using (IDataReader reader = command.ExecuteReader())
                             {
@@ -2556,24 +2495,6 @@ namespace Import
                             OdbcCommand command = new OdbcCommand(QueryHelper.updateCommandeReliquat(true, dh.Ref_Commande_Donneur_Ordre), connection);
                             IDataReader reader = command.ExecuteReader();
                             logFileWriter.WriteLine(DateTime.Now + " | insertDesadv_Veolog() : Bon de Commande ENTETE Mise à jour");
-
-                            /*
-                            //logFileWriter.WriteLine("");
-                            //logFileWriter.WriteLine("Update local Reliquat table...");
-                            //db.reliquatManager.update(db.connectionString, logFileWriter, reliquat);
-
-                            logFileWriter.WriteLine("");
-                            logFileWriter.WriteLine("produitReliquat list : " + produitReliquat.Count);
-
-                            for (int x=0; x<produitReliquat.Count; x++)
-                            {
-                                logFileWriter.WriteLine("");
-                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : Mise à jour du Bon de Commande (BC) en LIGNE \"" + dh.Ref_Commande_Donneur_Ordre + "\".");
-                                logFileWriter.WriteLine(DateTime.Now + " | " + METHODE_NAME + " : SQL ===> " + QueryHelper.updateCommandeLigneReliquat(true, dh.Ref_Commande_Donneur_Ordre, produitReliquat[x]));
-                                OdbcCommand command_ = new OdbcCommand(QueryHelper.updateCommandeLigneReliquat(true, dh.Ref_Commande_Donneur_Ordre, produitReliquat[x]), connection);
-                                IDataReader reader_ = command_.ExecuteReader();
-                            }
-                            */
 
                             logFileWriter.WriteLine("");
                             logFileWriter.WriteLine("reliquatOrderLines list : " + reliquatOrderLines.Count);

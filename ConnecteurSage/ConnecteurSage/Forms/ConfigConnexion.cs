@@ -87,7 +87,7 @@ namespace ConnecteurSage.Forms
 
             Connexion.Classes.ConfigurationConnexion configurationConnexion = new Connexion.Classes.ConfigurationConnexion(
                 new Connexion.Classes.Custom.ODBC(comboBox1.Text, textBox2.Text, textBox3.Text),
-                new Connexion.Classes.Custom.SQL(comboBox2.Text.Split('_')[0], comboBox2.Text, textBox4.Text, textBox1.Text)
+                new Connexion.Classes.Custom.SQL(comboBox2.Text.Split(new String[] { "__" }, StringSplitOptions.None)[0], comboBox2.Text, textBox4.Text, textBox1.Text)
             );
             Connexion.ConnexionSaveLoad settings = new Connexion.ConnexionSaveLoad();
             settings.configurationConnexion = configurationConnexion;

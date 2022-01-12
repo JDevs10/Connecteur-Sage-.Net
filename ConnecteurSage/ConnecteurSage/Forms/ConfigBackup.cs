@@ -17,19 +17,6 @@ namespace ConnecteurSage.Forms
         {
             InitializeComponent();
 
-            string[] formatList = new string[3];     //List des formats d'export
-            formatList[0] = "veuillez choisir un format";
-            formatList[1] = "Plat";
-            formatList[2] = "Véolog";
-
-            for (int i = 0; i < formatList.Length; i++)
-            {
-                comboBox1.Items.Add(formatList[i]);
-                comboBox2.Items.Add(formatList[i]);
-                comboBox3.Items.Add(formatList[i]);
-                comboBox4.Items.Add(formatList[i]);
-            }
-
             if (File.Exists(Directory.GetCurrentDirectory() + @"\SettingBackup.xml"))
             {
                 ConfigurationBackup backup = new ConfigurationBackup();
@@ -40,10 +27,7 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportLog.Value = backup.export_Log;
                 numericUpDown_importSuccess.Value = backup.import_files_success;
                 numericUpDown_importErreur.Value = backup.import_files_error;
-                numericUpDown_exportBC.Value = backup.export_files_BC;
-                numericUpDown_exportBL.Value = backup.export_files_BL;
-                numericUpDown_exportFA.Value = backup.export_files_FA;
-                numericUpDown_exportME_MS.Value = backup.export_files_ME_MS;
+                numericUpDown_backupFiles.Value = backup.backup_files;
 
                 if (!checkBox_activateBackup.Checked)
                 {
@@ -52,14 +36,7 @@ namespace ConnecteurSage.Forms
                     numericUpDown_exportLog.Enabled = false;
                     numericUpDown_importSuccess.Enabled = false;
                     numericUpDown_importErreur.Enabled = false;
-                    numericUpDown_exportBC.Enabled = false;
-                    numericUpDown_exportBL.Enabled = false;
-                    numericUpDown_exportFA.Enabled = false;
-                    numericUpDown_exportME_MS.Enabled = false;
-                    comboBox1.Enabled = false;
-                    comboBox2.Enabled = false;
-                    comboBox3.Enabled = false;
-                    comboBox4.Enabled = false;
+                    numericUpDown_backupFiles.Enabled = false;
                 }
             }
             else
@@ -69,14 +46,7 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportLog.Enabled = false;
                 numericUpDown_importSuccess.Enabled = false;
                 numericUpDown_importErreur.Enabled = false;
-                numericUpDown_exportBC.Enabled = false;
-                numericUpDown_exportBL.Enabled = false;
-                numericUpDown_exportFA.Enabled = false;
-                numericUpDown_exportME_MS.Enabled = false;
-                comboBox1.Enabled = false;
-                comboBox2.Enabled = false;
-                comboBox3.Enabled = false;
-                comboBox4.Enabled = false;
+                numericUpDown_backupFiles.Enabled = false;
             }
         }
 
@@ -84,60 +54,6 @@ namespace ConnecteurSage.Forms
         {
             if (checkBox_activateBackup.Checked)
             {
-                string BC_Type = "";
-                string BL_Type = "";
-                string FA_Type = "";
-                string ME_MS_Type = "";
-
-                if (Convert.ToInt32(numericUpDown_exportBC.Value) != 0)
-                {
-                    if (comboBox1.Text != "")
-                    {
-                        BC_Type = comboBox1.Text;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Veuillez choisir un format!", "Attention!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-                }
-                if (Convert.ToInt32(numericUpDown_exportBL.Value) != 0)
-                {
-                    if (comboBox2.Text != "")
-                    {
-                        BL_Type = comboBox2.Text;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Veuillez choisir un format!", "Attention!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-                }
-                if (Convert.ToInt32(numericUpDown_exportFA.Value) != 0)
-                {
-                    if (comboBox3.Text != "")
-                    {
-                        FA_Type = comboBox3.Text;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Veuillez choisir un format!", "Attention!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-                }
-                if (Convert.ToInt32(numericUpDown_exportME_MS.Value) != 0)
-                {
-                    if (comboBox4.Text != "")
-                    {
-                        ME_MS_Type = comboBox4.Text;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Veuillez choisir un format!", "Attention!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-                }
-
                 ConfigurationBackup backup = new ConfigurationBackup(
                     checkBox_activateBackup.Checked,
                     Convert.ToInt32(numericUpDown_generalLog.Value),
@@ -145,14 +61,7 @@ namespace ConnecteurSage.Forms
                     Convert.ToInt32(numericUpDown_exportLog.Value),
                     Convert.ToInt32(numericUpDown_importSuccess.Value),
                     Convert.ToInt32(numericUpDown_importErreur.Value),
-                    Convert.ToInt32(numericUpDown_exportBC.Value),
-                    BC_Type,
-                    Convert.ToInt32(numericUpDown_exportBL.Value),
-                    BL_Type,
-                    Convert.ToInt32(numericUpDown_exportFA.Value),
-                    FA_Type,
-                    Convert.ToInt32(numericUpDown_exportME_MS.Value),
-                    ME_MS_Type
+                    Convert.ToInt32(numericUpDown_backupFiles.Value)
                 );
                 backup.saveInfo(backup);
                 Close();
@@ -164,10 +73,7 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportLog.Enabled = false;
                 numericUpDown_importSuccess.Enabled = false;
                 numericUpDown_importErreur.Enabled = false;
-                numericUpDown_exportBC.Enabled = false;
-                numericUpDown_exportBL.Enabled = false;
-                numericUpDown_exportFA.Enabled = false;
-                numericUpDown_exportME_MS.Enabled = false;
+                numericUpDown_backupFiles.Enabled = false;
 
                 ConfigurationBackup backup = new ConfigurationBackup(
                     false,
@@ -176,14 +82,7 @@ namespace ConnecteurSage.Forms
                     Convert.ToInt32(0),
                     Convert.ToInt32(0),
                     Convert.ToInt32(0),
-                    Convert.ToInt32(0),
-                    "",
-                    Convert.ToInt32(0),
-                    "",
-                    Convert.ToInt32(0),
-                    "",
-                    Convert.ToInt32(0),
-                    ""
+                    Convert.ToInt32(0)
                 );
                 backup.saveInfo(backup);
                 Close();
@@ -205,42 +104,7 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportLog.Enabled = true;
                 numericUpDown_importSuccess.Enabled = true;
                 numericUpDown_importErreur.Enabled = true;
-                numericUpDown_exportBC.Enabled = true;
-                numericUpDown_exportBL.Enabled = true;
-                numericUpDown_exportFA.Enabled = true;
-                numericUpDown_exportME_MS.Enabled = true;
-                if (numericUpDown_exportBC.Value > 0)
-                {
-                    comboBox1.Enabled = true;
-                }
-                else
-                {
-                    comboBox1.Enabled = false;
-                }
-                if (numericUpDown_exportBL.Value > 0)
-                {
-                    comboBox2.Enabled = true;
-                }
-                else
-                {
-                    comboBox2.Enabled = false;
-                }
-                if (numericUpDown_exportFA.Value > 0)
-                {
-                    comboBox3.Enabled = true;
-                }
-                else
-                {
-                    comboBox3.Enabled = false;
-                }
-                if (numericUpDown_exportME_MS.Value > 0)
-                {
-                    comboBox4.Enabled = true;
-                }
-                else
-                {
-                    comboBox4.Enabled = false;
-                }
+                numericUpDown_backupFiles.Enabled = true;
             }
             else
             {
@@ -249,63 +113,9 @@ namespace ConnecteurSage.Forms
                 numericUpDown_exportLog.Enabled = false;
                 numericUpDown_importSuccess.Enabled = false;
                 numericUpDown_importErreur.Enabled = false;
-                numericUpDown_exportBC.Enabled = false;
-                numericUpDown_exportBL.Enabled = false;
-                numericUpDown_exportFA.Enabled = false;
-                numericUpDown_exportME_MS.Enabled = false;
-                comboBox1.Enabled = false;
-                comboBox2.Enabled = false;
-                comboBox3.Enabled = false;
-                comboBox4.Enabled = false;
+                numericUpDown_backupFiles.Enabled = false;
             }
         }
 
-        private void numericUpDown_exportBC_ValueChanged(object sender, EventArgs e)
-        {
-            if (numericUpDown_exportBC.Value > 0)
-            {
-                comboBox1.Enabled = true;
-            }
-            else
-            {
-                comboBox1.Enabled = false;
-            }
-        }
-
-        private void numericUpDown_exportBL_ValueChanged(object sender, EventArgs e)
-        {
-            if (numericUpDown_exportBL.Value > 0)
-            {
-                comboBox2.Enabled = true;
-            }
-            else
-            {
-                comboBox2.Enabled = false;
-            }
-        }
-
-        private void numericUpDown_exportFA_ValueChanged(object sender, EventArgs e)
-        {
-            if (numericUpDown_exportFA.Value > 0)
-            {
-                comboBox3.Enabled = true;
-            }
-            else
-            {
-                comboBox3.Enabled = false;
-            }
-        }
-
-        private void numericUpDown_exportME_MS_ValueChanged(object sender, EventArgs e)
-        {
-            if (numericUpDown_exportME_MS.Value > 0)
-            {
-                comboBox4.Enabled = true;
-            }
-            else
-            {
-                comboBox4.Enabled = false;
-            }
-        }
     }
 }

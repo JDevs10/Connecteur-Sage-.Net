@@ -16,6 +16,7 @@ namespace ConnecteurAuto.Classes
         /// <summary>
         /// commande à exporter
         /// </summary>
+        private Database.Model.Settings settings = null;
         private Database.Database db = null;
         private string pathExport;
         private string docRefMail = "";
@@ -26,14 +27,15 @@ namespace ConnecteurAuto.Classes
         #endregion
 
 
-        public ExportStocks(string path)
+        public ExportStocks()
         {
-            this.pathExport = path;
+            
             // Init database && tables
-            db = new Database.Database();
+            this.db = new Database.Database();
 
-            Database.Model.Settings settings = db.settingsManager.get(db.connectionString, 1);
-            logDirectoryName_export = settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "STOCK";
+            this.settings = this.db.settingsManager.get(this.db.connectionString, 1);
+            this.pathExport = this.settings.EDI_Folder + @"\Export\Stock";
+            logDirectoryName_export = this.settings.EXE_Folder + @"\" + "LOG" + @"\" + "LOG_Export" + @"\" + "STOCK";
         }
 
         #region Intéractions avec l'application
@@ -115,8 +117,8 @@ namespace ConnecteurAuto.Classes
 
             if (settings.configurationExport.Stock.Format.Equals("Véolog"))
             {
-                string exportTo = "";
-                string exportStockPath = pathExport + @"\Export_Veolog";
+                string exportTo = @"Export\Stock";  // for backup path
+                string exportStockPath = pathExport;
 
                 if (!Directory.Exists(exportStockPath))
                 {
@@ -184,8 +186,6 @@ namespace ConnecteurAuto.Classes
                             }
                             file.WriteLine("F" + ";" + i); //writing at the end of file
 
-                            //export veolog
-                            exportTo = @"Export\Veolog_Stock";
                         }
 
                         // *file has been generated at the end of the method using @fileName*
@@ -199,7 +199,7 @@ namespace ConnecteurAuto.Classes
                         logFileWriter_export.WriteLine(DateTime.Now + " | ExportStock() : Le fichier a été généré à : " + fileName);
 
                         //add to backup folder
-                        addFileToBackUp(pathExport + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName_, logFileWriter_export);
+                        addFileToBackUp(this.settings.EDI_Folder + @"\BackUp\" + exportTo, pathExport + @"\" + fileName, fileName_, logFileWriter_export);
                     }
 
                 }
@@ -293,6 +293,8 @@ namespace ConnecteurAuto.Classes
                             while (reader.Read())
                             {
                                 Stock stock = new Stock(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), "", "", "");
+                                stock.DE_No = reader[4].ToString();
+                                stock.DE_No_Name = reader[5].ToString();
                                 stock_info.Add(stock);
                             }
                         }
